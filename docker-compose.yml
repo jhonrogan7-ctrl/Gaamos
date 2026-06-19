@@ -1,0 +1,39 @@
+services:
+  web:
+    build: .
+    ports:
+      - "8005:8000"
+    volumes:
+      - .:/app
+    env_file: .env
+    depends_on:
+      db:
+        condition: service_healthy
+    command: python manage.py runserver 0.0.0.0:8000
+
+  db:
+    image: postgres:16
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-gaamos}
+      POSTGRES_USER: ${POSTGRES_USER:-gaamos}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-gaamos}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-gaamos}"]
+      interval: 3s
+      timeout: 3s
+      retries: 10
+
+  cloudflared:
+    image: cloudflare/cloudflared:latest
+    command: tunnel --no-autoupdate run
+    env_file: .env
+    environment:
+      TUNNEL_TOKEN: ${TUNNEL_TOKEN:-}
+    depends_on:
+      - web
+    profiles: ["edge"]
+
+volumes:
+  pgdata:
