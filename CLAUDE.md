@@ -21,14 +21,17 @@ companies, each managing their own branches, categories, and menus, served via s
   Alpine + SQLite) whose working pieces (manager dashboard, server-side QR generation, menu
   data model, fail-closed tenant scoping) get ported during the re-platform.
 
-## Status — DOCS & WORKFLOW SCAFFOLD ONLY
+## Status — PLATFORM BUILD ACTIVE (gate cleared 2026-06-19)
 
-**No platform/SaaS code lives here yet.** This repo currently holds the project workflow
-(this file, `SKILLS.md`) and the vault is the home for specs and plans.
+**Validation gate is MET — platform code is unblocked.** The founder confirmed the Thamel
+demos passed (≥3-of-5 yes at the proposed price). gaamos is now an active platform build on
+the locked target stack, re-platforming the donor-era specs phase by phase (starting Phase 1).
+Decision record: `decisions/2026-06-19-validation-gate-cleared.md` (vault).
 
-> **Hard gate (founder decision, 2026-06-16):** no platform / re-platform code lands until
-> **3-of-5 in-person Thamel restaurant demos say yes at the proposed price.** Until then,
-> gaamos is a planning home only. The donor `qr_manu` repo stays live and single-tenant.
+> **Gate history (now cleared):** the founder decision of 2026-06-16 blocked all platform /
+> re-platform code until **3-of-5 in-person Thamel restaurant demos said yes at the proposed
+> price.** That condition was met on 2026-06-19. The donor `qr_manu` repo stays live and
+> single-tenant; gaamos is the new build.
 
 ## Core Decisions (target stack — never re-debate without a new decision record)
 
