@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Gaamos — Manager Dashboard · Desktop-first</title>
+<title>Gaamos — Manager Dashboard · Full operator surface</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700;12..96,800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -14,9 +14,10 @@
     /* neutral base (constant for every venue) */
     --bg: #eef0f4; --panel: #ffffff; --ink: #171a21; --ink-2: #5a616e; --ink-3: #98a0ad;
     --line: #e7e9ef; --line-2: #dde0e8; --side: #15171d; --side-2: #1f222b; --side-ink: #aeb4c2;
-    /* themed accent (swapped by the switcher) — default: Saffron */
+    /* fixed Saffron Festival house accent */
     --accent: #e23744; --accent-deep: #b3232f; --accent-soft: #ffe3df;
     --accent-grad: linear-gradient(135deg,#ff9f1c,#e23744); --accent-ink: #fff;
+    --green: #1f9d57; --green-soft: #e3f6ec; --amber: #c98a00; --amber-soft: #fdf0d4;
   }
   body { font-family: var(--bd); background: var(--bg); color: var(--ink); -webkit-font-smoothing: antialiased; padding: 30px 20px 60px; }
 
@@ -24,14 +25,7 @@
   .lead .kicker { font-family: var(--hd); font-weight: 800; letter-spacing: .18em; text-transform: uppercase; font-size: 12px; color: var(--accent); }
   .lead h1 { font-family: var(--hd); font-weight: 800; font-size: 30px; letter-spacing: -.02em; margin: 6px 0 6px; }
   .lead p { font-size: 14px; line-height: 1.6; color: var(--ink-2); max-width: 760px; }
-
-  /* theme switcher */
-  .switch { max-width: 1220px; margin: 0 auto 16px; display: flex; align-items: center; gap: 10px; }
-  .switch .lbl { font-size: 12px; font-weight: 700; color: var(--ink-2); }
-  .seg { display: inline-flex; background: #fff; border: 1px solid var(--line-2); border-radius: 12px; padding: 4px; gap: 4px; }
-  .seg button { font-family: var(--bd); font-weight: 700; font-size: 12.5px; color: var(--ink-2); background: none; border: none; padding: 7px 14px; border-radius: 9px; cursor: pointer; display: flex; align-items: center; gap: 7px; }
-  .seg button .d { width: 12px; height: 12px; border-radius: 4px; }
-  .seg button.on { color: #fff; background: var(--accent); }
+  .lead .hint { font-size: 12.5px; color: var(--accent-deep); font-weight: 700; margin-top: 8px; }
 
   /* browser frame */
   .frame { max-width: 1220px; margin: 0 auto; border-radius: 16px; overflow: hidden; box-shadow: 0 30px 70px -28px rgba(20,23,31,.55), 0 0 0 1px rgba(20,23,31,.06); background: #fff; }
@@ -40,7 +34,7 @@
   .frame .chrome .url { margin-left: 14px; background: #fff; border-radius: 8px; height: 24px; flex: 1; max-width: 420px; display: flex; align-items: center; padding: 0 12px; font-size: 11.5px; color: var(--ink-3); }
 
   /* app shell: sidebar + main */
-  .app { display: grid; grid-template-columns: 232px 1fr; min-height: 720px; }
+  .app { display: grid; grid-template-columns: 232px 1fr; min-height: 760px; position: relative; }
 
   /* sidebar (neutral, constant) */
   .side { background: var(--side); padding: 16px 12px; display: flex; flex-direction: column; gap: 4px; }
@@ -49,7 +43,7 @@
   .side .brand .nm { font-family: var(--hd); font-weight: 800; font-size: 15px; color: #fff; line-height: 1.05; }
   .side .brand .nm small { display: block; font-family: var(--bd); font-size: 10.5px; font-weight: 600; color: #6b7180; margin-top: 2px; }
   .side .grp { font-size: 9.5px; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; color: #565c6a; padding: 14px 10px 6px; }
-  .nav { display: flex; align-items: center; gap: 11px; padding: 10px 11px; border-radius: 11px; color: var(--side-ink); font-size: 13.5px; font-weight: 600; cursor: pointer; }
+  .nav { display: flex; align-items: center; gap: 11px; padding: 10px 11px; border-radius: 11px; color: var(--side-ink); font-size: 13.5px; font-weight: 600; cursor: pointer; user-select: none; }
   .nav svg { width: 18px; height: 18px; flex-shrink: 0; }
   .nav:hover { background: var(--side-2); color: #fff; }
   .nav.on { background: var(--accent); color: #fff; }
@@ -62,31 +56,29 @@
 
   /* main */
   .main { display: flex; flex-direction: column; min-width: 0; background: var(--bg); }
-  .top { height: 62px; background: #fff; border-bottom: 1px solid var(--line); display: flex; align-items: center; gap: 16px; padding: 0 24px; flex-shrink: 0; }
+  .top { min-height: 62px; background: #fff; border-bottom: 1px solid var(--line); display: flex; align-items: center; gap: 16px; padding: 0 24px; flex-shrink: 0; }
   .top h2 { font-family: var(--hd); font-weight: 800; font-size: 19px; letter-spacing: -.015em; }
   .top h2 small { display: block; font-family: var(--bd); font-size: 11px; font-weight: 600; color: var(--ink-3); margin-top: 1px; }
   .top .spacer { flex: 1; }
-  .search { display: flex; align-items: center; gap: 9px; background: var(--bg); border: 1px solid var(--line); border-radius: 11px; padding: 9px 13px; width: 280px; color: var(--ink-3); }
+  .search { display: flex; align-items: center; gap: 9px; background: var(--bg); border: 1px solid var(--line); border-radius: 11px; padding: 9px 13px; width: 260px; color: var(--ink-3); }
   .search svg { width: 16px; height: 16px; }
   .search input { border: none; background: none; outline: none; font-family: var(--bd); font-size: 13px; color: var(--ink); flex: 1; }
   .btn { font-family: var(--bd); font-weight: 700; font-size: 13px; border: none; border-radius: 11px; padding: 10px 16px; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; }
+  .btn svg { width: 16px; height: 16px; }
   .btn.primary { background: var(--accent-grad); color: var(--accent-ink); box-shadow: 0 8px 18px -8px var(--accent); }
-  .btn.primary svg { width: 16px; height: 16px; }
+  .btn.ghost { background: #fff; color: var(--ink); border: 1px solid var(--line-2); }
+  .btn.ghost:hover { border-color: var(--ink-3); }
 
   .body { padding: 22px 24px; overflow: hidden; }
+  .view { display: none; }
+  .view.active { display: block; animation: fade .22s ease; }
+  @keyframes fade { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
 
-  /* stat cards */
-  .stats { display: grid; grid-template-columns: repeat(4,1fr); gap: 14px; margin-bottom: 20px; }
-  .stat { background: var(--panel); border: 1px solid var(--line); border-radius: 16px; padding: 16px; }
-  .stat .ic { width: 38px; height: 38px; border-radius: 11px; background: var(--accent-soft); color: var(--accent-deep); display: flex; align-items: center; justify-content: center; margin-bottom: 12px; }
-  .stat .ic svg { width: 19px; height: 19px; }
-  .stat .val { font-family: var(--hd); font-weight: 800; font-size: 27px; letter-spacing: -.02em; line-height: 1; }
-  .stat .lbl { font-size: 11.5px; color: var(--ink-3); font-weight: 600; margin-top: 5px; }
-  .stat .delta { font-size: 11px; font-weight: 700; color: #1f9d57; margin-top: 8px; }
-  .stat .delta.flat { color: var(--ink-3); }
-
-  /* two-pane builder */
-  .panes { display: grid; grid-template-columns: 1fr 320px; gap: 16px; align-items: start; }
+  /* section heading inside a view */
+  .sec-h { display: flex; align-items: center; gap: 10px; margin: 4px 2px 12px; }
+  .sec-h h3 { font-family: var(--hd); font-weight: 800; font-size: 16px; }
+  .sec-h .sp { flex: 1; }
+  .sec-h .mini { font-size: 11.5px; color: var(--ink-3); font-weight: 600; }
   .panel { background: var(--panel); border: 1px solid var(--line); border-radius: 16px; }
   .ph { display: flex; align-items: center; gap: 10px; padding: 15px 18px; border-bottom: 1px solid var(--line); }
   .ph h3 { font-family: var(--hd); font-weight: 800; font-size: 15px; }
@@ -94,6 +86,129 @@
   .ph .mini { font-size: 11.5px; color: var(--ink-3); font-weight: 600; }
   .pb { padding: 12px; }
 
+  /* stat cards */
+  .stats { display: grid; grid-template-columns: repeat(4,1fr); gap: 14px; margin-bottom: 18px; }
+  .stat { background: var(--panel); border: 1px solid var(--line); border-radius: 16px; padding: 16px; }
+  .stat .ic { width: 38px; height: 38px; border-radius: 11px; background: var(--accent-soft); color: var(--accent-deep); display: flex; align-items: center; justify-content: center; margin-bottom: 12px; }
+  .stat .ic svg { width: 19px; height: 19px; }
+  .stat .val { font-family: var(--hd); font-weight: 800; font-size: 27px; letter-spacing: -.02em; line-height: 1; }
+  .stat .lbl { font-size: 11.5px; color: var(--ink-3); font-weight: 600; margin-top: 5px; }
+  .stat .delta { font-size: 11px; font-weight: 700; color: var(--green); margin-top: 8px; }
+  .stat .delta.flat { color: var(--ink-3); }
+
+  /* ── OVERVIEW ── */
+  .ov-grid { display: grid; grid-template-columns: 1fr 340px; gap: 16px; align-items: start; }
+  .chart { padding: 16px 18px 12px; }
+  .chart .bars { display: flex; align-items: flex-end; gap: 10px; height: 168px; padding-top: 14px; }
+  .chart .bar { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 8px; height: 100%; justify-content: flex-end; }
+  .chart .bar .col { width: 100%; max-width: 34px; border-radius: 7px 7px 4px 4px; background: var(--accent-soft); position: relative; }
+  .chart .bar.peak .col { background: var(--accent-grad); }
+  .chart .bar .v { font-size: 10px; font-weight: 800; color: var(--ink-2); font-family: var(--hd); }
+  .chart .bar .d { font-size: 10.5px; color: var(--ink-3); font-weight: 600; }
+  .feed .fi { display: flex; align-items: center; gap: 11px; padding: 11px 12px; border-bottom: 1px solid var(--line); }
+  .feed .fi:last-child { border-bottom: none; }
+  .feed .fi .fic { width: 34px; height: 34px; border-radius: 10px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
+  .feed .fi .fic svg { width: 16px; height: 16px; }
+  .feed .fi .ft { font-size: 12.5px; font-weight: 700; }
+  .feed .fi .fm { font-size: 10.5px; color: var(--ink-3); font-weight: 600; margin-top: 1px; }
+  .feed .fi .fr { margin-left: auto; font-family: var(--hd); font-weight: 800; font-size: 12.5px; }
+  .feed .fi .fr small { display: block; font-family: var(--bd); font-weight: 600; font-size: 9.5px; color: var(--ink-3); text-align: right; }
+  .toplist { padding: 6px 0; }
+  .toprow { display: flex; align-items: center; gap: 11px; padding: 9px 16px; }
+  .toprow .rk { width: 22px; font-family: var(--hd); font-weight: 800; font-size: 13px; color: var(--ink-3); }
+  .toprow .th { width: 34px; height: 34px; border-radius: 9px; flex-shrink: 0; background-size: cover; }
+  .toprow .tn { font-size: 12.5px; font-weight: 700; }
+  .toprow .tm { font-size: 10px; color: var(--ink-3); font-weight: 600; }
+  .toprow .tv { margin-left: auto; font-family: var(--hd); font-weight: 800; font-size: 13px; color: var(--accent-deep); }
+  .mt16 { margin-top: 16px; }
+
+  /* ── shared table ── */
+  .tbl { width: 100%; border-collapse: collapse; }
+  .tbl th { text-align: left; font-size: 10px; letter-spacing: .1em; text-transform: uppercase; color: var(--ink-3); font-weight: 800; padding: 12px 16px; border-bottom: 1px solid var(--line); }
+  .tbl td { padding: 13px 16px; border-bottom: 1px solid var(--line); font-size: 12.5px; vertical-align: middle; }
+  .tbl tr:last-child td { border-bottom: none; }
+  .tbl tr:hover td { background: #fafbfd; }
+  .ono { font-family: var(--hd); font-weight: 800; font-size: 13px; }
+  .tablechip { display: inline-flex; align-items: center; gap: 5px; font-size: 11px; font-weight: 800; color: var(--ink-2); background: var(--bg); border: 1px solid var(--line-2); border-radius: 8px; padding: 4px 9px; }
+  .status { display: inline-flex; align-items: center; gap: 6px; font-size: 11px; font-weight: 800; border-radius: 999px; padding: 4px 11px; }
+  .status::before { content: ''; width: 7px; height: 7px; border-radius: 50%; background: currentColor; }
+  .status.new { color: var(--accent-deep); background: var(--accent-soft); }
+  .status.prep { color: var(--amber); background: var(--amber-soft); }
+  .status.done { color: var(--green); background: var(--green-soft); }
+  .filters { display: flex; gap: 8px; }
+  .fchip { font-size: 12px; font-weight: 700; color: var(--ink-2); background: #fff; border: 1px solid var(--line-2); border-radius: 999px; padding: 7px 14px; cursor: pointer; }
+  .fchip.on { background: var(--ink); color: #fff; border-color: var(--ink); }
+  .lnk { color: var(--accent-deep); font-weight: 800; font-size: 12px; cursor: pointer; }
+
+  /* ── branches ── */
+  .cards { display: grid; grid-template-columns: repeat(3,1fr); gap: 14px; }
+  .bcard { background: var(--panel); border: 1px solid var(--line); border-radius: 16px; padding: 16px; display: flex; flex-direction: column; }
+  .bcard .bh { display: flex; align-items: center; gap: 11px; }
+  .bcard .bav { width: 40px; height: 40px; border-radius: 11px; background: var(--accent-soft); color: var(--accent-deep); font-family: var(--hd); font-weight: 800; font-size: 16px; display: flex; align-items: center; justify-content: center; }
+  .bcard .bn { font-family: var(--hd); font-weight: 800; font-size: 15px; }
+  .bcard .ba { font-size: 11px; color: var(--ink-3); font-weight: 600; margin-top: 2px; }
+  .bcard .bstats { display: flex; gap: 18px; margin: 14px 0 13px; }
+  .bcard .bstat .n { font-family: var(--hd); font-weight: 800; font-size: 18px; }
+  .bcard .bstat .l { font-size: 10px; color: var(--ink-3); font-weight: 700; }
+  .bcard .bf { display: flex; gap: 8px; margin-top: auto; }
+  .bcard.add { border-style: dashed; border-color: var(--line-2); align-items: center; justify-content: center; color: var(--accent-deep); font-weight: 800; font-size: 13px; gap: 10px; cursor: pointer; min-height: 190px; flex-direction: column; }
+  .bcard.add .pl { width: 44px; height: 44px; border-radius: 13px; background: var(--accent-soft); display: flex; align-items: center; justify-content: center; }
+  .bcard.add .pl svg { width: 22px; height: 22px; }
+
+  /* ── QR ── */
+  .qgrid { display: grid; grid-template-columns: repeat(4,1fr); gap: 14px; }
+  .qcard { background: var(--panel); border: 1px solid var(--line); border-radius: 16px; padding: 16px; text-align: center; display: flex; flex-direction: column; align-items: center; }
+  .qcard .qframe { width: 124px; height: 124px; border-radius: 14px; background: #fff; border: 1px solid var(--line); padding: 9px; margin-bottom: 12px; }
+  .qcard .qn { font-family: var(--hd); font-weight: 800; font-size: 14px; }
+  .qcard .qu { font-size: 10px; color: var(--ink-3); font-weight: 600; margin: 3px 0 13px; word-break: break-all; }
+  .qcard .btn { width: 100%; justify-content: center; }
+
+  /* ── settings ── */
+  .set-grid { display: grid; grid-template-columns: 200px 1fr; gap: 22px; align-items: start; }
+  .set-nav { display: flex; flex-direction: column; gap: 3px; position: sticky; top: 16px; }
+  .set-nav a { font-size: 13px; font-weight: 700; color: var(--ink-2); padding: 9px 12px; border-radius: 10px; cursor: pointer; text-decoration: none; }
+  .set-nav a.on { background: var(--accent-soft); color: var(--accent-deep); }
+  .set-nav a:hover { background: #fff; }
+  .fcard { margin-bottom: 16px; }
+  .fcard .ph { border-bottom: 1px solid var(--line); }
+  .fcard .pb { padding: 18px; }
+  .fld { margin-bottom: 15px; }
+  .fld:last-child { margin-bottom: 0; }
+  .fld label { display: block; font-size: 11.5px; font-weight: 800; color: var(--ink-2); margin-bottom: 7px; }
+  .fld .inp { width: 100%; border: 1px solid var(--line-2); border-radius: 11px; padding: 11px 13px; font-family: var(--bd); font-size: 13px; color: var(--ink); background: #fff; }
+  .fld .inp:focus { outline: none; border-color: var(--accent); }
+  .fld .pre { display: flex; align-items: stretch; border: 1px solid var(--line-2); border-radius: 11px; overflow: hidden; }
+  .fld .pre input { border: none; outline: none; flex: 1; padding: 11px 13px; font-family: var(--bd); font-size: 13px; }
+  .fld .pre .suf { background: var(--bg); color: var(--ink-2); font-size: 12.5px; font-weight: 700; display: flex; align-items: center; padding: 0 13px; border-left: 1px solid var(--line-2); }
+  .fld .help { font-size: 11px; color: var(--ink-3); font-weight: 600; margin-top: 6px; }
+  .frow { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  /* theme picker (venue chooses guest gamut) */
+  .themes { display: grid; grid-template-columns: repeat(3,1fr); gap: 12px; }
+  .theme { border: 2px solid var(--line-2); border-radius: 14px; padding: 12px; cursor: pointer; text-align: left; background: #fff; }
+  .theme.on { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
+  .theme .swatch { height: 46px; border-radius: 9px; margin-bottom: 10px; display: flex; }
+  .theme .swatch span { flex: 1; }
+  .theme .tn { font-family: var(--hd); font-weight: 800; font-size: 13px; display: flex; align-items: center; gap: 6px; }
+  .theme .tn .ck { width: 16px; height: 16px; border-radius: 50%; background: var(--accent); color: #fff; display: none; align-items: center; justify-content: center; margin-left: auto; }
+  .theme .tn .ck svg { width: 10px; height: 10px; }
+  .theme.on .tn .ck { display: flex; }
+  .theme .td { font-size: 10.5px; color: var(--ink-3); font-weight: 600; margin-top: 3px; }
+  /* toggle row */
+  .trow { display: flex; align-items: center; gap: 12px; padding: 13px 0; border-bottom: 1px solid var(--line); }
+  .trow:last-child { border-bottom: none; }
+  .trow .tt { font-size: 13px; font-weight: 700; }
+  .trow .tsub { font-size: 11px; color: var(--ink-3); font-weight: 600; margin-top: 2px; }
+  .trow .sp { flex: 1; }
+  .toggle { width: 40px; height: 23px; border-radius: 12px; background: var(--accent); position: relative; flex-shrink: 0; cursor: pointer; }
+  .toggle::after { content: ''; position: absolute; width: 18px; height: 18px; border-radius: 50%; background: #fff; top: 2.5px; right: 2.5px; transition: .15s; }
+  .toggle.off { background: #cfd3db; }
+  .toggle.off::after { right: auto; left: 2.5px; }
+  .planbox { display: flex; align-items: center; gap: 14px; padding: 16px; border: 1px solid var(--accent); background: var(--accent-soft); border-radius: 14px; }
+  .planbox .pn { font-family: var(--hd); font-weight: 800; font-size: 16px; color: var(--accent-deep); }
+  .planbox .pd { font-size: 11.5px; color: var(--ink-2); font-weight: 600; margin-top: 2px; }
+
+  /* ════ MENU (existing builder) ════ */
+  .panes { display: grid; grid-template-columns: 1fr 320px; gap: 16px; align-items: start; }
   .cat { border: 1px solid var(--line); border-radius: 12px; margin-bottom: 10px; overflow: hidden; }
   .cat-h { display: flex; align-items: center; gap: 10px; padding: 12px 13px; cursor: pointer; }
   .cat-h.open { background: var(--accent-soft); }
@@ -105,19 +220,18 @@
   .cat-h .sp { margin-left: auto; }
   .cat-h .grip { color: var(--ink-3); font-size: 14px; cursor: grab; }
   .cat-b { padding: 8px 12px 12px 18px; }
-  .row { display: flex; align-items: center; gap: 11px; background: #fff; border: 1px solid var(--line); border-radius: 10px; padding: 8px 11px; margin-bottom: 7px; }
+  .row { display: flex; align-items: center; gap: 11px; background: #fff; border: 1px solid var(--line); border-radius: 10px; padding: 8px 11px; margin-bottom: 7px; cursor: pointer; }
+  .row:hover { border-color: var(--accent); }
   .row .th { width: 36px; height: 36px; border-radius: 8px; flex-shrink: 0; background-size: cover; background-position: center; }
   .row .rn { font-size: 13px; font-weight: 700; }
   .row .rm { font-size: 10.5px; color: var(--ink-3); font-weight: 600; margin-top: 1px; }
   .row .pr { margin-left: auto; font-family: var(--hd); font-weight: 800; font-size: 13px; color: var(--accent-deep); background: var(--accent-soft); border-radius: 8px; padding: 5px 10px; }
   .row .grip { color: var(--ink-3); font-size: 14px; cursor: grab; }
-  .toggle { width: 38px; height: 22px; border-radius: 11px; background: var(--accent); position: relative; flex-shrink: 0; }
-  .toggle::after { content: ''; position: absolute; width: 17px; height: 17px; border-radius: 50%; background: #fff; top: 2.5px; right: 2.5px; }
-  .toggle.off { background: #cfd3db; }
-  .toggle.off::after { right: auto; left: 2.5px; }
+  .rowtoggle { width: 38px; height: 22px; border-radius: 11px; background: var(--accent); position: relative; flex-shrink: 0; }
+  .rowtoggle::after { content: ''; position: absolute; width: 17px; height: 17px; border-radius: 50%; background: #fff; top: 2.5px; right: 2.5px; }
+  .rowtoggle.off { background: #cfd3db; }
+  .rowtoggle.off::after { right: auto; left: 2.5px; }
   .addrow { width: 100%; border: 1.5px dashed var(--line-2); background: #fff; color: var(--accent-deep); font-family: var(--bd); font-weight: 700; font-size: 12.5px; border-radius: 10px; padding: 10px; display: flex; align-items: center; justify-content: center; gap: 8px; cursor: pointer; }
-
-  /* library pane */
   .lib { background: var(--accent-soft); border: 1px solid var(--line); position: sticky; top: 16px; }
   .lib .ph { border-bottom: 1px solid rgba(0,0,0,.06); }
   .lib .hint { margin: 10px 12px; background: #fff; border: 1.5px solid var(--accent); color: var(--accent-deep); border-radius: 11px; padding: 10px 12px; font-size: 11.5px; line-height: 1.45; font-weight: 600; }
@@ -130,32 +244,82 @@
   .libitem .lm { font-size: 10px; color: var(--ink-3); font-weight: 600; }
   .libitem .add { margin-left: auto; width: 26px; height: 26px; border-radius: 8px; background: var(--accent); color: #fff; display: flex; align-items: center; justify-content: center; font-size: 17px; }
 
-  .foot { max-width: 1220px; margin: 16px auto 0; font-size: 12px; color: var(--ink-3); display: flex; gap: 18px; }
-  .foot a { color: var(--accent-deep); font-weight: 700; text-decoration: none; }
+  /* ════ ITEM EDITOR OVERLAY ════ */
+  .overlay { position: absolute; inset: 0; background: rgba(20,23,31,.5); display: none; align-items: stretch; justify-content: flex-end; z-index: 60; }
+  .overlay.open { display: flex; animation: fade .18s ease; }
+  .editor { width: 560px; max-width: 100%; background: var(--bg); display: flex; flex-direction: column; box-shadow: -30px 0 60px -20px rgba(0,0,0,.4); animation: slidein .24s cubic-bezier(.2,.8,.2,1); }
+  @keyframes slidein { from { transform: translateX(40px); } to { transform: none; } }
+  .editor .eh { display: flex; align-items: center; gap: 12px; padding: 16px 20px; background: #fff; border-bottom: 1px solid var(--line); }
+  .editor .eh h3 { font-family: var(--hd); font-weight: 800; font-size: 17px; }
+  .editor .eh h3 small { display: block; font-size: 11px; font-weight: 600; color: var(--ink-3); margin-top: 1px; }
+  .editor .eh .x { margin-left: auto; width: 34px; height: 34px; border-radius: 10px; border: 1px solid var(--line-2); background: #fff; display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--ink-2); }
+  .editor .eb { padding: 18px 20px; overflow: auto; flex: 1; }
+  .editor .ef { padding: 14px 20px; background: #fff; border-top: 1px solid var(--line); display: flex; align-items: center; gap: 10px; }
+  .editor .ef .sp { flex: 1; }
+  /* focal-point picker */
+  .focal { margin-bottom: 16px; }
+  .focal .stageimg { position: relative; height: 230px; border-radius: 14px; overflow: hidden; background-size: cover; background-position: center; cursor: crosshair; border: 1px solid var(--line); }
+  .focal .dot { position: absolute; width: 30px; height: 30px; border-radius: 50%; border: 3px solid #fff; box-shadow: 0 0 0 2px rgba(0,0,0,.35), 0 4px 12px rgba(0,0,0,.4); transform: translate(-50%,-50%); cursor: grab; background: rgba(226,55,68,.25); }
+  .focal .dot::after { content: ''; position: absolute; inset: 9px; border-radius: 50%; background: #fff; }
+  .focal .cap { display: flex; align-items: center; gap: 7px; font-size: 11px; color: var(--ink-3); font-weight: 600; margin-top: 8px; }
+  .focal .cap svg { width: 14px; height: 14px; }
+  .focal .cap b { color: var(--accent-deep); font-weight: 800; }
+  .focal .crops { display: flex; gap: 8px; margin-top: 10px; }
+  .focal .crop { text-align: center; }
+  .focal .crop .cimg { border-radius: 9px; background-size: cover; border: 1px solid var(--line); }
+  .focal .crop .cl { font-size: 9px; color: var(--ink-3); font-weight: 700; margin-top: 4px; }
+  /* diet badge chips */
+  .badges { display: flex; gap: 8px; flex-wrap: wrap; }
+  .bchip { font-size: 11px; font-weight: 800; padding: 7px 12px; border-radius: 9px; border: 1.5px solid var(--line-2); background: #fff; color: var(--ink-2); cursor: pointer; }
+  .bchip.on { border-color: transparent; color: #fff; }
+  .bchip.on.v { background: var(--green); }
+  .bchip.on.spicy { background: var(--accent); }
+  .bchip.on.gf { background: var(--amber); }
+  /* option group builder */
+  .og { border: 1px solid var(--line); border-radius: 12px; background: #fff; margin-bottom: 10px; }
+  .og .ogh { display: flex; align-items: center; gap: 9px; padding: 11px 13px; border-bottom: 1px solid var(--line); }
+  .og .ogh .ogn { font-family: var(--hd); font-weight: 800; font-size: 13px; }
+  .og .ogh .req { font-size: 9px; font-weight: 800; letter-spacing: .06em; color: var(--accent-deep); background: var(--accent-soft); padding: 3px 7px; border-radius: 6px; }
+  .og .ogh .sp { flex: 1; }
+  .og .ogb { padding: 8px 13px 11px; }
+  .oprow { display: flex; align-items: center; gap: 9px; padding: 7px 0; font-size: 12.5px; }
+  .oprow + .oprow { border-top: 1px solid var(--line); }
+  .oprow .on { font-weight: 700; }
+  .oprow .op { margin-left: auto; font-family: var(--hd); font-weight: 800; color: var(--ink-2); }
+  .oprow .gr { color: var(--ink-3); cursor: grab; }
 
-  /* responsive hint blurb */
+  .foot { max-width: 1220px; margin: 16px auto 0; font-size: 12px; color: var(--ink-3); display: flex; gap: 18px; flex-wrap: wrap; }
+  .foot a { color: var(--accent-deep); font-weight: 700; text-decoration: none; }
   .resp { max-width: 1220px; margin: 14px auto 0; display: flex; gap: 12px; flex-wrap: wrap; }
   .resp .tag { font-size: 11.5px; font-weight: 700; color: var(--ink-2); background: #fff; border: 1px solid var(--line-2); border-radius: 10px; padding: 7px 12px; }
 
-  @media (max-width: 1100px) { .stats { grid-template-columns: repeat(2,1fr); } .panes { grid-template-columns: 1fr; } .lib { position: static; } }
+  @media (max-width: 1100px) {
+    .stats { grid-template-columns: repeat(2,1fr); }
+    .panes, .ov-grid { grid-template-columns: 1fr; }
+    .lib { position: static; }
+    .cards, .qgrid { grid-template-columns: repeat(2,1fr); }
+    .set-grid { grid-template-columns: 1fr; }
+    .set-nav { position: static; flex-direction: row; flex-wrap: wrap; }
+  }
 </style>
 </head>
 <body>
 
 <div class="lead">
   <div class="kicker">Gaamos · Manager Dashboard</div>
-  <h1>One calm, desktop-first dashboard</h1>
+  <h1>The full operator surface</h1>
   <p>
-    The operator surface stays neutral and low-fatigue — a persistent sidebar, white cards, dark text — so daily
-    menu work is fast and legible. It carries one fixed <b>Saffron Festival</b> accent: the gaamos operator-side
-    house brand, the same for every venue regardless of which theme they pick for their guest menu.
+    One calm, desktop-first dashboard for running a venue: <b>Overview, Menu, Orders, Branches, QR codes</b> and
+    <b>Settings</b>. Neutral base, white cards, dark text, carrying the one fixed <b>Saffron Festival</b> accent —
+    the gaamos operator house brand, identical for every venue regardless of the theme they pick for their guest menu.
   </p>
+  <div class="hint">↳ Click the sidebar to move between screens · open any menu item (or “New item”) to see the item editor with the image focal-point picker.</div>
 </div>
 
 <div class="frame">
   <div class="chrome">
     <span class="dot" style="background:#ff5f57"></span><span class="dot" style="background:#febc2e"></span><span class="dot" style="background:#28c840"></span>
-    <span class="url">app.juicery.gaamos.com / menu</span>
+    <span class="url" id="url">app.juicery.gaamos.com / menu</span>
   </div>
   <div class="app">
     <!-- sidebar -->
@@ -165,13 +329,13 @@
         <div class="nm">The Juicery<small>Café · Pokhara</small></div>
       </div>
       <div class="grp">Manage</div>
-      <div class="nav"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>Overview</div>
-      <div class="nav on"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h10"/></svg>Menu<span class="pill">58</span></div>
-      <div class="nav"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21V8l9-5 9 5v13"/><path d="M9 21v-6h6v6"/></svg>Branches<span class="pill">3</span></div>
-      <div class="nav"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="8" height="8" rx="1"/><rect x="13" y="3" width="8" height="8" rx="1"/><rect x="3" y="13" width="8" height="8" rx="1"/><path d="M13 13h3v3h-3zM19 19h2v2h-2z"/></svg>QR Codes</div>
-      <div class="nav"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18M16 10a4 4 0 0 1-8 0"/></svg>Orders<span class="pill">12</span></div>
+      <div class="nav" data-view="overview"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>Overview</div>
+      <div class="nav on" data-view="menu"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h10"/></svg>Menu<span class="pill">58</span></div>
+      <div class="nav" data-view="orders"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18M16 10a4 4 0 0 1-8 0"/></svg>Orders<span class="pill">12</span></div>
+      <div class="nav" data-view="branches"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21V8l9-5 9 5v13"/><path d="M9 21v-6h6v6"/></svg>Branches<span class="pill">3</span></div>
+      <div class="nav" data-view="qr"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="8" height="8" rx="1"/><rect x="13" y="3" width="8" height="8" rx="1"/><rect x="3" y="13" width="8" height="8" rx="1"/><path d="M13 13h3v3h-3zM19 19h2v2h-2z"/></svg>QR Codes</div>
       <div class="grp">Account</div>
-      <div class="nav"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-2.81 1.17V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 8 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.6 14H4.5a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 6.18 8.4l-.33-.32a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 11 4.6h.09A2 2 0 0 1 13 4.5v.09a1.65 1.65 0 0 0 2.82 1.17l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 11h.1a2 2 0 0 1 0 4Z"/></svg>Settings</div>
+      <div class="nav" data-view="settings"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-2.81 1.17V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 8 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.6 14H4.5a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 6.18 8.4l-.33-.32a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 11 4.6h.09A2 2 0 0 1 13 4.5v.09a1.65 1.65 0 0 0 2.82 1.17l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 11h.1a2 2 0 0 1 0 4Z"/></svg>Settings</div>
       <div class="venue">
         <div class="av">SK</div>
         <div class="vn">Suresh K.<small>Owner</small></div>
@@ -181,69 +345,373 @@
     <!-- main -->
     <div class="main">
       <div class="top">
-        <h2>Menu<small>Lake Center branch · 58 items live</small></h2>
+        <h2 id="title">Menu<small id="subtitle">Lake Center branch · 58 items live</small></h2>
         <div class="spacer"></div>
-        <div class="search"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg><input placeholder="Search items…"></div>
-        <button class="btn primary"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M12 5v14M5 12h14"/></svg>New item</button>
+        <div class="search"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg><input placeholder="Search…"></div>
+        <button class="btn primary" id="primaryBtn" onclick="openEditor('new')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M12 5v14M5 12h14"/></svg><span id="primaryLbl">New item</span></button>
       </div>
 
       <div class="body">
-        <div class="stats">
-          <div class="stat"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="8" height="8" rx="1"/><rect x="13" y="3" width="8" height="8" rx="1"/><rect x="3" y="13" width="8" height="8" rx="1"/><path d="M13 13h3v3h-3z"/></svg></div><div class="val">1,284</div><div class="lbl">QR scans today</div><div class="delta">▲ 18% vs yesterday</div></div>
-          <div class="stat"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 8h14l-1.5 12h-11Z"/><path d="m5 8-1-4h7"/></svg></div><div class="val">Sea-Buckthorn</div><div class="lbl">Most viewed item</div><div class="delta flat">312 views</div></div>
-          <div class="stat"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg></div><div class="val">58</div><div class="lbl">Items live</div><div class="delta flat">6 hidden</div></div>
-          <div class="stat"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21V8l9-5 9 5v13"/></svg></div><div class="val">3</div><div class="lbl">Branches</div><div class="delta">All synced</div></div>
+
+        <!-- ══════════ OVERVIEW ══════════ -->
+        <div class="view" data-view="overview">
+          <div class="stats">
+            <div class="stat"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="8" height="8" rx="1"/><rect x="13" y="3" width="8" height="8" rx="1"/><rect x="3" y="13" width="8" height="8" rx="1"/><path d="M13 13h3v3h-3z"/></svg></div><div class="val">1,284</div><div class="lbl">QR scans today</div><div class="delta">▲ 18% vs yesterday</div></div>
+            <div class="stat"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18M16 10a4 4 0 0 1-8 0"/></svg></div><div class="val">96</div><div class="lbl">Orders today</div><div class="delta">▲ 12% vs yesterday</div></div>
+            <div class="stat"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1v22M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div><div class="val">Rs 84,200</div><div class="lbl">Revenue today</div><div class="delta">▲ 9% vs yesterday</div></div>
+            <div class="stat"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg></div><div class="val">58</div><div class="lbl">Items live</div><div class="delta flat">6 hidden</div></div>
+          </div>
+
+          <div class="ov-grid">
+            <div class="panel chart">
+              <div class="ph" style="padding:0 0 12px;border:none"><h3>QR scans · last 7 days</h3><div class="sp"></div><span class="mini">Lake Center branch</span></div>
+              <div class="bars">
+                <div class="bar"><span class="v">680</span><div class="col" style="height:42%"></div><span class="d">Mon</span></div>
+                <div class="bar"><span class="v">740</span><div class="col" style="height:48%"></div><span class="d">Tue</span></div>
+                <div class="bar"><span class="v">910</span><div class="col" style="height:60%"></div><span class="d">Wed</span></div>
+                <div class="bar"><span class="v">860</span><div class="col" style="height:56%"></div><span class="d">Thu</span></div>
+                <div class="bar"><span class="v">1,120</span><div class="col" style="height:74%"></div><span class="d">Fri</span></div>
+                <div class="bar peak"><span class="v">1,480</span><div class="col" style="height:100%"></div><span class="d">Sat</span></div>
+                <div class="bar"><span class="v">1,284</span><div class="col" style="height:86%"></div><span class="d">Sun</span></div>
+              </div>
+              <div class="toplist mt16" style="border-top:1px solid var(--line);padding-top:10px">
+                <div class="ph" style="padding:4px 16px 8px;border:none"><h3>Most viewed items</h3></div>
+                <div class="toprow"><span class="rk">1</span><div class="th" style="background-image:linear-gradient(145deg,#ffb02e,#ff7a45)"></div><div><div class="tn">Himalayan Sea-Buckthorn</div><div class="tm">Juices · Signature</div></div><span class="tv">312</span></div>
+                <div class="toprow"><span class="rk">2</span><div class="th" style="background-image:linear-gradient(145deg,#ff6a88,#ff99ac)"></div><div><div class="tn">Pokhara Sunrise Smoothie</div><div class="tm">Juices · Signature</div></div><span class="tv">248</span></div>
+                <div class="toprow"><span class="rk">3</span><div class="th" style="background-image:linear-gradient(145deg,#f97316,#ea580c)"></div><div><div class="tn">Buff Momo (10pc)</div><div class="tm">Momo</div></div><span class="tv">201</span></div>
+              </div>
+            </div>
+
+            <div class="panel feed">
+              <div class="ph"><h3>Live orders</h3><div class="sp"></div><span class="status new">12 active</span></div>
+              <div class="fi"><div class="fic" style="background:var(--accent-soft);color:var(--accent-deep)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18M16 10a4 4 0 0 1-8 0"/></svg></div><div><div class="ft">Table 7 · 3 items</div><div class="fm">Sea-Buckthorn, Smoothie…</div></div><div class="fr">Rs 1,071<small>just now</small></div></div>
+              <div class="fi"><div class="fic" style="background:var(--amber-soft);color:var(--amber)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg></div><div><div class="ft">Table 2 · 2 items</div><div class="fm">Turmeric Latte, Avocado…</div></div><div class="fr">Rs 540<small>2 min</small></div></div>
+              <div class="fi"><div class="fic" style="background:var(--green-soft);color:var(--green)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg></div><div><div class="ft">Table 11 · 5 items</div><div class="fm">Served</div></div><div class="fr">Rs 2,180<small>6 min</small></div></div>
+              <div class="fi"><div class="fic" style="background:var(--green-soft);color:var(--green)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg></div><div><div class="ft">Table 4 · 1 item</div><div class="fm">Served</div></div><div class="fr">Rs 320<small>9 min</small></div></div>
+              <div style="padding:12px 16px"><span class="lnk" onclick="go('orders')">View all orders →</span></div>
+            </div>
+          </div>
         </div>
 
-        <div class="panes">
-          <!-- builder tree -->
+        <!-- ══════════ MENU (builder) ══════════ -->
+        <div class="view active" data-view="menu">
+          <div class="panes">
+            <div class="panel">
+              <div class="ph"><h3>Menu builder</h3><div class="sp"></div><span class="mini">Drag to reorder · changes save instantly</span></div>
+              <div class="pb">
+                <div class="cat">
+                  <div class="cat-h open"><span class="grip">⋮⋮</span><div class="ci"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 8h14l-1.5 12h-11Z"/><path d="m5 8-1-4h7"/></svg></div><div><div class="nm">Juices &amp; Smoothies</div><div class="ct">14 items · 2 subcategories</div></div></div>
+                  <div class="cat-b">
+                    <div class="row" onclick="openEditor('edit')"><span class="grip">⋮⋮</span><div class="th" style="background-image:linear-gradient(145deg,#ffb02e,#ff7a45)"></div><div><div class="rn">Himalayan Sea-Buckthorn</div><div class="rm">Signature Pressed · VEG</div></div><span class="pr">Rs 320</span><div class="rowtoggle"></div></div>
+                    <div class="row" onclick="openEditor('edit')"><span class="grip">⋮⋮</span><div class="th" style="background-image:linear-gradient(145deg,#ff6a88,#ff99ac)"></div><div><div class="rn">Pokhara Sunrise Smoothie</div><div class="rm">Signature Pressed · VEG · GF</div></div><span class="pr">Rs 380</span><div class="rowtoggle"></div></div>
+                    <div class="row" onclick="openEditor('edit')"><span class="grip">⋮⋮</span><div class="th" style="background-image:linear-gradient(145deg,#34d399,#10b981)"></div><div><div class="rn">Cold-Pressed Greens</div><div class="rm">Detox · VEG</div></div><span class="pr">Rs 360</span><div class="rowtoggle off"></div></div>
+                    <button class="addrow" onclick="openEditor('new')"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M12 5v14M5 12h14"/></svg>Add item from library</button>
+                  </div>
+                </div>
+                <div class="cat">
+                  <div class="cat-h"><span class="grip">⋮⋮</span><div class="ci"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 8h1a4 4 0 0 1 0 8h-1"/><path d="M3 8h14v6a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4Z"/></svg></div><div><div class="nm">Coffee</div><div class="ct">9 items</div></div><span class="sp"></span></div>
+                </div>
+                <div class="cat">
+                  <div class="cat-h"><span class="grip">⋮⋮</span><div class="ci"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 14a9 5 0 0 0 18 0M3 14c0-3 4-6 9-6s9 3 9 6"/></svg></div><div><div class="nm">Momo</div><div class="ct">7 items</div></div><span class="sp"></span></div>
+                </div>
+                <button class="addrow" style="border-style:dashed;color:var(--ink-2)"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M12 5v14M5 12h14"/></svg>Add category</button>
+              </div>
+            </div>
+            <div class="panel lib">
+              <div class="ph"><h3>Item library</h3></div>
+              <div class="hint"><b>Build once, reuse everywhere</b>Items in your library can be dropped into any branch's menu — pricing stays per-branch.</div>
+              <div class="search"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg><input placeholder="Search library…"></div>
+              <div class="libitem"><div class="th" style="background-image:linear-gradient(145deg,#e23744,#a01a44)"></div><div><div class="ln">Beetroot Spice Tonic</div><div class="lm">Juices · not on this branch</div></div><div class="add">+</div></div>
+              <div class="libitem"><div class="th" style="background-image:linear-gradient(145deg,#fbbf24,#f59e0b)"></div><div><div class="ln">Turmeric Latte</div><div class="lm">Coffee · not on this branch</div></div><div class="add">+</div></div>
+              <div class="libitem"><div class="th" style="background-image:linear-gradient(145deg,#a3e635,#65a30d)"></div><div><div class="ln">Avocado Toast</div><div class="lm">Bakes · not on this branch</div></div><div class="add">+</div></div>
+              <div class="libitem"><div class="th" style="background-image:linear-gradient(145deg,#f97316,#ea580c)"></div><div><div class="ln">Buff Momo (10pc)</div><div class="lm">Momo · not on this branch</div></div><div class="add">+</div></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ══════════ ORDERS ══════════ -->
+        <div class="view" data-view="orders">
+          <div class="sec-h">
+            <div class="filters">
+              <span class="fchip on">All · 12</span>
+              <span class="fchip">New · 4</span>
+              <span class="fchip">Preparing · 5</span>
+              <span class="fchip">Served · 3</span>
+            </div>
+            <div class="sp"></div>
+            <span class="mini">Live · auto-refreshing · Lake Center</span>
+          </div>
           <div class="panel">
-            <div class="ph"><h3>Menu builder</h3><div class="sp"></div><span class="mini">Drag to reorder · changes save instantly</span></div>
-            <div class="pb">
-              <div class="cat">
-                <div class="cat-h open"><span class="grip">⋮⋮</span><div class="ci"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 8h14l-1.5 12h-11Z"/><path d="m5 8-1-4h7"/></svg></div><div><div class="nm">Juices &amp; Smoothies</div><div class="ct">14 items · 2 subcategories</div></div></div>
-                <div class="cat-b">
-                  <div class="row"><span class="grip">⋮⋮</span><div class="th" style="background-image:linear-gradient(145deg,#ffb02e,#ff7a45)"></div><div><div class="rn">Himalayan Sea-Buckthorn</div><div class="rm">Signature Pressed · VEG</div></div><span class="pr">Rs 320</span><div class="toggle"></div></div>
-                  <div class="row"><span class="grip">⋮⋮</span><div class="th" style="background-image:linear-gradient(145deg,#ff6a88,#ff99ac)"></div><div><div class="rn">Pokhara Sunrise Smoothie</div><div class="rm">Signature Pressed · VEG · GF</div></div><span class="pr">Rs 380</span><div class="toggle"></div></div>
-                  <div class="row"><span class="grip">⋮⋮</span><div class="th" style="background-image:linear-gradient(145deg,#34d399,#10b981)"></div><div><div class="rn">Cold-Pressed Greens</div><div class="rm">Detox · VEG</div></div><span class="pr">Rs 360</span><div class="toggle off"></div></div>
-                  <button class="addrow"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M12 5v14M5 12h14"/></svg>Add item from library</button>
+            <table class="tbl">
+              <thead><tr><th>Order</th><th>Table</th><th>Items</th><th>Total</th><th>Placed</th><th>Status</th><th></th></tr></thead>
+              <tbody>
+                <tr><td class="ono">#JC-2847</td><td><span class="tablechip">Table 7</span></td><td>Sea-Buckthorn (L), Sunrise Smoothie, Cold-Pressed Greens</td><td class="ono">Rs 1,071</td><td>just now</td><td><span class="status new">New</span></td><td><span class="lnk">Accept</span></td></tr>
+                <tr><td class="ono">#JC-2846</td><td><span class="tablechip">Table 2</span></td><td>Turmeric Latte, Avocado Toast</td><td class="ono">Rs 540</td><td>2 min</td><td><span class="status prep">Preparing</span></td><td><span class="lnk">Mark served</span></td></tr>
+                <tr><td class="ono">#JC-2845</td><td><span class="tablechip">Table 9</span></td><td>Buff Momo (10pc), Beetroot Spice Tonic</td><td class="ono">Rs 760</td><td>4 min</td><td><span class="status prep">Preparing</span></td><td><span class="lnk">Mark served</span></td></tr>
+                <tr><td class="ono">#JC-2844</td><td><span class="tablechip">Table 11</span></td><td>5 items · large party</td><td class="ono">Rs 2,180</td><td>6 min</td><td><span class="status done">Served</span></td><td><span class="lnk">Receipt</span></td></tr>
+                <tr><td class="ono">#JC-2843</td><td><span class="tablechip">Table 4</span></td><td>Cold-Pressed Greens</td><td class="ono">Rs 320</td><td>9 min</td><td><span class="status done">Served</span></td><td><span class="lnk">Receipt</span></td></tr>
+                <tr><td class="ono">#JC-2842</td><td><span class="tablechip">Takeaway</span></td><td>Himalayan Sea-Buckthorn (L) + Chia</td><td class="ono">Rs 450</td><td>11 min</td><td><span class="status new">New</span></td><td><span class="lnk">Accept</span></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- ══════════ BRANCHES ══════════ -->
+        <div class="view" data-view="branches">
+          <div class="sec-h"><h3>Your branches</h3><div class="sp"></div><span class="mini">Plan: Growth · up to 5 branches</span></div>
+          <div class="cards">
+            <div class="bcard">
+              <div class="bh"><div class="bav">LC</div><div><div class="bn">Lake Center</div><div class="ba">Lakeside Rd, Baidam · Pokhara</div></div></div>
+              <div class="bstats"><div class="bstat"><div class="n">58</div><div class="l">ITEMS</div></div><div class="bstat"><div class="n">1,284</div><div class="l">SCANS/DAY</div></div><div class="bstat"><div class="n" style="color:var(--green)">Live</div><div class="l">STATUS</div></div></div>
+              <div class="bf"><button class="btn ghost" style="flex:1;justify-content:center" onclick="go('menu')">Edit menu</button><button class="btn ghost" style="justify-content:center" onclick="go('qr')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="8" height="8" rx="1"/><rect x="13" y="3" width="8" height="8" rx="1"/><rect x="3" y="13" width="8" height="8" rx="1"/></svg></button></div>
+            </div>
+            <div class="bcard">
+              <div class="bh"><div class="bav">DB</div><div><div class="bn">Damside</div><div class="ba">Damside Rd · Pokhara</div></div></div>
+              <div class="bstats"><div class="bstat"><div class="n">42</div><div class="l">ITEMS</div></div><div class="bstat"><div class="n">760</div><div class="l">SCANS/DAY</div></div><div class="bstat"><div class="n" style="color:var(--green)">Live</div><div class="l">STATUS</div></div></div>
+              <div class="bf"><button class="btn ghost" style="flex:1;justify-content:center" onclick="go('menu')">Edit menu</button><button class="btn ghost" style="justify-content:center" onclick="go('qr')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="8" height="8" rx="1"/><rect x="13" y="3" width="8" height="8" rx="1"/><rect x="3" y="13" width="8" height="8" rx="1"/></svg></button></div>
+            </div>
+            <div class="bcard">
+              <div class="bh"><div class="bav">TH</div><div><div class="bn">Thamel</div><div class="ba">Thamel Marg · Kathmandu</div></div></div>
+              <div class="bstats"><div class="bstat"><div class="n">31</div><div class="l">ITEMS</div></div><div class="bstat"><div class="n" style="color:var(--amber)">Draft</div><div class="l">SCANS/DAY</div></div><div class="bstat"><div class="n" style="color:var(--amber)">Hidden</div><div class="l">STATUS</div></div></div>
+              <div class="bf"><button class="btn primary" style="flex:1;justify-content:center">Publish branch</button></div>
+            </div>
+            <div class="bcard add"><div class="pl"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M12 5v14M5 12h14"/></svg></div>Add a branch</div>
+          </div>
+        </div>
+
+        <!-- ══════════ QR CODES ══════════ -->
+        <div class="view" data-view="qr">
+          <div class="sec-h"><h3>QR codes</h3><div class="sp"></div><button class="btn ghost"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>Download all (PDF)</button></div>
+          <div class="lib hint" style="position:static;background:var(--accent-soft);border:1.5px solid var(--accent);color:var(--accent-deep);border-radius:12px;padding:12px 14px;font-size:12px;font-weight:600;margin-bottom:16px"><b style="font-weight:800;display:block;margin-bottom:2px">Per-table ordering</b>Each table gets its own QR. Scans land on the menu pre-tagged with the table number, so orders arrive labelled — no app, no login.</div>
+          <div class="qgrid">
+            <div class="qcard"><div class="qframe"><svg viewBox="0 0 29 29" width="100%" height="100%" shape-rendering="crispEdges" fill="#171a21"><path d="M0 0h7v7h-7zM2 2h3v3h-3z" fill="#171a21"/><rect x="2" y="2" width="3" height="3" fill="#fff"/><path d="M22 0h7v7h-7z"/><rect x="24" y="2" width="3" height="3" fill="#fff"/><path d="M0 22h7v7h-7z"/><rect x="2" y="24" width="3" height="3" fill="#fff"/><path d="M9 0h1v1h-1zM11 0h2v1h-2zM15 0h1v2h-1zM18 0h1v1h-1zM20 0h1v3h-1zM9 2h2v1h-2zM13 2h1v2h-1zM17 2h1v1h-1zM9 4h1v3h-1zM12 4h2v1h-2zM16 4h1v1h-1zM18 4h3v1h-3zM11 5h1v2h-1zM14 5h1v1h-1zM17 5h1v2h-1zM13 6h1v1h-1zM15 6h2v1h-2zM19 6h2v1h-2zM0 9h1v2h-1zM2 9h3v1h-3zM6 9h2v1h-2zM9 9h1v1h-1zM11 9h3v1h-3zM16 9h1v3h-1zM18 9h1v1h-1zM20 9h2v1h-2zM23 9h1v2h-1zM25 9h1v1h-1zM27 9h2v1h-2zM3 10h1v2h-1zM5 10h1v1h-1zM8 10h1v2h-1zM13 10h1v1h-1zM19 10h1v2h-1zM22 10h1v1h-1zM26 10h2v1h-2zM0 11h2v1h-2zM10 11h2v1h-2zM14 11h1v2h-1zM21 11h1v2h-1zM24 11h2v1h-2zM2 12h1v3h-1zM6 12h1v2h-1zM11 12h1v1h-1zM17 12h2v1h-2zM23 12h1v1h-1zM27 12h1v2h-1zM0 13h1v1h-1zM4 13h2v1h-2zM9 13h2v1h-2zM12 13h1v2h-1zM16 13h1v1h-1zM19 13h2v1h-2zM25 13h1v1h-1zM7 14h2v1h-2zM10 14h1v2h-1zM15 14h1v2h-1zM18 14h1v2h-1zM22 14h2v1h-2zM26 14h1v2h-1zM0 15h2v1h-2zM4 15h1v3h-1zM8 15h1v1h-1zM13 15h2v1h-2zM20 15h2v1h-2zM24 15h1v2h-1zM9 16h1v2h-1zM12 16h1v1h-1zM16 16h2v1h-2zM19 16h1v1h-1zM23 16h1v3h-1zM27 16h2v1h-2zM0 17h1v2h-1zM2 17h1v2h-1zM6 17h2v1h-2zM11 17h1v3h-1zM14 17h1v1h-1zM18 17h1v2h-1zM21 17h2v1h-2zM25 17h1v1h-1zM5 18h2v1h-2zM8 18h1v1h-1zM13 18h1v2h-1zM16 18h1v2h-1zM20 18h1v1h-1zM26 18h2v1h-2zM9 20h1v1h-1zM11 20h3v1h-3zM15 20h1v2h-1zM17 20h2v1h-2zM20 20h1v3h-1zM22 20h1v1h-1zM24 20h2v1h-2zM27 20h1v2h-1zM9 22h2v1h-2zM13 22h1v2h-1zM17 22h1v1h-1zM23 22h2v1h-2zM26 22h1v1h-1zM9 24h1v3h-1zM12 24h2v1h-2zM16 24h1v1h-1zM18 24h3v1h-3zM22 24h1v2h-1zM25 24h2v1h-2zM11 25h1v2h-1zM14 25h1v1h-1zM17 25h1v2h-1zM28 25h1v2h-1zM13 26h1v1h-1zM15 26h2v1h-2zM19 26h2v1h-2zM24 26h1v2h-1zM26 26h2v1h-2z"/></svg></div><div class="qn">Branch menu</div><div class="qu">app.juicery.gaamos.com</div><button class="btn ghost"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>Download</button></div>
+            <div class="qcard"><div class="qframe"><svg viewBox="0 0 29 29" width="100%" height="100%" shape-rendering="crispEdges" fill="#171a21"><path d="M0 0h7v7h-7zM2 2h3v3h-3z" fill="#171a21"/><rect x="2" y="2" width="3" height="3" fill="#fff"/><path d="M22 0h7v7h-7z"/><rect x="24" y="2" width="3" height="3" fill="#fff"/><path d="M0 22h7v7h-7z"/><rect x="2" y="24" width="3" height="3" fill="#fff"/><path d="M9 0h1v1h-1zM11 0h2v1h-2zM15 0h1v2h-1zM18 0h1v1h-1zM20 0h1v3h-1zM9 2h2v1h-2zM13 2h1v2h-1zM17 2h1v1h-1zM9 4h1v3h-1zM12 4h2v1h-2zM16 4h1v1h-1zM18 4h3v1h-3zM11 5h1v2h-1zM14 5h1v1h-1zM17 5h1v2h-1zM13 6h1v1h-1zM15 6h2v1h-2zM19 6h2v1h-2zM0 9h1v2h-1zM2 9h3v1h-3zM6 9h2v1h-2zM9 9h1v1h-1zM11 9h3v1h-3zM16 9h1v3h-1zM18 9h1v1h-1zM20 9h2v1h-2zM23 9h1v2h-1zM25 9h1v1h-1zM27 9h2v1h-2zM3 10h1v2h-1zM5 10h1v1h-1zM8 10h1v2h-1zM13 10h1v1h-1zM19 10h1v2h-1zM22 10h1v1h-1zM26 10h2v1h-2zM0 11h2v1h-2zM10 11h2v1h-2zM14 11h1v2h-1zM21 11h1v2h-1zM24 11h2v1h-2zM2 12h1v3h-1zM6 12h1v2h-1zM11 12h1v1h-1zM17 12h2v1h-2zM23 12h1v1h-1zM27 12h1v2h-1zM0 13h1v1h-1zM4 13h2v1h-2zM9 13h2v1h-2zM12 13h1v2h-1zM16 13h1v1h-1zM19 13h2v1h-2zM25 13h1v1h-1zM7 14h2v1h-2zM10 14h1v2h-1zM15 14h1v2h-1zM18 14h1v2h-1zM22 14h2v1h-2zM26 14h1v2h-1zM0 15h2v1h-2zM4 15h1v3h-1zM8 15h1v1h-1zM13 15h2v1h-2zM20 15h2v1h-2zM24 15h1v2h-1zM9 16h1v2h-1zM12 16h1v1h-1zM16 16h2v1h-2zM19 16h1v1h-1zM23 16h1v3h-1zM27 16h2v1h-2zM0 17h1v2h-1zM2 17h1v2h-1zM6 17h2v1h-2zM11 17h1v3h-1zM14 17h1v1h-1zM18 17h1v2h-1zM21 17h2v1h-2zM25 17h1v1h-1zM5 18h2v1h-2zM8 18h1v1h-1zM13 18h1v2h-1zM16 18h1v2h-1zM20 18h1v1h-1zM26 18h2v1h-2zM9 20h1v1h-1zM11 20h3v1h-3zM15 20h1v2h-1zM17 20h2v1h-2zM20 20h1v3h-1zM22 20h1v1h-1zM24 20h2v1h-2zM27 20h1v2h-1zM9 22h2v1h-2zM13 22h1v2h-1zM17 22h1v1h-1zM23 22h2v1h-2zM26 22h1v1h-1zM9 24h1v3h-1zM12 24h2v1h-2zM16 24h1v1h-1zM18 24h3v1h-3zM22 24h1v2h-1zM25 24h2v1h-2zM11 25h1v2h-1zM14 25h1v1h-1zM17 25h1v2h-1zM28 25h1v2h-1zM13 26h1v1h-1zM15 26h2v1h-2zM19 26h2v1h-2zM24 26h1v2h-1zM26 26h2v1h-2z"/></svg></div><div class="qn">Table 1</div><div class="qu">…/t/1</div><button class="btn ghost"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>Download</button></div>
+            <div class="qcard"><div class="qframe"><svg viewBox="0 0 29 29" width="100%" height="100%" shape-rendering="crispEdges" fill="#171a21"><path d="M0 0h7v7h-7zM2 2h3v3h-3z" fill="#171a21"/><rect x="2" y="2" width="3" height="3" fill="#fff"/><path d="M22 0h7v7h-7z"/><rect x="24" y="2" width="3" height="3" fill="#fff"/><path d="M0 22h7v7h-7z"/><rect x="2" y="24" width="3" height="3" fill="#fff"/><path d="M9 0h1v1h-1zM11 0h2v1h-2zM15 0h1v2h-1zM18 0h1v1h-1zM20 0h1v3h-1zM9 2h2v1h-2zM13 2h1v2h-1zM17 2h1v1h-1zM9 4h1v3h-1zM12 4h2v1h-2zM16 4h1v1h-1zM18 4h3v1h-3zM11 5h1v2h-1zM14 5h1v1h-1zM17 5h1v2h-1zM13 6h1v1h-1zM15 6h2v1h-2zM19 6h2v1h-2zM0 9h1v2h-1zM2 9h3v1h-3zM6 9h2v1h-2zM9 9h1v1h-1zM11 9h3v1h-3zM16 9h1v3h-1zM18 9h1v1h-1zM20 9h2v1h-2zM23 9h1v2h-1zM25 9h1v1h-1zM27 9h2v1h-2zM3 10h1v2h-1zM5 10h1v1h-1zM8 10h1v2h-1zM13 10h1v1h-1zM19 10h1v2h-1zM22 10h1v1h-1zM26 10h2v1h-2zM0 11h2v1h-2zM10 11h2v1h-2zM14 11h1v2h-1zM21 11h1v2h-1zM24 11h2v1h-2zM2 12h1v3h-1zM6 12h1v2h-1zM11 12h1v1h-1zM17 12h2v1h-2zM23 12h1v1h-1zM27 12h1v2h-1zM0 13h1v1h-1zM4 13h2v1h-2zM9 13h2v1h-2zM12 13h1v2h-1zM16 13h1v1h-1zM19 13h2v1h-2zM25 13h1v1h-1zM7 14h2v1h-2zM10 14h1v2h-1zM15 14h1v2h-1zM18 14h1v2h-1zM22 14h2v1h-2zM26 14h1v2h-1zM0 15h2v1h-2zM4 15h1v3h-1zM8 15h1v1h-1zM13 15h2v1h-2zM20 15h2v1h-2zM24 15h1v2h-1zM9 16h1v2h-1zM12 16h1v1h-1zM16 16h2v1h-2zM19 16h1v1h-1zM23 16h1v3h-1zM27 16h2v1h-2zM0 17h1v2h-1zM2 17h1v2h-1zM6 17h2v1h-2zM11 17h1v3h-1zM14 17h1v1h-1zM18 17h1v2h-1zM21 17h2v1h-2zM25 17h1v1h-1zM5 18h2v1h-2zM8 18h1v1h-1zM13 18h1v2h-1zM16 18h1v2h-1zM20 18h1v1h-1zM26 18h2v1h-2zM9 20h1v1h-1zM11 20h3v1h-3zM15 20h1v2h-1zM17 20h2v1h-2zM20 20h1v3h-1zM22 20h1v1h-1zM24 20h2v1h-2zM27 20h1v2h-1zM9 22h2v1h-2zM13 22h1v2h-1zM17 22h1v1h-1zM23 22h2v1h-2zM26 22h1v1h-1zM9 24h1v3h-1zM12 24h2v1h-2zM16 24h1v1h-1zM18 24h3v1h-3zM22 24h1v2h-1zM25 24h2v1h-2zM11 25h1v2h-1zM14 25h1v1h-1zM17 25h1v2h-1zM28 25h1v2h-1zM13 26h1v1h-1zM15 26h2v1h-2zM19 26h2v1h-2zM24 26h1v2h-1zM26 26h2v1h-2z"/></svg></div><div class="qn">Table 2</div><div class="qu">…/t/2</div><button class="btn ghost"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>Download</button></div>
+            <div class="qcard" style="border-style:dashed;justify-content:center;color:var(--accent-deep)"><div class="pl" style="width:48px;height:48px;border-radius:13px;background:var(--accent-soft);display:flex;align-items:center;justify-content:center;margin-bottom:12px"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M12 5v14M5 12h14"/></svg></div><div class="qn">Generate tables</div><div class="qu" style="color:var(--ink-3)">Make QR for a range (e.g. 1–20)</div></div>
+          </div>
+        </div>
+
+        <!-- ══════════ SETTINGS ══════════ -->
+        <div class="view" data-view="settings">
+          <div class="set-grid">
+            <nav class="set-nav">
+              <a class="on">Venue profile</a>
+              <a>Guest menu theme</a>
+              <a>Web address</a>
+              <a>Languages</a>
+              <a>Plan &amp; billing</a>
+            </nav>
+            <div>
+              <div class="panel fcard">
+                <div class="ph"><h3>Venue profile</h3></div>
+                <div class="pb">
+                  <div class="fld"><label>Venue name</label><input class="inp" value="The Juicery Café"></div>
+                  <div class="fld"><label>Tagline</label><input class="inp" value="Fresh · Local · Himalayan"></div>
+                  <div class="frow">
+                    <div class="fld"><label>Contact phone</label><input class="inp" value="+977 61 462 880"></div>
+                    <div class="fld"><label>Open hours</label><input class="inp" value="7:00 AM – 9:00 PM daily"></div>
+                  </div>
                 </div>
               </div>
-              <div class="cat">
-                <div class="cat-h"><span class="grip">⋮⋮</span><div class="ci"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 8h1a4 4 0 0 1 0 8h-1"/><path d="M3 8h14v6a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4Z"/></svg></div><div><div class="nm">Coffee</div><div class="ct">9 items</div></div><span class="sp"></span></div>
+
+              <div class="panel fcard">
+                <div class="ph"><h3>Guest menu theme</h3><div class="sp"></div><span class="mini">Applies to the guest-facing menu only</span></div>
+                <div class="pb">
+                  <div class="themes">
+                    <div class="theme on" data-theme="saffron"><div class="swatch"><span style="background:#ff9f1c"></span><span style="background:#e23744"></span><span style="background:#fff6e9"></span></div><div class="tn">Saffron Festival<span class="ck"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="4"><path d="M20 6 9 17l-5-5"/></svg></span></div><div class="td">Warm · festive · earthy</div></div>
+                    <div class="theme" data-theme="berry"><div class="swatch"><span style="background:#ec4899"></span><span style="background:#7c3aed"></span><span style="background:#f6f4ff"></span></div><div class="tn">Electric Berry<span class="ck"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="4"><path d="M20 6 9 17l-5-5"/></svg></span></div><div class="td">Bold · modern · vibrant</div></div>
+                    <div class="theme" data-theme="juice"><div class="swatch"><span style="background:#06b6d4"></span><span style="background:#ff3d71"></span><span style="background:#ffffff"></span></div><div class="tn">Tropical Juice<span class="ck"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="4"><path d="M20 6 9 17l-5-5"/></svg></span></div><div class="td">Fresh · cool · breezy</div></div>
+                  </div>
+                  <div class="fld help" style="margin-top:12px">The gaamos dashboard always stays on the fixed Saffron house brand — only your guests see the theme above.</div>
+                </div>
               </div>
-              <div class="cat">
-                <div class="cat-h"><span class="grip">⋮⋮</span><div class="ci"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 14a9 5 0 0 0 18 0M3 14c0-3 4-6 9-6s9 3 9 6"/></svg></div><div><div class="nm">Momo</div><div class="ct">7 items</div></div><span class="sp"></span></div>
+
+              <div class="panel fcard">
+                <div class="ph"><h3>Web address</h3></div>
+                <div class="pb">
+                  <div class="fld"><label>Subdomain (included)</label><div class="pre"><input value="juicery"><span class="suf">.gaamos.com</span></div><div class="help">Live now · used by every QR code.</div></div>
+                  <div class="fld"><label>Custom domain (paid add-on)</label><div class="pre"><input placeholder="menu.thejuicery.com.np"><span class="suf">Connect</span></div><div class="help">On-demand TLS is issued automatically once DNS points here.</div></div>
+                </div>
               </div>
-              <button class="addrow" style="border-style:dashed;color:var(--ink-2)"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M12 5v14M5 12h14"/></svg>Add category</button>
+
+              <div class="panel fcard">
+                <div class="ph"><h3>Languages</h3></div>
+                <div class="pb">
+                  <div class="trow"><div><div class="tt">English</div><div class="tsub">Default menu language</div></div><div class="sp"></div><div class="toggle"></div></div>
+                  <div class="trow"><div><div class="tt">नेपाली · Nepali</div><div class="tsub">Guests get an NP / EN toggle on the menu</div></div><div class="sp"></div><div class="toggle"></div></div>
+                  <div class="trow"><div><div class="tt">Show prices with “Rs”</div><div class="tsub">Integer NPR, no decimals</div></div><div class="sp"></div><div class="toggle"></div></div>
+                </div>
+              </div>
+
+              <div class="panel fcard">
+                <div class="ph"><h3>Plan &amp; billing</h3></div>
+                <div class="pb">
+                  <div class="planbox"><div><div class="pn">Growth plan</div><div class="pd">3 of 5 branches · custom domain add-on · Rs 2,500 / mo</div></div><div class="sp" style="flex:1"></div><button class="btn ghost">Change plan</button></div>
+                  <div class="fld help" style="margin-top:12px">Billed in NPR via eSewa. Next charge: 16 Jul 2026.</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ══════════ ITEM EDITOR OVERLAY ══════════ -->
+    <div class="overlay" id="overlay">
+      <div class="editor">
+        <div class="eh">
+          <div><h3 id="edTitle">Edit item</h3><small id="edSub">Juices &amp; Smoothies · Lake Center</small></div>
+          <div class="x" onclick="closeEditor()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M18 6 6 18M6 6l12 12"/></svg></div>
+        </div>
+        <div class="eb">
+          <div class="focal">
+            <div class="stageimg" id="stageimg" style="background-image:linear-gradient(160deg,#ffb02e,#ff5e3a)">
+              <div class="dot" id="focalDot" style="left:50%;top:42%"></div>
+            </div>
+            <div class="cap"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5v14"/></svg>Drag the dot to set the <b>focal point</b> — guest cards & hero crop around it. <b id="focalRead">50% · 42%</b></div>
+            <div class="crops" id="crops">
+              <div class="crop"><div class="cimg" id="crop1" style="width:54px;height:54px;background-image:linear-gradient(160deg,#ffb02e,#ff5e3a)"></div><div class="cl">Card 1:1</div></div>
+              <div class="crop"><div class="cimg" id="crop2" style="width:96px;height:54px;background-image:linear-gradient(160deg,#ffb02e,#ff5e3a)"></div><div class="cl">Hero 16:9</div></div>
+              <div class="crop"><div class="cimg" id="crop3" style="width:40px;height:54px;background-image:linear-gradient(160deg,#ffb02e,#ff5e3a)"></div><div class="cl">List 3:4</div></div>
             </div>
           </div>
 
-          <!-- library pane -->
-          <div class="panel lib">
-            <div class="ph"><h3>Item library</h3></div>
-            <div class="hint"><b>Build once, reuse everywhere</b>Items in your library can be dropped into any branch's menu — pricing stays per-branch.</div>
-            <div class="search"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg><input placeholder="Search library…"></div>
-            <div class="libitem"><div class="th" style="background-image:linear-gradient(145deg,#e23744,#a01a44)"></div><div><div class="ln">Beetroot Spice Tonic</div><div class="lm">Juices · not on this branch</div></div><div class="add">+</div></div>
-            <div class="libitem"><div class="th" style="background-image:linear-gradient(145deg,#fbbf24,#f59e0b)"></div><div><div class="ln">Turmeric Latte</div><div class="lm">Coffee · not on this branch</div></div><div class="add">+</div></div>
-            <div class="libitem"><div class="th" style="background-image:linear-gradient(145deg,#a3e635,#65a30d)"></div><div><div class="ln">Avocado Toast</div><div class="lm">Bakes · not on this branch</div></div><div class="add">+</div></div>
-            <div class="libitem"><div class="th" style="background-image:linear-gradient(145deg,#f97316,#ea580c)"></div><div><div class="ln">Buff Momo (10pc)</div><div class="lm">Momo · not on this branch</div></div><div class="add">+</div></div>
+          <div class="frow">
+            <div class="fld"><label>Item name</label><input class="inp" id="edName" value="Himalayan Sea-Buckthorn"></div>
+            <div class="fld"><label>Price (Rs)</label><input class="inp" id="edPrice" value="320"></div>
           </div>
+          <div class="fld"><label>Category</label><input class="inp" value="Juices & Smoothies · Signature Pressed"></div>
+          <div class="fld"><label>Description</label><textarea class="inp" rows="3" style="resize:vertical">Tart wild sea-buckthorn (chuk amilo) from the high Himalaya, balanced with mountain honey and fresh lime.</textarea></div>
+
+          <div class="fld">
+            <label>Diet badges</label>
+            <div class="badges">
+              <span class="bchip v on" onclick="this.classList.toggle('on')">VEG</span>
+              <span class="bchip gf" onclick="this.classList.toggle('on')">GF</span>
+              <span class="bchip spicy" onclick="this.classList.toggle('on')">SPICY</span>
+            </div>
+          </div>
+
+          <div class="fld">
+            <label>Option groups</label>
+            <div class="og">
+              <div class="ogh"><span class="ogn">Size</span><span class="req">REQUIRED</span><span class="sp"></span><span class="gr">⋮⋮</span></div>
+              <div class="ogb">
+                <div class="oprow"><span class="gr">⋮⋮</span><span class="on">Regular · 300ml</span><span class="op">Included</span></div>
+                <div class="oprow"><span class="gr">⋮⋮</span><span class="on">Large · 450ml</span><span class="op">+ Rs 90</span></div>
+              </div>
+            </div>
+            <div class="og">
+              <div class="ogh"><span class="ogn">Boosts</span><span class="sp"></span><span class="gr">⋮⋮</span></div>
+              <div class="ogb">
+                <div class="oprow"><span class="gr">⋮⋮</span><span class="on">Chia seeds</span><span class="op">+ Rs 40</span></div>
+                <div class="oprow"><span class="gr">⋮⋮</span><span class="on">Whey protein</span><span class="op">+ Rs 80</span></div>
+              </div>
+            </div>
+            <button class="addrow"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M12 5v14M5 12h14"/></svg>Add option group</button>
+          </div>
+
+          <div class="trow" style="border-top:1px solid var(--line);margin-top:6px"><div><div class="tt">Available on this branch</div><div class="tsub">Hidden items stay in your library</div></div><div class="sp"></div><div class="toggle" onclick="this.classList.toggle('off')"></div></div>
+        </div>
+        <div class="ef">
+          <button class="btn ghost" onclick="closeEditor()">Cancel</button>
+          <div class="sp"></div>
+          <button class="btn ghost">Save to library</button>
+          <button class="btn primary" onclick="closeEditor()">Save item</button>
         </div>
       </div>
     </div>
+
   </div>
 </div>
 
 <div class="resp">
-  <span class="tag">Desktop ≥1100px — two-pane builder</span>
-  <span class="tag">Tablet — library collapses below the tree</span>
-  <span class="tag">Mobile — sidebar → top bar + sheet; library = bottom sheet (qr_manu pattern kept)</span>
+  <span class="tag">Desktop ≥1100px — sidebar + multi-column views</span>
+  <span class="tag">Tablet — cards/QR reflow to 2-up; settings nav goes horizontal</span>
+  <span class="tag">Mobile — sidebar → top bar + sheet; editor = full-screen (qr_manu pattern kept)</span>
 </div>
 
 <div class="foot">
   <span>Fixed Saffron Festival accent — the gaamos operator house brand, identical for every venue.</span>
-  <a href="./index.html">← Back to guest menu themes</a>
+  <a href="./index.html">← Guest menu themes</a>
+  <a href="./flow.html">Guest flow →</a>
 </div>
+
+<script>
+const META = {
+  overview:  ['Overview', "The Juicery Café · today at a glance", null],
+  menu:      ['Menu', 'Lake Center branch · 58 items live', ['New item', "openEditor('new')"]],
+  orders:    ['Orders', 'Lake Center · 12 active', null],
+  branches:  ['Branches', '3 branches · Growth plan', ['Add branch', "go('branches')"]],
+  qr:        ['QR Codes', 'Lake Center · per-table ordering', null],
+  settings:  ['Settings', 'The Juicery Café account', null],
+};
+function go(view){
+  document.querySelectorAll('.nav').forEach(n => n.classList.toggle('on', n.dataset.view === view));
+  document.querySelectorAll('.view').forEach(v => v.classList.toggle('active', v.dataset.view === view));
+  const m = META[view];
+  document.getElementById('title').innerHTML = m[0] + '<small id="subtitle">' + m[1] + '</small>';
+  document.getElementById('url').textContent = 'app.juicery.gaamos.com / ' + view;
+  const btn = document.getElementById('primaryBtn');
+  if (m[2]) { btn.style.display=''; document.getElementById('primaryLbl').textContent = m[2][0]; btn.setAttribute('onclick', m[2][1]); }
+  else { btn.style.display='none'; }
+}
+document.querySelectorAll('.nav[data-view]').forEach(n => n.addEventListener('click', () => go(n.dataset.view)));
+
+// settings sub-nav
+document.querySelectorAll('.set-nav a').forEach(a => a.addEventListener('click', e => {
+  e.preventDefault();
+  document.querySelectorAll('.set-nav a').forEach(x => x.classList.remove('on'));
+  a.classList.add('on');
+  const cards = document.querySelectorAll('.set-grid .fcard');
+  const idx = [...document.querySelectorAll('.set-nav a')].indexOf(a);
+  if (cards[idx]) cards[idx].scrollIntoView({behavior:'smooth', block:'center'});
+}));
+// theme picker
+document.querySelectorAll('.theme').forEach(t => t.addEventListener('click', () => {
+  document.querySelectorAll('.theme').forEach(x => x.classList.remove('on'));
+  t.classList.add('on');
+}));
+// fchip filter (orders)
+document.querySelectorAll('.fchip').forEach(c => c.addEventListener('click', () => {
+  document.querySelectorAll('.fchip').forEach(x => x.classList.remove('on')); c.classList.add('on');
+}));
+// row toggles
+document.querySelectorAll('.rowtoggle, .trow .toggle').forEach(t => t.addEventListener('click', e => { e.stopPropagation(); t.classList.toggle('off'); }));
+
+// ── item editor ──
+function openEditor(mode){
+  document.getElementById('edTitle').textContent = mode === 'new' ? 'New item' : 'Edit item';
+  document.getElementById('overlay').classList.add('open');
+}
+function closeEditor(){ document.getElementById('overlay').classList.remove('open'); }
+
+// ── focal-point drag ──
+(function(){
+  const stage = document.getElementById('stageimg'), dot = document.getElementById('focalDot');
+  const read = document.getElementById('focalRead');
+  const crops = [document.getElementById('crop1'), document.getElementById('crop2'), document.getElementById('crop3')];
+  let dragging = false;
+  function set(xp, yp){
+    xp = Math.max(0, Math.min(100, xp)); yp = Math.max(0, Math.min(100, yp));
+    dot.style.left = xp + '%'; dot.style.top = yp + '%';
+    read.textContent = Math.round(xp) + '% · ' + Math.round(yp) + '%';
+    crops.forEach(c => c.style.backgroundPosition = xp + '% ' + yp + '%');
+  }
+  function fromEvent(e){
+    const r = stage.getBoundingClientRect();
+    const cx = (e.touches ? e.touches[0].clientX : e.clientX) - r.left;
+    const cy = (e.touches ? e.touches[0].clientY : e.clientY) - r.top;
+    set(cx / r.width * 100, cy / r.height * 100);
+  }
+  stage.addEventListener('mousedown', e => { dragging = true; fromEvent(e); });
+  window.addEventListener('mousemove', e => { if (dragging) fromEvent(e); });
+  window.addEventListener('mouseup', () => dragging = false);
+  stage.addEventListener('touchstart', e => { dragging = true; fromEvent(e); }, {passive:true});
+  stage.addEventListener('touchmove', e => { if (dragging) fromEvent(e); }, {passive:true});
+  window.addEventListener('touchend', () => dragging = false);
+})();
+</script>
 </body>
 </html>
