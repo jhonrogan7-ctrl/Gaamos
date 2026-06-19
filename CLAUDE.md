@@ -37,9 +37,15 @@ companies, each managing their own branches, categories, and menus, served via s
 | Language | Python 3 / Django 5.x | Donor codebase + team familiarity |
 | Database | PostgreSQL | Multi-tenant row-level scoping; production-grade |
 | Frontend | Django templates + Tailwind + HTMX | No build step; incremental partial updates |
+| Client interactivity | Alpine.js | Pairs with HTMX (server) for local UI state; no build step; donor reuse |
 | Tenancy model | Shared schema, row-level company scoping | Rejected `django-tenants` (both councils) |
 | Media | Cloudflare R2 | Tenant-scoped object storage |
 | App shell | PWA | Installable, mobile-first guest experience |
+| Responsive strategy | Mobile-first everywhere — guest menu AND dashboard | Both designed mobile-first; dashboard must also fully fit tablet & desktop (real layouts, not shrunk mobile) |
+| Deployment | Fully dockerized via Docker Compose | One-command local + prod parity; web + Postgres + `cloudflared` as compose services |
+| Edge / TLS | Cloudflare Tunnel (`cloudflared`) at the edge | TLS terminated at Cloudflare edge; no in-stack TLS proxy; covers subdomains + on-demand custom-domain TLS |
+| Menu themes | Tenant-selectable theme system — Saffron Festival / Electric Berry / Tropical Juice | Bold, colourful guest menu; venue picks their gamut. Shared UX (ported from qr_manu), themed via CSS variables |
+| Dashboard brand | Fixed **Saffron Festival** accent (neutral base) — same for every venue | Operator-side house brand; calm desktop-first work tool, not themed per venue |
 | Localisation | Bilingual NP / EN | Nepali restaurant market |
 | Billing | eSewa (NPR) | Local payment rail |
 | Routing | Subdomain per venue + paid custom domain | On-demand TLS for custom domains |

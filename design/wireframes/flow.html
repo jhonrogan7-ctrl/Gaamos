@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gaamos — Full Guest Flow · All Themes</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700;12..96,800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  :root { --hd: 'Bricolage Grotesque', sans-serif; --bd: 'Plus Jakarta Sans', sans-serif; }
+  body { font-family: var(--bd); background: #0f1014; color: #e7e7ea; -webkit-font-smoothing: antialiased; padding: 30px 20px 70px; }
+
+  .lead { max-width: 1280px; margin: 0 auto 18px; }
+  .lead .kicker { font-family: var(--hd); font-weight: 800; letter-spacing: .18em; text-transform: uppercase; font-size: 12px; color: #ff8a5c; }
+  .lead h1 { font-family: var(--hd); font-weight: 800; font-size: 30px; letter-spacing: -.02em; margin: 6px 0 8px; color: #fff; }
+  .lead p { font-size: 14px; line-height: 1.6; color: #a4a4ad; max-width: 780px; }
+
+  .switch { max-width: 1280px; margin: 16px auto 26px; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+  .switch .lbl { font-size: 12px; font-weight: 700; color: #9a9aa3; }
+  .seg { display: inline-flex; background: #1a1b21; border: 1px solid #2a2b33; border-radius: 12px; padding: 4px; gap: 4px; }
+  .seg button { font-family: var(--bd); font-weight: 700; font-size: 13px; color: #b9b9c2; background: none; border: none; padding: 8px 16px; border-radius: 9px; cursor: pointer; display: flex; align-items: center; gap: 8px; }
+  .seg button .d { width: 13px; height: 13px; border-radius: 4px; }
+  .seg button.on { color: #fff; background: #2c2d36; }
+
+  .stage { display: flex; gap: 26px; justify-content: flex-start; align-items: flex-start; max-width: 1280px; margin: 0 auto; overflow-x: auto; padding-bottom: 16px; scrollbar-width: thin; }
+  .col { flex-shrink: 0; }
+  .col .cap { text-align: center; margin-bottom: 12px; }
+  .col .cap .step { font-family: var(--hd); font-weight: 800; font-size: 11px; letter-spacing: .14em; text-transform: uppercase; color: #ff8a5c; }
+  .col .cap .nm { font-family: var(--hd); font-weight: 800; font-size: 16px; color: #fff; margin-top: 3px; }
+
+  .phone { width: 340px; height: 738px; border-radius: 40px; padding: 10px; background: linear-gradient(160deg,#2b2c34,#161519); box-shadow: 0 30px 70px -24px rgba(0,0,0,.8), 0 0 0 1px rgba(255,255,255,.05) inset; }
+  .screen { width: 100%; height: 100%; border-radius: 32px; overflow: hidden; display: flex; flex-direction: column; position: relative; background: var(--cream); }
+
+  /* ─────────── shared base (ported from qr_manu) ─────────── */
+  .v, .v * { font-family: var(--bd); }
+  .brandbar { padding: 15px 15px 12px; display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-shrink: 0; background: var(--bar, var(--cream)); }
+  .brand { display: flex; align-items: center; gap: 10px; min-width: 0; }
+  .logo { width: 42px; height: 42px; border-radius: 13px; flex-shrink: 0; background: var(--logo-bg); color: #fff; font-weight: 800; font-size: 17px; display: flex; align-items: center; justify-content: center; font-family: var(--hd); box-shadow: var(--logo-shadow); }
+  .brand .nm { font-family: var(--hd); font-weight: 800; font-size: 16px; letter-spacing: -.015em; color: var(--ink); line-height: 1.05; }
+  .brand .nm small { display: block; font-family: var(--bd); font-size: 10px; color: var(--ink-3); font-weight: 500; margin-top: 2px; }
+  .icon-btn { width: 39px; height: 39px; border-radius: 12px; flex-shrink: 0; background: var(--btn-bg); border: 1px solid var(--btn-bd); color: var(--btn-ink); display: flex; align-items: center; justify-content: center; position: relative; cursor: pointer; }
+  .icon-btn svg { width: 18px; height: 18px; }
+  .icon-btn .badge { position: absolute; top: -5px; right: -5px; min-width: 18px; height: 18px; border-radius: 9px; background: var(--accent); color: #fff; font-size: 10px; font-weight: 800; display: flex; align-items: center; justify-content: center; padding: 0 5px; border: 2px solid var(--cream); }
+
+  .menu-shell { display: flex; flex: 1; min-height: 0; overflow: hidden; }
+  .rail { width: 82px; flex-shrink: 0; background: var(--rail-bg); overflow: hidden; padding-top: 4px; }
+  .rail-item { padding: 12px 5px; display: flex; flex-direction: column; align-items: center; gap: 5px; position: relative; cursor: pointer; border-left: 3px solid transparent; }
+  .rail-item.active { background: var(--cream); border-left-color: var(--accent); }
+  .rail-item .rc { width: 44px; height: 44px; border-radius: 15px; background: var(--chip-bg); color: var(--chip-ink); display: flex; align-items: center; justify-content: center; border: 1px solid var(--chip-bd); }
+  .rail-item .rc svg { width: 21px; height: 21px; }
+  .rail-item.active .rc { background: var(--accent-grad,var(--accent)); color: #fff; border-color: transparent; box-shadow: var(--chip-active-shadow); }
+  .rail-item .n2 { font-size: 10.5px; font-weight: 700; text-align: center; color: var(--rail-ink); }
+  .rail-item.active .n2 { color: var(--ink); }
+  .rail-item .ct { font-size: 9px; color: var(--ink-3); font-weight: 600; }
+
+  .main-col { flex: 1; display: flex; flex-direction: column; min-width: 0; background: var(--cream); }
+  .cat-head { padding: 14px 15px 6px; display: flex; align-items: flex-start; gap: 9px; }
+  .cat-head h2 { font-family: var(--hd); font-size: 23px; font-weight: 800; letter-spacing: -.025em; color: var(--ink); line-height: 1.02; flex: 1; }
+  .hbtn { width: 35px; height: 35px; border-radius: 11px; background: var(--btn-bg); border: 1px solid var(--btn-bd); color: var(--btn-ink); display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0; }
+  .hbtn svg { width: 16px; height: 16px; }
+  .hbtn.solid { background: var(--accent-grad,var(--accent)); color: #fff; border-color: transparent; }
+  .subline { padding: 0 15px; font-size: 11px; color: var(--ink-3); font-weight: 600; }
+  .chips { display: flex; gap: 6px; padding: 10px 15px 4px; overflow: hidden; }
+  .chip { flex-shrink: 0; font-size: 10.5px; font-weight: 700; padding: 6px 11px; border-radius: 999px; border: 1.5px solid var(--chip-bd); background: var(--cream); color: var(--ink-2); }
+  .chip.on { background: var(--accent-soft); color: var(--accent-deep); border-color: var(--accent); }
+  .grp { padding: 11px 15px 2px; display: flex; align-items: center; gap: 9px; }
+  .grp .gt { font-family: var(--hd); font-size: 11px; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; color: var(--ink); }
+  .grp .ln { flex: 1; height: 2px; border-radius: 2px; background: var(--accent); opacity: .5; }
+  .dishes { padding: 6px 15px 14px; display: flex; flex-direction: column; gap: 10px; overflow: hidden; }
+  .dish { display: flex; gap: 11px; padding: 9px; border-radius: 17px; background: var(--card); border: 1px solid var(--line); box-shadow: var(--card-shadow); }
+  .dish .img { width: 78px; height: 78px; border-radius: 13px; flex-shrink: 0; background-size: cover; background-position: center; }
+  .dish .info { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+  .dish .r1 { display: flex; justify-content: space-between; gap: 8px; align-items: flex-start; }
+  .dish .dn { font-family: var(--hd); font-size: 14px; font-weight: 800; letter-spacing: -.01em; color: var(--ink); line-height: 1.15; }
+  .dish .pr { font-family: var(--hd); font-size: 14px; font-weight: 800; color: var(--price); white-space: nowrap; }
+  .dish .dc { font-size: 10.5px; color: var(--ink-2); line-height: 1.4; margin-top: 3px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+  .dish .r2 { display: flex; align-items: center; justify-content: space-between; margin-top: auto; padding-top: 7px; }
+  .diets { display: flex; gap: 4px; }
+  .diet { font-size: 8.5px; font-weight: 800; padding: 3px 6px; border-radius: 6px; }
+  .diet.v { color: #1f7a3d; background: #d8f3e0; }
+  .diet.spicy { color: #c0392b; background: #ffe0d6; }
+  .diet.gf { color: #9a6b16; background: #fbecc8; }
+  .plus { width: 29px; height: 29px; border-radius: 10px; flex-shrink: 0; background: var(--accent-grad,var(--accent)); color: #fff; border: none; font-size: 17px; font-weight: 700; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: var(--plus-shadow); }
+
+  .cartbar { flex-shrink: 0; margin: auto 11px 13px; padding: 13px 15px; border-radius: 17px; background: var(--cta-bg); color: #fff; display: flex; align-items: center; justify-content: space-between; box-shadow: var(--cta-shadow); cursor: pointer; }
+  .cartbar .l { display: flex; align-items: center; gap: 10px; }
+  .cartbar .qb { width: 29px; height: 29px; border-radius: 9px; background: var(--cta-chip); display: flex; align-items: center; justify-content: center; font-family: var(--hd); font-weight: 800; font-size: 13px; }
+  .cartbar .t { font-size: 12.5px; font-weight: 700; }
+  .cartbar .t small { display: block; font-size: 10px; opacity: .72; font-weight: 600; }
+  .cartbar .pr { font-family: var(--hd); font-weight: 800; font-size: 16px; }
+
+  /* ─────────── item detail ─────────── */
+  .sub-h { padding: 13px 14px; display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
+  .sub-h .icon-btn { background: var(--btn-bg); }
+  .sub-h .ttl { font-family: var(--hd); font-weight: 700; font-size: 14px; color: var(--ink); }
+  .hero { height: 250px; flex-shrink: 0; background-size: cover; background-position: center; position: relative; }
+  .hero .topbar { position: absolute; inset: 0 0 auto 0; padding: 14px; display: flex; justify-content: space-between; }
+  .hero .gbtn { width: 38px; height: 38px; border-radius: 12px; background: rgba(255,255,255,.92); backdrop-filter: blur(8px); color: var(--ink); display: flex; align-items: center; justify-content: center; }
+  .hero .gbtn svg { width: 18px; height: 18px; }
+  .hero .fav { display: inline-flex; align-items: center; gap: 6px; height: 38px; padding: 0 13px; border-radius: 12px; background: rgba(255,255,255,.92); backdrop-filter: blur(8px); color: var(--ink); }
+  .hero .fav svg { width: 16px; height: 16px; color: #e0566b; }
+  .hero .fav .c { font-family: var(--hd); font-weight: 800; font-size: 13px; }
+  .detail { flex: 1; overflow: hidden; background: var(--cream); border-radius: 22px 22px 0 0; margin-top: -22px; position: relative; z-index: 2; padding: 20px 16px 0; }
+  .detail h1 { font-family: var(--hd); font-size: 24px; font-weight: 800; letter-spacing: -.02em; color: var(--ink); line-height: 1.08; }
+  .detail .meta { display: flex; gap: 7px; align-items: center; font-size: 11.5px; color: var(--ink-2); margin: 7px 0 12px; }
+  .detail .meta .pr { font-family: var(--hd); font-weight: 800; font-size: 20px; color: var(--price); margin-left: auto; }
+  .detail .desc { font-size: 12.5px; color: var(--ink-2); line-height: 1.5; margin-bottom: 16px; }
+  .og { margin-bottom: 14px; }
+  .og .ogt { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+  .og .ogt .t { font-family: var(--hd); font-weight: 800; font-size: 14px; color: var(--ink); }
+  .og .ogt .rq { font-size: 9px; font-weight: 800; letter-spacing: .08em; color: var(--accent-deep); background: var(--accent-soft); padding: 3px 7px; border-radius: 6px; }
+  .opt { display: flex; align-items: center; justify-content: space-between; padding: 12px 14px; border: 1px solid var(--line); background: var(--card); border-radius: 13px; margin-bottom: 7px; font-size: 12.5px; }
+  .opt.on { border-color: var(--accent); background: var(--accent-soft); }
+  .opt .lf { display: flex; align-items: center; gap: 11px; }
+  .opt .rad { width: 18px; height: 18px; border-radius: 50%; border: 2px solid var(--ink-3); flex-shrink: 0; position: relative; }
+  .opt.on .rad { border-color: var(--accent); }
+  .opt.on .rad::after { content: ''; position: absolute; inset: 3px; border-radius: 50%; background: var(--accent); }
+  .opt .chk { width: 18px; height: 18px; border-radius: 6px; border: 2px solid var(--ink-3); flex-shrink: 0; display: flex; align-items: center; justify-content: center; color: transparent; }
+  .opt.on .chk { background: var(--accent); border-color: var(--accent); color: #fff; }
+  .opt .chk svg { width: 12px; height: 12px; }
+  .opt .onm { font-weight: 700; color: var(--ink); }
+  .opt .ex { color: var(--ink-2); font-weight: 700; font-size: 12px; }
+  .opt.on .ex { color: var(--accent-deep); }
+  .sticky-cta { position: absolute; left: 0; right: 0; bottom: 0; padding: 13px 16px 22px; background: linear-gradient(to top, var(--cream) 72%, transparent); }
+  .cta { width: 100%; height: 54px; border-radius: 16px; border: none; background: var(--cta-bg); color: #fff; display: flex; align-items: center; justify-content: space-between; padding: 0 20px; font-size: 13.5px; font-weight: 700; cursor: pointer; box-shadow: var(--cta-shadow); }
+  .cta .pr { font-family: var(--hd); font-weight: 800; font-size: 16px; }
+
+  /* ─────────── cart ─────────── */
+  .scr-h { padding: 16px 16px 8px; display: flex; align-items: center; gap: 11px; flex-shrink: 0; }
+  .scr-h h1 { font-family: var(--hd); font-size: 21px; font-weight: 800; letter-spacing: -.02em; color: var(--ink); flex: 1; }
+  .scr-h h1 small { display: block; font-family: var(--bd); font-size: 10.5px; color: var(--ink-3); font-weight: 600; margin-top: 2px; }
+  .cart-body { flex: 1; overflow: hidden; padding: 4px 16px; }
+  .citem { display: flex; gap: 11px; padding: 10px; border-radius: 15px; background: var(--card); border: 1px solid var(--line); box-shadow: var(--card-shadow); margin-bottom: 9px; }
+  .citem .img { width: 56px; height: 56px; border-radius: 11px; flex-shrink: 0; background-size: cover; background-position: center; }
+  .citem .info { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+  .citem .cn { font-family: var(--hd); font-size: 13px; font-weight: 800; color: var(--ink); line-height: 1.15; }
+  .citem .cm { font-size: 10px; color: var(--ink-3); font-weight: 600; margin-top: 2px; }
+  .citem .ft { display: flex; align-items: center; justify-content: space-between; margin-top: auto; }
+  .citem .cp { font-family: var(--hd); font-weight: 800; font-size: 13px; color: var(--price); }
+  .qmini { display: flex; align-items: center; gap: 7px; }
+  .qmini button { width: 24px; height: 24px; border-radius: 7px; background: var(--cream); border: 1px solid var(--line); color: var(--ink); font-size: 14px; display: flex; align-items: center; justify-content: center; cursor: pointer; }
+  .qmini button.p { background: var(--accent-grad,var(--accent)); color: #fff; border-color: transparent; }
+  .qmini .n { font-family: var(--hd); font-weight: 800; font-size: 12px; min-width: 12px; text-align: center; }
+  .promo { display: flex; align-items: center; gap: 9px; padding: 11px 13px; border-radius: 13px; background: var(--card); border: 1px dashed var(--line-2); margin: 4px 0 12px; }
+  .promo svg { width: 16px; height: 16px; color: var(--ink-3); }
+  .promo input { flex: 1; border: none; outline: none; background: none; font-size: 12px; font-family: var(--bd); color: var(--ink); }
+  .promo .ap { font-size: 11px; font-weight: 800; letter-spacing: .04em; text-transform: uppercase; color: var(--accent-deep); cursor: pointer; }
+  .summary { padding: 14px; border-radius: 15px; background: var(--card); border: 1px solid var(--line); box-shadow: var(--card-shadow); display: flex; flex-direction: column; gap: 8px; }
+  .sm { display: flex; justify-content: space-between; font-size: 12px; color: var(--ink-2); }
+  .sm strong { color: var(--ink); font-weight: 700; }
+  .sm.disc { color: var(--accent-deep); }
+  .sm.tot { font-family: var(--hd); font-size: 16px; font-weight: 800; color: var(--ink); padding-top: 10px; border-top: 1px solid var(--line); margin-top: 3px; }
+  .sm.tot .am { color: var(--price); }
+  .placebar { flex-shrink: 0; padding: 12px 16px 20px; }
+
+  /* ─────────── order placed ─────────── */
+  .ok-wrap { flex: 1; display: flex; flex-direction: column; padding: 0 16px; overflow: hidden; }
+  .ok-head { text-align: center; padding: 30px 0 14px; }
+  .ok-badge { width: 66px; height: 66px; border-radius: 20px; margin: 0 auto 14px; background: var(--accent-grad,var(--accent)); color: #fff; display: flex; align-items: center; justify-content: center; box-shadow: var(--cta-shadow); }
+  .ok-badge svg { width: 32px; height: 32px; }
+  .ok-head h1 { font-family: var(--hd); font-size: 24px; font-weight: 800; letter-spacing: -.02em; color: var(--ink); }
+  .ok-head .om { font-size: 12px; color: var(--ink-2); margin-top: 6px; }
+  .ok-head .table { display: inline-flex; align-items: center; gap: 6px; margin-top: 12px; font-size: 11px; font-weight: 800; letter-spacing: .04em; color: var(--accent-deep); background: var(--accent-soft); padding: 6px 12px; border-radius: 999px; }
+  .receipt { background: var(--card); border: 1px solid var(--line); border-radius: 16px; box-shadow: var(--card-shadow); padding: 14px; }
+  .ritem { display: flex; align-items: center; gap: 10px; padding: 8px 0; }
+  .ritem + .ritem { border-top: 1px solid var(--line); }
+  .ritem .q { font-size: 11px; font-weight: 800; color: var(--accent-deep); background: var(--accent-soft); padding: 3px 8px; border-radius: 999px; }
+  .ritem .rn { flex: 1; font-size: 12.5px; font-weight: 700; color: var(--ink); }
+  .ritem .rp { font-family: var(--hd); font-weight: 800; font-size: 13px; color: var(--ink); }
+  .rtot { display: flex; align-items: center; justify-content: space-between; margin-top: 8px; padding-top: 13px; border-top: 2px dashed var(--line-2); }
+  .rtot .l { font-size: 13px; font-weight: 700; color: var(--ink-2); }
+  .rtot strong { font-family: var(--hd); font-size: 21px; font-weight: 800; color: var(--price); }
+  .ok-foot { margin-top: auto; padding: 12px 0 20px; }
+
+  /* ─────────── contact sheet ─────────── */
+  .sheet-scr { justify-content: flex-end; background: rgba(20,16,18,.45); }
+  .sheet { background: var(--cream); border-radius: 26px 26px 0 0; max-height: 92%; overflow: hidden; display: flex; flex-direction: column; position: relative; }
+  .sheet .handle { width: 38px; height: 4px; border-radius: 2px; background: var(--line-2); margin: 10px auto 0; }
+  .sheet .s-hero { padding: 22px 22px 18px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 6px; background: linear-gradient(180deg, var(--accent-soft) 0%, transparent 100%); }
+  .sheet .s-logo { width: 70px; height: 70px; border-radius: 22px; background: var(--logo-bg); color: #fff; font-family: var(--hd); font-weight: 800; font-size: 28px; display: flex; align-items: center; justify-content: center; box-shadow: var(--logo-shadow); margin-bottom: 4px; }
+  .sheet .s-hero h2 { font-family: var(--hd); font-size: 22px; font-weight: 800; letter-spacing: -.02em; color: var(--ink); }
+  .sheet .s-hero .tag { font-size: 10px; font-weight: 800; letter-spacing: .16em; text-transform: uppercase; color: var(--accent-deep); }
+  .csec { padding: 14px 16px 0; overflow: hidden; }
+  .clbl { font-size: 9.5px; letter-spacing: .14em; text-transform: uppercase; color: var(--ink-3); font-weight: 800; margin-bottom: 9px; }
+  .crow { display: flex; align-items: center; gap: 12px; padding: 12px 13px; background: var(--card); border: 1px solid var(--line); border-radius: 13px; margin-bottom: 8px; }
+  .crow .cic { width: 36px; height: 36px; border-radius: 11px; background: var(--accent-soft); color: var(--accent-deep); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .crow .cic svg { width: 17px; height: 17px; }
+  .crow .lb { font-size: 9.5px; font-weight: 700; color: var(--ink-3); letter-spacing: .08em; text-transform: uppercase; }
+  .crow .vl { font-family: var(--hd); font-size: 13.5px; font-weight: 800; color: var(--ink); margin-top: 2px; }
+  .loc { border: 1px solid var(--line); border-radius: 15px; background: var(--card); padding: 13px; margin-bottom: 14px; }
+  .loc .lt { display: flex; gap: 11px; }
+  .loc .nm { font-family: var(--hd); font-size: 14px; font-weight: 800; color: var(--ink); }
+  .loc .ad { font-size: 11px; color: var(--ink-2); line-height: 1.4; margin-top: 2px; }
+  .loc .btns { display: flex; gap: 8px; border-top: 1px dashed var(--line-2); padding-top: 11px; margin-top: 11px; }
+  .loc .lb2 { flex: 1; height: 38px; border-radius: 11px; font-size: 12px; font-weight: 700; display: flex; align-items: center; justify-content: center; gap: 6px; background: var(--cta-bg); color: #fff; border: none; }
+  .loc .lb2.out { background: var(--card); color: var(--ink); border: 1px solid var(--line); }
+
+  /* ════════ THEME A — SAFFRON FESTIVAL ════════ */
+  .v-saffron {
+    --cream:#fff6e9; --ink:#2a1726; --ink-2:#6e5560; --ink-3:#a9909c; --line:#f0e2cf; --line-2:#e3d2bb;
+    --card:#fff; --card-shadow:0 1px 0 rgba(42,23,38,.04),0 12px 26px -16px rgba(226,55,68,.35);
+    --accent:#e23744; --accent-deep:#b3232f; --accent-soft:#ffe2dd; --accent-grad:linear-gradient(140deg,#ff9f1c,#e23744);
+    --price:#e23744; --logo-bg:linear-gradient(140deg,#ff9f1c,#e23744); --logo-shadow:0 8px 18px -6px rgba(226,55,68,.55);
+    --rail-bg:linear-gradient(180deg,#fff0d6,#ffe6d2); --rail-ink:#8a6f5e;
+    --chip-bg:#fff; --chip-ink:#e2802a; --chip-bd:#f4ddc2; --chip-active-shadow:0 8px 16px -5px rgba(226,55,68,.5);
+    --btn-bg:#fff; --btn-bd:#f0e2cf; --btn-ink:#2a1726; --bar:linear-gradient(180deg,#fff0d6,#fff6e9);
+    --plus-shadow:0 6px 14px -4px rgba(226,55,68,.5);
+    --cta-bg:linear-gradient(135deg,#2a1726,#4a1f2e); --cta-chip:rgba(255,159,28,.28); --cta-shadow:0 16px 34px -14px rgba(42,23,38,.6);
+  }
+  /* ════════ THEME B — ELECTRIC BERRY ════════ */
+  .v-berry {
+    --cream:#f6f4ff; --ink:#1c1340; --ink-2:#5b5180; --ink-3:#9991bd; --line:#e7e1ff; --line-2:#d8d0f5;
+    --card:#fff; --card-shadow:0 1px 0 rgba(28,19,64,.04),0 12px 26px -16px rgba(124,58,237,.4);
+    --accent:#7c3aed; --accent-deep:#5b21b6; --accent-soft:#ece2ff; --accent-grad:linear-gradient(140deg,#ec4899,#7c3aed);
+    --price:#db2777; --logo-bg:linear-gradient(140deg,#ec4899,#7c3aed); --logo-shadow:0 8px 18px -6px rgba(124,58,237,.6);
+    --rail-bg:linear-gradient(180deg,#efe8ff,#f6e9ff); --rail-ink:#7b6fa6;
+    --chip-bg:#fff; --chip-ink:#7c3aed; --chip-bd:#e7e1ff; --chip-active-shadow:0 8px 16px -5px rgba(124,58,237,.55);
+    --btn-bg:#fff; --btn-bd:#e7e1ff; --btn-ink:#1c1340; --bar:linear-gradient(180deg,#efe8ff,#f6f4ff);
+    --plus-shadow:0 6px 14px -4px rgba(124,58,237,.55);
+    --cta-bg:linear-gradient(135deg,#7c3aed,#db2777); --cta-chip:rgba(255,255,255,.22); --cta-shadow:0 16px 34px -14px rgba(124,58,237,.6);
+  }
+  /* ════════ THEME C — TROPICAL JUICE ════════ */
+  .v-juice {
+    --cream:#fff; --ink:#0d2b2b; --ink-2:#4d6b6b; --ink-3:#93aaaa; --line:#e6f0ee; --line-2:#d4e6e2;
+    --card:#fff; --card-shadow:0 1px 0 rgba(13,43,43,.04),0 12px 26px -16px rgba(6,182,212,.34);
+    --accent:#06b6d4; --accent-deep:#0e7490; --accent-soft:#d3f4fa; --accent-grad:linear-gradient(140deg,#ffb02e,#ff3d71);
+    --price:#ff3d71; --logo-bg:linear-gradient(140deg,#ffb02e,#ff3d71); --logo-shadow:0 8px 18px -6px rgba(255,61,113,.5);
+    --rail-bg:linear-gradient(180deg,#effbf9,#fff4ec); --rail-ink:#5e807e;
+    --chip-bg:#fff; --chip-ink:#08a3bf; --chip-bd:#def2ef; --chip-active-shadow:0 8px 16px -5px rgba(255,61,113,.45);
+    --btn-bg:#fff; --btn-bd:#e6f0ee; --btn-ink:#0d2b2b; --bar:linear-gradient(180deg,#effbf9,#fff);
+    --plus-shadow:0 6px 14px -4px rgba(255,61,113,.5);
+    --cta-bg:linear-gradient(135deg,#06b6d4,#ff3d71); --cta-chip:rgba(255,255,255,.24); --cta-shadow:0 16px 34px -14px rgba(6,182,212,.55);
+  }
+</style>
+</head>
+<body>
+
+<div class="lead">
+  <div class="kicker">Gaamos · Guest Flow</div>
+  <h1>The full guest journey — in all three themes</h1>
+  <p>
+    Every screen from qr_manu's guest flow, restyled and bolder: <b>Menu → Item detail → Cart → Order placed → About &amp; contact</b>.
+    UX and structure are kept 1:1 (rail, dish cards, option groups, warm-receipt order, bottom-sheet about); only the colour
+    layer changes. Flip the theme to see each venue's gamut applied across the whole flow.
+  </p>
+</div>
+
+<div class="switch">
+  <span class="lbl">Theme:</span>
+  <div class="seg" id="seg">
+    <button data-t="v-saffron" class="on"><span class="d" style="background:#e23744"></span>Saffron Festival</button>
+    <button data-t="v-berry"><span class="d" style="background:#7c3aed"></span>Electric Berry</button>
+    <button data-t="v-juice"><span class="d" style="background:#06b6d4"></span>Tropical Juice</button>
+  </div>
+</div>
+
+<div class="stage" id="stage"></div>
+
+<script>
+const I = {
+  heart:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>',
+  heartF:'<svg viewBox="0 0 24 24" fill="currentColor"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>',
+  info:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>',
+  search:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>',
+  filter:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M3 5h18M6 12h12M10 19h4"/></svg>',
+  back:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>',
+  share:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="m8.6 13.5 6.8 4M15.4 6.5l-6.8 4"/></svg>',
+  check:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>',
+  check2:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>',
+  tag:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12.6 2.6a2 2 0 0 0-1.4-.6H4a2 2 0 0 0-2 2v7.2a2 2 0 0 0 .6 1.4l8.8 8.8a2 2 0 0 0 2.8 0l6.4-6.4a2 2 0 0 0 0-2.8Z"/><path d="M7 7h.01"/></svg>',
+  phone:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3 19.5 19.5 0 0 1-6-6 19.8 19.8 0 0 1-3-8.6A2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 1.9.7 2.8a2 2 0 0 1-.5 2.1L8.1 9.9a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.8.7a2 2 0 0 1 1.7 2Z"/></svg>',
+  clock:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>',
+  pin:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>',
+  wifi:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5a10 10 0 0 1 14 0M8.5 16a5 5 0 0 1 7 0M2 9a15 15 0 0 1 20 0"/><path d="M12 20h.01"/></svg>',
+  juice:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 8h14l-1.5 12h-11L5 8Z"/><path d="M5 8 4 4h7"/></svg>',
+  coffee:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 8h1a4 4 0 0 1 0 8h-1"/><path d="M3 8h14v6a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4Z"/></svg>',
+  momo:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 14a9 5 0 0 0 18 0M3 14c0-3 4-6 9-6s9 3 9 6"/></svg>',
+  bowl:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11h18a9 9 0 0 1-18 0Z"/></svg>',
+  cake:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 21h16v-7H4z"/><path d="M4 14c2 0 2 2 4 2s2-2 4-2 2 2 4 2 2-2 4-2"/></svg>',
+};
+
+const CATS=[['juice','Juices','14',1],['coffee','Coffee','9',0],['momo','Momo','7',0],['bowl','Newari','11',0],['cake','Bakes','8',0]];
+const D=[
+ ['Himalayan Sea-Buckthorn','Wild chuk amilo, honey, fresh lime over crushed ice.','Rs 320','linear-gradient(145deg,#ffb02e,#ff7a45)',[['v','VEG']]],
+ ['Pokhara Sunrise Smoothie','Mango, banana, local yoghurt, a pinch of cardamom.','Rs 380','linear-gradient(145deg,#ff6a88,#ff99ac)',[['v','VEG'],['gf','GF']]],
+ ['Cold-Pressed Greens','Spinach, cucumber, green apple, ginger, mint.','Rs 360','linear-gradient(145deg,#34d399,#10b981)',[['v','VEG']]],
+ ['Beetroot Spice Tonic','Beet, carrot, orange with a warm chilli kick.','Rs 340','linear-gradient(145deg,#e23744,#a01a44)',[['v','VEG'],['spicy','HOT']]],
+];
+
+// ── Screen 1: MENU
+const railHTML = CATS.map(c=>`<div class="rail-item ${c[3]?'active':''}"><div class="rc">${I[c[0]]}</div><div class="n2">${c[1]}</div><div class="ct">${c[2]}</div></div>`).join('');
+const dishHTML = D.map(x=>`<div class="dish"><div class="img" style="background-image:${x[3]}"></div><div class="info"><div class="r1"><div class="dn">${x[0]}</div><div class="pr">${x[2]}</div></div><div class="dc">${x[1]}</div><div class="r2"><div class="diets">${x[4].map(d=>`<span class="diet ${d[0]}">${d[1]}</span>`).join('')}</div><button class="plus">+</button></div></div></div>`).join('');
+const MENU=`
+<div class="brandbar"><div class="brand"><div class="logo">J</div><div class="nm">The Juicery Café<small>Lakeside · Pokhara</small></div></div><div style="display:flex;gap:6px"><button class="icon-btn">${I.heart}<span class="badge">3</span></button><button class="icon-btn">${I.info}</button></div></div>
+<div class="menu-shell"><div class="rail">${railHTML}</div><div class="main-col">
+  <div class="cat-head"><h2>Juices &amp; Smoothies</h2><button class="hbtn">${I.search}</button><button class="hbtn solid">${I.filter}</button></div>
+  <div class="subline">14 dishes · fresh-pressed daily</div>
+  <div class="chips"><span class="chip on">Bestsellers</span><span class="chip">Vegan</span><span class="chip">Under Rs 350</span></div>
+  <div class="grp"><span class="gt">Signature Pressed</span><span class="ln"></span></div>
+  <div class="dishes">${dishHTML}</div>
+  <div class="cartbar"><div class="l"><div class="qb">3</div><div class="t">View order<small>3 items</small></div></div><div class="pr">Rs 1,040</div></div>
+</div></div>`;
+
+// ── Screen 2: ITEM DETAIL
+const DETAIL=`
+<div class="hero" style="background-image:linear-gradient(160deg,#ffb02e,#ff5e3a)">
+  <div class="topbar"><button class="gbtn">${I.back}</button><div style="display:flex;gap:8px"><button class="gbtn">${I.share}</button><div class="fav">${I.heartF}<span class="c">128</span></div></div></div>
+</div>
+<div class="detail">
+  <h1>Himalayan Sea-Buckthorn</h1>
+  <div class="meta"><span class="diet v">VEG</span><span>·</span><span>Cold-pressed</span><span class="pr">Rs 320</span></div>
+  <div class="desc">Tart wild sea-buckthorn (chuk amilo) from the high Himalaya, balanced with mountain honey and fresh lime. Vitamin-C powerhouse, served over crushed ice.</div>
+  <div class="og"><div class="ogt"><span class="t">Size</span><span class="rq">REQUIRED</span></div>
+    <div class="opt"><div class="lf"><span class="rad"></span><span class="onm">Regular · 300ml</span></div><span class="ex">Included</span></div>
+    <div class="opt on"><div class="lf"><span class="rad"></span><span class="onm">Large · 450ml</span></div><span class="ex">+ Rs 90</span></div>
+  </div>
+  <div class="og"><div class="ogt"><span class="t">Boosts</span><span class="rq" style="background:none;color:var(--ink-3)">OPTIONAL</span></div>
+    <div class="opt on"><div class="lf"><span class="chk">${I.check}</span><span class="onm">Chia seeds</span></div><span class="ex">+ Rs 40</span></div>
+    <div class="opt"><div class="lf"><span class="chk"></span><span class="onm">Whey protein</span></div><span class="ex">+ Rs 80</span></div>
+  </div>
+  <div class="sticky-cta"><button class="cta"><span>Add to order</span><span class="pr">Rs 450</span></button></div>
+</div>`;
+
+// ── Screen 3: CART
+const CART=`
+<div class="scr-h"><button class="icon-btn">${I.back}</button><h1>Your order<small>The Juicery Café · Table 7</small></h1></div>
+<div class="cart-body">
+  <div class="citem"><div class="img" style="background-image:linear-gradient(145deg,#ffb02e,#ff7a45)"></div><div class="info"><div class="cn">Himalayan Sea-Buckthorn</div><div class="cm">Large · + Chia seeds</div><div class="ft"><span class="cp">Rs 450</span><div class="qmini"><button>−</button><span class="n">1</span><button class="p">+</button></div></div></div></div>
+  <div class="citem"><div class="img" style="background-image:linear-gradient(145deg,#ff6a88,#ff99ac)"></div><div class="info"><div class="cn">Pokhara Sunrise Smoothie</div><div class="cm">Regular</div><div class="ft"><span class="cp">Rs 380</span><div class="qmini"><button>−</button><span class="n">1</span><button class="p">+</button></div></div></div></div>
+  <div class="citem"><div class="img" style="background-image:linear-gradient(145deg,#34d399,#10b981)"></div><div class="info"><div class="cn">Cold-Pressed Greens</div><div class="cm">Regular</div><div class="ft"><span class="cp">Rs 360</span><div class="qmini"><button>−</button><span class="n">1</span><button class="p">+</button></div></div></div></div>
+  <div class="promo">${I.tag}<input placeholder="Promo code"><span class="ap">Apply</span></div>
+  <div class="summary"><div class="sm"><span>Subtotal</span><strong>Rs 1,190</strong></div><div class="sm disc"><span>Welcome 10%</span><span>− Rs 119</span></div><div class="sm"><span>VAT incl.</span><span>Rs 0</span></div><div class="sm tot"><span>Total</span><span class="am">Rs 1,071</span></div></div>
+</div>
+<div class="placebar"><button class="cta"><span>Place order · Table 7</span><span class="pr">Rs 1,071</span></button></div>`;
+
+// ── Screen 4: ORDER PLACED
+const OK=`
+<div class="ok-wrap">
+  <div class="ok-head">
+    <div class="ok-badge">${I.check2}</div>
+    <h1>Order placed!</h1>
+    <div class="om">Order #JC-2847 · sent to the kitchen</div>
+    <div class="table">${I.clock} Ready in ~8 min</div>
+  </div>
+  <div class="receipt">
+    <div class="ritem"><span class="q">1×</span><span class="rn">Himalayan Sea-Buckthorn <small style="color:var(--ink-3);font-weight:600">· Large</small></span><span class="rp">Rs 450</span></div>
+    <div class="ritem"><span class="q">1×</span><span class="rn">Pokhara Sunrise Smoothie</span><span class="rp">Rs 380</span></div>
+    <div class="ritem"><span class="q">1×</span><span class="rn">Cold-Pressed Greens</span><span class="rp">Rs 360</span></div>
+    <div class="rtot"><span class="l">Total paid at counter</span><strong>Rs 1,071</strong></div>
+  </div>
+  <div class="ok-foot"><button class="cta"><span>Back to menu</span><span class="pr">＋</span></button></div>
+</div>`;
+
+// ── Screen 5: ABOUT / CONTACT SHEET
+const ABOUT=`
+<div class="sheet">
+  <div class="handle"></div>
+  <div class="s-hero"><div class="s-logo">J</div><h2>The Juicery Café</h2><div class="tag">Fresh · Local · Himalayan</div></div>
+  <div class="csec">
+    <div class="clbl">Get in touch</div>
+    <div class="crow"><div class="cic">${I.phone}</div><div><div class="lb">Call</div><div class="vl">+977 61 462 880</div></div></div>
+    <div class="crow"><div class="cic">${I.clock}</div><div><div class="lb">Open hours</div><div class="vl">7:00 AM – 9:00 PM daily</div></div></div>
+    <div class="crow"><div class="cic">${I.wifi}</div><div><div class="lb">Wi-Fi password</div><div class="vl">juicery2024</div></div></div>
+    <div class="clbl" style="margin-top:14px">Find us</div>
+    <div class="loc"><div class="lt"><div class="cic" style="width:36px;height:36px;border-radius:11px;background:var(--accent-soft);color:var(--accent-deep);display:flex;align-items:center;justify-content:center;flex-shrink:0">${I.pin}</div><div><div class="nm">Lake Center</div><div class="ad">Lakeside Rd, Baidam · Pokhara 33700</div></div></div><div class="btns"><button class="lb2">${I.pin} Directions</button><button class="lb2 out">${I.phone} Call</button></div></div>
+  </div>
+</div>`;
+
+const SCREENS=[
+  ['Step 1','Menu',MENU,''],
+  ['Step 2','Item detail',DETAIL,''],
+  ['Step 3','Cart',CART,''],
+  ['Step 4','Order placed',OK,''],
+  ['Step 5','About & contact',ABOUT,'sheet-scr'],
+];
+
+let theme='v-saffron';
+function render(){
+  document.getElementById('stage').innerHTML = SCREENS.map(s=>`
+    <div class="col">
+      <div class="cap"><div class="step">${s[0]}</div><div class="nm">${s[1]}</div></div>
+      <div class="phone"><div class="screen v ${theme} ${s[3]}">${s[2]}</div></div>
+    </div>`).join('');
+}
+render();
+document.getElementById('seg').addEventListener('click',e=>{
+  const b=e.target.closest('button'); if(!b) return;
+  document.querySelectorAll('#seg button').forEach(x=>x.classList.remove('on'));
+  b.classList.add('on'); theme=b.dataset.t; render();
+});
+</script>
+</body>
+</html>
