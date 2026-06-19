@@ -16,7 +16,7 @@
   {% block content %}{% endblock %}
   <script>
     if ("serviceWorker" in navigator) {
-      navigator.serviceWorker.register("{% static 'pwa/sw.js' %}");
+      navigator.serviceWorker.register("/sw.js", { scope: "/" });
     }
   </script>
 </body>
