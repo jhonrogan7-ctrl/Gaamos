@@ -372,15 +372,14 @@ def qr_download(request, branch_id):
 
 @require_owner
 def settings_index(request):
-    from django.contrib.auth.models import User as DjangoUser
     restaurant = request.company
     branches = Branch.objects.all()
-    accounts = DjangoUser.objects.filter(is_staff=True)
+    members = Membership.objects.filter(company=request.company).select_related('user').prefetch_related('branches')
     return render(request, 'dashboard/settings/index.html', {
         'active_tab': 'settings',
         'restaurant': restaurant,
         'branches': branches,
-        'accounts': accounts,
+        'members': members,
     })
 
 
@@ -437,34 +436,57 @@ def branch_delete(request, pk):
 
 @require_owner
 @require_POST
-def account_save(request, pk=None):
+def member_save(request, pk=None):
     from django.contrib.auth.models import User as DjangoUser
+    role = request.POST.get('role', Membership.ROLE_MANAGER)
+    role = role if role in (Membership.ROLE_OWNER, Membership.ROLE_MANAGER) else Membership.ROLE_MANAGER
+    branch_ids = request.POST.getlist('branches')
     if pk:
-        account = get_object_or_404(DjangoUser, pk=pk)
-        account.username = request.POST.get('username', account.username).strip()
-        account.email = request.POST.get('email', '').strip()
+        membership = get_object_or_404(Membership, pk=pk, company=request.company)
+        # last-owner guard: block demoting the only owner
+        if membership.is_owner and role != Membership.ROLE_OWNER and _is_last_owner(membership):
+            return redirect('dashboard:settings')
+        user = membership.user
+        user.email = request.POST.get('email', user.email).strip()
         password = request.POST.get('password', '').strip()
         if password:
-            account.set_password(password)
-        account.save()
+            user.set_password(password)
+        user.save()
+        membership.role = role
+        membership.save()
     else:
         username = request.POST.get('username', '').strip()
         email = request.POST.get('email', '').strip()
         password = request.POST.get('password', '').strip()
-        if username and password:
-            DjangoUser.objects.create_user(username=username, email=email, password=password, is_staff=True)
+        if not (username and password):
+            return redirect('dashboard:settings')
+        user, _ = DjangoUser.objects.get_or_create(
+            username=username, defaults={'email': email})
+        user.is_staff = True
+        user.set_password(password)
+        user.save()
+        membership, _ = Membership.objects.update_or_create(
+            user=user, company=request.company, defaults={'role': role})
+    membership.branches.set(
+        Branch.objects.filter(pk__in=branch_ids) if role == Membership.ROLE_MANAGER else [])
     return redirect('dashboard:settings')
 
 
 @require_owner
 @require_POST
-def account_delete(request, pk):
-    from django.contrib.auth.models import User as DjangoUser
-    account = get_object_or_404(DjangoUser, pk=pk)
-    if account == request.user:
-        return JsonResponse({'ok': False, 'error': 'Cannot delete your own account.'})
-    account.delete()
+def member_delete(request, pk):
+    membership = get_object_or_404(Membership, pk=pk, company=request.company)
+    if membership.is_owner and _is_last_owner(membership):
+        return JsonResponse({'ok': False, 'error': 'Cannot remove the last owner.'})
+    membership.delete()
     return JsonResponse({'ok': True})
+
+
+def _is_last_owner(membership):
+    return not (Membership.objects
+                .filter(company=membership.company, role=Membership.ROLE_OWNER)
+                .exclude(pk=membership.pk)
+                .exists())
 
 
 @require_membership

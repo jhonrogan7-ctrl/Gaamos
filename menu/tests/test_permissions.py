@@ -183,6 +183,54 @@ class HomeAggregationTest(TenantTestCase):
         self.assertEqual(set(slugs), {'a'})
 
 
+class MemberManagementTest(TenantTestCase):
+    def setUp(self):
+        super().setUp()
+        self.branch = Branch.objects.create(company=self.company, name='Main', slug='main', address='X')
+        self.owner = User.objects.create_user(username='owner', password='pass')
+        self.make_owner(self.owner)
+        self.login_as(self.owner)
+
+    def test_owner_adds_manager_with_branch(self):
+        resp = self.client.post('/dashboard/settings/members/add/', {
+            'username': 'newmgr', 'email': 'm@x.com', 'password': 'pw',
+            'role': 'manager', 'branches': [self.branch.pk]})
+        self.assertRedirects(resp, '/dashboard/settings/', fetch_redirect_response=False)
+        m = Membership.objects.get(user__username='newmgr', company=self.company)
+        self.assertEqual(m.role, 'manager')
+        self.assertEqual(list(m.branches.all()), [self.branch])
+
+    def test_remove_member_deletes_membership_not_user(self):
+        u = User.objects.create_user(username='temp', password='pass')
+        m = self.make_manager(u)
+        resp = self.client.post(f'/dashboard/settings/members/{m.pk}/delete/')
+        data = resp.json()
+        self.assertTrue(data['ok'])
+        self.assertFalse(Membership.objects.filter(pk=m.pk).exists())
+        self.assertTrue(User.objects.filter(username='temp').exists())
+
+    def test_cannot_remove_last_owner(self):
+        m = Membership.objects.get(user=self.owner, company=self.company)
+        resp = self.client.post(f'/dashboard/settings/members/{m.pk}/delete/')
+        self.assertFalse(resp.json()['ok'])
+        self.assertTrue(Membership.objects.filter(pk=m.pk).exists())
+
+    def test_cannot_demote_last_owner(self):
+        m = Membership.objects.get(user=self.owner, company=self.company)
+        self.client.post(f'/dashboard/settings/members/{m.pk}/', {
+            'username': 'owner', 'role': 'manager'})
+        m.refresh_from_db()
+        self.assertTrue(m.is_owner)
+
+    def test_manager_cannot_manage_members(self):
+        mgr = User.objects.create_user(username='mgr', password='pass')
+        self.make_manager(mgr)
+        self.client.logout(); self.login_as(mgr)
+        resp = self.client.post('/dashboard/settings/members/add/', {
+            'username': 'x', 'password': 'pw', 'role': 'manager'})
+        self.assertEqual(resp.status_code, 403)
+
+
 class LoginGateTest(TenantTestCase):
     def setUp(self):
         super().setUp()

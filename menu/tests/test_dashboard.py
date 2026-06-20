@@ -215,14 +215,6 @@ class SettingsTest(TenantTestCase):
         })
         self.assertEqual(Branch.objects.filter(name='City Branch').count(), 1)
 
-    def test_add_manager_account(self):
-        from django.contrib.auth.models import User as DjangoUser
-        response = self.client.post('/dashboard/settings/accounts/add/', {
-            'username': 'newmgr', 'email': 'mgr@test.com', 'password': 'testpass123',
-        })
-        self.assertEqual(DjangoUser.objects.filter(username='newmgr').count(), 1)
-        self.assertTrue(DjangoUser.objects.get(username='newmgr').is_staff)
-
 
 class BranchItemsTest(TenantTestCase):
     def setUp(self):
