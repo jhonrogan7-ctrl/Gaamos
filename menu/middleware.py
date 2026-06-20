@@ -1,9 +1,32 @@
 from django.conf import settings
-from django.http import Http404
+from django.core.cache import cache
+from django.http import Http404, HttpResponse
 from django.shortcuts import render
 
 from .models import Company
 from .tenancy import set_current_company, reset_current_company
+
+
+class RateLimitMiddleware:
+    """Lightweight per-IP throttle for guest menu reads (anti bulk-enumeration, spec §7).
+    Cloudflare/WAF fronts this in production; this is the in-app backstop."""
+
+    def __init__(self, get_response):
+        self.get_response = get_response
+
+    def __call__(self, request):
+        limit = getattr(settings, 'GUEST_RATE_LIMIT', 60)
+        window = getattr(settings, 'GUEST_RATE_WINDOW', 60)
+        ip = request.META.get('REMOTE_ADDR', '') or 'unknown'
+        key = f'guest-rl:{ip}'
+        count = cache.get(key, 0) + 1
+        if count == 1:
+            cache.set(key, count, window)
+        else:
+            cache.incr(key)
+        if count > limit:
+            return HttpResponse('Too Many Requests', status=429)
+        return self.get_response(request)
 
 
 class TenantMiddleware:
