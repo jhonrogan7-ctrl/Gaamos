@@ -11,9 +11,8 @@ class SeedJuiceryTest(TestCase):
     def tearDown(self):
         # Ensure no tenant context leaks to subsequent tests across the suite.
         token = set_current_company(None)
-        # We don't hold the original token so we cannot reset precisely;
-        # instead forcefully clear to None (ContextVar accepts None as default).
-        # Using set(None) is sufficient since default is already None.
+        reset_current_company(token)
+        super().tearDown()
 
     def test_seed_creates_juicery_with_stamped_rows(self):
         call_command('seed_juicery')
@@ -37,6 +36,9 @@ class SeedJuiceryTest(TestCase):
     def test_seed_is_idempotent(self):
         call_command('seed_juicery')
         items_first = MenuItem.all_objects.count()
+        from menu.models import BranchItemPlacement
+        placements_first = BranchItemPlacement.objects.count()
         call_command('seed_juicery')
         self.assertEqual(MenuItem.all_objects.count(), items_first)
         self.assertEqual(Company.objects.filter(slug='juicery').count(), 1)
+        self.assertEqual(BranchItemPlacement.objects.count(), placements_first)
