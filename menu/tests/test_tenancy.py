@@ -74,3 +74,18 @@ class BranchRootedIntegrityTest(TenantTestCase):
         bmi = BranchMenuItem(branch=self.branch, menu_item=self.item_cross)
         with self.assertRaises(ValidationError):
             bmi.full_clean()
+
+    def test_cross_company_placement_rejected(self):
+        cat_cross = Category.all_objects.create(company=self.other, name='X', slug='x')
+        pl = BranchItemPlacement(
+            branch=self.branch, menu_item=self.item_same, category=cat_cross)
+        with self.assertRaises(ValidationError):
+            pl.full_clean()
+
+    def test_same_company_placement_ok(self):
+        cat_same = Category.all_objects.create(company=self.company, name='Y', slug='y')
+        pl = BranchItemPlacement(
+            branch=self.branch, menu_item=self.item_same, category=cat_same)
+        pl.full_clean()  # should not raise
+        pl.save()
+        self.assertIsNotNone(pl.pk)

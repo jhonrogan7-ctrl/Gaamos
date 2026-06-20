@@ -107,6 +107,8 @@ class _SameCompanyMixin:
             obj = getattr(self, field, None)
             if obj is not None and getattr(obj, 'company_id', None) is not None:
                 companies.add(obj.company_id)
+        # Empty/singleton set = FKs unassigned or all one company; required-field
+        # validation fires separately in full_clean(). Only a true multi-company span fails.
         if len(companies) > 1:
             raise ValidationError('All related objects must belong to the same company.')
 
