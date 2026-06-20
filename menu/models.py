@@ -76,7 +76,7 @@ class SubCategory(TenantScopedModel):
 class MenuItem(TenantScopedModel):
     company = models.ForeignKey(Company, on_delete=models.CASCADE, related_name='items')
     name = models.CharField(max_length=120)
-    slug = models.SlugField()
+    slug = models.SlugField(max_length=80)
     description = models.TextField(blank=True)
     price = models.PositiveIntegerField()
     dietary_tags = models.JSONField(default=list)
