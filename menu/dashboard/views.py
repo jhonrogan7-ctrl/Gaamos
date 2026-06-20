@@ -460,12 +460,12 @@ def member_save(request, pk=None):
         password = request.POST.get('password', '').strip()
         if not (username and password):
             return redirect('dashboard:settings')
-        user, _ = DjangoUser.objects.get_or_create(
-            username=username, defaults={'email': email})
-        user.set_password(password)
-        user.save()
-        membership, _ = Membership.objects.update_or_create(
-            user=user, company=request.company, defaults={'role': role})
+        if DjangoUser.objects.filter(username=username).exists():
+            # Refuse: username is global; resetting/attaching a pre-existing account
+            # here would be a cross-tenant takeover vector. (Shared-user invites = later phase.)
+            return redirect('dashboard:settings')
+        user = DjangoUser.objects.create_user(username=username, email=email, password=password)
+        membership = Membership.objects.create(user=user, company=request.company, role=role)
     membership.branches.set(
         Branch.objects.filter(pk__in=branch_ids) if role == Membership.ROLE_MANAGER else [])
     return redirect('dashboard:settings')

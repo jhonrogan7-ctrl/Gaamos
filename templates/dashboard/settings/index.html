@@ -89,7 +89,7 @@
         <div style="font-size:10px;color:var(--text-muted);">{{ m.user.email }}{% if not m.is_owner %} · {% for b in m.branches.all %}{{ b.name }}{% if not forloop.last %}, {% endif %}{% empty %}no branch{% endfor %}{% endif %}</div>
       </div>
       <div style="display:flex;gap:6px">
-        <button class="btn btn-small" @click="openEdit({{ m.pk }}, '{{ m.user.username|escapejs }}', '{{ m.role }}')">Edit</button>
+        <button class="btn btn-small" @click="openEdit({{ m.pk }}, '{{ m.user.username|escapejs }}', '{{ m.role }}', [{% for b in m.branches.all %}'{{ b.pk }}'{% if not forloop.last %},{% endif %}{% endfor %}])">Edit</button>
         <form method="post" action="{% url 'dashboard:member_delete' m.pk %}" @submit.prevent="del($el)"><button class="btn btn-small btn-danger" type="submit">Remove</button></form>
       </div>
     </div>
@@ -114,7 +114,7 @@
             <option value="owner">Owner</option>
           </select></div>
         <div class="form-group" x-show="aRole==='manager'"><label class="form-label">Branches</label>
-          <select class="form-select" name="branches" multiple>
+          <select class="form-select" name="branches" multiple x-model="aBranches">
             {% for b in branches %}<option value="{{ b.pk }}">{{ b.name }}</option>{% endfor %}
           </select></div>
         <button type="submit" class="btn btn-primary btn-full">Save member</button>
@@ -135,9 +135,9 @@ function branchManager() {
 }
 function memberManager() {
   return {
-    show:false, title:'', formAction:'', pkEditing:null, aUser:'', aEmail:'', aRole:'manager',
-    openAdd() { this.formAction='/dashboard/settings/members/add/'; this.pkEditing=null; this.aUser=''; this.aEmail=''; this.aRole='manager'; this.show=true; },
-    openEdit(pk,username,role) { this.formAction=`/dashboard/settings/members/${pk}/`; this.pkEditing=pk; this.aUser=username; this.aRole=role; this.show=true; },
+    show:false, title:'', formAction:'', pkEditing:null, aUser:'', aEmail:'', aRole:'manager', aBranches:[],
+    openAdd() { this.formAction='/dashboard/settings/members/add/'; this.pkEditing=null; this.aUser=''; this.aEmail=''; this.aRole='manager'; this.aBranches=[]; this.show=true; },
+    openEdit(pk,username,role,branches) { this.formAction=`/dashboard/settings/members/${pk}/`; this.pkEditing=pk; this.aUser=username; this.aRole=role; this.aBranches=branches||[]; this.show=true; },
     del(form) { fetch(form.action,{method:'POST',headers:{'X-CSRFToken':form.querySelector('[name=csrfmiddlewaretoken]')?.value||document.cookie.match(/csrftoken=([^;]+)/)?.[1]}}).then(r=>r.json()).then(d=>{ if(d.ok){location.reload()} else {alert(d.error)} }); },
   }
 }

@@ -232,6 +232,43 @@ class MemberManagementTest(TenantTestCase):
             'username': 'x', 'password': 'pw', 'role': 'manager'})
         self.assertEqual(resp.status_code, 403)
 
+    def test_add_member_refuses_existing_username_no_takeover(self):
+        """Cross-tenant account takeover: posting an existing username must not reset
+        that user's password or attach a membership to this company."""
+        company_b = Company.objects.create(name='Juicery B', slug='juicery-b')
+        boss_b = User.objects.create_user(username='bossB', password='original_pw')
+        self.make_owner(boss_b, company=company_b)
+
+        # Two companies now exist, so the Phase-1 shim (count==1) won't resolve the
+        # tenant. Simulate the testco subdomain via HTTP_HOST so TenantMiddleware
+        # resolves self.company regardless of DEBUG state.
+        resp = self.client.post(
+            '/dashboard/settings/members/add/',
+            {'username': 'bossB', 'password': 'hacked', 'role': 'manager'},
+            HTTP_HOST=f'{self.company_slug}.localhost')
+        self.assertRedirects(resp, '/dashboard/settings/', fetch_redirect_response=False)
+
+        # No membership created in company A for bossB
+        self.assertFalse(
+            Membership.objects.filter(user__username='bossB', company=self.company).exists())
+        # Password was NOT reset
+        boss_b.refresh_from_db()
+        self.assertFalse(boss_b.check_password('hacked'))
+        self.assertTrue(boss_b.check_password('original_pw'))
+
+    def test_edit_modal_carries_assigned_branch_pks(self):
+        """The settings page must embed the manager's current branch pks in the
+        openEdit(...) call so that submitting the edit form preserves assignments."""
+        mgr = User.objects.create_user(username='mgreditor', password='pass')
+        self.make_manager(mgr, branches=[self.branch])
+
+        resp = self.client.get('/dashboard/settings/')
+        self.assertEqual(resp.status_code, 200)
+        # The rendered HTML must contain the branch pk inside an openEdit(...) call
+        branch_pk_str = f"'{self.branch.pk}'"
+        self.assertContains(resp, 'openEdit(')
+        self.assertContains(resp, branch_pk_str)
+
 
 class LoginGateTest(TenantTestCase):
     def setUp(self):
