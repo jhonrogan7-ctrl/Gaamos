@@ -29,7 +29,7 @@
   {% endfor %}
 
   {% if request.user.is_superuser or request.membership.is_owner %}
-  <a href="{% url 'dashboard:branch_add' %}" class="bcard add">
+  <a href="{% url 'dashboard:settings' %}" class="bcard add">
     <div class="pl">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M12 5v14M5 12h14"/></svg>
     </div>
