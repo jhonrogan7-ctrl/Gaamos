@@ -23,8 +23,7 @@
 
       <div class="grp">Manage</div>
 
-      {# TODO: {% url 'dashboard:overview' %} once Task 4 adds it #}
-      <a href="#" class="nav {% if active_tab == 'overview' %}on{% endif %}">
+      <a href="{% url 'dashboard:overview' %}" class="nav {% if active_tab == 'overview' %}on{% endif %}">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>
         Overview
       </a>

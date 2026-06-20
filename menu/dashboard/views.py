@@ -68,6 +68,11 @@ def logout_view(request):
 
 
 @require_membership
+def overview(request):
+    return render(request, 'dashboard/overview.html', {'active_tab': 'overview'})
+
+
+@require_membership
 def home(request):
     restaurant = request.company
     total_count = MenuItem.objects.count()
