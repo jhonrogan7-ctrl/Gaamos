@@ -1,6 +1,7 @@
+from django.core.exceptions import ValidationError
 from django.test import TestCase
 
-from menu.models import Company, Category, MenuItem
+from menu.models import Branch, BranchItemPlacement, BranchMenuItem, Company, Category, MenuItem
 from menu.tenancy import (
     TenantContextRequired, set_current_company, reset_current_company,
 )
@@ -53,3 +54,23 @@ class ScopedQueryTest(TenantTestCase):
         # within active context, create without explicit company stamps it
         item = MenuItem.objects.create(name='Latte', slug='latte', price=250)
         self.assertEqual(item.company, self.company)
+
+
+class BranchRootedIntegrityTest(TenantTestCase):
+    def setUp(self):
+        super().setUp()
+        self.other = Company.objects.create(name='Other', slug='other')
+        self.branch = Branch.all_objects.create(company=self.company, name='Main', slug='main', address='X')
+        self.item_same = MenuItem.all_objects.create(company=self.company, name='A', slug='a', price=100)
+        self.item_cross = MenuItem.all_objects.create(company=self.other, name='B', slug='b', price=100)
+
+    def test_same_company_branch_item_ok(self):
+        bmi = BranchMenuItem(branch=self.branch, menu_item=self.item_same)
+        bmi.full_clean()  # should not raise
+        bmi.save()
+        self.assertEqual(bmi.effective_price, 100)
+
+    def test_cross_company_branch_item_rejected(self):
+        bmi = BranchMenuItem(branch=self.branch, menu_item=self.item_cross)
+        with self.assertRaises(ValidationError):
+            bmi.full_clean()

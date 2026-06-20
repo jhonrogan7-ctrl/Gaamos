@@ -1,3 +1,4 @@
+from django.core.exceptions import ValidationError
 from django.db import models
 
 from .tenancy import TenantScopedModel
@@ -93,3 +94,79 @@ class MenuItem(TenantScopedModel):
 
     def __str__(self):
         return self.name
+
+
+class _SameCompanyMixin:
+    """Validates that all company-bearing FKs on a branch-rooted row agree."""
+    same_company_fields = ()  # names of related objects that carry .company / .company_id
+
+    def clean(self):
+        super().clean()
+        companies = set()
+        for field in self.same_company_fields:
+            obj = getattr(self, field, None)
+            if obj is not None and getattr(obj, 'company_id', None) is not None:
+                companies.add(obj.company_id)
+        if len(companies) > 1:
+            raise ValidationError('All related objects must belong to the same company.')
+
+
+class BranchMenuItem(_SameCompanyMixin, models.Model):
+    same_company_fields = ('branch', 'menu_item')
+    branch = models.ForeignKey(Branch, on_delete=models.CASCADE, related_name='branch_items')
+    menu_item = models.ForeignKey(MenuItem, on_delete=models.CASCADE, related_name='branch_items')
+    price_override = models.PositiveIntegerField(null=True, blank=True)
+
+    class Meta:
+        unique_together = ('branch', 'menu_item')
+
+    @property
+    def effective_price(self):
+        return self.price_override if self.price_override is not None else self.menu_item.price
+
+    def __str__(self):
+        return f"{self.branch.name} / {self.menu_item.name}"
+
+
+class BranchCategory(_SameCompanyMixin, models.Model):
+    same_company_fields = ('branch', 'category')
+    branch = models.ForeignKey(Branch, on_delete=models.CASCADE, related_name='branch_categories')
+    category = models.ForeignKey(Category, on_delete=models.CASCADE, related_name='branch_links')
+    display_order = models.PositiveSmallIntegerField(default=0)
+
+    class Meta:
+        unique_together = ('branch', 'category')
+        ordering = ['display_order']
+
+    def __str__(self):
+        return f"{self.branch.name} / {self.category.name}"
+
+
+class BranchSubCategory(_SameCompanyMixin, models.Model):
+    same_company_fields = ('branch', 'sub_category')
+    branch = models.ForeignKey(Branch, on_delete=models.CASCADE, related_name='branch_subcategories')
+    sub_category = models.ForeignKey(SubCategory, on_delete=models.CASCADE, related_name='branch_links')
+    display_order = models.PositiveSmallIntegerField(default=0)
+
+    class Meta:
+        unique_together = ('branch', 'sub_category')
+        ordering = ['display_order']
+
+    def __str__(self):
+        return f"{self.branch.name} / {self.sub_category.name}"
+
+
+class BranchItemPlacement(_SameCompanyMixin, models.Model):
+    same_company_fields = ('branch', 'menu_item', 'category', 'sub_category')
+    branch = models.ForeignKey(Branch, on_delete=models.CASCADE, related_name='placements')
+    menu_item = models.ForeignKey(MenuItem, on_delete=models.CASCADE, related_name='placements')
+    category = models.ForeignKey(Category, on_delete=models.CASCADE)
+    sub_category = models.ForeignKey(SubCategory, on_delete=models.CASCADE, null=True, blank=True)
+    display_order = models.PositiveSmallIntegerField(default=0)
+
+    class Meta:
+        unique_together = ('branch', 'menu_item', 'category', 'sub_category')
+        ordering = ['display_order']
+
+    def __str__(self):
+        return f"{self.branch.name} / {self.menu_item.name} @ {self.category.name}"
