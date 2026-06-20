@@ -72,8 +72,15 @@ def logout_view(request):
 def home(request):
     restaurant = request.company
     total_count = MenuItem.objects.count()
+    m = request.membership
+    if request.user.is_superuser or (m and m.is_owner):
+        branches = Branch.objects.all()
+    elif m:
+        branches = Branch.objects.filter(pk__in=m.branches.values_list('pk', flat=True))
+    else:
+        branches = Branch.objects.none()
     branches_data = []
-    for branch in Branch.objects.all():
+    for branch in branches:
         active_count = (BranchItemPlacement.objects
                         .filter(branch=branch).values('menu_item').distinct().count())
         pct = round(active_count / total_count * 100) if total_count else 0
@@ -318,7 +325,7 @@ def subcategory_delete(request, pk):
     return JsonResponse({'ok': True})
 
 
-@login_required
+@require_membership
 def qr_index(request):
     branches = Branch.objects.all()
     return render(request, 'dashboard/qr/index.html', {
@@ -327,20 +334,24 @@ def qr_index(request):
     })
 
 
-@login_required
+@require_membership
 @require_POST
 def qr_generate(request, branch_id):
     from .utils import generate_qr_for_branch
     branch = get_object_or_404(Branch, pk=branch_id)
+    if not ensure_can_manage_branch(request, branch):
+        return forbidden(request)
     generate_qr_for_branch(branch)
     return redirect('dashboard:qr')
 
 
-@login_required
+@require_membership
 def qr_download(request, branch_id):
     from django.http import HttpResponse
     from .utils import generate_qr_pdf
     branch = get_object_or_404(Branch, pk=branch_id)
+    if not ensure_can_manage_branch(request, branch):
+        return forbidden(request)
     if not branch.qr_image:
         return HttpResponse('QR not yet generated for this branch', status=404)
     fmt = request.GET.get('format', 'png')
@@ -507,17 +518,21 @@ def _build_composition(branch):
     return composition
 
 
-@login_required
+@require_membership
 def branch_composition(request, slug):
     """JSON snapshot of the branch's composition tree, re-fetched by the builder
     after each mutation to refresh in place (no full page reload)."""
     branch = get_object_or_404(Branch, slug=slug)
+    if not ensure_can_manage_branch(request, branch):
+        return forbidden(request)
     return JsonResponse(_build_composition(branch), safe=False)
 
 
-@login_required
+@require_membership
 def branch_items(request, slug):
     branch = get_object_or_404(Branch, slug=slug)
+    if not ensure_can_manage_branch(request, branch):
+        return forbidden(request)
     composition = _build_composition(branch)
 
     library = [{'id': m.id, 'name': m.name, 'price': m.price, 'image_url': m.image_url,
@@ -540,10 +555,12 @@ def _next_order(qs):
     return (qs.aggregate(models.Max('display_order'))['display_order__max'] or -1) + 1
 
 
-@login_required
+@require_membership
 @require_POST
 def branch_category_add(request, slug):
     branch = get_object_or_404(Branch, slug=slug)
+    if not ensure_can_manage_branch(request, branch):
+        return forbidden(request)
     cat = get_object_or_404(Category, pk=request.POST.get('category_id'))
     bc, created = BranchCategory.objects.get_or_create(
         branch=branch, category=cat,
@@ -551,10 +568,12 @@ def branch_category_add(request, slug):
     return JsonResponse({'id': bc.pk, 'category_id': cat.pk, 'created': created})
 
 
-@login_required
+@require_membership
 @require_POST
 def branch_category_remove(request, slug, pk):
     branch = get_object_or_404(Branch, slug=slug)
+    if not ensure_can_manage_branch(request, branch):
+        return forbidden(request)
     bc = get_object_or_404(BranchCategory, pk=pk, branch=branch)
     cat_id = bc.category_id
     BranchItemPlacement.objects.filter(branch=branch, category_id=cat_id).delete()
@@ -564,10 +583,12 @@ def branch_category_remove(request, slug, pk):
     return JsonResponse({'ok': True})
 
 
-@login_required
+@require_membership
 @require_POST
 def branch_subcategory_add(request, slug):
     branch = get_object_or_404(Branch, slug=slug)
+    if not ensure_can_manage_branch(request, branch):
+        return forbidden(request)
     sub = get_object_or_404(SubCategory, pk=request.POST.get('sub_category_id'))
     BranchCategory.objects.get_or_create(
         branch=branch, category=sub.category,
@@ -578,10 +599,12 @@ def branch_subcategory_add(request, slug):
     return JsonResponse({'id': bsc.pk, 'sub_category_id': sub.pk, 'created': created})
 
 
-@login_required
+@require_membership
 @require_POST
 def branch_subcategory_remove(request, slug, pk):
     branch = get_object_or_404(Branch, slug=slug)
+    if not ensure_can_manage_branch(request, branch):
+        return forbidden(request)
     bsc = get_object_or_404(BranchSubCategory, pk=pk, branch=branch)
     BranchItemPlacement.objects.filter(
         branch=branch, sub_category_id=bsc.sub_category_id).delete()
@@ -589,10 +612,12 @@ def branch_subcategory_remove(request, slug, pk):
     return JsonResponse({'ok': True})
 
 
-@login_required
+@require_membership
 @require_POST
 def branch_placements_add(request, slug):
     branch = get_object_or_404(Branch, slug=slug)
+    if not ensure_can_manage_branch(request, branch):
+        return forbidden(request)
     cat = get_object_or_404(Category, pk=request.POST.get('category_id'))
     sub_id = request.POST.get('sub_category_id') or None
     sub = get_object_or_404(SubCategory, pk=sub_id) if sub_id else None
@@ -617,18 +642,22 @@ def branch_placements_add(request, slug):
     return JsonResponse({'created': created})
 
 
-@login_required
+@require_membership
 @require_POST
 def branch_placement_remove(request, slug, pk):
     branch = get_object_or_404(Branch, slug=slug)
+    if not ensure_can_manage_branch(request, branch):
+        return forbidden(request)
     get_object_or_404(BranchItemPlacement, pk=pk, branch=branch).delete()
     return JsonResponse({'ok': True})
 
 
-@login_required
+@require_membership
 @require_POST
 def branch_reorder(request, slug):
     branch = get_object_or_404(Branch, slug=slug)
+    if not ensure_can_manage_branch(request, branch):
+        return forbidden(request)
     level = request.POST.get('level')
     model = {'category': BranchCategory, 'subcategory': BranchSubCategory,
              'placement': BranchItemPlacement}.get(level)
@@ -640,11 +669,15 @@ def branch_reorder(request, slug):
     return JsonResponse({'ok': True})
 
 
-@login_required
+@require_membership
 @require_POST
 def branch_clone(request, slug):
     target = get_object_or_404(Branch, slug=slug)
+    if not ensure_can_manage_branch(request, target):
+        return forbidden(request)
     source = get_object_or_404(Branch, slug=request.POST.get('source'))
+    if not ensure_can_manage_branch(request, source):
+        return forbidden(request)
     raw = request.POST.get('category_ids', '').strip()
     cat_ids = [int(x) for x in raw.split(',') if x.strip().isdigit()] if raw else None
 
@@ -679,10 +712,12 @@ def branch_clone(request, slug):
     return JsonResponse({'ok': True})
 
 
-@login_required
+@require_membership
 @require_POST
 def branch_item_price(request, slug, pk):
     branch = get_object_or_404(Branch, slug=slug)
+    if not ensure_can_manage_branch(request, branch):
+        return forbidden(request)
     item = get_object_or_404(MenuItem, pk=pk)
     bmi, _ = BranchMenuItem.objects.get_or_create(branch=branch, menu_item=item)
     price_str = request.POST.get('price', '').strip()

@@ -133,6 +133,44 @@ class EnsureCanManageBranchTest(TenantTestCase):
         self.assertTrue(ensure_can_manage_branch(req, self.branch))
 
 
+class BranchScopeHttpTest(TenantTestCase):
+    def setUp(self):
+        super().setUp()
+        self.a = Branch.objects.create(company=self.company, name='A', slug='a', address='X')
+        self.b = Branch.objects.create(company=self.company, name='B', slug='b', address='Y')
+        self.manager = User.objects.create_user(username='mgr', password='pass')
+        self.make_manager(self.manager, branches=[self.a])
+        self.login_as(self.manager)
+
+    def test_manager_can_open_assigned_branch(self):
+        self.assertEqual(self.client.get('/dashboard/branch/a/').status_code, 200)
+
+    def test_manager_403_on_unassigned_branch(self):
+        self.assertEqual(self.client.get('/dashboard/branch/b/').status_code, 403)
+
+    def test_owner_can_open_any_branch(self):
+        owner_user = User.objects.create_user(username='own', password='pass')
+        self.make_owner(owner_user)
+        self.client.logout(); self.login_as(owner_user)
+        self.assertEqual(self.client.get('/dashboard/branch/b/').status_code, 200)
+
+
+class HomeAggregationTest(TenantTestCase):
+    def setUp(self):
+        super().setUp()
+        self.a = Branch.objects.create(company=self.company, name='A', slug='a', address='X')
+        self.b = Branch.objects.create(company=self.company, name='B', slug='b', address='Y')
+        self.manager = User.objects.create_user(username='mgr', password='pass')
+        self.make_manager(self.manager, branches=[self.a])
+        self.login_as(self.manager)
+
+    def test_manager_home_lists_only_assigned_branches(self):
+        resp = self.client.get('/dashboard/')
+        # home view stores branch under key 'obj' in branches_data dicts
+        slugs = [d['obj'].slug for d in resp.context['branches_data']]
+        self.assertEqual(slugs, ['a'])
+
+
 class LoginGateTest(TenantTestCase):
     def setUp(self):
         super().setUp()
