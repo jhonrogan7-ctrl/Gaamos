@@ -20,7 +20,7 @@ class TenantMiddlewareTest(TestCase):
         return HttpResponse('ok')
 
     def test_subdomain_resolves_company(self):
-        juicery = Company.objects.create(name='Juicery', slug='juicery')
+        juicery = Company.objects.create(name='Juicery', slug='juicery', status='active')
         req = self.rf.get('/', HTTP_HOST='juicery.zxyn.online')
         self.mw(req)
         self.assertEqual(req.company, juicery)
@@ -46,7 +46,8 @@ class TenantMiddlewareTest(TestCase):
         a = Company.objects.create(name='A', slug='a')
         Company.objects.create(name='B', slug='b')
         self.mw(self.rf.get('/', HTTP_HOST='a.zxyn.online'))
+        # context must already be None here — before request B touches it
+        self.assertIsNone(get_current_company())
         self.mw(self.rf.get('/', HTTP_HOST='b.zxyn.online'))
-        # after both requests fully returned, context must be reset to None
         self.assertIsNone(get_current_company())
         self.assertEqual(self.captured[0], a)
