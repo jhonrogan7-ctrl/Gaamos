@@ -1,4 +1,5 @@
 from django.contrib.auth.models import AnonymousUser, User
+from django.core.management import call_command
 from django.db import IntegrityError, transaction
 from django.test import RequestFactory
 
@@ -256,3 +257,22 @@ class LoginGateTest(TenantTestCase):
     def test_bad_password_rejected(self):
         resp = self.client.post('/dashboard/login/', {'username': 'member', 'password': 'wrong'})
         self.assertContains(resp, 'Access denied')
+
+
+class CreateOwnerCommandTest(TenantTestCase):
+    def test_creates_user_and_owner_membership(self):
+        call_command('create_owner', self.company_slug, 'boss', '--password', 'pw')
+        user = User.objects.get(username='boss')
+        m = Membership.objects.get(user=user, company=self.company)
+        self.assertTrue(m.is_owner)
+        self.assertTrue(self.client.login(username='boss', password='pw'))
+
+    def test_idempotent(self):
+        call_command('create_owner', self.company_slug, 'boss', '--password', 'pw')
+        call_command('create_owner', self.company_slug, 'boss', '--password', 'pw2')
+        self.assertEqual(Membership.objects.filter(user__username='boss', company=self.company).count(), 1)
+
+    def test_unknown_company_errors(self):
+        from django.core.management.base import CommandError
+        with self.assertRaises(CommandError):
+            call_command('create_owner', 'nope', 'boss', '--password', 'pw')
