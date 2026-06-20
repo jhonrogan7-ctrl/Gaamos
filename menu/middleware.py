@@ -70,3 +70,26 @@ class TenantMiddleware:
         if Company.objects.count() == 1:
             return Company.objects.first()
         return None
+
+
+class MembershipMiddleware:
+    """Attaches request.membership (the Membership for request.user in request.company,
+    or None). Runs after TenantMiddleware (needs request.company) and AuthenticationMiddleware."""
+
+    def __init__(self, get_response):
+        self.get_response = get_response
+
+    def __call__(self, request):
+        request.membership = self._resolve(request)
+        return self.get_response(request)
+
+    def _resolve(self, request):
+        user = getattr(request, 'user', None)
+        company = getattr(request, 'company', None)
+        if user is None or not user.is_authenticated or company is None:
+            return None
+        from .models import Membership
+        return (Membership.objects
+                .filter(user=user, company=company)
+                .prefetch_related('branches')
+                .first())

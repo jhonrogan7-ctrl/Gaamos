@@ -1,5 +1,7 @@
 from django.contrib.auth.models import User
 from django.db import IntegrityError, transaction
+from django.test import RequestFactory
+from django.contrib.auth.models import AnonymousUser
 
 from menu.models import Company, Branch, Membership
 from menu.tests.base import TenantTestCase
@@ -38,3 +40,60 @@ class MembershipModelTest(TenantTestCase):
                                       role=Membership.ROLE_MANAGER)
         m.branches.add(branch)
         self.assertEqual(list(m.branches.all()), [branch])
+
+
+from menu.middleware import MembershipMiddleware
+from menu.permissions import can_manage_branch
+
+
+class MembershipMiddlewareTest(TenantTestCase):
+    def setUp(self):
+        super().setUp()
+        self.rf = RequestFactory()
+        self.user = User.objects.create_user(username='u', password='pass')
+        self.mw = MembershipMiddleware(lambda req: req)  # echo request back
+
+    def _run(self, user):
+        req = self.rf.get('/dashboard/')
+        req.user = user
+        req.company = self.company
+        self.mw(req)
+        return req
+
+    def test_member_attached(self):
+        m = self.make_owner(self.user)
+        self.assertEqual(self._run(self.user).membership, m)
+
+    def test_non_member_is_none(self):
+        self.assertIsNone(self._run(self.user).membership)
+
+    def test_anonymous_is_none(self):
+        self.assertIsNone(self._run(AnonymousUser()).membership)
+
+    def test_no_company_is_none(self):
+        req = self.rf.get('/dashboard/')
+        req.user = self.user
+        req.company = None
+        self.mw(req)
+        self.assertIsNone(req.membership)
+
+
+class CanManageBranchTest(TenantTestCase):
+    def setUp(self):
+        super().setUp()
+        self.user = User.objects.create_user(username='u', password='pass')
+        self.a = Branch.objects.create(company=self.company, name='A', slug='a', address='X')
+        self.b = Branch.objects.create(company=self.company, name='B', slug='b', address='Y')
+
+    def test_owner_manages_any_branch(self):
+        m = self.make_owner(self.user)
+        self.assertTrue(can_manage_branch(m, self.a))
+        self.assertTrue(can_manage_branch(m, self.b))
+
+    def test_manager_only_assigned(self):
+        m = self.make_manager(self.user, branches=[self.a])
+        self.assertTrue(can_manage_branch(m, self.a))
+        self.assertFalse(can_manage_branch(m, self.b))
+
+    def test_none_membership_cannot(self):
+        self.assertFalse(can_manage_branch(None, self.a))
