@@ -1,49 +1,64 @@
 {% extends "dashboard/base.html" %}
 {% block title %}QR Codes{% endblock %}
-{% block page_title %}QR Codes{% endblock %}
+{% block page_title %}QR Codes<small>One QR per branch — scan to open the menu</small>{% endblock %}
 
 {% block content %}
-{% for branch in branches %}
-<div class="card" style="margin-bottom:10px;">
-  <div class="qr-card-header">
-    <div>
-      <div style="font-weight:700;font-size:13px;">{{ branch.name }}</div>
-      <div style="font-size:10px;color:var(--text-muted);">{{ branch.address }}</div>
-    </div>
-    {% if branch.tag == 'FLAGSHIP' %}<span class="tag-flagship">FLAGSHIP</span>
-    {% elif branch.tag == 'NEW' %}<span class="tag-new">NEW</span>{% endif %}
-  </div>
-  <div class="qr-card-body">
+<div class="sec-h">
+  <h3>QR codes</h3>
+  <div class="sp"></div>
+  <button class="btn ghost" disabled style="opacity:.5;cursor:default;">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+    Download all (PDF)
+  </button>
+</div>
+
+<div class="lib hint" style="position:static;background:var(--accent-soft);border:1.5px solid var(--accent);color:var(--accent-deep);border-radius:12px;padding:12px 14px;font-size:12px;font-weight:600;margin-bottom:16px">
+  <b style="font-weight:800;display:block;margin-bottom:2px">Per-table ordering</b>Each table gets its own QR. Scans land on the menu pre-tagged with the table number, so orders arrive labelled — no app, no login.
+</div>
+
+<div class="qgrid">
+  {% for branch in branches %}
+  <div class="qcard">
     {% if branch.qr_image %}
-      <img src="/media/{{ branch.qr_image }}" class="qr-preview" alt="QR">
-      <div style="flex:1;">
-        <div style="font-size:10px;color:var(--text-muted);margin-bottom:6px;">
-          thejuicerycafe.cafe/?branch={{ branch.slug }}
-        </div>
-        <div style="display:flex;gap:6px;">
-          <a href="{% url 'dashboard:qr_download' branch.pk %}?format=png" class="btn btn-primary btn-sm" style="flex:1;">⬇ PNG</a>
-          <a href="{% url 'dashboard:qr_download' branch.pk %}?format=pdf" class="btn btn-ghost btn-sm">PDF</a>
-          <a href="/?branch={{ branch.slug }}" target="_blank" class="btn btn-ghost btn-sm">👁 Preview</a>
-        </div>
-        <form method="post" action="{% url 'dashboard:qr_generate' branch.pk %}" style="margin-top:6px;">
-          {% csrf_token %}
-          <button type="submit" class="btn btn-ghost btn-sm btn-full">↻ Regenerate with logo</button>
-        </form>
+      <div class="qframe">
+        <img src="/media/{{ branch.qr_image }}" alt="QR for {{ branch.name }}" style="width:100%;height:100%;object-fit:contain;">
       </div>
+      <div class="qn">{{ branch.name }}</div>
+      <div class="qu">/?branch={{ branch.slug }}</div>
+      <div style="display:flex;gap:6px;width:100%;margin-top:4px;">
+        <a href="{% url 'dashboard:qr_download' branch.pk %}?format=png" class="btn btn-primary" style="flex:1;justify-content:center;">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+          Download
+        </a>
+        <a href="{% url 'dashboard:qr_download' branch.pk %}?format=pdf" class="btn btn-ghost">PDF</a>
+        <a href="/?branch={{ branch.slug }}" target="_blank" class="btn btn-ghost">Preview</a>
+      </div>
+      <form method="post" action="{% url 'dashboard:qr_generate' branch.pk %}" style="width:100%;margin-top:4px;">
+        {% csrf_token %}
+        <button type="submit" class="btn ghost" style="width:100%;justify-content:center;">Regenerate</button>
+      </form>
     {% else %}
-      <div class="qr-placeholder">No QR yet</div>
-      <div style="flex:1;">
-        <div style="font-size:10px;color:var(--text-muted);margin-bottom:6px;">QR not yet generated</div>
-        <form method="post" action="{% url 'dashboard:qr_generate' branch.pk %}">
-          {% csrf_token %}
-          <button type="submit" class="btn btn-primary btn-sm btn-full">Generate QR</button>
-        </form>
-        <a href="/?branch={{ branch.slug }}" target="_blank" class="btn btn-ghost btn-sm btn-full" style="margin-top:6px;">👁 Preview</a>
-      </div>
+      <div class="qframe" style="display:flex;align-items:center;justify-content:center;color:var(--ink-3);font-size:12px;">No QR yet</div>
+      <div class="qn">{{ branch.name }}</div>
+      <div class="qu">/?branch={{ branch.slug }}</div>
+      <form method="post" action="{% url 'dashboard:qr_generate' branch.pk %}" style="width:100%;margin-top:8px;">
+        {% csrf_token %}
+        <button type="submit" class="btn primary" style="width:100%;justify-content:center;">Generate QR</button>
+      </form>
+      <a href="/?branch={{ branch.slug }}" target="_blank" class="btn ghost" style="width:100%;justify-content:center;margin-top:4px;">Preview</a>
     {% endif %}
   </div>
+  {% empty %}
+  <p style="grid-column:1/-1;color:var(--ink-3);text-align:center;margin-top:32px;">No branches. Add one in Settings.</p>
+  {% endfor %}
+
+  {# Static stub — per-table ordering not yet built #}
+  <div class="qcard" style="border-style:dashed;justify-content:center;color:var(--accent-deep)">
+    <div class="pl" style="width:48px;height:48px;border-radius:13px;background:var(--accent-soft);display:flex;align-items:center;justify-content:center;margin-bottom:12px">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M12 5v14M5 12h14"/></svg>
+    </div>
+    <div class="qn">Generate tables</div>
+    <div class="qu" style="color:var(--ink-3)">Make QR for a range (e.g. 1–20)</div>
+  </div>
 </div>
-{% empty %}
-<p style="color:var(--text-muted);text-align:center;margin-top:32px;">No branches. Add one in Settings.</p>
-{% endfor %}
 {% endblock %}

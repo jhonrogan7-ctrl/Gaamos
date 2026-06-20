@@ -74,3 +74,17 @@ class BranchesScreenTest(DashboardShellTest):
         self.assertEqual(r.status_code, 200)
         self.assertContains(r, 'Lake Center')
         self.assertContains(r, 'class="bcard"')
+
+
+class QrSkinTest(DashboardShellTest):
+    def setUp(self):
+        super().setUp()
+        from menu.models import Branch
+        Branch.objects.create(company=self.company, name='Lake Center', slug='lake')
+
+    def test_qr_card_grid(self):
+        self.login_as(self.owner)
+        r = self.client.get('/dashboard/qr/')
+        self.assertEqual(r.status_code, 200)
+        self.assertContains(r, 'class="qgrid"')
+        self.assertContains(r, 'Lake Center')
