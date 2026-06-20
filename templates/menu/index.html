@@ -1,0 +1,565 @@
+{% extends "menu/_base.html" %}
+{% load static %}
+{% block content %}
+{{ payload|json_script:"menu-data" }}
+
+<div class="screen-wrap" x-data="menuApp" x-init="init()">
+
+  <!-- ═══════════════════════════════════════════════
+       SCREEN 1 — MENU
+  ══════════════════════════════════════════════════ -->
+  <template x-if="screen === 'menu'">
+    <div style="display:flex;flex-direction:column;flex:1;min-height:0;overflow:hidden;">
+
+      <!-- Brand bar -->
+      <div class="brandbar">
+        <div class="brand">
+          <img src="{% static 'images/juicery_logo.png' %}" alt="Juicery Cafe" class="logo-img">
+          <div class="name">
+            <span x-text="restaurant.name"></span>
+            <small x-text="branch.name + (branch.address ? ' · ' + branch.address : '')"></small>
+          </div>
+        </div>
+        <div style="display:flex;gap:6px;">
+          <button class="icon-btn" @click="screen='cart'" aria-label="View order">
+            <span x-html="icon('heart')"></span>
+            <span class="badge" x-show="cartCount > 0" x-text="cartCount"></span>
+          </button>
+          <button class="icon-btn" @click="contactOpen=true" aria-label="About & contact">
+            <span x-html="icon('info')"></span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Menu shell: rail + main column -->
+      <div class="menu-shell">
+
+        <!-- Category rail (accordion: subcategories slide down under active category) -->
+        <div class="rail">
+          <template x-for="cat in categories" :key="cat.id">
+            <div class="rail-cat">
+              <div :class="{'rail-item':true, 'active': cat.id === activeCategory}"
+                   @click="toggleCategory(cat.id)">
+                <template x-if="(cat.subcategories || []).length > 0">
+                  <span class="rail-chev" :class="{'open': cat.id === expandedCategory}">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m6 9 6 6 6-6"/></svg>
+                  </span>
+                </template>
+                <div class="rc" x-html="icon(cat.icon_key)"></div>
+                <div class="nm" x-text="cat.name"></div>
+                <div class="ct" x-text="categoryDishCount(cat.id)"></div>
+              </div>
+              <!-- Subcategory accordion -->
+              <template x-if="cat.id === expandedCategory && currentCategorySubcats.length > 0">
+                <div class="rail-subs">
+                  <template x-for="sub in currentCategorySubcats" :key="sub.name">
+                    <div :class="{'rail-sub':true, 'active': sub.name === activeSubcat}"
+                         @click="activeSubcat = sub.name">
+                      <span class="rsi" x-html="icon(sub.icon_key)"></span>
+                      <span class="rsn" x-text="sub.name"></span>
+                    </div>
+                  </template>
+                </div>
+              </template>
+            </div>
+          </template>
+        </div>
+
+        <!-- Main column -->
+        <div class="main-col">
+
+          <!-- Category header -->
+          <div class="cat-head">
+            <div class="ttl-block">
+              <h2 x-text="currentCategory.name"></h2>
+              <div class="sub">
+                <span x-text="categoryDishCount(activeCategory) + ' dishes'"></span>
+                <template x-if="currentCategory.hours_note">
+                  <><span>·</span><span x-text="currentCategory.hours_note"></span></>
+                </template>
+              </div>
+            </div>
+            <div class="head-icons">
+              <button class="hbtn" :class="{'active': searchOpen}"
+                      @click="searchOpen ? closeSearch() : openSearch()" aria-label="Search">
+                <span x-html="icon('search')"></span>
+              </button>
+              <button class="hbtn solid" @click="filterOpen=true" aria-label="Filter">
+                <span x-html="icon('filter')"></span>
+                <span class="dot-n" x-show="activeDiets.length > 0"></span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Search bar -->
+          <template x-if="searchOpen">
+            <div class="search-bar">
+              <span class="si" x-html="icon('search')"></span>
+              <input type="text" x-model.debounce.150ms="searchQuery" x-ref="searchInput"
+                     placeholder="Search dishes…" @keydown.escape="closeSearch()">
+              <button class="sx" @click="closeSearch()" aria-label="Close search">
+                <span x-html="icon('x')"></span>
+              </button>
+            </div>
+          </template>
+
+          <!-- Active dietary filter pills -->
+          <template x-if="activeDiets.length > 0">
+            <div class="active-filters">
+              <template x-for="k in activeDiets" :key="k">
+                <span class="fp">
+                  <span x-text="k"></span>
+                  <span class="xx" @click="toggleDiet(k)">×</span>
+                </span>
+              </template>
+              <span class="fp clear" @click="activeDiets=[]">Clear all</span>
+            </div>
+          </template>
+
+          <!-- Grouped dish list -->
+          <div class="menu-body">
+            <template x-if="visibleDishes.length === 0">
+              <div class="empty-state">
+                <div class="title" x-text="isSearching ? 'No dishes found' : 'Nothing matches'"></div>
+                <div class="hint"
+                     x-text="isSearching
+                       ? 'No dishes match “' + searchQuery + '”. Try another term.'
+                       : 'Try removing a dietary filter or pick a different subcategory.'"></div>
+                <template x-if="isSearching">
+                  <button class="clear-btn" @click="searchQuery=''">Clear search</button>
+                </template>
+                <template x-if="!isSearching && activeDiets.length > 0">
+                  <button class="clear-btn" @click="activeDiets=[]">Clear filters</button>
+                </template>
+              </div>
+            </template>
+
+            <template x-for="group in groupedDishes" :key="group.sub">
+              <div class="sub-group">
+                <template x-if="showGroupHeader()">
+                  <div class="sub-group-head">
+                    <span class="nm" x-text="group.sub"></span>
+                    <span class="ct" x-text="group.dishes.length + ' dishes'"></span>
+                  </div>
+                </template>
+                <div class="menu-dish-list">
+                  <template x-for="dish in group.dishes" :key="dish.id">
+                    <div class="menu-dish" @click="openDish(dish.id)">
+                      <div class="img"
+                           x-lazy-bg="dish.image_url"
+                           :style="'background-position:' + (dish.focal_x ?? 50) + '% ' + (dish.focal_y ?? 50) + '%'"></div>
+                      <div class="info">
+                        <div class="r1">
+                          <div class="nm" x-text="dish.name"></div>
+                          <div class="pr" x-text="'Rs ' + dish.price"></div>
+                        </div>
+                        <template x-if="dish.dietary_tags.length > 0">
+                          <div class="diets">
+                            <template x-for="tag in dish.dietary_tags" :key="tag">
+                              <span :class="dietClass(tag)" x-text="dietLabel(tag)"></span>
+                            </template>
+                          </div>
+                        </template>
+                        <div class="dc" x-text="dish.description"></div>
+                        <div class="r2">
+                          <div class="dish-qty">
+                            <template x-if="cartQtyOf(dish.id) > 0">
+                              <button class="plus minus" @click.stop="quickRemove(dish.id)">−</button>
+                            </template>
+                            <template x-if="cartQtyOf(dish.id) > 0">
+                              <span class="qn" x-text="cartQtyOf(dish.id)"></span>
+                            </template>
+                            <button class="plus" @click.stop="quickAdd(dish.id)">+</button>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </template>
+                </div>
+              </div>
+            </template>
+
+            <!-- Footer credit -->
+            <div class="menu-credit">
+              © 2026 <span x-text="restaurant.name"></span>. All rights reserved.<br>
+              Designed &amp; developed by <strong>Twenty Two Tech Company</strong>
+            </div>
+          </div><!-- /menu-body -->
+
+        </div><!-- /main-col -->
+      </div><!-- /menu-shell -->
+
+    </div>
+  </template>
+  <!-- END SCREEN 1 -->
+
+  <!-- ═══════════════════════════════════════════════
+       SCREEN 2 — ITEM DETAIL
+  ══════════════════════════════════════════════════ -->
+  <template x-if="screen === 'detail' && selectedDish">
+    <div style="display:flex;flex-direction:column;flex:1;min-height:0;overflow:hidden;position:relative;">
+
+      <!-- Hero image — tap to view the full (uncropped) image -->
+      <div class="detail-img" :class="{ zoomable: selectedDish.image_url }"
+           :style="selectedDish.image_url ? 'background-image:url('+selectedDish.image_url+');background-position:'+(selectedDish.focal_x ?? 50)+'% '+(selectedDish.focal_y ?? 50)+'%' : ''"
+           @click="selectedDish.image_url && (lightbox = selectedDish.image_url)">
+        <div class="grad"></div>
+        <div class="top">
+          <button class="icon-btn" @click.stop="goBack()"><span x-html="icon('back')"></span></button>
+          <div style="display:flex;gap:8px;">
+            <div class="fav-stat" @click.stop title="In your order">
+              <span class="hrt" x-html="icon('heart')"></span>
+              <span class="ct" x-text="cartQtyOf(selectedDish.id)"></span>
+            </div>
+          </div>
+        </div>
+        <button class="zoom-hint" x-show="selectedDish.image_url"
+                @click.stop="lightbox = selectedDish.image_url">
+          <span x-html="icon('expand')"></span><span>Tap to enlarge</span>
+        </button>
+        <div class="badge-row">
+          <template x-for="tag in selectedDish.dietary_tags" :key="tag">
+            <span :class="dietClass(tag)" x-text="dietLabel(tag)"></span>
+          </template>
+        </div>
+      </div>
+
+      <!-- Scrollable detail body -->
+      <div class="detail">
+        <h1 x-text="selectedDish.name"></h1>
+        <div class="submeta">
+          <span x-text="currentCategory.name"></span>
+          <span class="dot">·</span>
+          <span x-text="selectedDish.sub"></span>
+        </div>
+        <div class="price-line">
+          <span class="pr" x-text="'Rs ' + selectedDish.price"></span>
+        </div>
+        <p class="desc" x-text="selectedDish.description"></p>
+
+        <!-- Quantity (tracks & edits the bag directly) -->
+        <div class="qty-bar">
+          <span class="lbl">Quantity</span>
+          <div class="ctrl">
+            <button class="btn" @click="quickRemove(selectedDish.id)"
+                    :disabled="cartQtyOf(selectedDish.id) === 0">−</button>
+            <span class="n" x-text="cartQtyOf(selectedDish.id)"></span>
+            <button class="btn" @click="quickAdd(selectedDish.id)">+</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Sticky CTA -->
+      <div class="sticky-cta">
+        <template x-if="cartQtyOf(selectedDish.id) === 0">
+          <button class="cta" @click="quickAdd(selectedDish.id)">
+            <span>Add to Order</span>
+            <span class="pr" x-text="'Rs ' + selectedDish.price"></span>
+          </button>
+        </template>
+        <template x-if="cartQtyOf(selectedDish.id) > 0">
+          <button class="cta" @click="screen = 'cart'">
+            <span x-text="cartQtyOf(selectedDish.id) + ' in order · View Order'"></span>
+            <span class="pr" x-text="'Rs ' + detailTotal"></span>
+          </button>
+        </template>
+      </div>
+
+    </div>
+  </template>
+  <!-- END SCREEN 2 -->
+
+  <!-- ═══════════════════════════════════════════════
+       SCREEN 3 — CART / BAG
+  ══════════════════════════════════════════════════ -->
+  <template x-if="screen === 'cart'">
+    <div style="display:flex;flex-direction:column;flex:1;min-height:0;overflow:hidden;position:relative;">
+
+      <!-- Sub-screen header -->
+      <div class="sub-h">
+        <button class="icon-btn" @click="goBack()" style="border:none;background:transparent;padding:0;">
+          <span x-html="icon('back')"></span>
+        </button>
+        <h2>My Order</h2>
+        <span style="font-size:11px;color:var(--ink-2);font-weight:500;cursor:pointer;"
+              @click="clearCart()">Clear</span>
+      </div>
+
+      <!-- Cart body -->
+      <div class="cart">
+
+        <!-- Current order being built -->
+        <template x-if="cart.length > 0">
+          <div>
+            <div class="cart-h">
+              <h1>
+                <span x-text="cartCount + ' item' + (cartCount !== 1 ? 's' : '')"></span>
+              </h1>
+            </div>
+
+            <!-- Cart items -->
+            <template x-for="(item, idx) in cart" :key="item.id">
+              <div class="citem">
+                <div class="img" x-lazy-bg="item.image_url"></div>
+                <div class="info">
+                  <div class="nm" x-text="item.name"></div>
+                  <div class="ft">
+                    <div class="qmini">
+                      <button @click="updateCartQty(idx,-1)">−</button>
+                      <span class="n" x-text="item.qty"></span>
+                      <button @click="updateCartQty(idx,1)">+</button>
+                    </div>
+                    <span class="pr" x-text="'Rs ' + (item.price * item.qty)"></span>
+                  </div>
+                </div>
+              </div>
+            </template>
+
+            <!-- Promo code -->
+            <div class="promo">
+              <span x-html="icon('promoIcon')"></span>
+              <input placeholder="Promo code">
+              <span class="apply">Apply</span>
+            </div>
+
+            <!-- Order summary -->
+            <div class="summary">
+              <div class="sm">
+                <span x-text="'Subtotal (' + cartCount + ' items)'"></span>
+                <strong x-text="'Rs ' + cartSubtotal()"></strong>
+              </div>
+              <div class="sm tot">
+                <span>Total</span>
+                <span class="am" x-text="'Rs ' + cartTotal()"></span>
+              </div>
+            </div>
+          </div>
+        </template>
+
+        <!-- Placed orders (this device) -->
+        <template x-if="orders.length > 0">
+          <div class="orders-block">
+            <div class="orders-h">Your orders</div>
+            <template x-for="o in orders" :key="o.id">
+              <div class="order-row" @click="openOrder(o)">
+                <div class="othumb-wrap">
+                  <template x-if="o.items[0] && o.items[0].image_url">
+                    <div class="othumb" x-lazy-bg="o.items[0].image_url"></div>
+                  </template>
+                  <template x-if="!(o.items[0] && o.items[0].image_url)">
+                    <div class="othumb othumb-ph"><span x-html="icon('bag')"></span></div>
+                  </template>
+                  <span class="othumb-more" x-show="o.items.length > 1" x-text="'+' + (o.items.length - 1)"></span>
+                </div>
+                <div class="oinfo">
+                  <div class="onm" x-text="orderTime(o)"></div>
+                  <div class="ots">
+                    <span class="ochip" x-text="o.items.reduce((n,i)=>n+i.qty,0) + ' item' + (o.items.reduce((n,i)=>n+i.qty,0)!==1?'s':'')"></span>
+                  </div>
+                </div>
+                <div class="oright">
+                  <div class="opr" x-text="'Rs ' + o.total"></div>
+                  <span class="ochev">›</span>
+                </div>
+              </div>
+            </template>
+          </div>
+        </template>
+
+        <!-- Empty state -->
+        <template x-if="cart.length === 0 && orders.length === 0">
+          <div class="order-empty">
+            <div class="t">No items yet</div>
+            <div class="h">Add items from the menu to start an order.</div>
+          </div>
+        </template>
+
+      </div><!-- /cart -->
+
+      <!-- Sticky CTA (only while building an order) -->
+      <div class="sticky-cta" x-show="cart.length > 0">
+        <button class="cta" @click="placeOrder()" :disabled="cart.length === 0 || placing">
+          <span x-text="placing ? 'Placing…' : 'Place Order'"></span>
+          <span class="pr" x-text="'Rs ' + cartTotal()"></span>
+        </button>
+      </div>
+
+    </div>
+  </template>
+  <!-- END SCREEN 3 -->
+
+  <!-- ═══════════════════════════════════════════════
+       OVERLAY — CONTACT MODAL
+  ══════════════════════════════════════════════════ -->
+  <template x-if="contactOpen">
+    <div class="scrim" @click="contactOpen=false">
+      <div class="modal" @click.stop>
+        <div class="handle"></div>
+        <button class="close" @click="contactOpen=false"><span x-html="icon('x')"></span></button>
+
+        <div class="hero">
+          <img src="{% static 'images/juicery_logo.png' %}" alt="Juicery Cafe" class="logo-big-img">
+
+          <h2 x-text="restaurant.name"></h2>
+          <div class="sub" x-text="restaurant.tagline"></div>
+        </div>
+
+        <div class="csec">
+          <div class="clbl"><span>Get in touch</span></div>
+          <div class="crow">
+            <div class="cic" x-html="icon('phone')"></div>
+            <div class="tx">
+              <div class="lb">Phone</div>
+              <div class="vl" x-text="restaurant.phone"></div>
+            </div>
+            <span x-html="icon('dir')"></span>
+          </div>
+          <div class="crow">
+            <div class="cic" x-html="icon('mail')"></div>
+            <div class="tx">
+              <div class="lb">Email</div>
+              <div class="vl" x-text="restaurant.email"></div>
+            </div>
+            <span x-html="icon('dir')"></span>
+          </div>
+        </div>
+
+        <div class="csec">
+          <div class="clbl">
+            <span>Our locations</span>
+            <span class="ct" x-text="branches.length + ' branches'"></span>
+          </div>
+          <template x-for="loc in branches" :key="loc.name">
+            <div class="loc">
+              <div class="top-row">
+                <div class="cic" x-html="icon('pin')"></div>
+                <div>
+                  <div class="nm" x-text="loc.name"></div>
+                  <div class="addr" x-text="loc.address"></div>
+                  <template x-if="loc.tag">
+                    <span class="tag" x-text="loc.tag"></span>
+                  </template>
+                </div>
+              </div>
+              <div class="row">
+                <button class="btn-loc"><span x-html="icon('dir')"></span> Directions</button>
+                <button class="btn-loc outline"><span x-html="icon('phone')"></span> Call</button>
+              </div>
+            </div>
+          </template>
+        </div>
+
+        <div class="ft-credit">
+          <strong>© 2026 The Juicery Cafe.</strong> All rights reserved.<br>
+          Designed &amp; developed by <strong>Twenty Two Tech Company</strong>
+        </div>
+      </div>
+    </div>
+  </template>
+
+  <!-- ═══════════════════════════════════════════════
+       OVERLAY — FILTER SHEET
+  ══════════════════════════════════════════════════ -->
+  <template x-if="filterOpen">
+    <div class="scrim" @click="filterOpen=false">
+      <div class="modal fsheet-modal" @click.stop>
+        <div class="handle"></div>
+        <div class="gt">
+          <h3>Filter</h3>
+          <a @click="activeDiets=[]">Reset</a>
+        </div>
+
+        <div class="fsec">
+          <div class="l">Dietary</div>
+          <div class="fch-row">
+            <template x-for="d in [
+              {k:'VEG',l:'Vegetarian',cls:'v',s:'V'},
+              {k:'VEGAN',l:'Vegan',cls:'vg',s:'VG'},
+              {k:'HALAL',l:'Halal',cls:'h',s:'H'},
+              {k:'GF',l:'Gluten-free',cls:'gf',s:'GF'},
+              {k:'SPICY',l:'Spicy',cls:'spicy',s:'🌶'}
+            ]" :key="d.k">
+              <span :class="{'fch':true,'on':activeDiets.includes(d.k)}"
+                    @click="toggleDiet(d.k)">
+                <span :class="'diet '+d.cls" x-text="d.s"></span>
+                <span x-text="d.l"></span>
+              </span>
+            </template>
+          </div>
+        </div>
+
+        <div class="fsec">
+          <div class="l">Sort by</div>
+          <div class="fch-row">
+            <span class="fch on">Recommended</span>
+            <span class="fch">Price ↑</span>
+            <span class="fch">Price ↓</span>
+            <span class="fch">Popular</span>
+          </div>
+        </div>
+
+        <button class="fapply" @click="filterOpen=false"
+                x-text="'Show ' + filteredDishes.length + ' dishes'"></button>
+      </div>
+    </div>
+  </template>
+
+  <!-- Order detail modal -->
+  <template x-if="openedOrder">
+    <div class="scrim" @click="openedOrder = null">
+      <div class="modal om-modal" @click.stop>
+        <div class="handle"></div>
+        <button class="close" @click="openedOrder = null"><span x-html="icon('x')"></span></button>
+
+        <div class="om-head">
+          <div class="om-badge"><span x-html="icon('bag')"></span></div>
+          <h2>Order placed</h2>
+          <div class="om-meta">
+            <span x-text="orderTime(openedOrder)"></span>
+            <span class="dot">·</span>
+            <span x-text="openedOrder.items.reduce((n,i)=>n+i.qty,0) + ' item' + (openedOrder.items.reduce((n,i)=>n+i.qty,0)!==1?'s':'')"></span>
+          </div>
+        </div>
+
+        <div class="om-list">
+          <template x-for="(i, idx) in openedOrder.items" :key="i.name">
+            <div class="om-item" :style="'--d:' + (idx * 45) + 'ms'">
+              <template x-if="i.image_url">
+                <div class="om-thumb" x-lazy-bg="i.image_url"></div>
+              </template>
+              <template x-if="!i.image_url">
+                <div class="om-thumb om-thumb-ph"><span x-html="icon('bag')"></span></div>
+              </template>
+              <div class="om-it-info">
+                <div class="om-it-nm" x-text="i.name"></div>
+                <div class="om-it-unit" x-text="'Rs ' + i.price + ' each'"></div>
+              </div>
+              <div class="om-it-right">
+                <span class="om-qty" x-text="'×' + i.qty"></span>
+                <span class="om-it-pr" x-text="'Rs ' + (i.price * i.qty)"></span>
+              </div>
+            </div>
+          </template>
+        </div>
+
+        <div class="om-total">
+          <span>Total</span>
+          <strong x-text="'Rs ' + openedOrder.total"></strong>
+        </div>
+
+        <button class="om-del" @click="deleteOrder(openedOrder.id)">Remove from my orders</button>
+      </div>
+    </div>
+  </template>
+
+  <!-- Image lightbox — full (uncropped) image, tap anywhere or ✕ to close -->
+  <div class="lightbox" x-show="lightbox" x-transition.opacity @click="lightbox = null" x-cloak>
+    <button class="lightbox-close" @click="lightbox = null" aria-label="Close"><span x-html="icon('x')"></span></button>
+    <img class="lightbox-img" :src="lightbox" @click.stop alt="">
+  </div>
+
+  <!-- Toast -->
+  <div class="toast" x-show="toast" x-transition.opacity x-text="toast" x-cloak></div>
+
+</div><!-- /screen-wrap -->
+{% endblock %}
