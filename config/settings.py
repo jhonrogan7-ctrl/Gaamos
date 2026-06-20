@@ -6,10 +6,14 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.environ.get("SECRET_KEY", "django-insecure-dev-only")
 DEBUG = os.environ.get("DEBUG", "0") == "1"
 ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS", "*").split(",")
+BASE_DOMAIN = os.environ.get("BASE_DOMAIN", "zxyn.online")
+RESERVED_SUBDOMAINS = {"app", "www", "menu", "admin", "api", "static", "media"}
 
 INSTALLED_APPS = [
     "django.contrib.contenttypes",
     "django.contrib.auth",
+    "django.contrib.admin",
+    "django.contrib.messages",
     "django.contrib.sessions",
     "django.contrib.staticfiles",
     "core",
@@ -22,6 +26,8 @@ MIDDLEWARE = [
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
+    "django.contrib.messages.middleware.MessageMiddleware",
+    "menu.middleware.TenantMiddleware",
 ]
 
 ROOT_URLCONF = "config.urls"
@@ -33,6 +39,7 @@ TEMPLATES = [{
     "OPTIONS": {"context_processors": [
         "django.template.context_processors.request",
         "django.contrib.auth.context_processors.auth",
+        "django.contrib.messages.context_processors.messages",
     ]},
 }]
 
