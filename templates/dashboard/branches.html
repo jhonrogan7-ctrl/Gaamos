@@ -1,0 +1,40 @@
+{% extends 'dashboard/base.html' %}
+
+{% block page_title %}Branches{% endblock %}
+{% block subtitle %}{{ request.company.name }} · all locations{% endblock %}
+
+{% block content %}
+<div class="cards">
+  {% for b in branches %}
+  <div class="bcard">
+    <div class="bh">
+      <div class="bav">{{ b.name|slice:":1"|upper }}{% with words=b.name.split %}{% if words|length > 1 %}{{ words.1|slice:":1"|upper }}{% endif %}{% endwith %}</div>
+      <div>
+        <div class="bn">{{ b.name }}</div>
+        {% if b.address %}<div class="ba">{{ b.address }}</div>{% endif %}
+      </div>
+    </div>
+    <div class="bstats">
+      <div class="bstat"><div class="n">—</div><div class="l">SCANS/DAY</div></div>
+    </div>
+    <div class="bf">
+      <a href="{% url 'dashboard:branch_items' b.slug %}" class="btn ghost" style="flex:1;justify-content:center">Edit menu</a>
+      <a href="{% url 'dashboard:qr' %}" class="btn ghost" style="justify-content:center">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="8" height="8" rx="1"/><rect x="13" y="3" width="8" height="8" rx="1"/><rect x="3" y="13" width="8" height="8" rx="1"/></svg>
+      </a>
+    </div>
+  </div>
+  {% empty %}
+  <p style="color:var(--muted);padding:16px 0">No branches yet.</p>
+  {% endfor %}
+
+  {% if request.user.is_superuser or request.membership.is_owner %}
+  <a href="{% url 'dashboard:branch_add' %}" class="bcard add">
+    <div class="pl">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M12 5v14M5 12h14"/></svg>
+    </div>
+    Add a branch
+  </a>
+  {% endif %}
+</div>
+{% endblock %}

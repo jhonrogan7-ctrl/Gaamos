@@ -60,3 +60,17 @@ class OrdersStubTest(DashboardShellTest):
         body = r.content.decode()
         self.assertIn('class="tbl"', body)
         self.assertIn('Sample data', body)
+
+
+class BranchesScreenTest(DashboardShellTest):
+    def setUp(self):
+        super().setUp()
+        from menu.models import Branch
+        Branch.objects.create(company=self.company, name='Lake Center', slug='lake')
+
+    def test_branches_lists_real(self):
+        self.login_as(self.owner)
+        r = self.client.get('/dashboard/branches/')
+        self.assertEqual(r.status_code, 200)
+        self.assertContains(r, 'Lake Center')
+        self.assertContains(r, 'class="bcard"')

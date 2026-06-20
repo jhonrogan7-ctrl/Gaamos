@@ -78,6 +78,18 @@ def orders(request):
 
 
 @require_membership
+def branches(request):
+    m = request.membership
+    if request.user.is_superuser or (m and m.is_owner):
+        qs = Branch.objects.all()
+    elif m:
+        qs = Branch.objects.filter(pk__in=m.branches.values_list('pk', flat=True))
+    else:
+        qs = Branch.objects.none()
+    return render(request, 'dashboard/branches.html', {'active_tab': 'branches', 'branches': qs})
+
+
+@require_membership
 def home(request):
     restaurant = request.company
     total_count = MenuItem.objects.count()
