@@ -11,7 +11,7 @@ from django.conf import settings as django_settings
 from django.db import models
 from menu.models import (
     Company, Branch, Category, SubCategory, MenuItem, BranchMenuItem,
-    BranchCategory, BranchSubCategory, BranchItemPlacement,
+    BranchCategory, BranchSubCategory, BranchItemPlacement, Membership,
 )
 from menu.imaging import compute_focal_point
 
@@ -48,7 +48,10 @@ def login_view(request):
         username = request.POST.get('username', '')
         password = request.POST.get('password', '')
         user = authenticate(request, username=username, password=password)
-        if user and user.is_staff:
+        if user is None:
+            error = 'Access denied'
+        elif user.is_superuser or Membership.objects.filter(
+                user=user, company=request.company).exists():
             login(request, user)
             return redirect('dashboard:home')
         else:

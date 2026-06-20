@@ -131,3 +131,29 @@ class EnsureCanManageBranchTest(TenantTestCase):
         membership = self.make_manager(user, branches=[self.branch])
         req = self._req(user, membership=membership)
         self.assertTrue(ensure_can_manage_branch(req, self.branch))
+
+
+class LoginGateTest(TenantTestCase):
+    def setUp(self):
+        super().setUp()
+        self.member = User.objects.create_user(username='member', password='pass')
+        self.make_owner(self.member)
+        self.outsider = User.objects.create_user(username='outsider', password='pass')
+        self.superu = User.objects.create_superuser(username='root', password='pass')
+
+    def test_member_can_log_in(self):
+        resp = self.client.post('/dashboard/login/', {'username': 'member', 'password': 'pass'})
+        self.assertRedirects(resp, '/dashboard/', fetch_redirect_response=False)
+
+    def test_non_member_rejected(self):
+        resp = self.client.post('/dashboard/login/', {'username': 'outsider', 'password': 'pass'})
+        self.assertEqual(resp.status_code, 200)
+        self.assertContains(resp, 'Access denied')
+
+    def test_superuser_allowed(self):
+        resp = self.client.post('/dashboard/login/', {'username': 'root', 'password': 'pass'})
+        self.assertRedirects(resp, '/dashboard/', fetch_redirect_response=False)
+
+    def test_bad_password_rejected(self):
+        resp = self.client.post('/dashboard/login/', {'username': 'member', 'password': 'wrong'})
+        self.assertContains(resp, 'Access denied')
