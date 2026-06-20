@@ -46,6 +46,8 @@ TEMPLATES = [{
 
 WSGI_APPLICATION = "config.wsgi.application"
 
+LOGIN_URL = "/dashboard/login/"
+
 CACHES = {"default": {"BACKEND": "django.core.cache.backends.locmem.LocMemCache"}}
 GUEST_RATE_LIMIT = int(os.environ.get("GUEST_RATE_LIMIT", "120"))
 GUEST_RATE_WINDOW = int(os.environ.get("GUEST_RATE_WINDOW", "60"))

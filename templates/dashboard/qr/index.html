@@ -1,0 +1,49 @@
+{% extends "dashboard/base.html" %}
+{% block title %}QR Codes{% endblock %}
+{% block page_title %}QR Codes{% endblock %}
+
+{% block content %}
+{% for branch in branches %}
+<div class="card" style="margin-bottom:10px;">
+  <div class="qr-card-header">
+    <div>
+      <div style="font-weight:700;font-size:13px;">{{ branch.name }}</div>
+      <div style="font-size:10px;color:var(--text-muted);">{{ branch.address }}</div>
+    </div>
+    {% if branch.tag == 'FLAGSHIP' %}<span class="tag-flagship">FLAGSHIP</span>
+    {% elif branch.tag == 'NEW' %}<span class="tag-new">NEW</span>{% endif %}
+  </div>
+  <div class="qr-card-body">
+    {% if branch.qr_image %}
+      <img src="/media/{{ branch.qr_image }}" class="qr-preview" alt="QR">
+      <div style="flex:1;">
+        <div style="font-size:10px;color:var(--text-muted);margin-bottom:6px;">
+          thejuicerycafe.cafe/?branch={{ branch.slug }}
+        </div>
+        <div style="display:flex;gap:6px;">
+          <a href="{% url 'dashboard:qr_download' branch.pk %}?format=png" class="btn btn-primary btn-sm" style="flex:1;">⬇ PNG</a>
+          <a href="{% url 'dashboard:qr_download' branch.pk %}?format=pdf" class="btn btn-ghost btn-sm">PDF</a>
+          <a href="/?branch={{ branch.slug }}" target="_blank" class="btn btn-ghost btn-sm">👁 Preview</a>
+        </div>
+        <form method="post" action="{% url 'dashboard:qr_generate' branch.pk %}" style="margin-top:6px;">
+          {% csrf_token %}
+          <button type="submit" class="btn btn-ghost btn-sm btn-full">↻ Regenerate with logo</button>
+        </form>
+      </div>
+    {% else %}
+      <div class="qr-placeholder">No QR yet</div>
+      <div style="flex:1;">
+        <div style="font-size:10px;color:var(--text-muted);margin-bottom:6px;">QR not yet generated</div>
+        <form method="post" action="{% url 'dashboard:qr_generate' branch.pk %}">
+          {% csrf_token %}
+          <button type="submit" class="btn btn-primary btn-sm btn-full">Generate QR</button>
+        </form>
+        <a href="/?branch={{ branch.slug }}" target="_blank" class="btn btn-ghost btn-sm btn-full" style="margin-top:6px;">👁 Preview</a>
+      </div>
+    {% endif %}
+  </div>
+</div>
+{% empty %}
+<p style="color:var(--text-muted);text-align:center;margin-top:32px;">No branches. Add one in Settings.</p>
+{% endfor %}
+{% endblock %}

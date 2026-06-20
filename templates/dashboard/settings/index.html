@@ -1,0 +1,137 @@
+{% extends "dashboard/base.html" %}
+{% block title %}Settings{% endblock %}
+{% block page_title %}Settings{% endblock %}
+
+{% block content %}
+<div class="section-label">Restaurant</div>
+<div class="card" style="margin-bottom:10px;">
+  <form method="post" action="{% url 'dashboard:settings_restaurant' %}">
+    {% csrf_token %}
+    <div style="padding:12px;">
+      <div class="form-group">
+        <label class="form-label">Name</label>
+        <input class="form-input" name="name" value="{{ restaurant.name|default:'' }}" required>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Tagline</label>
+        <input class="form-input" name="tagline" value="{{ restaurant.tagline|default:'' }}">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Phone</label>
+        <input class="form-input" name="phone" value="{{ restaurant.phone|default:'' }}">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Email</label>
+        <input class="form-input" type="email" name="email" value="{{ restaurant.email|default:'' }}">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Instagram</label>
+        <input class="form-input" name="instagram" value="{{ restaurant.instagram|default:'' }}" placeholder="@handle">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Facebook</label>
+        <input class="form-input" name="facebook" value="{{ restaurant.facebook|default:'' }}">
+      </div>
+      <div class="form-group">
+        <label class="form-label">TikTok</label>
+        <input class="form-input" name="tiktok" value="{{ restaurant.tiktok|default:'' }}" placeholder="@handle">
+      </div>
+      <button type="submit" class="btn btn-primary btn-full">Save restaurant info</button>
+    </div>
+  </form>
+</div>
+
+<div class="section-label">Branches</div>
+<div class="card" style="margin-bottom:10px;" x-data="branchManager()">
+  {% for branch in branches %}
+    <div class="settings-row">
+      <div>
+        <div style="font-weight:600;font-size:12px;">{{ branch.name }}</div>
+        <div style="font-size:10px;color:var(--text-muted);">{{ branch.address }}</div>
+      </div>
+      <button class="btn btn-ghost btn-sm"
+              @click="openEdit({{ branch.pk }}, '{{ branch.name|escapejs }}', '{{ branch.address|escapejs }}', '{{ branch.tag }}')">
+        Edit ›
+      </button>
+    </div>
+  {% endfor %}
+  <div class="settings-row" @click="openAdd()" style="cursor:pointer;color:var(--text-muted);">
+    <span>＋ Add branch</span>
+  </div>
+  <div class="sheet-backdrop" x-show="show" x-cloak @click.self="show=false">
+    <div class="sheet">
+      <div class="sheet-handle"></div>
+      <h3 style="font-size:15px;font-weight:700;margin-bottom:14px;" x-text="title"></h3>
+      <form method="post" :action="formAction">
+        {% csrf_token %}
+        <div class="form-group"><label class="form-label">Name</label>
+          <input class="form-input" name="name" x-model="bName" required></div>
+        <div class="form-group"><label class="form-label">Address</label>
+          <input class="form-input" name="address" x-model="bAddr"></div>
+        <div class="form-group"><label class="form-label">Tag</label>
+          <select class="form-select" name="tag" x-model="bTag">
+            <option value="">Standard</option>
+            <option value="FLAGSHIP">Flagship</option>
+            <option value="NEW">New</option>
+          </select></div>
+        <button type="submit" class="btn btn-primary btn-full">Save</button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<div class="section-label">Manager Accounts</div>
+<div class="card" x-data="accountManager()">
+  {% for account in accounts %}
+    <div class="settings-row">
+      <div>
+        <div style="font-weight:600;font-size:12px;">{{ account.username }}</div>
+        <div style="font-size:10px;color:var(--text-muted);">{{ account.email }}</div>
+      </div>
+      <button class="btn btn-ghost btn-sm"
+              @click="openEdit({{ account.pk }}, '{{ account.username|escapejs }}', '{{ account.email|escapejs }}')">
+        Edit ›
+      </button>
+    </div>
+  {% endfor %}
+  <div class="settings-row" @click="openAdd()" style="cursor:pointer;color:var(--text-muted);">
+    <span>＋ Add manager account</span>
+  </div>
+  <div class="sheet-backdrop" x-show="show" x-cloak @click.self="show=false">
+    <div class="sheet">
+      <div class="sheet-handle"></div>
+      <h3 style="font-size:15px;font-weight:700;margin-bottom:14px;" x-text="title"></h3>
+      <form method="post" :action="formAction">
+        {% csrf_token %}
+        <div class="form-group"><label class="form-label">Username</label>
+          <input class="form-input" name="username" x-model="aUser" required></div>
+        <div class="form-group"><label class="form-label">Email</label>
+          <input class="form-input" type="email" name="email" x-model="aEmail"></div>
+        <div class="form-group">
+          <label class="form-label" x-text="pkEditing ? 'New password (blank = keep)' : 'Password'"></label>
+          <input class="form-input" type="password" name="password" :required="!pkEditing"></div>
+        <button type="submit" class="btn btn-primary btn-full">Save</button>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+function branchManager() {
+  return {
+    show: false, title: '', formAction: '', bName: '', bAddr: '', bTag: '',
+    openAdd() { this.title='Add Branch'; this.formAction='/dashboard/settings/branches/add/'; this.bName=''; this.bAddr=''; this.bTag=''; this.show=true; },
+    openEdit(pk,name,addr,tag) { this.title='Edit Branch'; this.formAction=`/dashboard/settings/branches/${pk}/`; this.bName=name; this.bAddr=addr; this.bTag=tag; this.show=true; },
+  };
+}
+function accountManager() {
+  return {
+    show: false, title: '', formAction: '', pkEditing: null, aUser: '', aEmail: '',
+    openAdd() { this.title='Add Manager'; this.formAction='/dashboard/settings/accounts/add/'; this.pkEditing=null; this.aUser=''; this.aEmail=''; this.show=true; },
+    openEdit(pk,username,email) { this.title='Edit Account'; this.formAction=`/dashboard/settings/accounts/${pk}/`; this.pkEditing=pk; this.aUser=username; this.aEmail=email; this.show=true; },
+  };
+}
+</script>
+{% endblock %}

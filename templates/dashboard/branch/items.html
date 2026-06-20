@@ -1,0 +1,487 @@
+{% extends "dashboard/base.html" %}
+{% block title %}{{ branch.name }}{% endblock %}
+{% block page_title %}{{ branch.name }} — Menu{% endblock %}
+{% block header_action %}
+  <button type="button" class="hdr-help" title="How to build your menu"
+          onclick="window.dispatchEvent(new CustomEvent('open-manual'))">?</button>
+  <a href="{% url 'dashboard:home' %}" style="color:rgba(255,255,255,.7);text-decoration:none;font-size:13px;">← Branches</a>
+{% endblock %}
+
+{% block content %}
+<script id="composition-data" type="application/json">{{ composition_json|safe }}</script>
+<script id="library-data" type="application/json">{{ library_json|safe }}</script>
+<script id="catalog-data" type="application/json">{{ catalog_json|safe }}</script>
+<script id="branches-data" type="application/json">{{ branches_json|safe }}</script>
+
+<div x-data="branchBuilder()" x-cloak class="builder" @open-manual.window="manualOpen = true">
+
+  <!-- ===================== TREE (Outliner) ===================== -->
+  <div class="tree">
+
+    <!-- opens the how-to manual (also reachable via the ? in the header) -->
+    <button type="button" class="manual-trigger" @click="manualOpen = true">
+      <span class="help-ic">?</span>
+      <span>How to build your menu</span>
+      <span class="arrow">›</span>
+    </button>
+
+    <button type="button" class="clone-btn" @click="cloneOpen = true">
+      ⧉ Clone from another branch…
+    </button>
+
+    <template x-for="(cat, ci) in composition" :key="cat.bc_id">
+      <div class="cat"
+           draggable="true"
+           @dragstart="dragStart('category','cats',composition,ci,$event)"
+           @dragover.prevent @drop="dragDrop('cats',ci)">
+        <div class="cat-h" :class="{ open: isOpen(cat.bc_id) }" @click="toggleCat(cat.bc_id)">
+          <span class="grip" @click.stop @mousedown.stop>⠿</span>
+          <span class="nm" x-text="cat.name"></span>
+          <span class="ct" x-text="catCount(cat)"></span>
+          <span class="sp" x-text="isOpen(cat.bc_id) ? '▾' : '▸'"></span>
+          <span class="rm" @click.stop="removeCategory(cat)" title="Remove category">✕</span>
+        </div>
+
+        <div class="cat-b" x-show="isOpen(cat.bc_id)">
+          <!-- direct (no sub-category) items -->
+          <template x-if="cat.direct.length">
+            <div class="sub">
+              <div class="sub-h">Ungrouped</div>
+              <template x-for="(it, ii) in cat.direct" :key="it.pl_id">
+                <div class="row"
+                     draggable="true"
+                     @dragstart="dragStart('placement','d'+cat.cat_id,cat.direct,ii,$event)"
+                     @dragover.prevent @drop="dragDrop('d'+cat.cat_id,ii)">
+                  <span class="grip" @mousedown.stop>⠿</span>
+                  <div class="thumb" :style="thumbStyle(it)" x-text="it.image_url ? '' : 'IMG'"></div>
+                  <div style="min-width:0;">
+                    <div class="nm" x-text="it.name"></div>
+                    <div class="meta">
+                      <span x-text="it.override ? 'override' : 'template'"></span>
+                      <span class="multi" x-show="it.also_in > 0" x-text="'also in ' + it.also_in"></span>
+                    </div>
+                  </div>
+                  <span class="pr-badge" :class="{ override: it.override }" @click="openPrice(it)"
+                        x-text="'Rs ' + it.price"></span>
+                  <span class="rm" @click="removePlacement(it)" title="Remove">✕</span>
+                </div>
+              </template>
+            </div>
+          </template>
+
+          <!-- sub-category groups -->
+          <template x-for="(g, gi) in cat.groups" :key="g.bsc_id">
+            <div class="sub"
+                 draggable="true"
+                 @dragstart="dragStart('subcategory','subs',allSubs(),gi,$event)"
+                 @dragover.prevent @drop="dragDrop('subs',gi)">
+              <div class="sub-h">
+                <span class="gripx" @mousedown.stop>⠿</span>
+                <span x-text="g.name"></span>
+                <span class="rm" @click="removeSubcategory(cat, g)" title="Remove group">✕</span>
+              </div>
+              <template x-for="(it, ii) in g.items" :key="it.pl_id">
+                <div class="row"
+                     draggable="true"
+                     @dragstart="dragStart('placement','g'+g.bsc_id,g.items,ii,$event)"
+                     @dragover.prevent @drop="dragDrop('g'+g.bsc_id,ii)">
+                  <span class="grip" @mousedown.stop>⠿</span>
+                  <div class="thumb" :style="thumbStyle(it)" x-text="it.image_url ? '' : 'IMG'"></div>
+                  <div style="min-width:0;">
+                    <div class="nm" x-text="it.name"></div>
+                    <div class="meta">
+                      <span x-text="it.override ? 'override' : 'template'"></span>
+                      <span class="multi" x-show="it.also_in > 0" x-text="'also in ' + it.also_in"></span>
+                    </div>
+                  </div>
+                  <span class="pr-badge" :class="{ override: it.override }" @click="openPrice(it)"
+                        x-text="'Rs ' + it.price"></span>
+                  <span class="rm" @click="removePlacement(it)" title="Remove">✕</span>
+                </div>
+              </template>
+              <button type="button" class="add add-item" @click="openAdd(cat, g)"><span class="ic">＋</span> Add item to “<span x-text="g.name"></span>”</button>
+            </div>
+          </template>
+
+          <button type="button" class="add add-item" @click="openAdd(cat, null)"><span class="ic">＋</span> Add item (no sub-category)</button>
+          <button type="button" class="add add-sub" @click="openSubPicker(cat)"><span class="ic">＋</span> Add sub-category</button>
+        </div>
+      </div>
+    </template>
+
+    <p x-show="composition.length === 0" style="color:var(--text-muted);text-align:center;margin:24px 0;">
+      This branch has no menu yet. Add a category, or clone from another branch.
+    </p>
+
+    <button type="button" class="add cat-add" @click="catPickerOpen = true"><span class="ic">＋</span> Add category to this branch</button>
+  </div>
+
+  <!-- ===================== LIBRARY PANE (sheet on mobile, column on desktop) ===================== -->
+  <div class="lib-pane" :class="{ show: addTarget !== null }">
+    <div class="lib-head">
+      <h4>Global library</h4>
+      <span class="lib-close" @click="closeAdd()">✕</span>
+    </div>
+    <div class="lib-hint start" x-show="!addTarget" x-cloak>
+      <span class="lib-hint-ic">👈</span>
+      <div>
+        <strong>Start here</strong>
+        <span>Tap a blue <b>＋ Add item</b> button inside any category to choose dishes.</span>
+      </div>
+    </div>
+    <div class="lib-hint active" x-show="addTarget" x-cloak>
+      <span class="lib-hint-ic">✓</span>
+      <div><strong x-text="addTargetLabel()"></strong></div>
+    </div>
+    <div class="search-bar" style="margin:8px 0;">
+      <span>🔍</span>
+      <input x-model="libQ" placeholder="Search templates…" autocomplete="off">
+    </div>
+    <div class="lib-list">
+      <template x-for="it in filteredLibrary()" :key="it.id">
+        <div class="libitem" :class="{ dis: isPlaced(it.id), on: selected[it.id] }"
+             @click="!isPlaced(it.id) && toggleSelect(it.id)">
+          <span class="cb" :class="{ on: selected[it.id], done: isPlaced(it.id) }"
+                x-text="(selected[it.id] || isPlaced(it.id)) ? '✓' : ''"></span>
+          <div class="thumb" :style="thumbStyle(it)" x-text="it.image_url ? '' : 'IMG'"></div>
+          <div style="min-width:0;">
+            <div class="nm" x-text="it.name"></div>
+            <div class="meta">
+              <span x-text="'Rs ' + it.price"></span>
+              <span x-show="isPlaced(it.id)"> · already here</span>
+            </div>
+          </div>
+        </div>
+      </template>
+      <p x-show="filteredLibrary().length === 0" style="color:var(--text-muted);font-size:12px;text-align:center;padding:16px;">No templates match.</p>
+    </div>
+    <button type="button" class="btn btn-primary btn-full" :disabled="selectedCount() === 0 || !addTarget"
+            @click="addSelected()" x-text="selectedCount() ? ('Add ' + selectedCount() + ' selected') : 'Select items to add'"></button>
+  </div>
+
+  <!-- backdrop for mobile add-item sheet (hidden on desktop where library is a column) -->
+  <div class="sheet-backdrop add-backdrop" x-show="addTarget !== null" @click.self="closeAdd()" x-cloak
+       style="z-index:25;"></div>
+
+  <!-- ===================== ADD CATEGORY PICKER ===================== -->
+  <div class="sheet-backdrop" x-show="catPickerOpen" @click.self="catPickerOpen = false" x-cloak>
+    <div class="sheet">
+      <div class="sheet-handle"></div>
+      <h4 style="font-size:15px;margin-bottom:10px;">Add a category</h4>
+      <template x-for="c in availableCategories()" :key="c.id">
+        <div class="libitem" @click="addCategory(c.id)">
+          <div style="min-width:0;"><div class="nm" x-text="c.name"></div></div>
+          <span class="add-s">＋</span>
+        </div>
+      </template>
+      <p x-show="availableCategories().length === 0" style="color:var(--text-muted);font-size:12px;padding:8px;">All catalog categories are already on this branch.</p>
+    </div>
+  </div>
+
+  <!-- ===================== ADD SUB-CATEGORY PICKER ===================== -->
+  <div class="sheet-backdrop" x-show="subPicker !== null" @click.self="subPicker = null" x-cloak>
+    <div class="sheet">
+      <div class="sheet-handle"></div>
+      <h4 style="font-size:15px;margin-bottom:10px;">Add a sub-category</h4>
+      <template x-for="s in availableSubs()" :key="s.id">
+        <div class="libitem" @click="addSubcategory(s.id)">
+          <div style="min-width:0;"><div class="nm" x-text="s.name"></div></div>
+          <span class="add-s">＋</span>
+        </div>
+      </template>
+      <p x-show="subPicker && availableSubs().length === 0" style="color:var(--text-muted);font-size:12px;padding:8px;">No more sub-categories to add for this category.</p>
+    </div>
+  </div>
+
+  <!-- ===================== CLONE ===================== -->
+  <div class="sheet-backdrop" x-show="cloneOpen" @click.self="cloneOpen = false" x-cloak>
+    <div class="sheet">
+      <div class="sheet-handle"></div>
+      <h4 style="font-size:15px;margin-bottom:4px;">Clone menu from another branch</h4>
+      <p style="font-size:12px;color:var(--text-muted);margin-bottom:10px;">Copies categories, sub-categories, item placements and price overrides into this branch.</p>
+      <template x-for="b in branches" :key="b.slug">
+        <div class="libitem" @click="cloneFrom(b.slug)">
+          <div style="min-width:0;"><div class="nm" x-text="b.name"></div></div>
+          <span class="add-s">⧉</span>
+        </div>
+      </template>
+      <p x-show="branches.length === 0" style="color:var(--text-muted);font-size:12px;padding:8px;">No other branches to clone from.</p>
+    </div>
+  </div>
+
+  <!-- ===================== MANUAL (how-to) ===================== -->
+  <div class="sheet-backdrop" x-show="manualOpen" @click.self="manualOpen = false" x-cloak style="z-index:40;">
+    <div class="sheet manual-sheet">
+      <div class="sheet-handle"></div>
+      <div class="manual-head">
+        <span class="help-ic">?</span>
+        <h4 class="manual-title">How to build your menu</h4>
+        <span class="lib-close" @click="manualOpen = false">✕</span>
+      </div>
+      <p class="manual-sub">Five steps. The buttons shown here are the same ones you tap inside the list.</p>
+
+      <ol class="help-steps manual-steps">
+        <li>
+          <span class="n">1</span>
+          <div>
+            <b>Add a category</b>
+            <span>Tap this button at the bottom of the list — like Drinks or Brunch.</span>
+            <div class="demo"><span class="add cat-add"><span class="ic">＋</span> Add category to this branch</span></div>
+          </div>
+        </li>
+        <li>
+          <span class="n">2</span>
+          <div>
+            <b>Add items</b>
+            <span>Open a category, tap the blue button, pick dishes from the library, then confirm.</span>
+            <div class="demo">
+              <span class="add add-item"><span class="ic">＋</span> Add item</span>
+              <span class="btn btn-primary btn-sm">Add 3 selected</span>
+            </div>
+          </div>
+        </li>
+        <li>
+          <span class="n">3</span>
+          <div>
+            <b>Group them <small>(optional)</small></b>
+            <span>Sort items into groups inside a category — like Coffee or Tea.</span>
+            <div class="demo"><span class="add add-sub"><span class="ic">＋</span> Add sub-category</span></div>
+          </div>
+        </li>
+        <li>
+          <span class="n">4</span>
+          <div>
+            <b>Price &amp; order</b>
+            <span>Tap the price to set this branch’s price. Drag the handle to reorder.</span>
+            <div class="demo">
+              <span class="pr-badge">Rs 250</span>
+              <span class="grip">⠿</span>
+              <span class="demo-cap">drag to reorder</span>
+            </div>
+          </div>
+        </li>
+        <li>
+          <span class="n">5</span>
+          <div>
+            <b>Remove</b>
+            <span>Tap this on any item, group, or category to take it off this branch.</span>
+            <div class="demo"><span class="rm">✕</span><span class="demo-cap">remove</span></div>
+          </div>
+        </li>
+      </ol>
+
+      <div class="help-tip">
+        ⧉ <b>In a hurry?</b> Use <em>Clone from another branch</em> to copy a ready menu, then tweak it.
+        <div class="demo demo-tip"><span class="clone-btn">⧉ Clone from another branch…</span></div>
+      </div>
+
+      <button type="button" class="btn btn-primary btn-full" style="margin-top:14px;" @click="manualOpen = false">Got it</button>
+    </div>
+  </div>
+
+  <!-- ===================== PRICE OVERRIDE SHEET ===================== -->
+  <div class="sheet-backdrop" x-show="priceItem !== null" @click.self="closePrice()" x-cloak>
+    <div class="sheet">
+      <div class="sheet-handle"></div>
+      <div style="font-size:16px;font-weight:700;color:#111827;margin-bottom:2px;" x-text="priceItem && priceItem.name"></div>
+      <div style="font-size:12px;color:#9ca3af;margin-bottom:20px;" x-text="priceItem ? 'template price Rs ' + priceItem.template_price : ''"></div>
+      <label class="form-label">Branch price (Rs)</label>
+      <input type="number" inputmode="numeric" class="sheet-price-input" x-model="priceVal" placeholder="Enter price">
+      <button class="btn btn-primary btn-full" style="margin-bottom:10px;" @click="savePrice()"
+              x-text="priceVal ? 'Save Rs ' + priceVal : 'Save'"></button>
+      <button class="btn btn-ghost btn-full" @click="clearPrice()" x-show="priceItem && priceItem.override"
+              x-text="priceItem ? 'Clear override — use template (Rs ' + priceItem.template_price + ')' : ''"></button>
+    </div>
+  </div>
+
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+function branchBuilder() {
+  const read = (id) => { const el = document.getElementById(id); return el ? JSON.parse(el.textContent) : []; };
+  return {
+    composition: read('composition-data'),
+    library: read('library-data'),
+    catalog: read('catalog-data'),
+    branches: read('branches-data'),
+
+    open: {},            // bc_id -> bool (collapsed state)
+    drag: null,
+    manualOpen: false,   // "How to build your menu" modal (header ? or top button)
+
+    // add-item state
+    addTarget: null,     // { cat_id, slug, catName, sub_id, subName }
+    libQ: '',
+    selected: {},
+
+    catPickerOpen: false,
+    subPicker: null,     // category object being added to
+    cloneOpen: false,
+
+    priceItem: null,
+    priceVal: '',
+
+    init() {
+      // open the first category by default
+      if (this.composition.length) this.open[this.composition[0].bc_id] = true;
+    },
+
+    // ---- helpers ----
+    csrf() { return getCookie('csrftoken'); },
+    async post(path, body) {
+      const res = await fetch(path, {
+        method: 'POST',
+        headers: { 'X-CSRFToken': this.csrf(), 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: body || '',
+      });
+      return res;
+    },
+    // Re-fetch the composition tree and let Alpine re-render in place. Replaces
+    // location.reload() so actions don't flash the page or lose open/scroll state.
+    async refresh() {
+      const res = await fetch('composition/', { headers: { 'X-Requested-With': 'fetch' } });
+      if (res.ok) this.composition = await res.json();
+    },
+    thumbStyle(it) {
+      return it.image_url ? `background-image:url(${it.image_url});background-size:cover;background-position:center;` : '';
+    },
+    isOpen(bcId) { return !!this.open[bcId]; },
+    toggleCat(bcId) { this.open[bcId] = !this.open[bcId]; },
+    catCount(cat) {
+      const items = cat.direct.length + cat.groups.reduce((n, g) => n + g.items.length, 0);
+      const grp = cat.groups.length;
+      return `${grp} group${grp === 1 ? '' : 's'} · ${items} item${items === 1 ? '' : 's'}`;
+    },
+    allSubs() {
+      // flat list of all groups across categories, for sub reorder ordering
+      const out = [];
+      for (const c of this.composition) for (const g of c.groups) out.push(g);
+      return out;
+    },
+
+    // ---- drag reorder ----
+    dragStart(level, listId, list, idx, e) {
+      this.drag = { level, listId, list, idx };
+      if (e && e.dataTransfer) e.dataTransfer.effectAllowed = 'move';
+    },
+    dragDrop(listId, idx) {
+      if (!this.drag || this.drag.listId !== listId) { this.drag = null; return; }
+      const list = this.drag.list;
+      if (this.drag.idx === idx) { this.drag = null; return; }
+      const [moved] = list.splice(this.drag.idx, 1);
+      list.splice(idx, 0, moved);
+      const level = this.drag.level;
+      this.drag = null;
+      const key = { category: 'bc_id', subcategory: 'bsc_id', placement: 'pl_id' }[level];
+      const ids = list.map(x => x[key]).join(',');
+      this.post('reorder/', `level=${level}&ids=${encodeURIComponent(ids)}`);
+    },
+
+    // ---- add items ----
+    openAdd(cat, group) {
+      this.selected = {};
+      this.libQ = '';
+      this.addTarget = {
+        cat_id: cat.cat_id, slug: cat.slug, catName: cat.name,
+        sub_id: group ? group.sub_id : null, subName: group ? group.name : null,
+      };
+    },
+    closeAdd() { this.addTarget = null; this.selected = {}; },
+    addTargetLabel() {
+      if (!this.addTarget) return '';
+      return 'Adding to: ' + this.addTarget.catName + (this.addTarget.subName ? ' › ' + this.addTarget.subName : ' (ungrouped)');
+    },
+    filteredLibrary() {
+      const q = this.libQ.trim().toLowerCase();
+      return this.library.filter(it => !q || it.name.toLowerCase().includes(q));
+    },
+    placedItemIds() {
+      // item ids already placed in the current add target (cat + sub)
+      if (!this.addTarget) return new Set();
+      const cat = this.composition.find(c => c.cat_id === this.addTarget.cat_id);
+      if (!cat) return new Set();
+      const list = this.addTarget.sub_id == null
+        ? cat.direct
+        : (cat.groups.find(g => g.sub_id === this.addTarget.sub_id) || { items: [] }).items;
+      return new Set(list.map(p => p.item_id));
+    },
+    isPlaced(itemId) { return this.placedItemIds().has(itemId); },
+    toggleSelect(itemId) { this.selected[itemId] = !this.selected[itemId]; },
+    selectedCount() { return Object.values(this.selected).filter(Boolean).length; },
+    async addSelected() {
+      if (!this.addTarget || this.selectedCount() === 0) return;
+      const ids = Object.keys(this.selected).filter(k => this.selected[k]);
+      const params = new URLSearchParams();
+      ids.forEach(id => params.append('item_ids', id));
+      params.append('category_id', this.addTarget.cat_id);
+      if (this.addTarget.sub_id != null) params.append('sub_category_id', this.addTarget.sub_id);
+      const res = await this.post('placements/', params.toString());
+      if (res.ok) { this.closeAdd(); await this.refresh(); }
+    },
+
+    // ---- categories / sub-categories ----
+    availableCategories() {
+      const have = new Set(this.composition.map(c => c.cat_id));
+      return this.catalog.filter(c => !have.has(c.id));
+    },
+    async addCategory(catId) {
+      const res = await this.post('category/', `category_id=${catId}`);
+      if (res.ok) { this.catPickerOpen = false; await this.refresh(); }
+    },
+    async removeCategory(cat) {
+      if (!confirm(`Remove “${cat.name}” and all its items from this branch?`)) return;
+      const res = await this.post(`category/${cat.bc_id}/remove/`);
+      if (res.ok) await this.refresh();
+    },
+    openSubPicker(cat) { this.subPicker = cat; },
+    availableSubs() {
+      if (!this.subPicker) return [];
+      const cat = this.subPicker;
+      const catalogCat = this.catalog.find(c => c.id === cat.cat_id);
+      if (!catalogCat) return [];
+      const have = new Set(cat.groups.map(g => g.sub_id));
+      return catalogCat.subs.filter(s => !have.has(s.id));
+    },
+    async addSubcategory(subId) {
+      const res = await this.post('subcategory/', `sub_category_id=${subId}`);
+      if (res.ok) { this.subPicker = null; await this.refresh(); }
+    },
+    async removeSubcategory(cat, group) {
+      if (!confirm(`Remove sub-category “${group.name}” and its items from this branch?`)) return;
+      const res = await this.post(`subcategory/${group.bsc_id}/remove/`);
+      if (res.ok) await this.refresh();
+    },
+
+    // ---- placements ----
+    async removePlacement(it) {
+      const res = await this.post(`placement/${it.pl_id}/remove/`);
+      if (res.ok) await this.refresh();
+    },
+
+    // ---- clone ----
+    async cloneFrom(sourceSlug) {
+      const res = await this.post('clone/', `source=${encodeURIComponent(sourceSlug)}`);
+      if (res.ok) { this.cloneOpen = false; await this.refresh(); }
+    },
+
+    // ---- price override (shared per branch+item) ----
+    openPrice(it) {
+      this.priceItem = { ...it };
+      this.priceVal = it.override ? String(it.price) : '';
+    },
+    closePrice() { this.priceItem = null; this.priceVal = ''; },
+    async savePrice() {
+      if (!this.priceVal || Number(this.priceVal) <= 0) return;
+      const res = await this.post(`item/${this.priceItem.item_id}/price/`, `price=${encodeURIComponent(this.priceVal)}`);
+      if (res.ok) { this.closePrice(); await this.refresh(); }
+    },
+    async clearPrice() {
+      const res = await this.post(`item/${this.priceItem.item_id}/price/`, 'price=');
+      if (res.ok) { this.closePrice(); await this.refresh(); }
+    },
+  };
+}
+</script>
+{% endblock %}

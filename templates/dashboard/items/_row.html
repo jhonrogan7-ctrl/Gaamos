@@ -1,0 +1,15 @@
+{% load static %}
+<div class="item-row" data-name="{{ item.name|lower }}"
+     x-show="nq === '' || $el.dataset.name.includes(nq)">
+  {% if item.image_url %}
+    <img src="{{ item.image_url }}" class="item-thumb" alt="">
+  {% else %}
+    <div class="item-thumb" style="display:flex;align-items:center;justify-content:center;color:#9ca3af;font-size:10px;">No img</div>
+  {% endif %}
+  <div style="flex:1;min-width:0;">
+    <div class="item-name">{{ item.name }}</div>
+    <div class="item-price">Rs {{ item.price }}</div>
+    {% if item.dietary_tags %}<div class="item-tags">{{ item.dietary_tags|join:", " }}</div>{% endif %}
+  </div>
+  <a href="{% url 'dashboard:item_edit' item.pk %}" style="color:#6b7280;font-size:18px;text-decoration:none;padding:4px;">›</a>
+</div>

@@ -1,0 +1,101 @@
+{% extends "dashboard/base.html" %}
+{% block title %}{% if item %}Edit{% else %}Add{% endif %} Item{% endblock %}
+{% block page_title %}{% if item %}Edit Item{% else %}Add Item{% endif %}{% endblock %}
+{% block header_action %}
+  <a href="{% url 'dashboard:items_list' %}" style="color:rgba(255,255,255,.7);text-decoration:none;font-size:13px;">← Back</a>
+{% endblock %}
+
+{% block content %}
+<div x-data="itemEditForm({{ item.dietary_tags|default:'[]'|safe }}, {{ item.focal_x|default:50 }}, {{ item.focal_y|default:50 }})">
+  <form method="post" action="" enctype="multipart/form-data">
+    {% csrf_token %}
+    <!-- Image: file picker (takes priority) or URL -->
+    <div class="form-group">
+      <label class="form-label">Image</label>
+      {% if item.image_url %}
+        <!-- Focal-point picker: drag the dot to the part that must stay visible
+             when the photo is cropped square on the menu. -->
+        <div class="focal-pick" @pointerdown="focalPick($event)" @pointermove="focalDrag($event)"
+             @pointerup="focalDragging = false" @pointerleave="focalDragging = false">
+          <img src="{{ item.image_url }}" alt="" draggable="false">
+          <span class="focal-dot" :style="'left:'+focalX+'%;top:'+focalY+'%'"></span>
+        </div>
+        <div class="focal-hint">Drag the dot to the main subject (e.g. the dish or glass). It’s set automatically — adjust only if the crop looks off.</div>
+        <input type="hidden" name="focal_x" :value="focalX">
+        <input type="hidden" name="focal_y" :value="focalY">
+      {% endif %}
+      <input type="file" name="image_file" accept="image/jpeg,image/png,image/webp"
+             style="margin-bottom:6px;display:block;">
+      <div style="font-size:10px;color:var(--text-muted);margin-bottom:6px;">— or paste a URL —</div>
+      <input class="form-input" type="text" name="image_url" value="{{ item.image_url|default:'' }}" placeholder="https://…">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Name *</label>
+      <input class="form-input" type="text" name="name" value="{{ item.name|default:'' }}" required>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Price (Rs) *</label>
+      <input class="form-input" type="number" name="price" value="{{ item.price|default:'' }}" min="0" required>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Description</label>
+      <textarea class="form-textarea" name="description">{{ item.description|default:'' }}</textarea>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Dietary tags</label>
+      <div class="dietary-pills">
+        {% for tag in dietary_choices %}
+          <label class="pill" :class="{ active: activeTags.includes('{{ tag }}') }" @click.prevent="toggleTag('{{ tag }}')">
+            <input type="checkbox" name="dietary_tags" value="{{ tag }}" :checked="activeTags.includes('{{ tag }}')" style="display:none;">
+            {{ tag }}
+          </label>
+        {% endfor %}
+      </div>
+    </div>
+    <div class="form-group" style="display:flex;gap:16px;">
+      <label style="display:flex;align-items:center;gap:8px;font-size:13px;">
+        <input type="checkbox" name="is_popular" {% if item.is_popular %}checked{% endif %}> Popular
+      </label>
+      <label style="display:flex;align-items:center;gap:8px;font-size:13px;">
+        <input type="checkbox" name="is_featured" {% if item.is_featured %}checked{% endif %}> Featured
+      </label>
+    </div>
+    <button type="submit" class="btn btn-primary btn-full">Save changes</button>
+  </form>
+  {% if item %}
+  <div style="margin-top:10px;">
+    <form method="post" action="{% url 'dashboard:item_delete' item.pk %}" onsubmit="return confirm('Delete this item?')">
+      {% csrf_token %}
+      <button type="submit" class="btn btn-danger btn-full">Delete item</button>
+    </form>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+function itemEditForm(initialTags, focalX, focalY) {
+  return {
+    activeTags: initialTags || [],
+    toggleTag(tag) {
+      const idx = this.activeTags.indexOf(tag);
+      if (idx === -1) this.activeTags.push(tag);
+      else this.activeTags.splice(idx, 1);
+    },
+
+    // ── Focal-point picker ──
+    focalX: focalX ?? 50,
+    focalY: focalY ?? 50,
+    focalDragging: false,
+    _setFocal(e) {
+      const r = e.currentTarget.getBoundingClientRect();
+      this.focalX = Math.round(Math.max(0, Math.min(100, (e.clientX - r.left) / r.width * 100)));
+      this.focalY = Math.round(Math.max(0, Math.min(100, (e.clientY - r.top) / r.height * 100)));
+    },
+    focalPick(e) { this.focalDragging = true; this._setFocal(e); },
+    focalDrag(e) { if (this.focalDragging) this._setFocal(e); },
+  };
+}
+</script>
+{% endblock %}

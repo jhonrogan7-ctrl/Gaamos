@@ -9,6 +9,7 @@ urlpatterns = [
     path("admin/", admin.site.urls),
     path("healthz", core_views.healthz, name="healthz"),
     path("sw.js", core_views.service_worker, name="service_worker"),
+    path("dashboard/", include("menu.dashboard.urls")),
     path("", include("menu.urls")),
 ]
 

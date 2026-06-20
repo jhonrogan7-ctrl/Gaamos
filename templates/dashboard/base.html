@@ -1,0 +1,56 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}Dashboard{% endblock %} — QR Manu</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{% static 'css/dashboard.css' %}?v=6">
+  {% block extra_head %}{% endblock %}
+</head>
+<body>
+  {% block body %}
+  <header class="db-header">
+    <div class="db-header-row">
+      <div>
+        <div class="sub">QR Manu</div>
+        <h1>{% block page_title %}Dashboard{% endblock %}</h1>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px;">
+        {% block header_action %}{% endblock %}
+        <form method="post" action="{% url 'dashboard:logout' %}" style="display:inline;">
+          {% csrf_token %}
+          <button type="submit" style="background:none;border:none;color:rgba(255,255,255,.6);font-size:11px;cursor:pointer;padding:4px 8px;">Sign out</button>
+        </form>
+      </div>
+    </div>
+  </header>
+  <main class="db-page">
+    {% block content %}{% endblock %}
+  </main>
+  <nav class="db-nav">
+    <a href="{% url 'dashboard:home' %}" class="{% if active_tab == 'home' %}active{% endif %}">
+      <span class="icon">🏠</span><span>Home</span>
+    </a>
+    <a href="{% url 'dashboard:items_list' %}" class="{% if active_tab == 'items' %}active{% endif %}">
+      <span class="icon">🍽</span><span>Items</span>
+    </a>
+    <a href="{% url 'dashboard:categories' %}" class="{% if active_tab == 'categories' %}active{% endif %}">
+      <span class="icon">📂</span><span>Categories</span>
+    </a>
+    <a href="{% url 'dashboard:qr' %}" class="{% if active_tab == 'qr' %}active{% endif %}">
+      <span class="icon">📱</span><span>QR Codes</span>
+    </a>
+    <a href="{% url 'dashboard:settings' %}" class="{% if active_tab == 'settings' %}active{% endif %}">
+      <span class="icon">⚙️</span><span>Settings</span>
+    </a>
+  </nav>
+  {% endblock %}
+  <script src="//unpkg.com/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+  <script src="{% static 'js/icons.js' %}?v=1"></script>
+  <script src="{% static 'js/dashboard.js' %}"></script>
+  {% block extra_scripts %}{% endblock %}
+</body>
+</html>

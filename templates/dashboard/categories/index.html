@@ -1,0 +1,173 @@
+{% extends "dashboard/base.html" %}
+{% block title %}Categories{% endblock %}
+{% block page_title %}Categories{% endblock %}
+{% block header_action %}
+  <button class="btn btn-ghost btn-sm" onclick="window.dispatchEvent(new CustomEvent('open-add-cat'))">＋ Category</button>
+{% endblock %}
+
+{% block content %}
+<div x-data="catManager()" @open-add-cat.window="openAddCat()">
+
+{% for cd in cats_data %}
+  <div class="card" style="margin-bottom:8px;">
+    <div class="cat-row" :class="{ expanded: expanded.includes({{ cd.obj.pk }}) }"
+         @click="toggle({{ cd.obj.pk }})">
+      <span class="cat-icon" x-html="icon('{{ cd.obj.icon_key }}')"></span>
+      <div style="flex:1;">
+        <div class="cat-name">{{ cd.obj.name }}</div>
+        <div class="cat-meta">{{ cd.subs|length }} subcategor{{ cd.subs|length|pluralize:"y,ies" }}</div>
+      </div>
+      <span style="color:#6b7280;font-size:11px;cursor:pointer;padding:4px;"
+            @click.stop="openEditCat({{ cd.obj.pk }}, '{{ cd.obj.name|escapejs }}', '{{ cd.obj.icon_key|escapejs }}', '{{ cd.obj.hours_note|escapejs }}')">✏️</span>
+      <span style="cursor:pointer;color:#fca5a5;font-size:11px;padding:4px;"
+            @click.stop="deleteCat({{ cd.obj.pk }}, '{{ cd.obj.name|escapejs }}')">🗑</span>
+      <span x-text="expanded.includes({{ cd.obj.pk }}) ? '▲' : '▼'" style="color:#6b7280;font-weight:700;font-size:14px;padding:4px;"></span>
+    </div>
+    <div class="sub-list" x-show="expanded.includes({{ cd.obj.pk }})">
+      {% for sd in cd.subs %}
+        <div class="sub-row">
+          <span class="sub-icon-sm" x-html="icon('{{ sd.obj.icon_key }}')"></span>
+          <span class="sub-name" style="flex:1;">{{ sd.obj.name }}</span>
+          <span style="cursor:pointer;padding:2px;"
+                @click="openEditSub({{ sd.obj.pk }}, '{{ sd.obj.name|escapejs }}', '{{ sd.obj.icon_key|escapejs }}')">✏️</span>
+          <span style="cursor:pointer;color:#fca5a5;padding:2px;"
+                @click="deleteSub({{ sd.obj.pk }}, '{{ sd.obj.name|escapejs }}')">🗑</span>
+        </div>
+      {% endfor %}
+      <button class="sub-add-btn"
+              @click="openAddSub({{ cd.obj.pk }}, '{{ cd.obj.name|escapejs }}')">
+        <span>＋</span><span>Add subcategory to {{ cd.obj.name }}</span>
+      </button>
+    </div>
+  </div>
+{% endfor %}
+
+<!-- Category sheet -->
+<div class="sheet-backdrop" x-show="catSheet" x-cloak @click.self="catSheet=false">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <h3 style="font-size:15px;font-weight:700;margin-bottom:14px;" x-text="catSheetTitle"></h3>
+    <form method="post" :action="catFormAction">
+      {% csrf_token %}
+      <div class="form-group">
+        <label class="form-label">Name</label>
+        <input class="form-input" name="name" x-model="catName" required>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Icon</label>
+        <div class="icon-picker">
+          {% for ik in icon_choices %}
+            <span class="icon-option" :class="{ selected: catIcon === '{{ ik }}' }"
+                  @click="catIcon='{{ ik }}'" x-html="icon('{{ ik }}')"></span>
+          {% endfor %}
+        </div>
+        <input type="hidden" name="icon_key" :value="catIcon">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Hours note <span style="color:#9ca3af;">(optional)</span></label>
+        <input class="form-input" name="hours_note" x-model="catHours" placeholder="e.g. Available 8am–3pm">
+      </div>
+      <div style="display:flex;gap:8px;">
+        <button type="submit" class="btn btn-primary" style="flex:1;">Save</button>
+        <button type="button" class="btn btn-ghost" @click="catSheet=false">Cancel</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- SubCategory sheet -->
+<div class="sheet-backdrop" x-show="subSheet" x-cloak @click.self="subSheet=false">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <h3 style="font-size:15px;font-weight:700;margin-bottom:14px;" x-text="subSheetTitle"></h3>
+    <form method="post" :action="subFormAction">
+      {% csrf_token %}
+      <input type="hidden" name="category" :value="subCatId">
+      <div class="form-group">
+        <label class="form-label">Name</label>
+        <input class="form-input" name="name" x-model="subName" required>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Icon</label>
+        <div class="icon-picker">
+          {% for ik in icon_choices %}
+            <span class="icon-option" :class="{ selected: subIcon === '{{ ik }}' }"
+                  @click="subIcon='{{ ik }}'" x-html="icon('{{ ik }}')"></span>
+          {% endfor %}
+        </div>
+        <input type="hidden" name="icon_key" :value="subIcon">
+      </div>
+      <div style="display:flex;gap:8px;">
+        <button type="submit" class="btn btn-primary" style="flex:1;">Save</button>
+        <button type="button" class="btn btn-ghost" @click="subSheet=false">Cancel</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div x-show="deleteMsg" x-cloak
+     style="position:fixed;bottom:70px;left:50%;transform:translateX(-50%);background:#fee2e2;color:#991b1b;padding:10px 16px;border-radius:8px;font-size:13px;z-index:50;"
+     x-text="deleteMsg"></div>
+
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+function catManager() {
+  return {
+    expanded: [],
+    catSheet: false, catSheetTitle: '', catFormAction: '', catName: '', catIcon: 'brunch', catHours: '',
+    subSheet: false, subSheetTitle: '', subFormAction: '', subCatId: null, subName: '', subIcon: 'subAll',
+    deleteMsg: '',
+    icon(key) { return (typeof ICONS !== 'undefined' && ICONS[key]) ? ICONS[key] : key; },
+    toggle(id) {
+      const i = this.expanded.indexOf(id);
+      if (i >= 0) this.expanded.splice(i, 1); else this.expanded.push(id);
+    },
+    openAddCat() {
+      this.catSheetTitle = 'Add Category';
+      this.catFormAction = '/dashboard/categories/add/';
+      this.catName = ''; this.catIcon = 'brunch'; this.catHours = '';
+      this.catSheet = true;
+    },
+    openEditCat(pk, name, icon, hours) {
+      this.catSheetTitle = 'Edit Category';
+      this.catFormAction = `/dashboard/categories/${pk}/`;
+      this.catName = name; this.catIcon = icon || 'brunch'; this.catHours = hours;
+      this.catSheet = true;
+    },
+    openAddSub(catId, catName) {
+      this.subSheetTitle = `Add subcategory to ${catName}`;
+      this.subFormAction = '/dashboard/subcategories/add/';
+      this.subCatId = catId; this.subName = ''; this.subIcon = 'subAll';
+      this.subSheet = true;
+    },
+    openEditSub(pk, name, icon) {
+      this.subSheetTitle = 'Edit Sub-category';
+      this.subFormAction = `/dashboard/subcategories/${pk}/`;
+      this.subCatId = null; this.subName = name; this.subIcon = icon || 'subAll';
+      this.subSheet = true;
+    },
+    async deleteCat(pk, name) {
+      if (!confirm(`Delete "${name}" and all its subcategories?`)) return;
+      const res = await fetch(`/dashboard/categories/${pk}/delete/`, {
+        method: 'POST', headers: { 'X-CSRFToken': getCookie('csrftoken') },
+      });
+      const data = await res.json();
+      if (data.ok) { location.reload(); }
+      else { this.deleteMsg = data.error; setTimeout(() => this.deleteMsg = '', 4000); }
+    },
+    async deleteSub(pk, name) {
+      if (!confirm(`Delete "${name}"?`)) return;
+      const res = await fetch(`/dashboard/subcategories/${pk}/delete/`, {
+        method: 'POST', headers: { 'X-CSRFToken': getCookie('csrftoken') },
+      });
+      const data = await res.json();
+      if (data.ok) { location.reload(); }
+      else { this.deleteMsg = data.error; setTimeout(() => this.deleteMsg = '', 4000); }
+    }
+  };
+}
+</script>
+{% endblock %}

@@ -1,0 +1,102 @@
+{% extends "dashboard/base.html" %}
+{% load static %}
+{% block title %}Items{% endblock %}
+{% block page_title %}Menu Items{% endblock %}
+{% block header_action %}
+  <a href="{% url 'dashboard:item_add' %}" class="btn btn-ghost btn-sm">＋ Add</a>
+{% endblock %}
+
+{% block content %}
+<div x-data="{ q: '{{ search|escapejs }}', filtersOpen: {{ active_filter_count }} > 0,
+              get nq() { return this.q.trim().toLowerCase(); } }">
+
+  <div class="search-bar">
+    <span>🔍</span>
+    <input name="q" x-model="q" placeholder="Search items by name…" autocomplete="off" autofocus>
+    <button type="button" x-show="q.length" @click="q=''" aria-label="Clear search"
+            style="background:none;border:none;color:#9ca3af;font-size:16px;cursor:pointer;line-height:1;padding:0 2px;" x-cloak>✕</button>
+  </div>
+
+  <!-- Toolbar: sort (always visible) + filters toggle -->
+  <div class="toolbar">
+    <div class="sort-wrap">
+      <select class="sort-select"
+              @change="window.location.href = $event.target.selectedOptions[0].dataset.href">
+        {% for val, label in sort_options %}
+          <option data-href="{% querystring sort=val %}" {% if sort == val %}selected{% endif %}>{{ label }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <button type="button" class="filters-btn" :class="{ 'open': filtersOpen }" @click="filtersOpen = !filtersOpen">
+      <span class="fb-icon">⚙</span>
+      <span>Filters</span>
+      {% if active_filter_count %}<span class="filters-count">{{ active_filter_count }}</span>{% endif %}
+      <span class="fb-caret" :class="{ 'up': filtersOpen }">▾</span>
+    </button>
+  </div>
+
+  <!-- Collapsible filter panel -->
+  <div class="filter-panel" x-show="filtersOpen" x-cloak
+       x-transition:enter="fp-enter" x-transition:enter-start="fp-enter-start" x-transition:enter-end="fp-enter-end">
+
+    {% if diet_options %}
+    <div class="filter-group">
+      <span class="filter-label">Diet</span>
+      <div class="filter-pills">
+        <a href="{% querystring diet=None %}" class="filter-pill {% if not diet_filter %}active{% endif %}">All</a>
+        {% for d in diet_options %}
+          <a href="{% querystring diet=d %}" class="filter-pill {% if diet_filter == d %}active{% endif %}">{{ d }}</a>
+        {% endfor %}
+      </div>
+    </div>
+    {% endif %}
+
+    <div class="filter-group">
+      <span class="filter-label">Flag</span>
+      <div class="filter-pills">
+        <a href="{% querystring flag=None %}" class="filter-pill {% if not flag_filter %}active{% endif %}">All</a>
+        <a href="{% querystring flag='popular' %}" class="filter-pill {% if flag_filter == 'popular' %}active{% endif %}">Popular</a>
+        <a href="{% querystring flag='featured' %}" class="filter-pill {% if flag_filter == 'featured' %}active{% endif %}">Featured</a>
+      </div>
+    </div>
+
+    <form method="get" class="filter-group price-group">
+      <span class="filter-label">Price range (Rs)</span>
+      <input type="hidden" name="q" value="{{ search }}">
+      <input type="hidden" name="sort" value="{{ sort }}">
+      <input type="hidden" name="diet" value="{{ diet_filter }}">
+      <input type="hidden" name="flag" value="{{ flag_filter }}">
+      <div class="price-inputs">
+        <input type="number" name="price_min" value="{{ price_min_raw }}" placeholder="min" min="0" class="price-input">
+        <span class="price-dash">–</span>
+        <input type="number" name="price_max" value="{{ price_max_raw }}" placeholder="max" min="0" class="price-input">
+        <button type="submit" class="btn btn-primary btn-sm">Apply</button>
+      </div>
+    </form>
+
+    {% if active_filter_count %}
+    <div class="filter-panel-foot">
+      <a href="{% url 'dashboard:items_list' %}" class="clear-all">✕ Clear all filters</a>
+    </div>
+    {% endif %}
+  </div>
+
+  <div class="results-bar">
+    <span class="result-count"><strong>{{ result_count }}</strong> item{{ result_count|pluralize }}</span>
+    <span class="result-mode">{% for v,l in sort_options %}{% if v == sort %}{{ l }}{% endif %}{% endfor %}</span>
+  </div>
+
+  {% if items %}
+    <div class="card">
+      {% for item in items %}{% include "dashboard/items/_row.html" %}{% endfor %}
+    </div>
+  {% else %}
+    <p style="color:var(--text-muted);text-align:center;margin-top:32px;">No items found.</p>
+  {% endif %}
+
+  <p x-show="nq !== '' && ![...$root.querySelectorAll('.item-row')].some(r => r.dataset.name.includes(nq))"
+     x-cloak style="color:var(--text-muted);text-align:center;margin-top:32px;">
+    No items match “<span x-text="q"></span>”.
+  </p>
+</div>
+{% endblock %}
