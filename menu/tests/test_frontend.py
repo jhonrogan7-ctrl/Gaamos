@@ -88,3 +88,14 @@ class QrSkinTest(DashboardShellTest):
         self.assertEqual(r.status_code, 200)
         self.assertContains(r, 'class="qgrid"')
         self.assertContains(r, 'Lake Center')
+
+
+class SettingsSkinTest(DashboardShellTest):
+    def test_settings_sections(self):
+        self.login_as(self.owner)
+        r = self.client.get('/dashboard/settings/')
+        self.assertEqual(r.status_code, 200)
+        self.assertContains(r, 'class="set-grid"')
+        self.assertContains(r, 'Guest menu theme')
+        self.assertContains(r, 'data-theme-stub')   # picker marked non-functional
+        self.assertContains(r, self.company.name)

@@ -3,123 +3,217 @@
 {% block page_title %}Settings{% endblock %}
 
 {% block content %}
-<div class="section-label">Restaurant</div>
-<div class="card" style="margin-bottom:10px;">
-  <form method="post" action="{% url 'dashboard:settings_restaurant' %}">
-    {% csrf_token %}
-    <div style="padding:12px;">
-      <div class="form-group">
-        <label class="form-label">Name</label>
-        <input class="form-input" name="name" value="{{ restaurant.name|default:'' }}" required>
-      </div>
-      <div class="form-group">
-        <label class="form-label">Tagline</label>
-        <input class="form-input" name="tagline" value="{{ restaurant.tagline|default:'' }}">
-      </div>
-      <div class="form-group">
-        <label class="form-label">Phone</label>
-        <input class="form-input" name="phone" value="{{ restaurant.phone|default:'' }}">
-      </div>
-      <div class="form-group">
-        <label class="form-label">Email</label>
-        <input class="form-input" type="email" name="email" value="{{ restaurant.email|default:'' }}">
-      </div>
-      <div class="form-group">
-        <label class="form-label">Instagram</label>
-        <input class="form-input" name="instagram" value="{{ restaurant.instagram|default:'' }}" placeholder="@handle">
-      </div>
-      <div class="form-group">
-        <label class="form-label">Facebook</label>
-        <input class="form-input" name="facebook" value="{{ restaurant.facebook|default:'' }}">
-      </div>
-      <div class="form-group">
-        <label class="form-label">TikTok</label>
-        <input class="form-input" name="tiktok" value="{{ restaurant.tiktok|default:'' }}" placeholder="@handle">
-      </div>
-      <button type="submit" class="btn btn-primary btn-full">Save restaurant info</button>
-    </div>
-  </form>
-</div>
+<div class="set-grid">
+  <nav class="set-nav">
+    <a href="#venue-profile" class="on">Venue profile</a>
+    <a href="#guest-theme">Guest menu theme</a>
+    <a href="#web-address">Web address</a>
+    <a href="#languages">Languages</a>
+    <a href="#members">Members</a>
+    <a href="#branches">Branches</a>
+    <a href="#plan-billing">Plan &amp; billing</a>
+  </nav>
 
-<div class="section-label">Branches</div>
-<div class="card" style="margin-bottom:10px;" x-data="branchManager()">
-  {% for branch in branches %}
-    <div class="settings-row">
-      <div>
-        <div style="font-weight:600;font-size:12px;">{{ branch.name }}</div>
-        <div style="font-size:10px;color:var(--text-muted);">{{ branch.address }}</div>
-      </div>
-      <button class="btn btn-ghost btn-sm"
-              @click="openEdit({{ branch.pk }}, '{{ branch.name|escapejs }}', '{{ branch.address|escapejs }}', '{{ branch.tag }}')">
-        Edit ›
-      </button>
-    </div>
-  {% endfor %}
-  <div class="settings-row" @click="openAdd()" style="cursor:pointer;color:var(--text-muted);">
-    <span>＋ Add branch</span>
-  </div>
-  <div class="sheet-backdrop" x-show="show" x-cloak @click.self="show=false">
-    <div class="sheet">
-      <div class="sheet-handle"></div>
-      <h3 style="font-size:15px;font-weight:700;margin-bottom:14px;" x-text="title"></h3>
-      <form method="post" :action="formAction">
-        {% csrf_token %}
-        <div class="form-group"><label class="form-label">Name</label>
-          <input class="form-input" name="name" x-model="bName" required></div>
-        <div class="form-group"><label class="form-label">Address</label>
-          <input class="form-input" name="address" x-model="bAddr"></div>
-        <div class="form-group"><label class="form-label">Tag</label>
-          <select class="form-select" name="tag" x-model="bTag">
-            <option value="">Standard</option>
-            <option value="FLAGSHIP">Flagship</option>
-            <option value="NEW">New</option>
-          </select></div>
-        <button type="submit" class="btn btn-primary btn-full">Save</button>
-      </form>
-    </div>
-  </div>
-</div>
+  <div>
 
-<div class="section-label">Members</div>
-<div class="card" x-data="memberManager()">
-  {% for m in members %}
-    <div class="row" style="display:flex;justify-content:space-between;align-items:center;padding:6px 0">
-      <div>
-        <div style="font-weight:600;font-size:12px;">{{ m.user.username }} <span style="color:var(--text-muted)">· {{ m.get_role_display }}</span></div>
-        <div style="font-size:10px;color:var(--text-muted);">{{ m.user.email }}{% if not m.is_owner %} · {% for b in m.branches.all %}{{ b.name }}{% if not forloop.last %}, {% endif %}{% empty %}no branch{% endfor %}{% endif %}</div>
-      </div>
-      <div style="display:flex;gap:6px">
-        <button class="btn btn-small" @click="openEdit({{ m.pk }}, '{{ m.user.username|escapejs }}', '{{ m.role }}', [{% for b in m.branches.all %}'{{ b.pk }}'{% if not forloop.last %},{% endif %}{% endfor %}])">Edit</button>
-        <form method="post" action="{% url 'dashboard:member_delete' m.pk %}" @submit.prevent="del($el)"><button class="btn btn-small btn-danger" type="submit">Remove</button></form>
+    <!-- ── Venue profile ── -->
+    <div class="panel fcard" id="venue-profile">
+      <div class="ph"><h3>Venue profile</h3></div>
+      <div class="pb">
+        <form method="post" action="{% url 'dashboard:settings_restaurant' %}">
+          {% csrf_token %}
+          <div class="fld"><label>Venue name</label><input class="inp" name="name" value="{{ restaurant.name|default:'' }}" required></div>
+          <div class="fld"><label>Tagline</label><input class="inp" name="tagline" value="{{ restaurant.tagline|default:'' }}"></div>
+          <div class="frow">
+            <div class="fld"><label>Contact phone</label><input class="inp" name="phone" value="{{ restaurant.phone|default:'' }}"></div>
+            <div class="fld"><label>Email</label><input class="inp" type="email" name="email" value="{{ restaurant.email|default:'' }}"></div>
+          </div>
+          <div class="frow">
+            <div class="fld"><label>Instagram</label><input class="inp" name="instagram" value="{{ restaurant.instagram|default:'' }}" placeholder="@handle"></div>
+            <div class="fld"><label>Facebook</label><input class="inp" name="facebook" value="{{ restaurant.facebook|default:'' }}"></div>
+          </div>
+          <div class="fld"><label>TikTok</label><input class="inp" name="tiktok" value="{{ restaurant.tiktok|default:'' }}" placeholder="@handle"></div>
+          <div style="margin-top:16px">
+            <button type="submit" class="btn">Save restaurant info</button>
+          </div>
+        </form>
       </div>
     </div>
-  {% endfor %}
-  <button class="btn btn-secondary btn-full" @click="openAdd()"><span>＋ Add member</span></button>
 
-  <div class="sheet-backdrop" x-show="show" x-cloak @click.self="show=false">
-    <div class="sheet">
-      <div class="sheet-handle"></div>
-      <h3 style="font-size:15px;font-weight:700;margin-bottom:14px;">Member</h3>
-      <form method="post" :action="formAction">
-        {% csrf_token %}
-        <div class="form-group"><label class="form-label">Username</label>
-          <input class="form-input" name="username" x-model="aUser" :readonly="pkEditing!==null" required></div>
-        <div class="form-group"><label class="form-label">Email</label>
-          <input class="form-input" name="email" x-model="aEmail"></div>
-        <div class="form-group"><label class="form-label">Password (set/reset)</label>
-          <input class="form-input" name="password" type="password"></div>
-        <div class="form-group"><label class="form-label">Role</label>
-          <select class="form-select" name="role" x-model="aRole">
-            <option value="manager">Manager</option>
-            <option value="owner">Owner</option>
-          </select></div>
-        <div class="form-group" x-show="aRole==='manager'"><label class="form-label">Branches</label>
-          <select class="form-select" name="branches" multiple x-model="aBranches">
-            {% for b in branches %}<option value="{{ b.pk }}">{{ b.name }}</option>{% endfor %}
-          </select></div>
-        <button type="submit" class="btn btn-primary btn-full">Save member</button>
-      </form>
+    <!-- ── Guest menu theme (visual stub — Phase 4) ── -->
+    <div class="panel fcard" id="guest-theme">
+      <div class="ph"><h3>Guest menu theme</h3><div class="sp"></div><span class="mini">Applies to the guest-facing menu only</span></div>
+      <div class="pb">
+        <div class="themes" data-theme-stub>
+          <div class="theme on" data-theme="saffron">
+            <div class="swatch"><span style="background:#ff9f1c"></span><span style="background:#e23744"></span><span style="background:#fff6e9"></span></div>
+            <div class="tn">Saffron Festival<span class="ck"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="4"><path d="M20 6 9 17l-5-5"/></svg></span></div>
+            <div class="td">Warm · festive · earthy</div>
+          </div>
+          <div class="theme" data-theme="berry">
+            <div class="swatch"><span style="background:#ec4899"></span><span style="background:#7c3aed"></span><span style="background:#f6f4ff"></span></div>
+            <div class="tn">Electric Berry<span class="ck"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="4"><path d="M20 6 9 17l-5-5"/></svg></span></div>
+            <div class="td">Bold · modern · vibrant</div>
+          </div>
+          <div class="theme" data-theme="juice">
+            <div class="swatch"><span style="background:#06b6d4"></span><span style="background:#ff3d71"></span><span style="background:#ffffff"></span></div>
+            <div class="tn">Tropical Juice<span class="ck"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="4"><path d="M20 6 9 17l-5-5"/></svg></span></div>
+            <div class="td">Fresh · cool · breezy</div>
+          </div>
+        </div>
+        <div class="fld help" style="margin-top:12px">Theme selection ships with branding (Phase 4). The Gaamos dashboard always stays on the fixed Saffron house brand — only your guests see the theme above.</div>
+      </div>
     </div>
+
+    <!-- ── Web address (display only — Phase 5) ── -->
+    <div class="panel fcard" id="web-address">
+      <div class="ph"><h3>Web address</h3></div>
+      <div class="pb">
+        <div class="fld">
+          <label>Subdomain (included)</label>
+          <div class="pre"><input class="inp" value="{{ restaurant.slug }}" readonly><span class="suf">.gaamos.com</span></div>
+          <div class="help">Live now · used by every QR code.</div>
+        </div>
+        <div class="fld">
+          <label>Custom domain (paid add-on)</label>
+          <div class="pre"><input class="inp" placeholder="menu.yourrestaurant.com.np" disabled><span class="suf">Connect</span></div>
+          <div class="help">On-demand TLS is issued automatically once DNS points here. Available in Phase 5.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Languages (visual stub) ── -->
+    <div class="panel fcard" id="languages">
+      <div class="ph"><h3>Languages</h3></div>
+      <div class="pb">
+        <div class="trow"><div><div class="tt">English</div><div class="tsub">Default menu language</div></div><div class="sp"></div><div class="toggle on"></div></div>
+        <div class="trow"><div><div class="tt">नेपाली · Nepali</div><div class="tsub">Guests get an NP / EN toggle on the menu</div></div><div class="sp"></div><div class="toggle"></div></div>
+        <div class="trow"><div><div class="tt">Show prices with "Rs"</div><div class="tsub">Integer NPR, no decimals</div></div><div class="sp"></div><div class="toggle on"></div></div>
+      </div>
+    </div>
+
+    <!-- ── Members ── -->
+    <div class="panel fcard" id="members" x-data="memberManager()">
+      <div class="ph">
+        <h3>Members</h3><div class="sp"></div>
+        <button class="btn ghost" @click="openAdd()">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
+          Add member
+        </button>
+      </div>
+      <div class="pb" style="padding-top:0">
+        {% for m in members %}
+          <div class="trow">
+            <div>
+              <div class="tt">{{ m.user.username }} <span style="color:var(--ink-3);font-weight:400">· {{ m.get_role_display }}</span></div>
+              <div class="tsub">{{ m.user.email }}{% if not m.is_owner %} · {% for b in m.branches.all %}{{ b.name }}{% if not forloop.last %}, {% endif %}{% empty %}no branch{% endfor %}{% endif %}</div>
+            </div>
+            <div class="sp"></div>
+            <div style="display:flex;gap:6px;align-items:center">
+              <button class="btn ghost" @click="openEdit({{ m.pk }}, '{{ m.user.username|escapejs }}', '{{ m.role }}', [{% for b in m.branches.all %}'{{ b.pk }}'{% if not forloop.last %},{% endif %}{% endfor %}])">Edit</button>
+              <form method="post" action="{% url 'dashboard:member_delete' m.pk %}" @submit.prevent="del($el)">
+                {% csrf_token %}
+                <button class="btn ghost" type="submit" style="color:var(--danger,#e23744)">Remove</button>
+              </form>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+
+      <div class="sheet-backdrop" x-show="show" x-cloak @click.self="show=false">
+        <div class="sheet">
+          <div class="sheet-handle"></div>
+          <h3 style="font-size:15px;font-weight:700;margin-bottom:14px;">Member</h3>
+          <form method="post" :action="formAction">
+            {% csrf_token %}
+            <div class="fld"><label>Username</label>
+              <input class="inp" name="username" x-model="aUser" :readonly="pkEditing!==null" required></div>
+            <div class="fld"><label>Email</label>
+              <input class="inp" name="email" x-model="aEmail"></div>
+            <div class="fld"><label>Password (set/reset)</label>
+              <input class="inp" name="password" type="password"></div>
+            <div class="fld"><label>Role</label>
+              <select class="inp" name="role" x-model="aRole">
+                <option value="manager">Manager</option>
+                <option value="owner">Owner</option>
+              </select></div>
+            <div class="fld" x-show="aRole==='manager'"><label>Branches</label>
+              <select class="inp" name="branches" multiple x-model="aBranches">
+                {% for b in branches %}<option value="{{ b.pk }}">{{ b.name }}</option>{% endfor %}
+              </select></div>
+            <div style="margin-top:16px">
+              <button type="submit" class="btn">Save member</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Branches ── -->
+    <div class="panel fcard" id="branches" x-data="branchManager()">
+      <div class="ph">
+        <h3>Branches</h3><div class="sp"></div>
+        <button class="btn ghost" @click="openAdd()">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
+          Add branch
+        </button>
+      </div>
+      <div class="pb" style="padding-top:0">
+        {% for branch in branches %}
+          <div class="trow">
+            <div>
+              <div class="tt">{{ branch.name }}</div>
+              <div class="tsub">{{ branch.address }}</div>
+            </div>
+            <div class="sp"></div>
+            <button class="btn ghost"
+                    @click="openEdit({{ branch.pk }}, '{{ branch.name|escapejs }}', '{{ branch.address|escapejs }}', '{{ branch.tag }}')">
+              Edit
+            </button>
+          </div>
+        {% endfor %}
+      </div>
+
+      <div class="sheet-backdrop" x-show="show" x-cloak @click.self="show=false">
+        <div class="sheet">
+          <div class="sheet-handle"></div>
+          <h3 style="font-size:15px;font-weight:700;margin-bottom:14px;" x-text="title"></h3>
+          <form method="post" :action="formAction">
+            {% csrf_token %}
+            <div class="fld"><label>Name</label>
+              <input class="inp" name="name" x-model="bName" required></div>
+            <div class="fld"><label>Address</label>
+              <input class="inp" name="address" x-model="bAddr"></div>
+            <div class="fld"><label>Tag</label>
+              <select class="inp" name="tag" x-model="bTag">
+                <option value="">Standard</option>
+                <option value="FLAGSHIP">Flagship</option>
+                <option value="NEW">New</option>
+              </select></div>
+            <div style="margin-top:16px">
+              <button type="submit" class="btn">Save</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Plan & billing (static — Phase 5) ── -->
+    <div class="panel fcard" id="plan-billing">
+      <div class="ph"><h3>Plan &amp; billing</h3></div>
+      <div class="pb">
+        <div class="planbox">
+          <div>
+            <div class="pn">Starter plan</div>
+            <div class="pd">Unlimited branches · Rs 0 / mo during beta</div>
+          </div>
+          <div class="sp" style="flex:1"></div>
+          <button class="btn ghost" disabled>Change plan</button>
+        </div>
+        <div class="fld help" style="margin-top:12px">Billed in NPR via eSewa. Billing ships with Phase 5.</div>
+      </div>
+    </div>
+
   </div>
 </div>
 {% endblock %}
