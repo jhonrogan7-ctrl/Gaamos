@@ -15,15 +15,12 @@ class RateLimitMiddleware:
         self.get_response = get_response
 
     def __call__(self, request):
-        limit = getattr(settings, 'GUEST_RATE_LIMIT', 60)
+        limit = getattr(settings, 'GUEST_RATE_LIMIT', 120)
         window = getattr(settings, 'GUEST_RATE_WINDOW', 60)
         ip = request.META.get('REMOTE_ADDR', '') or 'unknown'
         key = f'guest-rl:{ip}'
-        count = cache.get(key, 0) + 1
-        if count == 1:
-            cache.set(key, count, window)
-        else:
-            cache.incr(key)
+        cache.add(key, 0, window)   # atomic: set to 0 with TTL only if absent
+        count = cache.incr(key)     # atomic increment; returns new stored value
         if count > limit:
             return HttpResponse('Too Many Requests', status=429)
         return self.get_response(request)

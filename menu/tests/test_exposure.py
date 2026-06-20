@@ -23,7 +23,8 @@ class RateLimitTest(TestCase):
         self.assertEqual(statuses[0], 200)
 
     def test_separate_ips_independent(self):
-        for _ in range(6):
-            self.mw(self.rf.get('/', REMOTE_ADDR='9.9.9.9'))
+        statuses = [self.mw(self.rf.get('/', REMOTE_ADDR='9.9.9.9')).status_code
+                    for _ in range(6)]
+        self.assertEqual(statuses[-1], 429)  # 9.9.9.9 is now throttled
         resp = self.mw(self.rf.get('/', REMOTE_ADDR='5.5.5.5'))
-        self.assertEqual(resp.status_code, 200)
+        self.assertEqual(resp.status_code, 200)  # different IP unaffected
