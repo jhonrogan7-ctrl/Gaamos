@@ -9,7 +9,7 @@ services:
     depends_on:
       db:
         condition: service_healthy
-    command: python manage.py runserver 0.0.0.0:8000
+    command: sh -c "bash bin/build-css.sh build && python manage.py runserver 0.0.0.0:8000"
 
   db:
     image: postgres:16
