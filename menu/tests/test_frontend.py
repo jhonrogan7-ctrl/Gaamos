@@ -1,6 +1,8 @@
 from pathlib import Path
 from django.conf import settings
 from django.test import SimpleTestCase
+from django.contrib.auth import get_user_model
+from menu.tests.base import TenantTestCase
 
 
 class CssBuildTest(SimpleTestCase):
@@ -20,3 +22,21 @@ class CssComponentsTest(SimpleTestCase):
         css = self._css()
         for sel in ['.btn', '.panel', '.side', '.nav', '.tbl', '.stat', '.focal']:
             self.assertIn(sel, css, f'missing component class {sel}')
+
+
+class DashboardShellTest(TenantTestCase):
+    def setUp(self):
+        super().setUp()
+        U = get_user_model()
+        self.owner = U.objects.create_user('boss', password='pass')
+        self.make_owner(self.owner)
+
+    def test_shell_rebranded_and_sidebar(self):
+        self.login_as(self.owner)
+        r = self.client.get('/dashboard/')
+        self.assertEqual(r.status_code, 200)
+        body = r.content.decode()
+        self.assertIn('Gaamos', body)
+        self.assertNotIn('QR Manu', body)
+        self.assertIn('class="side"', body)     # sidebar present
+        self.assertNotIn('🏠', body)            # no emoji nav
