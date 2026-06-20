@@ -1,0 +1,32 @@
+{% extends 'dashboard/base.html' %}
+
+{% block page_title %}Orders{% endblock %}
+{% block subtitle %}Live order queue · Sample data{% endblock %}
+
+{% block content %}
+<div class="sec-h">
+  <div class="filters">
+    <span class="fchip on">All · 12</span>
+    <span class="fchip">New · 4</span>
+    <span class="fchip">Preparing · 5</span>
+    <span class="fchip">Served · 3</span>
+  </div>
+  <div class="sp"></div>
+  <span class="mini">Live · auto-refreshing · Lake Center</span>
+</div>
+<div class="panel">
+  <table class="tbl">
+    <thead>
+      <tr><th>Order</th><th>Table</th><th>Items</th><th>Total</th><th>Placed</th><th>Status</th><th></th></tr>
+    </thead>
+    <tbody>
+      <tr><td class="ono">#JC-2847</td><td><span class="tablechip">Table 7</span></td><td>Sea-Buckthorn (L), Sunrise Smoothie, Cold-Pressed Greens</td><td class="ono">Rs 1,071</td><td>just now</td><td><span class="status new">New</span></td><td><span class="lnk">Accept</span></td></tr>
+      <tr><td class="ono">#JC-2846</td><td><span class="tablechip">Table 2</span></td><td>Turmeric Latte, Avocado Toast</td><td class="ono">Rs 540</td><td>2 min</td><td><span class="status prep">Preparing</span></td><td><span class="lnk">Mark served</span></td></tr>
+      <tr><td class="ono">#JC-2845</td><td><span class="tablechip">Table 9</span></td><td>Buff Momo (10pc), Beetroot Spice Tonic</td><td class="ono">Rs 760</td><td>4 min</td><td><span class="status prep">Preparing</span></td><td><span class="lnk">Mark served</span></td></tr>
+      <tr><td class="ono">#JC-2844</td><td><span class="tablechip">Table 11</span></td><td>5 items · large party</td><td class="ono">Rs 2,180</td><td>6 min</td><td><span class="status done">Served</span></td><td><span class="lnk">Receipt</span></td></tr>
+      <tr><td class="ono">#JC-2843</td><td><span class="tablechip">Table 4</span></td><td>Cold-Pressed Greens</td><td class="ono">Rs 320</td><td>9 min</td><td><span class="status done">Served</span></td><td><span class="lnk">Receipt</span></td></tr>
+      <tr><td class="ono">#JC-2842</td><td><span class="tablechip">Takeaway</span></td><td>Himalayan Sea-Buckthorn (L) + Chia</td><td class="ono">Rs 450</td><td>11 min</td><td><span class="status new">New</span></td><td><span class="lnk">Accept</span></td></tr>
+    </tbody>
+  </table>
+</div>
+{% endblock %}

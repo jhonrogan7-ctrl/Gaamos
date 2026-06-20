@@ -37,7 +37,7 @@
     <div class="fi"><div class="fic" style="background:var(--amber-soft);color:var(--amber)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg></div><div><div class="ft">Table 2 · 2 items</div><div class="fm">Turmeric Latte, Avocado…</div></div><div class="fr">Rs 540<small>2 min</small></div></div>
     <div class="fi"><div class="fic" style="background:var(--green-soft);color:var(--green)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg></div><div><div class="ft">Table 11 · 5 items</div><div class="fm">Served</div></div><div class="fr">Rs 2,180<small>6 min</small></div></div>
     <div class="fi"><div class="fic" style="background:var(--green-soft);color:var(--green)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg></div><div><div class="ft">Table 4 · 1 item</div><div class="fm">Served</div></div><div class="fr">Rs 320<small>9 min</small></div></div>
-    <div style="padding:12px 16px"><span class="lnk">View all orders →</span></div>
+    <div style="padding:12px 16px"><a class="lnk" href="{% url 'dashboard:orders' %}">View all orders →</a></div>
   </div>
 </div>
 {% endblock %}

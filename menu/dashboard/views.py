@@ -73,6 +73,11 @@ def overview(request):
 
 
 @require_membership
+def orders(request):
+    return render(request, 'dashboard/orders.html', {'active_tab': 'orders'})
+
+
+@require_membership
 def home(request):
     restaurant = request.company
     total_count = MenuItem.objects.count()

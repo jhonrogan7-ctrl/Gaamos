@@ -50,3 +50,13 @@ class OverviewStubTest(DashboardShellTest):
         body = r.content.decode()
         self.assertIn('class="stat"', body)
         self.assertIn('Sample data', body)   # explicit sample marker
+
+
+class OrdersStubTest(DashboardShellTest):
+    def test_orders_renders_sample(self):
+        self.login_as(self.owner)
+        r = self.client.get('/dashboard/orders/')
+        self.assertEqual(r.status_code, 200)
+        body = r.content.decode()
+        self.assertIn('class="tbl"', body)
+        self.assertIn('Sample data', body)
