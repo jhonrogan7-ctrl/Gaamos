@@ -3,7 +3,7 @@ from django.db import IntegrityError, transaction
 from django.test import RequestFactory
 
 from menu.middleware import MembershipMiddleware
-from menu.models import Branch, Company, Membership
+from menu.models import Branch, Category, Company, Membership, MenuItem
 from menu.permissions import can_manage_branch, ensure_can_manage_branch
 from menu.tests.base import TenantTestCase
 
@@ -154,6 +154,18 @@ class BranchScopeHttpTest(TenantTestCase):
         self.client.logout(); self.login_as(owner_user)
         self.assertEqual(self.client.get('/dashboard/branch/b/').status_code, 200)
 
+    def test_manager_post_branch_category_add_unassigned_is_403(self):
+        """Manager scoped to branch 'a' must get 403 POSTing category-add to branch 'b'."""
+        cat = Category.objects.create(name='Drinks', slug='drinks', display_order=1)
+        resp = self.client.post('/dashboard/branch/b/category/', {'category_id': cat.pk})
+        self.assertEqual(resp.status_code, 403)
+
+    def test_manager_post_branch_item_price_unassigned_is_403(self):
+        """Manager scoped to branch 'a' must get 403 POSTing item price update to branch 'b'."""
+        item = MenuItem.objects.create(name='Mango', slug='mango', price=380)
+        resp = self.client.post(f'/dashboard/branch/b/item/{item.pk}/price/', {'price': '300'})
+        self.assertEqual(resp.status_code, 403)
+
 
 class HomeAggregationTest(TenantTestCase):
     def setUp(self):
@@ -168,7 +180,7 @@ class HomeAggregationTest(TenantTestCase):
         resp = self.client.get('/dashboard/')
         # home view stores branch under key 'obj' in branches_data dicts
         slugs = [d['obj'].slug for d in resp.context['branches_data']]
-        self.assertEqual(slugs, ['a'])
+        self.assertEqual(set(slugs), {'a'})
 
 
 class LoginGateTest(TenantTestCase):

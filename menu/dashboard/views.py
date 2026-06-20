@@ -3,7 +3,6 @@ import os
 
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import authenticate, login, logout
-from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 from django.views.decorators.http import require_POST
 from django.conf import settings as django_settings
@@ -327,6 +326,7 @@ def subcategory_delete(request, pk):
 
 @require_membership
 def qr_index(request):
+    # TenantManager scopes this to request.company automatically
     branches = Branch.objects.all()
     return render(request, 'dashboard/qr/index.html', {
         'active_tab': 'qr',
