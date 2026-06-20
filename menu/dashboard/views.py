@@ -276,7 +276,7 @@ def category_save(request, pk=None):
     return redirect('dashboard:categories')
 
 
-@login_required
+@require_owner
 @require_POST
 def category_delete(request, pk):
     cat = get_object_or_404(Category, pk=pk)

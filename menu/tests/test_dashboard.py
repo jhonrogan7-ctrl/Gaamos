@@ -295,3 +295,8 @@ class ManagerRestrictionsTest(TenantTestCase):
 
     def test_manager_can_load_home(self):
         self.assertEqual(self.client.get('/dashboard/').status_code, 200)
+
+    def test_manager_blocked_from_category_delete(self):
+        cat = Category.objects.create(name='X', slug='x', display_order=1)
+        resp = self.client.post(f'/dashboard/categories/{cat.pk}/delete/')
+        self.assertEqual(resp.status_code, 403)
