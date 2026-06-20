@@ -13,6 +13,9 @@ from menu.models import (
     Company, Branch, Category, SubCategory, MenuItem, BranchMenuItem,
     BranchCategory, BranchSubCategory, BranchItemPlacement, Membership,
 )
+from menu.permissions import (
+    require_membership, require_owner, ensure_can_manage_branch, forbidden,
+)
 from menu.imaging import compute_focal_point
 
 ALLOWED_IMAGE_EXTS = ('.jpg', '.jpeg', '.png', '.webp')
@@ -65,7 +68,7 @@ def logout_view(request):
     return redirect('dashboard:login')
 
 
-@login_required
+@require_membership
 def home(request):
     restaurant = request.company
     total_count = MenuItem.objects.count()
@@ -97,7 +100,7 @@ ITEM_SORTS = {
 }
 
 
-@login_required
+@require_owner
 def items_list(request):
     search = request.GET.get('q', '')
     diet_filter = request.GET.get('diet', '')
@@ -160,7 +163,7 @@ def items_list(request):
     })
 
 
-@login_required
+@require_owner
 def item_edit(request, pk=None):
     from .forms import MenuItemForm
     item = get_object_or_404(MenuItem, pk=pk) if pk else None
@@ -195,7 +198,7 @@ def item_edit(request, pk=None):
     })
 
 
-@login_required
+@require_owner
 @require_POST
 def item_delete(request, pk):
     item = get_object_or_404(MenuItem, pk=pk)
@@ -203,7 +206,7 @@ def item_delete(request, pk):
     return redirect('dashboard:items_list')
 
 
-@login_required
+@require_owner
 @require_POST
 def item_image_upload(request, pk):
     item = get_object_or_404(MenuItem, pk=pk)
@@ -219,7 +222,7 @@ def item_image_upload(request, pk):
     return JsonResponse({'url': url, 'focal_x': item.focal_x, 'focal_y': item.focal_y})
 
 
-@login_required
+@require_owner
 def categories_index(request):
     categories = Category.objects.prefetch_related('subcategories').order_by('display_order')
     cats_data = []
@@ -246,7 +249,7 @@ def categories_index(request):
     })
 
 
-@login_required
+@require_owner
 @require_POST
 def category_save(request, pk=None):
     from django.utils.text import slugify
@@ -283,7 +286,7 @@ def category_delete(request, pk):
     return JsonResponse({'ok': True})
 
 
-@login_required
+@require_owner
 @require_POST
 def subcategory_save(request, pk=None):
     sub = get_object_or_404(SubCategory, pk=pk) if pk else None
@@ -305,7 +308,7 @@ def subcategory_save(request, pk=None):
     return redirect('dashboard:categories')
 
 
-@login_required
+@require_owner
 @require_POST
 def subcategory_delete(request, pk):
     sub = get_object_or_404(SubCategory, pk=pk)
@@ -356,7 +359,7 @@ def qr_download(request, branch_id):
         return response
 
 
-@login_required
+@require_owner
 def settings_index(request):
     from django.contrib.auth.models import User as DjangoUser
     restaurant = request.company
@@ -370,7 +373,7 @@ def settings_index(request):
     })
 
 
-@login_required
+@require_owner
 @require_POST
 def settings_restaurant(request):
     restaurant = request.company
@@ -385,7 +388,7 @@ def settings_restaurant(request):
     return redirect('dashboard:settings')
 
 
-@login_required
+@require_owner
 @require_POST
 def branch_save(request, pk=None):
     from django.utils.text import slugify
@@ -411,7 +414,7 @@ def branch_save(request, pk=None):
     return redirect('dashboard:settings')
 
 
-@login_required
+@require_owner
 @require_POST
 def branch_delete(request, pk):
     branch = get_object_or_404(Branch, pk=pk)
@@ -421,7 +424,7 @@ def branch_delete(request, pk):
     return JsonResponse({'ok': True})
 
 
-@login_required
+@require_owner
 @require_POST
 def account_save(request, pk=None):
     from django.contrib.auth.models import User as DjangoUser
@@ -442,7 +445,7 @@ def account_save(request, pk=None):
     return redirect('dashboard:settings')
 
 
-@login_required
+@require_owner
 @require_POST
 def account_delete(request, pk):
     from django.contrib.auth.models import User as DjangoUser
@@ -453,7 +456,7 @@ def account_delete(request, pk):
     return JsonResponse({'ok': True})
 
 
-@login_required
+@require_membership
 def api_subcategories(request):
     cat_id = request.GET.get('cat')
     subs = list(SubCategory.objects.filter(category_id=cat_id).values('id', 'name'))

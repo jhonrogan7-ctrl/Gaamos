@@ -10,7 +10,8 @@ from menu.tests.base import TenantTestCase
 class BuilderEndpointTest(TenantTestCase):
     def setUp(self):
         super().setUp()
-        User.objects.create_user(username='mgr', password='pass', is_staff=True)
+        user = User.objects.create_user(username='mgr', password='pass', is_staff=True)
+        self.make_owner(user)
         self.client.login(username='mgr', password='pass')
         self.b = Branch.objects.create(company=self.company, name='Main', slug='main', address='X')
         self.cat = Category.objects.create(name='Drinks', slug='drinks', display_order=1)
@@ -87,7 +88,8 @@ class BuilderEndpointTest(TenantTestCase):
 class CloneTest(TenantTestCase):
     def setUp(self):
         super().setUp()
-        User.objects.create_user(username='mgr', password='pass', is_staff=True)
+        user = User.objects.create_user(username='mgr', password='pass', is_staff=True)
+        self.make_owner(user)
         self.client.login(username='mgr', password='pass')
         self.src = Branch.objects.create(company=self.company, name='Src', slug='src', address='X')
         self.dst = Branch.objects.create(company=self.company, name='Dst', slug='dst', address='Y')
