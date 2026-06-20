@@ -217,8 +217,9 @@ class MemberManagementTest(TenantTestCase):
 
     def test_cannot_demote_last_owner(self):
         m = Membership.objects.get(user=self.owner, company=self.company)
-        self.client.post(f'/dashboard/settings/members/{m.pk}/', {
+        resp = self.client.post(f'/dashboard/settings/members/{m.pk}/', {
             'username': 'owner', 'role': 'manager'})
+        self.assertRedirects(resp, '/dashboard/settings/', fetch_redirect_response=False)
         m.refresh_from_db()
         self.assertTrue(m.is_owner)
 

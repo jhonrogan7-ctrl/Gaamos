@@ -96,22 +96,30 @@
   {% endfor %}
   <button class="btn btn-secondary btn-full" @click="openAdd()"><span>＋ Add member</span></button>
 
-  <div x-show="show" class="modal">
-    <form method="post" :action="formAction">
-      {% csrf_token %}
-      <input class="form-input" name="username" placeholder="username" x-model="aUser" :readonly="pkEditing!==null" required>
-      <input class="form-input" name="email" placeholder="email" x-model="aEmail">
-      <input class="form-input" name="password" type="password" placeholder="password (set/reset)">
-      <select class="form-input" name="role" x-model="aRole">
-        <option value="manager">Manager</option>
-        <option value="owner">Owner</option>
-      </select>
-      <select class="form-input" name="branches" multiple x-show="aRole==='manager'">
-        {% for b in branches %}<option value="{{ b.pk }}">{{ b.name }}</option>{% endfor %}
-      </select>
-      <button class="btn btn-primary btn-full" type="submit">Save member</button>
-      <button class="btn btn-full" type="button" @click="show=false">Cancel</button>
-    </form>
+  <div class="sheet-backdrop" x-show="show" x-cloak @click.self="show=false">
+    <div class="sheet">
+      <div class="sheet-handle"></div>
+      <h3 style="font-size:15px;font-weight:700;margin-bottom:14px;">Member</h3>
+      <form method="post" :action="formAction">
+        {% csrf_token %}
+        <div class="form-group"><label class="form-label">Username</label>
+          <input class="form-input" name="username" x-model="aUser" :readonly="pkEditing!==null" required></div>
+        <div class="form-group"><label class="form-label">Email</label>
+          <input class="form-input" name="email" x-model="aEmail"></div>
+        <div class="form-group"><label class="form-label">Password (set/reset)</label>
+          <input class="form-input" name="password" type="password"></div>
+        <div class="form-group"><label class="form-label">Role</label>
+          <select class="form-select" name="role" x-model="aRole">
+            <option value="manager">Manager</option>
+            <option value="owner">Owner</option>
+          </select></div>
+        <div class="form-group" x-show="aRole==='manager'"><label class="form-label">Branches</label>
+          <select class="form-select" name="branches" multiple>
+            {% for b in branches %}<option value="{{ b.pk }}">{{ b.name }}</option>{% endfor %}
+          </select></div>
+        <button type="submit" class="btn btn-primary btn-full">Save member</button>
+      </form>
+    </div>
   </div>
 </div>
 {% endblock %}

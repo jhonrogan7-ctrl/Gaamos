@@ -462,7 +462,6 @@ def member_save(request, pk=None):
             return redirect('dashboard:settings')
         user, _ = DjangoUser.objects.get_or_create(
             username=username, defaults={'email': email})
-        user.is_staff = True
         user.set_password(password)
         user.save()
         membership, _ = Membership.objects.update_or_create(
