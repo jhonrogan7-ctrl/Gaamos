@@ -1,9 +1,10 @@
-from django.contrib.auth.models import User
+from django.contrib.auth.models import AnonymousUser, User
 from django.db import IntegrityError, transaction
 from django.test import RequestFactory
-from django.contrib.auth.models import AnonymousUser
 
-from menu.models import Company, Branch, Membership
+from menu.middleware import MembershipMiddleware
+from menu.models import Branch, Company, Membership
+from menu.permissions import can_manage_branch, ensure_can_manage_branch
 from menu.tests.base import TenantTestCase
 
 
@@ -40,10 +41,6 @@ class MembershipModelTest(TenantTestCase):
                                       role=Membership.ROLE_MANAGER)
         m.branches.add(branch)
         self.assertEqual(list(m.branches.all()), [branch])
-
-
-from menu.middleware import MembershipMiddleware
-from menu.permissions import can_manage_branch
 
 
 class MembershipMiddlewareTest(TenantTestCase):
@@ -97,3 +94,40 @@ class CanManageBranchTest(TenantTestCase):
 
     def test_none_membership_cannot(self):
         self.assertFalse(can_manage_branch(None, self.a))
+
+
+class EnsureCanManageBranchTest(TenantTestCase):
+    """Direct coverage of ensure_can_manage_branch, which wraps can_manage_branch
+    with a superuser bypass and reads membership off the request object."""
+
+    def setUp(self):
+        super().setUp()
+        self.rf = RequestFactory()
+        self.branch = Branch.objects.create(
+            company=self.company, name='Main', slug='main', address='Addr'
+        )
+
+    def _req(self, user, membership=None):
+        req = self.rf.get('/dashboard/')
+        req.user = user
+        req.membership = membership
+        return req
+
+    def test_superuser_bypasses_membership_check(self):
+        """Superuser with no membership should still return True."""
+        su = User.objects.create_user(username='su', password='pass', is_superuser=True)
+        req = self._req(su, membership=None)
+        self.assertTrue(ensure_can_manage_branch(req, self.branch))
+
+    def test_non_member_regular_user_is_false(self):
+        """Regular user with no membership (None) must return False."""
+        user = User.objects.create_user(username='nobody', password='pass')
+        req = self._req(user, membership=None)
+        self.assertFalse(ensure_can_manage_branch(req, self.branch))
+
+    def test_manager_with_assigned_branch_is_true(self):
+        """Manager membership that has the branch assigned must return True."""
+        user = User.objects.create_user(username='mgr', password='pass')
+        membership = self.make_manager(user, branches=[self.branch])
+        req = self._req(user, membership=membership)
+        self.assertTrue(ensure_can_manage_branch(req, self.branch))
