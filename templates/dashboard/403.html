@@ -1,0 +1,9 @@
+{% extends 'dashboard/base.html' %}
+{% block page_title %}Not allowed{% endblock %}
+{% block content %}
+<div class="card" style="text-align:center;padding:2rem">
+  <h2>Not allowed</h2>
+  <p style="color:var(--text-muted)">You don't have permission to view this page.</p>
+  <a class="btn btn-primary" href="{% url 'dashboard:home' %}">Back to dashboard</a>
+</div>
+{% endblock %}

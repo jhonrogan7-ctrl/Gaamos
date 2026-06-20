@@ -80,37 +80,44 @@
   </div>
 </div>
 
-<div class="section-label">Manager Accounts</div>
-<div class="card" x-data="accountManager()">
-  {% for account in accounts %}
-    <div class="settings-row">
+<div class="section-label">Members</div>
+<div class="card" x-data="memberManager()">
+  {% for m in members %}
+    <div class="row" style="display:flex;justify-content:space-between;align-items:center;padding:6px 0">
       <div>
-        <div style="font-weight:600;font-size:12px;">{{ account.username }}</div>
-        <div style="font-size:10px;color:var(--text-muted);">{{ account.email }}</div>
+        <div style="font-weight:600;font-size:12px;">{{ m.user.username }} <span style="color:var(--text-muted)">· {{ m.get_role_display }}</span></div>
+        <div style="font-size:10px;color:var(--text-muted);">{{ m.user.email }}{% if not m.is_owner %} · {% for b in m.branches.all %}{{ b.name }}{% if not forloop.last %}, {% endif %}{% empty %}no branch{% endfor %}{% endif %}</div>
       </div>
-      <button class="btn btn-ghost btn-sm"
-              @click="openEdit({{ account.pk }}, '{{ account.username|escapejs }}', '{{ account.email|escapejs }}')">
-        Edit ›
-      </button>
+      <div style="display:flex;gap:6px">
+        <button class="btn btn-small" @click="openEdit({{ m.pk }}, '{{ m.user.username|escapejs }}', '{{ m.role }}', [{% for b in m.branches.all %}'{{ b.pk }}'{% if not forloop.last %},{% endif %}{% endfor %}])">Edit</button>
+        <form method="post" action="{% url 'dashboard:member_delete' m.pk %}" @submit.prevent="del($el)"><button class="btn btn-small btn-danger" type="submit">Remove</button></form>
+      </div>
     </div>
   {% endfor %}
-  <div class="settings-row" @click="openAdd()" style="cursor:pointer;color:var(--text-muted);">
-    <span>＋ Add manager account</span>
-  </div>
+  <button class="btn btn-secondary btn-full" @click="openAdd()"><span>＋ Add member</span></button>
+
   <div class="sheet-backdrop" x-show="show" x-cloak @click.self="show=false">
     <div class="sheet">
       <div class="sheet-handle"></div>
-      <h3 style="font-size:15px;font-weight:700;margin-bottom:14px;" x-text="title"></h3>
+      <h3 style="font-size:15px;font-weight:700;margin-bottom:14px;">Member</h3>
       <form method="post" :action="formAction">
         {% csrf_token %}
         <div class="form-group"><label class="form-label">Username</label>
-          <input class="form-input" name="username" x-model="aUser" required></div>
+          <input class="form-input" name="username" x-model="aUser" :readonly="pkEditing!==null" required></div>
         <div class="form-group"><label class="form-label">Email</label>
-          <input class="form-input" type="email" name="email" x-model="aEmail"></div>
-        <div class="form-group">
-          <label class="form-label" x-text="pkEditing ? 'New password (blank = keep)' : 'Password'"></label>
-          <input class="form-input" type="password" name="password" :required="!pkEditing"></div>
-        <button type="submit" class="btn btn-primary btn-full">Save</button>
+          <input class="form-input" name="email" x-model="aEmail"></div>
+        <div class="form-group"><label class="form-label">Password (set/reset)</label>
+          <input class="form-input" name="password" type="password"></div>
+        <div class="form-group"><label class="form-label">Role</label>
+          <select class="form-select" name="role" x-model="aRole">
+            <option value="manager">Manager</option>
+            <option value="owner">Owner</option>
+          </select></div>
+        <div class="form-group" x-show="aRole==='manager'"><label class="form-label">Branches</label>
+          <select class="form-select" name="branches" multiple x-model="aBranches">
+            {% for b in branches %}<option value="{{ b.pk }}">{{ b.name }}</option>{% endfor %}
+          </select></div>
+        <button type="submit" class="btn btn-primary btn-full">Save member</button>
       </form>
     </div>
   </div>
@@ -126,12 +133,13 @@ function branchManager() {
     openEdit(pk,name,addr,tag) { this.title='Edit Branch'; this.formAction=`/dashboard/settings/branches/${pk}/`; this.bName=name; this.bAddr=addr; this.bTag=tag; this.show=true; },
   };
 }
-function accountManager() {
+function memberManager() {
   return {
-    show: false, title: '', formAction: '', pkEditing: null, aUser: '', aEmail: '',
-    openAdd() { this.title='Add Manager'; this.formAction='/dashboard/settings/accounts/add/'; this.pkEditing=null; this.aUser=''; this.aEmail=''; this.show=true; },
-    openEdit(pk,username,email) { this.title='Edit Account'; this.formAction=`/dashboard/settings/accounts/${pk}/`; this.pkEditing=pk; this.aUser=username; this.aEmail=email; this.show=true; },
-  };
+    show:false, title:'', formAction:'', pkEditing:null, aUser:'', aEmail:'', aRole:'manager', aBranches:[],
+    openAdd() { this.formAction='/dashboard/settings/members/add/'; this.pkEditing=null; this.aUser=''; this.aEmail=''; this.aRole='manager'; this.aBranches=[]; this.show=true; },
+    openEdit(pk,username,role,branches) { this.formAction=`/dashboard/settings/members/${pk}/`; this.pkEditing=pk; this.aUser=username; this.aRole=role; this.aBranches=branches||[]; this.show=true; },
+    del(form) { fetch(form.action,{method:'POST',headers:{'X-CSRFToken':form.querySelector('[name=csrfmiddlewaretoken]')?.value||document.cookie.match(/csrftoken=([^;]+)/)?.[1]}}).then(r=>r.json()).then(d=>{ if(d.ok){location.reload()} else {alert(d.error)} }); },
+  }
 }
 </script>
 {% endblock %}

@@ -17,7 +17,8 @@ class DashboardAuthTest(TenantTestCase):
         self.assertEqual(response.status_code, 200)
 
     def test_staff_user_can_access_dashboard(self):
-        User.objects.create_user(username='mgr', password='pass', is_staff=True)
+        user = User.objects.create_user(username='mgr', password='pass', is_staff=True)
+        self.make_owner(user)
         self.client.login(username='mgr', password='pass')
         response = self.client.get('/dashboard/')
         self.assertEqual(response.status_code, 200)
@@ -39,6 +40,7 @@ class DashboardHomeTest(TenantTestCase):
     def setUp(self):
         super().setUp()
         self.user = User.objects.create_user(username='mgr2', password='pass', is_staff=True)
+        self.make_owner(self.user)
         self.client.login(username='mgr2', password='pass')
         self.branch = Branch.objects.create(company=self.company, name='Main', slug='main', address='Lakeside')
         self.cat = Category.objects.create(name='Brunch', slug='brunch', display_order=1)
@@ -65,6 +67,7 @@ class ItemsListTest(TenantTestCase):
     def setUp(self):
         super().setUp()
         self.user = User.objects.create_user(username='mgr3', password='pass', is_staff=True)
+        self.make_owner(self.user)
         self.client.login(username='mgr3', password='pass')
         self.item = MenuItem.objects.create(name='Margherita', slug='margherita', price=500)
 
@@ -84,6 +87,7 @@ class ItemEditTest(TenantTestCase):
     def setUp(self):
         super().setUp()
         self.user = User.objects.create_user(username='mgr4', password='pass', is_staff=True)
+        self.make_owner(self.user)
         self.client.login(username='mgr4', password='pass')
 
     def test_add_item_page_loads(self):
@@ -111,6 +115,7 @@ class CategoriesTest(TenantTestCase):
     def setUp(self):
         super().setUp()
         self.user = User.objects.create_user(username='mgr5', password='pass', is_staff=True)
+        self.make_owner(self.user)
         self.client.login(username='mgr5', password='pass')
         self.branch = Branch.objects.create(company=self.company, name='Main', slug='main', address='X')
         self.cat = Category.objects.create(name='Brunch', slug='brunch', display_order=1)
@@ -165,6 +170,7 @@ class QRCodesTest(TenantTestCase):
     def setUp(self):
         super().setUp()
         self.user = User.objects.create_user(username='mgr6', password='pass', is_staff=True)
+        self.make_owner(self.user)
         self.client.login(username='mgr6', password='pass')
         self.branch = Branch.objects.create(
             company=self.company, name='Main', slug='main', address='Lakeside'
@@ -187,6 +193,7 @@ class SettingsTest(TenantTestCase):
     def setUp(self):
         super().setUp()
         self.user = User.objects.create_user(username='mgr7', password='pass', is_staff=True)
+        self.make_owner(self.user)
         self.client.login(username='mgr7', password='pass')
 
     def test_settings_page_loads(self):
@@ -208,19 +215,12 @@ class SettingsTest(TenantTestCase):
         })
         self.assertEqual(Branch.objects.filter(name='City Branch').count(), 1)
 
-    def test_add_manager_account(self):
-        from django.contrib.auth.models import User as DjangoUser
-        response = self.client.post('/dashboard/settings/accounts/add/', {
-            'username': 'newmgr', 'email': 'mgr@test.com', 'password': 'testpass123',
-        })
-        self.assertEqual(DjangoUser.objects.filter(username='newmgr').count(), 1)
-        self.assertTrue(DjangoUser.objects.get(username='newmgr').is_staff)
-
 
 class BranchItemsTest(TenantTestCase):
     def setUp(self):
         super().setUp()
         self.user = User.objects.create_user(username='branchmgr', password='pass', is_staff=True)
+        self.make_owner(self.user)
         self.client.login(username='branchmgr', password='pass')
         self.branch = Branch.objects.create(
             company=self.company, name='Main', slug='main', address='Lakeside'
@@ -266,3 +266,29 @@ class BranchItemsTest(TenantTestCase):
         data = json.loads(response.content)
         self.assertIsNone(data['price_override'])
         self.assertIsNone(BranchMenuItem.objects.get(branch=self.branch, menu_item=self.item).price_override)
+
+
+class ManagerRestrictionsTest(TenantTestCase):
+    def setUp(self):
+        super().setUp()
+        self.branch = Branch.objects.create(company=self.company, name='Main', slug='main', address='X')
+        self.manager = User.objects.create_user(username='mgr', password='pass')
+        self.make_manager(self.manager, branches=[self.branch])
+        self.login_as(self.manager)
+
+    def test_manager_blocked_from_items_list(self):
+        self.assertEqual(self.client.get('/dashboard/items/').status_code, 403)
+
+    def test_manager_blocked_from_categories(self):
+        self.assertEqual(self.client.get('/dashboard/categories/').status_code, 403)
+
+    def test_manager_blocked_from_settings(self):
+        self.assertEqual(self.client.get('/dashboard/settings/').status_code, 403)
+
+    def test_manager_can_load_home(self):
+        self.assertEqual(self.client.get('/dashboard/').status_code, 200)
+
+    def test_manager_blocked_from_category_delete(self):
+        cat = Category.objects.create(name='X', slug='x', display_order=1)
+        resp = self.client.post(f'/dashboard/categories/{cat.pk}/delete/')
+        self.assertEqual(resp.status_code, 403)

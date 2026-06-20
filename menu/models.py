@@ -172,3 +172,25 @@ class BranchItemPlacement(_SameCompanyMixin, models.Model):
 
     def __str__(self):
         return f"{self.branch.name} / {self.menu_item.name} @ {self.category.name}"
+
+
+class Membership(models.Model):
+    ROLE_OWNER = 'owner'
+    ROLE_MANAGER = 'manager'
+    ROLE_CHOICES = [(ROLE_OWNER, 'Owner'), (ROLE_MANAGER, 'Manager')]
+
+    user = models.ForeignKey('auth.User', on_delete=models.CASCADE, related_name='memberships')
+    company = models.ForeignKey(Company, on_delete=models.CASCADE, related_name='memberships')
+    role = models.CharField(max_length=20, choices=ROLE_CHOICES, default=ROLE_MANAGER)
+    branches = models.ManyToManyField(Branch, blank=True, related_name='managers')
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ('user', 'company')
+
+    @property
+    def is_owner(self):
+        return self.role == self.ROLE_OWNER
+
+    def __str__(self):
+        return f"{self.user.username} @ {self.company.slug} ({self.role})"

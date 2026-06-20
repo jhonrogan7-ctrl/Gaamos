@@ -3,7 +3,6 @@ import os
 
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import authenticate, login, logout
-from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 from django.views.decorators.http import require_POST
 from django.conf import settings as django_settings
@@ -11,7 +10,10 @@ from django.conf import settings as django_settings
 from django.db import models
 from menu.models import (
     Company, Branch, Category, SubCategory, MenuItem, BranchMenuItem,
-    BranchCategory, BranchSubCategory, BranchItemPlacement,
+    BranchCategory, BranchSubCategory, BranchItemPlacement, Membership,
+)
+from menu.permissions import (
+    require_membership, require_owner, ensure_can_manage_branch, forbidden,
 )
 from menu.imaging import compute_focal_point
 
@@ -48,7 +50,10 @@ def login_view(request):
         username = request.POST.get('username', '')
         password = request.POST.get('password', '')
         user = authenticate(request, username=username, password=password)
-        if user and user.is_staff:
+        if user is None:
+            error = 'Access denied'
+        elif user.is_superuser or Membership.objects.filter(
+                user=user, company=request.company).exists():
             login(request, user)
             return redirect('dashboard:home')
         else:
@@ -62,12 +67,19 @@ def logout_view(request):
     return redirect('dashboard:login')
 
 
-@login_required
+@require_membership
 def home(request):
     restaurant = request.company
     total_count = MenuItem.objects.count()
+    m = request.membership
+    if request.user.is_superuser or (m and m.is_owner):
+        branches = Branch.objects.all()
+    elif m:
+        branches = Branch.objects.filter(pk__in=m.branches.values_list('pk', flat=True))
+    else:
+        branches = Branch.objects.none()
     branches_data = []
-    for branch in Branch.objects.all():
+    for branch in branches:
         active_count = (BranchItemPlacement.objects
                         .filter(branch=branch).values('menu_item').distinct().count())
         pct = round(active_count / total_count * 100) if total_count else 0
@@ -94,7 +106,7 @@ ITEM_SORTS = {
 }
 
 
-@login_required
+@require_owner
 def items_list(request):
     search = request.GET.get('q', '')
     diet_filter = request.GET.get('diet', '')
@@ -157,7 +169,7 @@ def items_list(request):
     })
 
 
-@login_required
+@require_owner
 def item_edit(request, pk=None):
     from .forms import MenuItemForm
     item = get_object_or_404(MenuItem, pk=pk) if pk else None
@@ -192,7 +204,7 @@ def item_edit(request, pk=None):
     })
 
 
-@login_required
+@require_owner
 @require_POST
 def item_delete(request, pk):
     item = get_object_or_404(MenuItem, pk=pk)
@@ -200,7 +212,7 @@ def item_delete(request, pk):
     return redirect('dashboard:items_list')
 
 
-@login_required
+@require_owner
 @require_POST
 def item_image_upload(request, pk):
     item = get_object_or_404(MenuItem, pk=pk)
@@ -216,7 +228,7 @@ def item_image_upload(request, pk):
     return JsonResponse({'url': url, 'focal_x': item.focal_x, 'focal_y': item.focal_y})
 
 
-@login_required
+@require_owner
 def categories_index(request):
     categories = Category.objects.prefetch_related('subcategories').order_by('display_order')
     cats_data = []
@@ -243,7 +255,7 @@ def categories_index(request):
     })
 
 
-@login_required
+@require_owner
 @require_POST
 def category_save(request, pk=None):
     from django.utils.text import slugify
@@ -270,7 +282,7 @@ def category_save(request, pk=None):
     return redirect('dashboard:categories')
 
 
-@login_required
+@require_owner
 @require_POST
 def category_delete(request, pk):
     cat = get_object_or_404(Category, pk=pk)
@@ -280,7 +292,7 @@ def category_delete(request, pk):
     return JsonResponse({'ok': True})
 
 
-@login_required
+@require_owner
 @require_POST
 def subcategory_save(request, pk=None):
     sub = get_object_or_404(SubCategory, pk=pk) if pk else None
@@ -302,7 +314,7 @@ def subcategory_save(request, pk=None):
     return redirect('dashboard:categories')
 
 
-@login_required
+@require_owner
 @require_POST
 def subcategory_delete(request, pk):
     sub = get_object_or_404(SubCategory, pk=pk)
@@ -312,8 +324,9 @@ def subcategory_delete(request, pk):
     return JsonResponse({'ok': True})
 
 
-@login_required
+@require_membership
 def qr_index(request):
+    # TenantManager scopes this to request.company automatically
     branches = Branch.objects.all()
     return render(request, 'dashboard/qr/index.html', {
         'active_tab': 'qr',
@@ -321,20 +334,24 @@ def qr_index(request):
     })
 
 
-@login_required
+@require_membership
 @require_POST
 def qr_generate(request, branch_id):
     from .utils import generate_qr_for_branch
     branch = get_object_or_404(Branch, pk=branch_id)
+    if not ensure_can_manage_branch(request, branch):
+        return forbidden(request)
     generate_qr_for_branch(branch)
     return redirect('dashboard:qr')
 
 
-@login_required
+@require_membership
 def qr_download(request, branch_id):
     from django.http import HttpResponse
     from .utils import generate_qr_pdf
     branch = get_object_or_404(Branch, pk=branch_id)
+    if not ensure_can_manage_branch(request, branch):
+        return forbidden(request)
     if not branch.qr_image:
         return HttpResponse('QR not yet generated for this branch', status=404)
     fmt = request.GET.get('format', 'png')
@@ -353,21 +370,20 @@ def qr_download(request, branch_id):
         return response
 
 
-@login_required
+@require_owner
 def settings_index(request):
-    from django.contrib.auth.models import User as DjangoUser
     restaurant = request.company
     branches = Branch.objects.all()
-    accounts = DjangoUser.objects.filter(is_staff=True)
+    members = Membership.objects.filter(company=request.company).select_related('user').prefetch_related('branches')
     return render(request, 'dashboard/settings/index.html', {
         'active_tab': 'settings',
         'restaurant': restaurant,
         'branches': branches,
-        'accounts': accounts,
+        'members': members,
     })
 
 
-@login_required
+@require_owner
 @require_POST
 def settings_restaurant(request):
     restaurant = request.company
@@ -382,7 +398,7 @@ def settings_restaurant(request):
     return redirect('dashboard:settings')
 
 
-@login_required
+@require_owner
 @require_POST
 def branch_save(request, pk=None):
     from django.utils.text import slugify
@@ -408,7 +424,7 @@ def branch_save(request, pk=None):
     return redirect('dashboard:settings')
 
 
-@login_required
+@require_owner
 @require_POST
 def branch_delete(request, pk):
     branch = get_object_or_404(Branch, pk=pk)
@@ -418,39 +434,61 @@ def branch_delete(request, pk):
     return JsonResponse({'ok': True})
 
 
-@login_required
+@require_owner
 @require_POST
-def account_save(request, pk=None):
+def member_save(request, pk=None):
     from django.contrib.auth.models import User as DjangoUser
+    role = request.POST.get('role', Membership.ROLE_MANAGER)
+    role = role if role in (Membership.ROLE_OWNER, Membership.ROLE_MANAGER) else Membership.ROLE_MANAGER
+    branch_ids = request.POST.getlist('branches')
     if pk:
-        account = get_object_or_404(DjangoUser, pk=pk)
-        account.username = request.POST.get('username', account.username).strip()
-        account.email = request.POST.get('email', '').strip()
+        membership = get_object_or_404(Membership, pk=pk, company=request.company)
+        # last-owner guard: block demoting the only owner
+        if membership.is_owner and role != Membership.ROLE_OWNER and _is_last_owner(membership):
+            return redirect('dashboard:settings')
+        user = membership.user
+        user.email = request.POST.get('email', user.email).strip()
         password = request.POST.get('password', '').strip()
         if password:
-            account.set_password(password)
-        account.save()
+            user.set_password(password)
+        user.save()
+        membership.role = role
+        membership.save()
     else:
         username = request.POST.get('username', '').strip()
         email = request.POST.get('email', '').strip()
         password = request.POST.get('password', '').strip()
-        if username and password:
-            DjangoUser.objects.create_user(username=username, email=email, password=password, is_staff=True)
+        if not (username and password):
+            return redirect('dashboard:settings')
+        if DjangoUser.objects.filter(username=username).exists():
+            # Refuse: username is global; resetting/attaching a pre-existing account
+            # here would be a cross-tenant takeover vector. (Shared-user invites = later phase.)
+            return redirect('dashboard:settings')
+        user = DjangoUser.objects.create_user(username=username, email=email, password=password)
+        membership = Membership.objects.create(user=user, company=request.company, role=role)
+    membership.branches.set(
+        Branch.objects.filter(pk__in=branch_ids) if role == Membership.ROLE_MANAGER else [])
     return redirect('dashboard:settings')
 
 
-@login_required
+@require_owner
 @require_POST
-def account_delete(request, pk):
-    from django.contrib.auth.models import User as DjangoUser
-    account = get_object_or_404(DjangoUser, pk=pk)
-    if account == request.user:
-        return JsonResponse({'ok': False, 'error': 'Cannot delete your own account.'})
-    account.delete()
+def member_delete(request, pk):
+    membership = get_object_or_404(Membership, pk=pk, company=request.company)
+    if membership.is_owner and _is_last_owner(membership):
+        return JsonResponse({'ok': False, 'error': 'Cannot remove the last owner.'})
+    membership.delete()
     return JsonResponse({'ok': True})
 
 
-@login_required
+def _is_last_owner(membership):
+    return not (Membership.objects
+                .filter(company=membership.company, role=Membership.ROLE_OWNER)
+                .exclude(pk=membership.pk)
+                .exists())
+
+
+@require_membership
 def api_subcategories(request):
     cat_id = request.GET.get('cat')
     subs = list(SubCategory.objects.filter(category_id=cat_id).values('id', 'name'))
@@ -501,17 +539,21 @@ def _build_composition(branch):
     return composition
 
 
-@login_required
+@require_membership
 def branch_composition(request, slug):
     """JSON snapshot of the branch's composition tree, re-fetched by the builder
     after each mutation to refresh in place (no full page reload)."""
     branch = get_object_or_404(Branch, slug=slug)
+    if not ensure_can_manage_branch(request, branch):
+        return forbidden(request)
     return JsonResponse(_build_composition(branch), safe=False)
 
 
-@login_required
+@require_membership
 def branch_items(request, slug):
     branch = get_object_or_404(Branch, slug=slug)
+    if not ensure_can_manage_branch(request, branch):
+        return forbidden(request)
     composition = _build_composition(branch)
 
     library = [{'id': m.id, 'name': m.name, 'price': m.price, 'image_url': m.image_url,
@@ -534,10 +576,12 @@ def _next_order(qs):
     return (qs.aggregate(models.Max('display_order'))['display_order__max'] or -1) + 1
 
 
-@login_required
+@require_membership
 @require_POST
 def branch_category_add(request, slug):
     branch = get_object_or_404(Branch, slug=slug)
+    if not ensure_can_manage_branch(request, branch):
+        return forbidden(request)
     cat = get_object_or_404(Category, pk=request.POST.get('category_id'))
     bc, created = BranchCategory.objects.get_or_create(
         branch=branch, category=cat,
@@ -545,10 +589,12 @@ def branch_category_add(request, slug):
     return JsonResponse({'id': bc.pk, 'category_id': cat.pk, 'created': created})
 
 
-@login_required
+@require_membership
 @require_POST
 def branch_category_remove(request, slug, pk):
     branch = get_object_or_404(Branch, slug=slug)
+    if not ensure_can_manage_branch(request, branch):
+        return forbidden(request)
     bc = get_object_or_404(BranchCategory, pk=pk, branch=branch)
     cat_id = bc.category_id
     BranchItemPlacement.objects.filter(branch=branch, category_id=cat_id).delete()
@@ -558,10 +604,12 @@ def branch_category_remove(request, slug, pk):
     return JsonResponse({'ok': True})
 
 
-@login_required
+@require_membership
 @require_POST
 def branch_subcategory_add(request, slug):
     branch = get_object_or_404(Branch, slug=slug)
+    if not ensure_can_manage_branch(request, branch):
+        return forbidden(request)
     sub = get_object_or_404(SubCategory, pk=request.POST.get('sub_category_id'))
     BranchCategory.objects.get_or_create(
         branch=branch, category=sub.category,
@@ -572,10 +620,12 @@ def branch_subcategory_add(request, slug):
     return JsonResponse({'id': bsc.pk, 'sub_category_id': sub.pk, 'created': created})
 
 
-@login_required
+@require_membership
 @require_POST
 def branch_subcategory_remove(request, slug, pk):
     branch = get_object_or_404(Branch, slug=slug)
+    if not ensure_can_manage_branch(request, branch):
+        return forbidden(request)
     bsc = get_object_or_404(BranchSubCategory, pk=pk, branch=branch)
     BranchItemPlacement.objects.filter(
         branch=branch, sub_category_id=bsc.sub_category_id).delete()
@@ -583,10 +633,12 @@ def branch_subcategory_remove(request, slug, pk):
     return JsonResponse({'ok': True})
 
 
-@login_required
+@require_membership
 @require_POST
 def branch_placements_add(request, slug):
     branch = get_object_or_404(Branch, slug=slug)
+    if not ensure_can_manage_branch(request, branch):
+        return forbidden(request)
     cat = get_object_or_404(Category, pk=request.POST.get('category_id'))
     sub_id = request.POST.get('sub_category_id') or None
     sub = get_object_or_404(SubCategory, pk=sub_id) if sub_id else None
@@ -611,18 +663,22 @@ def branch_placements_add(request, slug):
     return JsonResponse({'created': created})
 
 
-@login_required
+@require_membership
 @require_POST
 def branch_placement_remove(request, slug, pk):
     branch = get_object_or_404(Branch, slug=slug)
+    if not ensure_can_manage_branch(request, branch):
+        return forbidden(request)
     get_object_or_404(BranchItemPlacement, pk=pk, branch=branch).delete()
     return JsonResponse({'ok': True})
 
 
-@login_required
+@require_membership
 @require_POST
 def branch_reorder(request, slug):
     branch = get_object_or_404(Branch, slug=slug)
+    if not ensure_can_manage_branch(request, branch):
+        return forbidden(request)
     level = request.POST.get('level')
     model = {'category': BranchCategory, 'subcategory': BranchSubCategory,
              'placement': BranchItemPlacement}.get(level)
@@ -634,11 +690,15 @@ def branch_reorder(request, slug):
     return JsonResponse({'ok': True})
 
 
-@login_required
+@require_membership
 @require_POST
 def branch_clone(request, slug):
     target = get_object_or_404(Branch, slug=slug)
+    if not ensure_can_manage_branch(request, target):
+        return forbidden(request)
     source = get_object_or_404(Branch, slug=request.POST.get('source'))
+    if not ensure_can_manage_branch(request, source):
+        return forbidden(request)
     raw = request.POST.get('category_ids', '').strip()
     cat_ids = [int(x) for x in raw.split(',') if x.strip().isdigit()] if raw else None
 
@@ -673,10 +733,12 @@ def branch_clone(request, slug):
     return JsonResponse({'ok': True})
 
 
-@login_required
+@require_membership
 @require_POST
 def branch_item_price(request, slug, pk):
     branch = get_object_or_404(Branch, slug=slug)
+    if not ensure_can_manage_branch(request, branch):
+        return forbidden(request)
     item = get_object_or_404(MenuItem, pk=pk)
     bmi, _ = BranchMenuItem.objects.get_or_create(branch=branch, menu_item=item)
     price_str = request.POST.get('price', '').strip()

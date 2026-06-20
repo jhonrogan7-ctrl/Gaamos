@@ -18,3 +18,20 @@ class TenantTestCase(TestCase):
     def tearDown(self):
         reset_current_company(self._token)
         super().tearDown()
+
+    def make_owner(self, user, company=None):
+        from menu.models import Membership
+        return Membership.objects.create(
+            user=user, company=company or self.company, role=Membership.ROLE_OWNER)
+
+    def make_manager(self, user, branches=(), company=None):
+        from menu.models import Membership
+        m = Membership.objects.create(
+            user=user, company=company or self.company, role=Membership.ROLE_MANAGER)
+        if branches:
+            m.branches.set(branches)
+        return m
+
+    def login_as(self, user, password='pass'):
+        self.assertTrue(self.client.login(username=user.username, password=password))
+        return user

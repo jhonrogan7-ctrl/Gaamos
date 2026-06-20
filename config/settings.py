@@ -28,6 +28,7 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "menu.middleware.TenantMiddleware",
+    "menu.middleware.MembershipMiddleware",
     "menu.middleware.RateLimitMiddleware",
 ]
 

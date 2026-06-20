@@ -31,9 +31,9 @@ urlpatterns = [
     path('settings/branches/add/', views.branch_save, name='branch_add'),
     path('settings/branches/<int:pk>/', views.branch_save, name='branch_edit'),
     path('settings/branches/<int:pk>/delete/', views.branch_delete, name='branch_delete'),
-    path('settings/accounts/add/', views.account_save, name='account_add'),
-    path('settings/accounts/<int:pk>/', views.account_save, name='account_edit'),
-    path('settings/accounts/<int:pk>/delete/', views.account_delete, name='account_delete'),
+    path('settings/members/add/', views.member_save, name='member_add'),
+    path('settings/members/<int:pk>/', views.member_save, name='member_edit'),
+    path('settings/members/<int:pk>/delete/', views.member_delete, name='member_delete'),
 
     path('branch/<slug:slug>/', views.branch_items, name='branch_items'),
     path('branch/<slug:slug>/composition/', views.branch_composition, name='branch_composition'),
