@@ -112,11 +112,15 @@ def place_order(request):
             continue
         if qty <= 0:
             continue
+        # MenuItem.objects is the fail-closed TenantManager: get_queryset() filters
+        # by the request's active company, so this update can only touch the current
+        # tenant's items — a guest on tenant A cannot bump tenant B's order_count.
         MenuItem.objects.filter(pk=item_id).update(order_count=F('order_count') + qty)
 
     return JsonResponse({'ok': True})
 
 
+@ensure_csrf_cookie
 def root(request):
     """Phase 1 root dispatcher: tenant host (company resolved) → guest menu;
     reserved/apex host (no company) → core marketing/home. Full host-based

@@ -1,8 +1,9 @@
 import json
 import re
+from django.test import TestCase, override_settings
 from menu.tests.base import TenantTestCase
 from menu.models import (
-    Branch, Category, MenuItem, BranchMenuItem,
+    Branch, Category, Company, MenuItem, BranchMenuItem,
     BranchCategory, BranchItemPlacement,
 )
 
@@ -211,3 +212,26 @@ class PlaceOrderTest(TenantTestCase):
         self.assertEqual(resp.status_code, 200)
         self.item_a.refresh_from_db()
         self.assertEqual(self.item_a.order_count, 0)
+
+
+@override_settings(BASE_DOMAIN='zxyn.online', ALLOWED_HOSTS=['.zxyn.online', 'testserver'])
+class PlaceOrderTenantIsolationTest(TestCase):
+    """A guest request resolved to company A must not be able to bump company B's
+    item order_count, even by guessing B's item pk."""
+
+    def setUp(self):
+        self.a = Company.objects.create(name='A Co', slug='aco', status='active')
+        self.b = Company.objects.create(name='B Co', slug='bco', status='active')
+        self.item_b = MenuItem.all_objects.create(
+            company=self.b, name='Secret', slug='secret', price=100)
+
+    def test_order_from_company_a_cannot_touch_company_b_item(self):
+        resp = self.client.post(
+            '/api/order/',
+            data=json.dumps({'items': [{'id': self.item_b.pk, 'qty': 5}]}),
+            content_type='application/json',
+            HTTP_HOST='aco.zxyn.online',   # resolves to company A
+        )
+        self.assertEqual(resp.status_code, 200)
+        self.item_b.refresh_from_db()
+        self.assertEqual(self.item_b.order_count, 0)  # B's item untouched by an A request
