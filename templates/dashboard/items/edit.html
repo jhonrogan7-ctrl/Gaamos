@@ -7,69 +7,90 @@
 
 {% block content %}
 <div x-data="itemEditForm({{ item.dietary_tags|default:'[]'|safe }}, {{ item.focal_x|default:50 }}, {{ item.focal_y|default:50 }})">
-  <form method="post" action="" enctype="multipart/form-data">
-    {% csrf_token %}
-    <!-- Image: file picker (takes priority) or URL -->
-    <div class="form-group">
-      <label class="form-label">Image</label>
-      {% if item.image_url %}
-        <!-- Focal-point picker: drag the dot to the part that must stay visible
-             when the photo is cropped square on the menu. -->
-        <div class="focal-pick" @pointerdown="focalPick($event)" @pointermove="focalDrag($event)"
-             @pointerup="focalDragging = false" @pointerleave="focalDragging = false">
-          <img src="{{ item.image_url }}" alt="" draggable="false">
-          <span class="focal-dot" :style="'left:'+focalX+'%;top:'+focalY+'%'"></span>
-        </div>
-        <div class="focal-hint">Drag the dot to the main subject (e.g. the dish or glass). It’s set automatically — adjust only if the crop looks off.</div>
-        <input type="hidden" name="focal_x" :value="focalX">
-        <input type="hidden" name="focal_y" :value="focalY">
-      {% endif %}
-      <input type="file" name="image_file" accept="image/jpeg,image/png,image/webp"
-             style="margin-bottom:6px;display:block;">
-      <div style="font-size:10px;color:var(--text-muted);margin-bottom:6px;">— or paste a URL —</div>
-      <input class="form-input" type="text" name="image_url" value="{{ item.image_url|default:'' }}" placeholder="https://…">
-    </div>
-    <div class="form-group">
-      <label class="form-label">Name *</label>
-      <input class="form-input" type="text" name="name" value="{{ item.name|default:'' }}" required>
-    </div>
-    <div class="form-group">
-      <label class="form-label">Price (Rs) *</label>
-      <input class="form-input" type="number" name="price" value="{{ item.price|default:'' }}" min="0" required>
-    </div>
-    <div class="form-group">
-      <label class="form-label">Description</label>
-      <textarea class="form-textarea" name="description">{{ item.description|default:'' }}</textarea>
-    </div>
-    <div class="form-group">
-      <label class="form-label">Dietary tags</label>
-      <div class="dietary-pills">
-        {% for tag in dietary_choices %}
-          <label class="pill" :class="{ active: activeTags.includes('{{ tag }}') }" @click.prevent="toggleTag('{{ tag }}')">
-            <input type="checkbox" name="dietary_tags" value="{{ tag }}" :checked="activeTags.includes('{{ tag }}')" style="display:none;">
-            {{ tag }}
-          </label>
-        {% endfor %}
-      </div>
-    </div>
-    <div class="form-group" style="display:flex;gap:16px;">
-      <label style="display:flex;align-items:center;gap:8px;font-size:13px;">
-        <input type="checkbox" name="is_popular" {% if item.is_popular %}checked{% endif %}> Popular
-      </label>
-      <label style="display:flex;align-items:center;gap:8px;font-size:13px;">
-        <input type="checkbox" name="is_featured" {% if item.is_featured %}checked{% endif %}> Featured
-      </label>
-    </div>
-    <button type="submit" class="btn btn-primary btn-full">Save changes</button>
-  </form>
-  {% if item %}
-  <div style="margin-top:10px;">
-    <form method="post" action="{% url 'dashboard:item_delete' item.pk %}" onsubmit="return confirm('Delete this item?')">
+  <div class="editor" style="width:100%;max-width:620px;box-shadow:none;animation:none;background:transparent;">
+    <form method="post" action="" enctype="multipart/form-data">
       {% csrf_token %}
-      <button type="submit" class="btn btn-danger btn-full">Delete item</button>
+      <div class="eb" style="padding:0;overflow:visible;">
+
+        <!-- Focal-point picker: drag the dot to the subject that must survive the square crop. -->
+        <div class="focal">
+          <div class="stageimg"
+               {% if item.image_url %}style="background-image:url('{{ item.image_url }}')"{% else %}style="background-image:linear-gradient(160deg,var(--accent),var(--accent-deep))"{% endif %}
+               @pointerdown="focalPick($event)" @pointermove="focalDrag($event)"
+               @pointerup="focalDragging = false" @pointerleave="focalDragging = false">
+            <div class="dot" :style="'left:'+focalX+'%;top:'+focalY+'%'"></div>
+          </div>
+          <div class="cap">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5v14"/></svg>
+            Drag the dot to set the <b>focal point</b> — guest cards &amp; hero crop around it.
+            <b x-text="focalX + '% · ' + focalY + '%'"></b>
+          </div>
+          <input type="hidden" name="focal_x" :value="focalX">
+          <input type="hidden" name="focal_y" :value="focalY">
+        </div>
+
+        <!-- Image source: file upload (priority) or pasted URL -->
+        <div class="fld">
+          <label>Image</label>
+          <input type="file" name="image_file" accept="image/jpeg,image/png,image/webp" style="display:block;margin-bottom:6px;">
+          <div style="font-size:10px;color:var(--ink-3);margin-bottom:6px;">— or paste a URL —</div>
+          <input class="inp" type="text" name="image_url" value="{{ item.image_url|default:'' }}" placeholder="https://…">
+        </div>
+
+        <div class="frow" style="display:flex;gap:14px;">
+          <div class="fld" style="flex:1;"><label>Item name *</label>
+            <input class="inp" type="text" name="name" value="{{ item.name|default:'' }}" required></div>
+          <div class="fld" style="width:160px;"><label>Price (Rs) *</label>
+            <input class="inp" type="number" name="price" value="{{ item.price|default:'' }}" min="0" required></div>
+        </div>
+
+        <div class="fld"><label>Description</label>
+          <textarea class="inp" name="description" rows="3" style="resize:vertical;">{{ item.description|default:'' }}</textarea></div>
+
+        <div class="fld">
+          <label>Diet badges</label>
+          <div class="badges">
+            {% for tag in dietary_choices %}
+              <span class="bchip" :class="{ on: activeTags.includes('{{ tag }}') }" @click="toggleTag('{{ tag }}')">
+                <input type="checkbox" name="dietary_tags" value="{{ tag }}" :checked="activeTags.includes('{{ tag }}')" style="display:none;">{{ tag }}
+              </span>
+            {% endfor %}
+          </div>
+        </div>
+
+        <div class="fld">
+          <label>Flags</label>
+          <div style="display:flex;gap:16px;">
+            <label style="display:flex;align-items:center;gap:8px;font-size:13px;font-weight:600;">
+              <input type="checkbox" name="is_popular" {% if item.is_popular %}checked{% endif %}> Popular</label>
+            <label style="display:flex;align-items:center;gap:8px;font-size:13px;font-weight:600;">
+              <input type="checkbox" name="is_featured" {% if item.is_featured %}checked{% endif %}> Featured</label>
+          </div>
+        </div>
+
+        <!-- Option groups: not yet modelled — static stub (see frontend-migration spec §8). -->
+        <div class="fld">
+          <label>Option groups</label>
+          <div style="font-size:11.5px;color:var(--ink-3);font-weight:600;border:1.5px dashed var(--line-2);border-radius:11px;padding:14px;text-align:center;">
+            Sizes &amp; add-ons coming soon
+          </div>
+        </div>
+      </div>
+
+      <div class="ef" style="padding:14px 0 0;">
+        <a href="{% url 'dashboard:items_list' %}" class="btn btn-ghost">Cancel</a>
+        <div class="sp" style="flex:1;"></div>
+        <button type="submit" class="btn btn-primary">Save item</button>
+      </div>
     </form>
+
+    {% if item %}
+    <form method="post" action="{% url 'dashboard:item_delete' item.pk %}" onsubmit="return confirm('Delete this item?')" style="margin-top:12px;">
+      {% csrf_token %}
+      <button type="submit" class="btn btn-ghost" style="width:100%;justify-content:center;color:#dc2626;border-color:#f3c7c7;">Delete item</button>
+    </form>
+    {% endif %}
   </div>
-  {% endif %}
 </div>
 {% endblock %}
 
@@ -84,7 +105,7 @@ function itemEditForm(initialTags, focalX, focalY) {
       else this.activeTags.splice(idx, 1);
     },
 
-    // ── Focal-point picker ──
+    // ── Focal-point picker (Alpine: the locked client-state tool) ──
     focalX: focalX ?? 50,
     focalY: focalY ?? 50,
     focalDragging: false,

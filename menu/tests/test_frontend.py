@@ -123,3 +123,32 @@ class MenuBuilderTest(DashboardShellTest):
         self.assertContains(r, 'class="cat"')
         self.assertContains(r, 'class="row"')
         self.assertContains(r, 'Item library')
+
+
+class ItemEditorTest(DashboardShellTest):
+    def setUp(self):
+        super().setUp()
+        from menu.models import MenuItem
+        # MenuItemForm has no category field; items are flat (placement is per-branch).
+        self.item = MenuItem.objects.create(company=self.company, name='Sea-Buckthorn',
+                                            slug='sea-buckthorn', price=320,
+                                            focal_x=50, focal_y=50)
+
+    def test_editor_renders_focal(self):
+        # Focal picker (wireframe .editor/.focal slide-over) renders even with no image.
+        self.login_as(self.owner)
+        r = self.client.get(f'/dashboard/items/{self.item.pk}/')
+        self.assertEqual(r.status_code, 200)
+        self.assertContains(r, 'class="focal"')
+        self.assertContains(r, 'name="focal_x"')
+
+    def test_editor_persists_focal(self):
+        # Regression guard: the re-skin must keep focal_x/y persistence working.
+        self.login_as(self.owner)
+        r = self.client.post(f'/dashboard/items/{self.item.pk}/', {
+            'name': 'Sea-Buckthorn', 'price': '320',
+            'focal_x': '70', 'focal_y': '30',
+        })
+        self.assertIn(r.status_code, (302, 200))
+        self.item.refresh_from_db()
+        self.assertEqual((self.item.focal_x, self.item.focal_y), (70, 30))
