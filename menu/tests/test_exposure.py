@@ -28,3 +28,11 @@ class RateLimitTest(TestCase):
         self.assertEqual(statuses[-1], 429)  # 9.9.9.9 is now throttled
         resp = self.mw(self.rf.get('/', REMOTE_ADDR='5.5.5.5'))
         self.assertEqual(resp.status_code, 200)  # different IP unaffected
+
+    def test_dashboard_and_static_paths_exempt(self):
+        # The throttle guards guest menu reads, not the authenticated dashboard,
+        # the admin, or static assets — those must never 429 on a rapid sweep.
+        for path in ('/dashboard/', '/dashboard/items/', '/static/css/app.css', '/admin/'):
+            statuses = [self.mw(self.rf.get(path, REMOTE_ADDR='7.7.7.7')).status_code
+                        for _ in range(8)]
+            self.assertNotIn(429, statuses, path)
