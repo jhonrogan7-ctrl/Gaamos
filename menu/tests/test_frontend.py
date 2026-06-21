@@ -36,6 +36,13 @@ class CssComponentsTest(SimpleTestCase):
         for needle in ['1fr 340px', '.bars', '.toprow', '.feed']:
             self.assertIn(needle, css, f'missing overview style {needle}')
 
+    def test_orders_section_styles_present(self):
+        # The Orders queue header (section title + filter chip row) and the
+        # order-number cells need their component styles.
+        css = self._css()
+        for needle in ['.sec-h', '.filters{', '.ono']:
+            self.assertIn(needle, css, f'missing orders style {needle}')
+
 
 class DashboardShellTest(TenantTestCase):
     def setUp(self):
