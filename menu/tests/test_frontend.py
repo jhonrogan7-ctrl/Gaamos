@@ -152,3 +152,16 @@ class ItemEditorTest(DashboardShellTest):
         self.assertIn(r.status_code, (302, 200))
         self.item.refresh_from_db()
         self.assertEqual((self.item.focal_x, self.item.focal_y), (70, 30))
+
+
+class GuestThemeTest(TenantTestCase):
+    def test_guest_menu_uses_theme_and_app_css(self):
+        # Guest menu must adopt the themed design system (data-theme + app.css),
+        # dropping the old green menu.css.
+        r = self.client.get('/')
+        self.assertEqual(r.status_code, 200)
+        body = r.content.decode()
+        self.assertIn('data-theme', body)
+        self.assertIn('css/app.css', body)
+        self.assertNotIn('css/menu.css', body)
+        self.assertNotIn('cdn.tailwindcss.com', body)
