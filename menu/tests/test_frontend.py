@@ -99,3 +99,27 @@ class SettingsSkinTest(DashboardShellTest):
         self.assertContains(r, 'Guest menu theme')
         self.assertContains(r, 'data-theme-stub')   # picker marked non-functional
         self.assertContains(r, self.company.name)
+
+
+class MenuBuilderTest(DashboardShellTest):
+    def setUp(self):
+        super().setUp()
+        from menu.models import Category, MenuItem
+        # Items are a flat company-level library; category placement is per-branch
+        # (BranchItemPlacement), so the dashboard builder shows real categories as
+        # structure and the item library as rows — no company-level item→category link.
+        Category.objects.create(company=self.company, name='Juices', slug='juices',
+                                display_order=1)
+        MenuItem.objects.create(company=self.company, name='Sea-Buckthorn',
+                                slug='sea-buckthorn', price=320)
+
+    def test_builder_lists_items(self):
+        self.login_as(self.owner)
+        r = self.client.get('/dashboard/items/')
+        self.assertEqual(r.status_code, 200)
+        self.assertContains(r, 'Sea-Buckthorn')
+        self.assertContains(r, 'Rs 320')
+        # Two-pane builder markup: real category block + item-library rows + library pane
+        self.assertContains(r, 'class="cat"')
+        self.assertContains(r, 'class="row"')
+        self.assertContains(r, 'Item library')

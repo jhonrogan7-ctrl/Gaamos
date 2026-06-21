@@ -175,9 +175,15 @@ def items_list(request):
         bool(diet_filter), bool(flag_filter), bool(price_min_raw or price_max_raw),
     ])
 
+    # Real categories shown as builder structure. Item→category placement is
+    # per-branch (BranchItemPlacement); the company dashboard has no branch context,
+    # so categories render as structure and items as a flat re-usable library.
+    categories = Category.objects.prefetch_related('subcategories').order_by('display_order')
+
     return render(request, 'dashboard/items/list.html', {
         'active_tab': 'items',
         'items': items,
+        'categories': categories,
         'diet_options': diet_options,
         'sort_options': [(val, label) for val, (label, _) in ITEM_SORTS.items()],
         'result_count': len(items),

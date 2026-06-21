@@ -86,17 +86,66 @@
     <span class="result-mode">{% for v,l in sort_options %}{% if v == sort %}{{ l }}{% endif %}{% endfor %}</span>
   </div>
 
-  {% if items %}
-    <div class="card">
-      {% for item in items %}{% include "dashboard/items/_row.html" %}{% endfor %}
-    </div>
-  {% else %}
-    <p style="color:var(--text-muted);text-align:center;margin-top:32px;">No items found.</p>
-  {% endif %}
+  <div class="panes">
+    <!-- Builder: real category structure + flat item library -->
+    <div class="panel">
+      <div class="ph">
+        <h3>Menu builder</h3><div class="sp"></div>
+        <span class="mini">Categories organise each branch’s menu · items are shared</span>
+      </div>
+      <div class="pb">
+        {% for cat in categories %}
+        <div class="cat">
+          <div class="cat-h">
+            <span class="grip">⋮⋮</span>
+            <div class="ci"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 8h14l-1.5 12h-11Z"/><path d="m5 8-1-4h7"/></svg></div>
+            <div>
+              <div class="nm">{{ cat.name }}</div>
+              <div class="ct">{{ cat.subcategories.count }} subcategor{{ cat.subcategories.count|pluralize:"y,ies" }}</div>
+            </div>
+            <span class="sp"></span>
+          </div>
+        </div>
+        {% endfor %}
+        <a href="{% url 'dashboard:categories' %}" class="addrow" style="border-style:dashed;color:var(--ink-2);text-decoration:none;">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M12 5v14M5 12h14"/></svg>Manage categories
+        </a>
 
-  <p x-show="nq !== '' && ![...$root.querySelectorAll('.item-row')].some(r => r.dataset.name.includes(nq))"
-     x-cloak style="color:var(--text-muted);text-align:center;margin-top:32px;">
-    No items match “<span x-text="q"></span>”.
-  </p>
+        <div class="cat" style="margin-top:14px;">
+          <div class="cat-h open">
+            <span class="grip">⋮⋮</span>
+            <div class="ci"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h10"/></svg></div>
+            <div>
+              <div class="nm">All items</div>
+              <div class="ct">{{ result_count }} item{{ result_count|pluralize }} in library</div>
+            </div>
+            <span class="sp"></span>
+          </div>
+          <div class="cat-b">
+            {% for item in items %}{% include "dashboard/items/_row.html" %}{% endfor %}
+            {% if not items %}
+              <p style="color:var(--text-muted);text-align:center;padding:18px 0;margin:0;">No items found.</p>
+            {% endif %}
+            <a href="{% url 'dashboard:item_add' %}" class="addrow" style="text-decoration:none;">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M12 5v14M5 12h14"/></svg>Add item to library
+            </a>
+            <p x-show="nq !== '' && ![...$root.querySelectorAll('.row')].some(r => r.dataset.name && r.dataset.name.includes(nq))"
+               x-cloak style="color:var(--text-muted);text-align:center;margin-top:14px;">
+              No items match “<span x-text="q"></span>”.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Library reuse hint -->
+    <div class="panel lib">
+      <div class="ph"><h3>Item library</h3></div>
+      <div class="hint">
+        <b>Build once, reuse everywhere</b>
+        Items live in your shared library and can be placed into any branch’s menu — pricing stays per-branch.
+      </div>
+    </div>
+  </div>
 </div>
 {% endblock %}

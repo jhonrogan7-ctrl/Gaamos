@@ -1,15 +1,17 @@
 {% load static %}
-<div class="item-row" data-name="{{ item.name|lower }}"
-     x-show="nq === '' || $el.dataset.name.includes(nq)">
+<div class="row" data-name="{{ item.name|lower }}"
+     x-show="nq === '' || $el.dataset.name.includes(nq)"
+     onclick="window.location.href='{% url 'dashboard:item_edit' item.pk %}'">
+  <span class="grip">⋮⋮</span>
   {% if item.image_url %}
-    <img src="{{ item.image_url }}" class="item-thumb" alt="">
+    <div class="th" style="background-image:url('{{ item.image_url }}')"></div>
   {% else %}
-    <div class="item-thumb" style="display:flex;align-items:center;justify-content:center;color:#9ca3af;font-size:10px;">No img</div>
+    <div class="th" style="background:var(--accent-soft)"></div>
   {% endif %}
-  <div style="flex:1;min-width:0;">
-    <div class="item-name">{{ item.name }}</div>
-    <div class="item-price">Rs {{ item.price }}</div>
-    {% if item.dietary_tags %}<div class="item-tags">{{ item.dietary_tags|join:", " }}</div>{% endif %}
+  <div style="min-width:0;">
+    <div class="rn">{{ item.name }}</div>
+    <div class="rm">{% if item.dietary_tags %}{{ item.dietary_tags|join:" · " }}{% else %}Library item{% endif %}</div>
   </div>
-  <a href="{% url 'dashboard:item_edit' item.pk %}" style="color:#6b7280;font-size:18px;text-decoration:none;padding:4px;">›</a>
+  <span class="pr">Rs {{ item.price }}</span>
+  <div class="rowtoggle"></div>
 </div>
