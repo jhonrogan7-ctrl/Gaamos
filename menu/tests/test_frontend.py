@@ -202,3 +202,14 @@ class LoginSkinTest(TenantTestCase):
         self.assertNotIn('css/dashboard.css', body)
         self.assertNotIn('QR Manu', body)
         self.assertIn('Gaamos', body)
+
+
+class AssetCacheBustTest(TenantTestCase):
+    def test_app_css_links_are_cache_busted(self):
+        # app.css keeps the same URL across rebuilds (no manifest hashing), so the
+        # link must carry a content-version query or stale caches render unstyled.
+        import re
+        for path in ('/', '/dashboard/login/'):
+            r = self.client.get(path)
+            self.assertEqual(r.status_code, 200, path)
+            self.assertRegex(r.content.decode(), r'css/app\.css\?v=\w+', path)
