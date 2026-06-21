@@ -1,21 +1,32 @@
 {% extends "dashboard/base.html" %}
 {% block title %}Home{% endblock %}
 {% block page_title %}{% if restaurant %}{{ restaurant.name }}{% else %}Dashboard{% endif %}{% endblock %}
+{% block subtitle %}Pick a branch to manage its menu{% endblock %}
 
 {% block content %}
-{% for bd in branches_data %}
-<a href="{% url 'dashboard:branch_items' bd.obj.slug %}" class="branch-card">
-  <div class="branch-card-icon">🏪</div>
-  <div class="branch-card-body">
-    <div class="branch-card-name">{{ bd.obj.name }}</div>
-    <div class="branch-card-count">{{ bd.active_count }} / {{ bd.total_count }} items active</div>
-    <div class="branch-progress-bar">
-      <div class="branch-progress-fill" style="width:{{ bd.pct }}%"></div>
+<div class="cards">
+  {% for bd in branches_data %}
+  <a href="{% url 'dashboard:branch_items' bd.obj.slug %}" class="bcard" style="text-decoration:none;color:inherit;">
+    <div class="bh">
+      <div class="bav">{{ bd.obj.name|slice:":1"|upper }}{% with words=bd.obj.name.split %}{% if words|length > 1 %}{{ words.1|slice:":1"|upper }}{% endif %}{% endwith %}</div>
+      <div>
+        <div class="bn">{{ bd.obj.name }}</div>
+        {% if bd.obj.address %}<div class="ba">{{ bd.obj.address }}</div>{% endif %}
+      </div>
     </div>
-  </div>
-  <div class="branch-card-chevron">›</div>
-</a>
-{% empty %}
-<p style="color:var(--text-muted);text-align:center;margin-top:32px;">No branches yet. Add one in Settings.</p>
-{% endfor %}
+    <div class="bstats">
+      <div class="bstat"><div class="n">{{ bd.active_count }}</div><div class="l">ITEMS ON MENU</div></div>
+      <div class="bstat"><div class="n">{{ bd.pct }}%</div><div class="l">OF LIBRARY</div></div>
+    </div>
+    <div style="height:7px;border-radius:999px;background:var(--line);overflow:hidden;margin:2px 0 13px;">
+      <div style="height:100%;width:{{ bd.pct }}%;background:var(--accent-grad);"></div>
+    </div>
+    <div class="bf">
+      <span class="btn btn-ghost" style="flex:1;justify-content:center;">Open menu →</span>
+    </div>
+  </a>
+  {% empty %}
+  <p style="color:var(--ink-3);padding:16px 0;">No branches yet. Add one in Settings.</p>
+  {% endfor %}
+</div>
 {% endblock %}

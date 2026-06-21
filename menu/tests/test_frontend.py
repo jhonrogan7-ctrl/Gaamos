@@ -23,6 +23,12 @@ class CssComponentsTest(SimpleTestCase):
         for sel in ['.btn', '.panel', '.side', '.nav', '.tbl', '.stat', '.focal']:
             self.assertIn(sel, css, f'missing component class {sel}')
 
+    def test_dashboard_shell_layout_present(self):
+        # The .app grid places the sidebar in a fixed left column with main on the
+        # right; without it the shell collapses (sidebar stacks above the content).
+        css = self._css()
+        self.assertIn('232px 1fr', css, 'missing .app sidebar/main grid layout')
+
 
 class DashboardShellTest(TenantTestCase):
     def setUp(self):
@@ -213,3 +219,17 @@ class AssetCacheBustTest(TenantTestCase):
             r = self.client.get(path)
             self.assertEqual(r.status_code, 200, path)
             self.assertRegex(r.content.decode(), r'css/app\.css\?v=\w+', path)
+
+
+class HomeSkinTest(DashboardShellTest):
+    def test_home_uses_card_components(self):
+        from menu.models import Branch
+        Branch.objects.create(company=self.company, name='Main', slug='main')
+        self.login_as(self.owner)
+        r = self.client.get('/dashboard/')
+        self.assertEqual(r.status_code, 200)
+        body = r.content.decode()
+        self.assertIn('class="cards"', body)      # gridded
+        self.assertIn('bcard', body)              # themed card component
+        self.assertNotIn('branch-card', body)     # old unstyled markup gone
+        self.assertNotIn('🏪', body)              # no emoji
