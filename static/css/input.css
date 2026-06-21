@@ -51,6 +51,42 @@ h1,h2,h3 { font-family: var(--hd); }
   @media (max-width: 680px) { .cards, .qgrid { grid-template-columns: 1fr; } }
 
   /* ══════════════════════════════════════════
+     OVERVIEW (KPIs · chart · top list · live feed)
+  ══════════════════════════════════════════ */
+  .stats { display: grid; grid-template-columns: repeat(4,1fr); gap: 14px; margin-bottom: 18px; }
+  .ov-grid { display: grid; grid-template-columns: 1fr 340px; gap: 16px; align-items: start; }
+  @media (max-width: 1100px) { .stats { grid-template-columns: repeat(2,1fr); } .ov-grid { grid-template-columns: 1fr; } }
+  @media (max-width: 680px) { .stats { grid-template-columns: 1fr; } }
+
+  .chart { padding: 16px 18px 12px; }
+  .chart .bars { @apply flex items-end gap-2.5; height: 168px; padding-top: 14px; }
+  .chart .bar { flex: 1; @apply flex flex-col items-center gap-2 justify-end; height: 100%; }
+  .chart .bar .col { width: 100%; max-width: 34px; border-radius: 7px 7px 4px 4px; background: var(--accent-soft); position: relative; }
+  .chart .bar.peak .col { background: var(--accent-grad); }
+  .chart .bar .v { font-size: 10px; font-weight: 800; color: var(--ink-2); font-family: var(--hd); }
+  .chart .bar .d { font-size: 10.5px; color: var(--ink-3); font-weight: 600; }
+
+  .feed .fi { @apply flex items-center gap-2.5; padding: 11px 12px; border-bottom: 1px solid var(--line); }
+  .feed .fi:last-child { border-bottom: none; }
+  .feed .fi .fic { width: 34px; height: 34px; border-radius: 10px; flex-shrink: 0; @apply flex items-center justify-center; }
+  .feed .fi .fic svg { width: 16px; height: 16px; }
+  .feed .fi .ft { font-size: 12.5px; font-weight: 700; }
+  .feed .fi .fm { font-size: 10.5px; color: var(--ink-3); font-weight: 600; margin-top: 1px; }
+  .feed .fi .fr { margin-left: auto; font-family: var(--hd); font-weight: 800; font-size: 12.5px; text-align: right; }
+  .feed .fi .fr small { display: block; font-family: var(--bd); font-weight: 600; font-size: 9.5px; color: var(--ink-3); }
+
+  .toplist { padding: 6px 0; }
+  .toprow { @apply flex items-center gap-2.5; padding: 9px 16px; }
+  .toprow .rk { width: 22px; font-family: var(--hd); font-weight: 800; font-size: 13px; color: var(--ink-3); }
+  .toprow .th { width: 34px; height: 34px; border-radius: 9px; flex-shrink: 0; background-size: cover; background-position: center; }
+  .toprow .tn { font-size: 12.5px; font-weight: 700; }
+  .toprow .tm { font-size: 10px; color: var(--ink-3); font-weight: 600; }
+  .toprow .tv { margin-left: auto; font-family: var(--hd); font-weight: 800; font-size: 13px; color: var(--accent-deep); }
+
+  .lnk { color: var(--accent-deep); font-weight: 800; font-size: 12px; cursor: pointer; text-decoration: none; }
+  .mt16 { margin-top: 16px; }
+
+  /* ══════════════════════════════════════════
      SHARED BUTTON
   ══════════════════════════════════════════ */
   .btn {

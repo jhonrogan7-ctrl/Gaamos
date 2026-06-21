@@ -29,6 +29,13 @@ class CssComponentsTest(SimpleTestCase):
         css = self._css()
         self.assertIn('232px 1fr', css, 'missing .app sidebar/main grid layout')
 
+    def test_overview_analytics_styles_present(self):
+        # Overview's KPI grid, analytics grid, bar chart, top list and live feed
+        # all need their component styles or the screen renders unstyled.
+        css = self._css()
+        for needle in ['1fr 340px', '.bars', '.toprow', '.feed']:
+            self.assertIn(needle, css, f'missing overview style {needle}')
+
 
 class DashboardShellTest(TenantTestCase):
     def setUp(self):
