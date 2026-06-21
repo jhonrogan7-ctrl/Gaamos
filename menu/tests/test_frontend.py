@@ -191,3 +191,14 @@ class GuestFlowTest(TenantTestCase):
     def test_order_submission_targets_place_order_endpoint(self):
         from django.urls import reverse
         self.assertEqual(reverse('place_order'), '/api/order/')
+
+
+class LoginSkinTest(TenantTestCase):
+    def test_login_uses_app_css_and_gaamos_brand(self):
+        r = self.client.get('/dashboard/login/')
+        self.assertEqual(r.status_code, 200)
+        body = r.content.decode()
+        self.assertIn('css/app.css', body)
+        self.assertNotIn('css/dashboard.css', body)
+        self.assertNotIn('QR Manu', body)
+        self.assertIn('Gaamos', body)
