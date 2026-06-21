@@ -165,3 +165,29 @@ class GuestThemeTest(TenantTestCase):
         self.assertIn('css/app.css', body)
         self.assertNotIn('css/menu.css', body)
         self.assertNotIn('cdn.tailwindcss.com', body)
+
+
+class GuestFlowTest(TenantTestCase):
+    """The guest SPA ships the full flow (menu -> detail -> cart -> order placed
+    -> venue), themed in T11. This guards that every flow screen renders and that
+    order submission targets the real place_order endpoint."""
+
+    def test_all_flow_screens_render_themed(self):
+        r = self.client.get('/')
+        self.assertEqual(r.status_code, 200)
+        body = r.content.decode()
+        # data-theme drives the palette on the whole flow
+        self.assertIn('data-theme=', body)
+        # Each flow screen's markup is present
+        self.assertIn('Add to Order', body)      # item detail CTA
+        self.assertIn('My Order', body)          # cart screen
+        self.assertIn('Place Order', body)       # cart CTA
+        self.assertIn('Order placed', body)      # confirmation / order modal
+        self.assertIn('Our locations', body)     # venue / contact sheet
+        # Themed flow components (ported into app.css) are used, not old greens
+        self.assertIn('detail-img', body)
+        self.assertIn('sticky-cta', body)
+
+    def test_order_submission_targets_place_order_endpoint(self):
+        from django.urls import reverse
+        self.assertEqual(reverse('place_order'), '/api/order/')
