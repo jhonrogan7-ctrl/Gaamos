@@ -675,6 +675,36 @@ def table_delete(request, slug, code):
     return redirect('dashboard:branch_qr', slug=branch.slug)
 
 
+@require_membership
+def table_qr(request, slug, code):
+    from django.http import HttpResponse
+    from .utils import render_qr_png, table_qr_url, render_table_qr_pdf
+    branch = get_object_or_404(Branch, slug=slug)
+    if not ensure_can_manage_branch(request, branch):
+        return forbidden(request)
+    table = get_object_or_404(Table, code=code, branch=branch)
+    if request.GET.get('format') == 'pdf':
+        pdf = render_table_qr_pdf(branch, [table])
+        resp = HttpResponse(pdf, content_type='application/pdf')
+        resp['Content-Disposition'] = f'attachment; filename="qr-{branch.slug}-table-{table.code}.pdf"'
+        return resp
+    png = render_qr_png(table_qr_url(branch, table), f"{branch.name} — {table.label}")
+    return HttpResponse(png, content_type='image/png')
+
+
+@require_membership
+def tables_qr_pdf(request, slug):
+    from django.http import HttpResponse
+    from .utils import render_table_qr_pdf
+    branch = get_object_or_404(Branch, slug=slug)
+    if not ensure_can_manage_branch(request, branch):
+        return forbidden(request)
+    pdf = render_table_qr_pdf(branch, list(branch.tables.all()))
+    resp = HttpResponse(pdf, content_type='application/pdf')
+    resp['Content-Disposition'] = f'attachment; filename="qr-{branch.slug}-tables.pdf"'
+    return resp
+
+
 def _next_order(qs):
     return (qs.aggregate(models.Max('display_order'))['display_order__max'] or -1) + 1
 

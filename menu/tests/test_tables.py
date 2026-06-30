@@ -122,3 +122,42 @@ class TableCrudTenancyTest(TenantTestCase):
         self.login_as(self.owner)
         r = self.client.post(f'/dashboard/branch/{stranger.slug}/tables/add/', {'label': 'x'})
         self.assertEqual(r.status_code, 403)
+
+
+class TableQrEndpointTest(TenantTestCase):
+    def setUp(self):
+        super().setUp()
+        U = get_user_model()
+        self.owner = U.objects.create_user('boss', password='pass')
+        self.make_owner(self.owner)
+        self.branch = Branch.objects.create(company=self.company, name='Lake', slug='lake')
+        self.table = Table.objects.create(branch=self.branch, label='7', code='abc123')
+        self.login_as(self.owner)
+
+    def test_table_qr_png(self):
+        r = self.client.get(f'/dashboard/branch/{self.branch.slug}/table/{self.table.code}/qr/')
+        self.assertEqual(r.status_code, 200)
+        self.assertEqual(r['Content-Type'], 'image/png')
+        self.assertTrue(r.content.startswith(b'\x89PNG'))
+
+    def test_table_qr_pdf(self):
+        r = self.client.get(f'/dashboard/branch/{self.branch.slug}/table/{self.table.code}/qr/?format=pdf')
+        self.assertEqual(r.status_code, 200)
+        self.assertEqual(r['Content-Type'], 'application/pdf')
+
+    def test_download_all_pdf(self):
+        Table.objects.create(branch=self.branch, label='8')
+        r = self.client.get(f'/dashboard/branch/{self.branch.slug}/tables/qr.pdf')
+        self.assertEqual(r.status_code, 200)
+        self.assertEqual(r['Content-Type'], 'application/pdf')
+
+    def test_table_qr_forbidden_other_company(self):
+        other = Company.objects.create(name='Other', slug='other')
+        tok = set_current_company(other)
+        try:
+            stranger = Branch.objects.create(company=other, name='Far', slug='far')
+            ftable = Table.objects.create(branch=stranger, label='1', code='zzz999')
+        finally:
+            reset_current_company(tok)
+        r = self.client.get(f'/dashboard/branch/{stranger.slug}/table/{ftable.code}/qr/')
+        self.assertEqual(r.status_code, 403)
