@@ -10,7 +10,7 @@ from django.conf import settings as django_settings
 from django.db import models
 from menu.models import (
     Company, Branch, Category, SubCategory, MenuItem, BranchMenuItem,
-    BranchCategory, BranchSubCategory, BranchItemPlacement, Membership, Table,
+    BranchCategory, BranchSubCategory, BranchItemPlacement, Membership, Table, Order,
 )
 from menu.permissions import (
     require_membership, require_owner, ensure_can_manage_branch, forbidden,
@@ -621,6 +621,46 @@ def branch_orders(request, slug):
         'active_tab': 'branches', 'branch_tab': 'orders', 'branch': branch,
         'has_tables': branch.tables.exists(),
     })
+
+
+def _orders_for(qs, status):
+    qs = qs.select_related('branch', 'table').prefetch_related('items')
+    if status in (Order.STATUS_NEW, Order.STATUS_SERVED):
+        qs = qs.filter(status=status)
+    return list(qs)
+
+
+@require_membership
+def orders_queue(request):
+    status = request.GET.get('status', 'all')
+    return render(request, 'dashboard/_orders_queue.html', {
+        'orders': _orders_for(Order.objects.all(), status),
+        'show_branch': True, 'status_filter': status,
+    })
+
+
+@require_membership
+def branch_orders_queue(request, slug):
+    branch = get_object_or_404(Branch, slug=slug)
+    if not ensure_can_manage_branch(request, branch):
+        return forbidden(request)
+    status = request.GET.get('status', 'all')
+    return render(request, 'dashboard/_orders_queue.html', {
+        'orders': _orders_for(branch.orders.all(), status),
+        'show_branch': False, 'status_filter': status, 'branch': branch,
+    })
+
+
+@require_membership
+@require_POST
+def order_serve(request, pk):
+    order = get_object_or_404(Order, pk=pk)
+    if not ensure_can_manage_branch(request, order.branch):
+        return forbidden(request)
+    if order.status == Order.STATUS_NEW:
+        order.status = Order.STATUS_SERVED
+        order.save(update_fields=['status', 'updated_at'])
+    return redirect(request.META.get('HTTP_REFERER') or 'dashboard:orders')
 
 
 @require_membership

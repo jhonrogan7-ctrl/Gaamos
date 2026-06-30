@@ -86,3 +86,49 @@ class PlaceOrderTest(TenantTestCase):
         r = self._post({'branch': 'lake', 'items': []})
         self.assertEqual(r.status_code, 400)
         self.assertEqual(Order.objects.count(), 0)
+
+
+class OrdersQueueTest(TenantTestCase):
+    def setUp(self):
+        super().setUp()
+        U = get_user_model()
+        self.owner = U.objects.create_user('boss', password='pass')
+        self.make_owner(self.owner)
+        self.branch = Branch.objects.create(company=self.company, name='Lake', slug='lake')
+        self.order = Order.objects.create(branch=self.branch, table_label='7', total=300)
+        OrderItem.objects.create(order=self.order, name='Latte', unit_price=150, qty=2)
+        self.login_as(self.owner)
+
+    def test_branch_queue_renders_real_order(self):
+        body = self.client.get(f'/dashboard/branch/{self.branch.slug}/orders/queue/').content.decode()
+        self.assertIn(f'#{self.order.number}', body)
+        self.assertIn('Latte', body)
+        self.assertIn('Rs 300', body)
+        self.assertIn('Table 7', body)
+
+    def test_global_queue_shows_branch_column(self):
+        body = self.client.get('/dashboard/orders/queue/').content.decode()
+        self.assertIn('Lake', body)  # branch name column
+        self.assertIn(f'#{self.order.number}', body)
+
+    def test_status_filter_new_excludes_served(self):
+        served = Order.objects.create(branch=self.branch, status=Order.STATUS_SERVED, total=0)
+        body = self.client.get('/dashboard/orders/queue/?status=new').content.decode()
+        self.assertIn(f'#{self.order.number}', body)
+        self.assertNotIn(f'#{served.number}', body)
+
+    def test_serve_action_marks_served(self):
+        self.client.post(f'/dashboard/order/{self.order.pk}/serve/')
+        self.order.refresh_from_db()
+        self.assertEqual(self.order.status, Order.STATUS_SERVED)
+
+    def test_serve_forbidden_other_company(self):
+        other = Company.objects.create(name='Other', slug='other')
+        tok = set_current_company(other)
+        try:
+            fbranch = Branch.objects.create(company=other, name='Far', slug='far')
+            forder = Order.objects.create(branch=fbranch, total=0)
+        finally:
+            reset_current_company(tok)
+        r = self.client.post(f'/dashboard/order/{forder.pk}/serve/')
+        self.assertEqual(r.status_code, 403)
