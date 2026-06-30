@@ -1,7 +1,15 @@
+import secrets
+
 from django.core.exceptions import ValidationError
 from django.db import models
 
 from .tenancy import TenantScopedModel
+
+_TABLE_CODE_ALPHABET = 'abcdefghjkmnpqrstuvwxyz23456789'  # no 0/o/1/l/i
+
+
+def generate_table_code(length=6):
+    return ''.join(secrets.choice(_TABLE_CODE_ALPHABET) for _ in range(length))
 
 
 class Company(models.Model):
@@ -172,6 +180,38 @@ class BranchItemPlacement(_SameCompanyMixin, models.Model):
 
     def __str__(self):
         return f"{self.branch.name} / {self.menu_item.name} @ {self.category.name}"
+
+
+class Table(TenantScopedModel):
+    """A physical table within a branch. Its QR encodes ?branch=<slug>&t=<code>;
+    the QR image is rendered on demand (never stored)."""
+    company = models.ForeignKey(Company, on_delete=models.CASCADE, related_name='tables')
+    branch = models.ForeignKey(Branch, on_delete=models.CASCADE, related_name='tables')
+    code = models.CharField(max_length=16, unique=True, blank=True)
+    label = models.CharField(max_length=40)
+    display_order = models.PositiveSmallIntegerField(default=0)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta(TenantScopedModel.Meta):
+        ordering = ['display_order', 'created_at']
+
+    def clean(self):
+        super().clean()
+        if (self.branch_id and self.company_id
+                and self.branch.company_id != self.company_id):
+            raise ValidationError('Table branch must belong to the same company.')
+
+    def save(self, *args, **kwargs):
+        if not self.code:
+            for _ in range(10):
+                candidate = generate_table_code()
+                if not Table.all_objects.filter(code=candidate).exists():
+                    self.code = candidate
+                    break
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+        return f"{self.branch.name} / {self.label}"
 
 
 class Membership(models.Model):

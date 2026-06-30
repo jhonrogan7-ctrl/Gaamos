@@ -12,8 +12,13 @@
 </div>
 
 <div class="lib hint" style="position:static;background:var(--accent-soft);border:1.5px solid var(--accent);color:var(--accent-deep);border-radius:12px;padding:12px 14px;font-size:12px;font-weight:600;margin-bottom:16px">
-  <b style="font-weight:800;display:block;margin-bottom:2px">Ordering not set up yet for {{ branch.name }}</b>
-  Add table-mapped QR codes to configure QR codes to enable ordering — orders will then arrive here, labelled by table.
+  {% if has_tables %}
+    <b style="font-weight:800;display:block;margin-bottom:2px">Ordering ready for {{ branch.name }}</b>
+    Table QRs are set up. Live orders will arrive here, labelled by table, when the ordering phase lands.
+  {% else %}
+    <b style="font-weight:800;display:block;margin-bottom:2px">Ordering not set up yet for {{ branch.name }}</b>
+    Add table QRs to enable ordering — open the QR &amp; Tables tab to create them. Orders will then arrive here, labelled by table.
+  {% endif %}
 </div>
 
 <div class="panel">

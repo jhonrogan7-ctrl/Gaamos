@@ -10,7 +10,7 @@ from django.conf import settings as django_settings
 from django.db import models
 from menu.models import (
     Company, Branch, Category, SubCategory, MenuItem, BranchMenuItem,
-    BranchCategory, BranchSubCategory, BranchItemPlacement, Membership,
+    BranchCategory, BranchSubCategory, BranchItemPlacement, Membership, Table,
 )
 from menu.permissions import (
     require_membership, require_owner, ensure_can_manage_branch, forbidden,
@@ -354,8 +354,9 @@ def subcategory_delete(request, pk):
 
 @require_membership
 def qr_index(request):
+    from django.db.models import Count
     # TenantManager scopes this to request.company automatically
-    branches = Branch.objects.all()
+    branches = Branch.objects.annotate(table_count=Count('tables'))
     return render(request, 'dashboard/qr/index.html', {
         'active_tab': 'qr',
         'branches': branches,
@@ -607,6 +608,7 @@ def branch_qr(request, slug):
         return forbidden(request)
     return render(request, 'dashboard/branch/qr.html', {
         'active_tab': 'branches', 'branch_tab': 'qr', 'branch': branch,
+        'tables': branch.tables.all(),
     })
 
 
@@ -617,7 +619,93 @@ def branch_orders(request, slug):
         return forbidden(request)
     return render(request, 'dashboard/branch/orders.html', {
         'active_tab': 'branches', 'branch_tab': 'orders', 'branch': branch,
+        'has_tables': branch.tables.exists(),
     })
+
+
+@require_membership
+@require_POST
+def tables_add(request, slug):
+    branch = get_object_or_404(Branch, slug=slug)
+    if not ensure_can_manage_branch(request, branch):
+        return forbidden(request)
+    label = request.POST.get('label', '').strip()
+    if label:
+        Table.objects.create(branch=branch, label=label)
+    return redirect('dashboard:branch_qr', slug=branch.slug)
+
+
+@require_membership
+@require_POST
+def tables_bulk(request, slug):
+    branch = get_object_or_404(Branch, slug=slug)
+    if not ensure_can_manage_branch(request, branch):
+        return forbidden(request)
+    try:
+        start = int(request.POST.get('start', ''))
+        end = int(request.POST.get('end', ''))
+    except ValueError:
+        return redirect('dashboard:branch_qr', slug=branch.slug)
+    if start <= end and (end - start + 1) <= 200:
+        existing = set(Table.objects.filter(branch=branch).values_list('label', flat=True))
+        for n in range(start, end + 1):
+            if str(n) not in existing:
+                Table.objects.create(branch=branch, label=str(n), display_order=n)
+    return redirect('dashboard:branch_qr', slug=branch.slug)
+
+
+@require_membership
+@require_POST
+def table_edit(request, slug, code):
+    branch = get_object_or_404(Branch, slug=slug)
+    if not ensure_can_manage_branch(request, branch):
+        return forbidden(request)
+    table = get_object_or_404(Table, code=code, branch=branch)
+    label = request.POST.get('label', '').strip()
+    if label:
+        table.label = label
+        table.save(update_fields=['label'])
+    return redirect('dashboard:branch_qr', slug=branch.slug)
+
+
+@require_membership
+@require_POST
+def table_delete(request, slug, code):
+    branch = get_object_or_404(Branch, slug=slug)
+    if not ensure_can_manage_branch(request, branch):
+        return forbidden(request)
+    get_object_or_404(Table, code=code, branch=branch).delete()
+    return redirect('dashboard:branch_qr', slug=branch.slug)
+
+
+@require_membership
+def table_qr(request, slug, code):
+    from django.http import HttpResponse
+    from .utils import render_qr_png, table_qr_url, render_table_qr_pdf
+    branch = get_object_or_404(Branch, slug=slug)
+    if not ensure_can_manage_branch(request, branch):
+        return forbidden(request)
+    table = get_object_or_404(Table, code=code, branch=branch)
+    if request.GET.get('format') == 'pdf':
+        pdf = render_table_qr_pdf(branch, [table])
+        resp = HttpResponse(pdf, content_type='application/pdf')
+        resp['Content-Disposition'] = f'attachment; filename="qr-{branch.slug}-table-{table.code}.pdf"'
+        return resp
+    png = render_qr_png(table_qr_url(branch, table), f"{branch.name} — {table.label}")
+    return HttpResponse(png, content_type='image/png')
+
+
+@require_membership
+def tables_qr_pdf(request, slug):
+    from django.http import HttpResponse
+    from .utils import render_table_qr_pdf
+    branch = get_object_or_404(Branch, slug=slug)
+    if not ensure_can_manage_branch(request, branch):
+        return forbidden(request)
+    pdf = render_table_qr_pdf(branch, list(branch.tables.all()))
+    resp = HttpResponse(pdf, content_type='application/pdf')
+    resp['Content-Disposition'] = f'attachment; filename="qr-{branch.slug}-tables.pdf"'
+    return resp
 
 
 def _next_order(qs):

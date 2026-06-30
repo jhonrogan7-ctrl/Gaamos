@@ -37,9 +37,63 @@
   </div>
 </div>
 
-<div class="sec-h" style="margin-top:24px;"><h3>Table QRs</h3></div>
-<div class="lib hint" style="position:static;background:var(--accent-soft);border:1.5px solid var(--accent);color:var(--accent-deep);border-radius:12px;padding:12px 14px;font-size:12px;font-weight:600;">
-  <b style="font-weight:800;display:block;margin-bottom:2px">Per-table ordering — coming with ordering</b>
-  Map QRs to tables so scans arrive labelled and orders route to the right table. Lands in the ordering phase.
+<div class="sec-h" style="margin-top:24px;">
+  <h3>Table QRs</h3><span class="mini">One QR per table — scans open this branch's menu tagged by table</span>
+  <div class="sp"></div>
+  {% if tables %}<a href="{% url 'dashboard:tables_qr_pdf' branch.slug %}" class="btn ghost">Download all (PDF)</a>{% endif %}
 </div>
+
+<div class="panel" style="margin-bottom:16px;padding:14px;display:flex;gap:18px;flex-wrap:wrap;align-items:flex-end;">
+  <form method="post" action="{% url 'dashboard:tables_bulk' branch.slug %}" style="display:flex;gap:8px;align-items:flex-end;">
+    {% csrf_token %}
+    <label style="font-size:12px;font-weight:700;color:var(--ink-3);">Add range
+      <span style="display:flex;gap:6px;margin-top:4px;">
+        <input type="number" name="start" min="1" placeholder="1" required style="width:70px;">
+        <input type="number" name="end" min="1" placeholder="20" required style="width:70px;">
+      </span>
+    </label>
+    <button type="submit" class="btn primary">Add tables</button>
+  </form>
+  <form method="post" action="{% url 'dashboard:tables_add' branch.slug %}" style="display:flex;gap:8px;align-items:flex-end;">
+    {% csrf_token %}
+    <label style="font-size:12px;font-weight:700;color:var(--ink-3);">Add one
+      <input type="text" name="label" placeholder="Patio 2" required style="display:block;margin-top:4px;width:120px;">
+    </label>
+    <button type="submit" class="btn ghost">Add table</button>
+  </form>
+</div>
+
+{% if tables %}
+<div class="panel">
+  <table class="tbl">
+    <thead><tr><th>Table</th><th>Code</th><th>QR</th><th></th></tr></thead>
+    <tbody>
+      {% for t in tables %}
+      <tr>
+        <td>
+          <form method="post" action="{% url 'dashboard:table_edit' branch.slug t.code %}" style="display:flex;gap:6px;align-items:center;">
+            {% csrf_token %}
+            <input type="text" name="label" value="{{ t.label }}" style="width:120px;">
+            <button type="submit" class="btn ghost" style="padding:4px 8px;">Save</button>
+          </form>
+        </td>
+        <td class="ono">{{ t.code }}</td>
+        <td>
+          <a href="{% url 'dashboard:table_qr' branch.slug t.code %}" target="_blank" class="btn ghost" style="padding:4px 8px;">Preview</a>
+          <a href="{% url 'dashboard:table_qr' branch.slug t.code %}?format=pdf" class="btn ghost" style="padding:4px 8px;">PDF</a>
+        </td>
+        <td style="text-align:right;">
+          <form method="post" action="{% url 'dashboard:table_delete' branch.slug t.code %}" style="display:inline;">
+            {% csrf_token %}
+            <button type="submit" class="btn ghost" style="padding:4px 8px;color:var(--accent-deep);">Delete</button>
+          </form>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% else %}
+<p style="color:var(--ink-3);font-size:13px;">No table QRs yet. Add a range or a single table above.</p>
+{% endif %}
 {% endblock %}

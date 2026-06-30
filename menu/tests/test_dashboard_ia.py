@@ -105,9 +105,9 @@ class BranchQrTabContentTest(IaTestBase):
         # Menu/general QR management for THIS branch.
         self.assertIn('Generate QR', body)
         self.assertIn(f'/?branch={self.b.slug}', body)
-        # Honest stub for per-table QRs (Spec 2), no false claims.
+        # Table QRs section is real as of Spec 2.
         self.assertIn('Table QRs', body)
-        self.assertIn('coming with ordering', body)
+        self.assertIn('Add table', body)
 
 
 class BranchOrdersTabContentTest(IaTestBase):
@@ -122,7 +122,7 @@ class BranchOrdersTabContentTest(IaTestBase):
         self.assertIn(self.b.name, body)
         # Honest about being sample + gated on QR ordering config.
         self.assertIn('Sample data', body)
-        self.assertIn('configure QR codes to enable ordering', body)
+        self.assertIn('Add table QRs to enable ordering', body)
 
 
 class GlobalQrAggregateTest(IaTestBase):

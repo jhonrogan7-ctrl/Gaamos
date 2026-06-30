@@ -48,6 +48,7 @@
       </form>
       <a href="/?branch={{ branch.slug }}" target="_blank" class="btn ghost" style="width:100%;justify-content:center;margin-top:4px;">Preview</a>
     {% endif %}
+    <div class="mini" style="margin-top:4px;">{{ branch.table_count }} table QR{{ branch.table_count|pluralize }}</div>
     <a href="{% url 'dashboard:branch_qr' branch.slug %}" class="btn btn-ghost" style="width:100%;justify-content:center;margin-top:4px;">Manage in branch →</a>
   </div>
   {% empty %}
