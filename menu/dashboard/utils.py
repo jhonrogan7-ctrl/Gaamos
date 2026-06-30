@@ -59,11 +59,20 @@ def render_qr_png(url, caption):
     return out.getvalue()
 
 
-def generate_qr_for_branch(branch):
-    # NOTE: In multi-tenant Gaamos the QR URL will be subdomain-rooted, e.g.
-    # https://<company-slug>.gaamos.com/?branch=<branch-slug>. For now we keep
-    # the same URL shape as the donor while Phase 4 (custom domains) lands.
-    url = f"https://thejuicerycafe.cafe/?branch={branch.slug}"
+def request_base_url(request):
+    """Scheme + host the operator is on, e.g. https://testco.localhost:8005.
+    The tenant is resolved from this host, so a QR encoded with it round-trips
+    back to the same company's menu. (Phase 4 custom domains may add a canonical
+    override; until then, mirror the operator's host.)"""
+    return f"{request.scheme}://{request.get_host()}"
+
+
+def general_qr_url(base_url, branch):
+    return f"{base_url}/?branch={branch.slug}"
+
+
+def generate_qr_for_branch(branch, base_url):
+    url = general_qr_url(base_url, branch)
     png = render_qr_png(url, COMPANY_NAME)
     dest_dir = os.path.join(settings.MEDIA_ROOT, 'qr')
     os.makedirs(dest_dir, exist_ok=True)
@@ -77,16 +86,16 @@ def generate_qr_for_branch(branch):
     return path
 
 
-def table_qr_url(branch, table):
-    return f"https://thejuicerycafe.cafe/?branch={branch.slug}&t={table.code}"
+def table_qr_url(base_url, branch, table):
+    return f"{base_url}/?branch={branch.slug}&t={table.code}"
 
 
-def render_table_qr_pdf(branch, tables):
+def render_table_qr_pdf(base_url, branch, tables):
     """One PDF page per table QR. Rendered on demand; nothing is stored."""
     import io
     pages = []
     for t in tables:
-        png = render_qr_png(table_qr_url(branch, t), f"{branch.name} — {t.label}")
+        png = render_qr_png(table_qr_url(base_url, branch, t), f"{branch.name} — {t.label}")
         pages.append(Image.open(io.BytesIO(png)).convert('RGB'))
     out = io.BytesIO()
     if pages:
