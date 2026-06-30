@@ -143,8 +143,9 @@ class GlobalQrAggregateTest(IaTestBase):
 
 
 class GlobalOrdersReframeTest(IaTestBase):
-    def test_global_orders_is_all_branches_sample(self):
+    def test_global_orders_is_all_branches_live_queue(self):
+        # Spec 3: global Orders is the real all-branches live queue (no longer a sample).
         self.login_as(self.owner)
         body = self.client.get('/dashboard/orders/').content.decode()
         self.assertIn('All branches', body)
-        self.assertIn('Sample data', body)   # still honest
+        self.assertIn('Live order queue', body)
