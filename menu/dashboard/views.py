@@ -10,7 +10,7 @@ from django.conf import settings as django_settings
 from django.db import models
 from menu.models import (
     Company, Branch, Category, SubCategory, MenuItem, BranchMenuItem,
-    BranchCategory, BranchSubCategory, BranchItemPlacement, Membership,
+    BranchCategory, BranchSubCategory, BranchItemPlacement, Membership, Table,
 )
 from menu.permissions import (
     require_membership, require_owner, ensure_can_manage_branch, forbidden,
@@ -618,6 +618,61 @@ def branch_orders(request, slug):
     return render(request, 'dashboard/branch/orders.html', {
         'active_tab': 'branches', 'branch_tab': 'orders', 'branch': branch,
     })
+
+
+@require_membership
+@require_POST
+def tables_add(request, slug):
+    branch = get_object_or_404(Branch, slug=slug)
+    if not ensure_can_manage_branch(request, branch):
+        return forbidden(request)
+    label = request.POST.get('label', '').strip()
+    if label:
+        Table.objects.create(branch=branch, label=label)
+    return redirect('dashboard:branch_qr', slug=branch.slug)
+
+
+@require_membership
+@require_POST
+def tables_bulk(request, slug):
+    branch = get_object_or_404(Branch, slug=slug)
+    if not ensure_can_manage_branch(request, branch):
+        return forbidden(request)
+    try:
+        start = int(request.POST.get('start', ''))
+        end = int(request.POST.get('end', ''))
+    except ValueError:
+        return redirect('dashboard:branch_qr', slug=branch.slug)
+    if start <= end and (end - start + 1) <= 200:
+        existing = set(Table.objects.filter(branch=branch).values_list('label', flat=True))
+        for n in range(start, end + 1):
+            if str(n) not in existing:
+                Table.objects.create(branch=branch, label=str(n), display_order=n)
+    return redirect('dashboard:branch_qr', slug=branch.slug)
+
+
+@require_membership
+@require_POST
+def table_edit(request, slug, code):
+    branch = get_object_or_404(Branch, slug=slug)
+    if not ensure_can_manage_branch(request, branch):
+        return forbidden(request)
+    table = get_object_or_404(Table, code=code, branch=branch)
+    label = request.POST.get('label', '').strip()
+    if label:
+        table.label = label
+        table.save(update_fields=['label'])
+    return redirect('dashboard:branch_qr', slug=branch.slug)
+
+
+@require_membership
+@require_POST
+def table_delete(request, slug, code):
+    branch = get_object_or_404(Branch, slug=slug)
+    if not ensure_can_manage_branch(request, branch):
+        return forbidden(request)
+    get_object_or_404(Table, code=code, branch=branch).delete()
+    return redirect('dashboard:branch_qr', slug=branch.slug)
 
 
 def _next_order(qs):

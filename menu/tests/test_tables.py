@@ -68,3 +68,57 @@ class QrHelpersTest(TenantTestCase):
         tables = [Table.objects.create(branch=self.branch, label=str(i)) for i in range(2)]
         data = render_table_qr_pdf(self.branch, tables)
         self.assertTrue(data.startswith(b'%PDF'))
+
+
+class TableCrudTest(TenantTestCase):
+    def setUp(self):
+        super().setUp()
+        U = get_user_model()
+        self.owner = U.objects.create_user('boss', password='pass')
+        self.make_owner(self.owner)
+        self.branch = Branch.objects.create(company=self.company, name='Lake', slug='lake')
+        self.login_as(self.owner)
+
+    def test_add_one(self):
+        r = self.client.post(f'/dashboard/branch/{self.branch.slug}/tables/add/', {'label': 'Patio 2'})
+        self.assertEqual(r.status_code, 302)
+        self.assertEqual(Table.objects.filter(branch=self.branch, label='Patio 2').count(), 1)
+
+    def test_bulk_range_creates_and_skips_existing(self):
+        Table.objects.create(branch=self.branch, label='2')
+        self.client.post(f'/dashboard/branch/{self.branch.slug}/tables/bulk/', {'start': '1', 'end': '4'})
+        labels = sorted(Table.objects.filter(branch=self.branch).values_list('label', flat=True))
+        self.assertEqual(labels, ['1', '2', '3', '4'])  # '2' not duplicated
+
+    def test_bulk_caps_oversized_range(self):
+        self.client.post(f'/dashboard/branch/{self.branch.slug}/tables/bulk/', {'start': '1', 'end': '500'})
+        self.assertEqual(Table.objects.filter(branch=self.branch).count(), 0)
+
+    def test_edit_keeps_code(self):
+        t = Table.objects.create(branch=self.branch, label='7')
+        code = t.code
+        self.client.post(f'/dashboard/branch/{self.branch.slug}/table/{t.code}/edit/', {'label': 'Window'})
+        t.refresh_from_db()
+        self.assertEqual(t.label, 'Window')
+        self.assertEqual(t.code, code)
+
+    def test_delete(self):
+        t = Table.objects.create(branch=self.branch, label='7')
+        self.client.post(f'/dashboard/branch/{self.branch.slug}/table/{t.code}/delete/')
+        self.assertFalse(Table.objects.filter(pk=t.pk).exists())
+
+
+class TableCrudTenancyTest(TenantTestCase):
+    def test_other_company_branch_forbidden(self):
+        U = get_user_model()
+        self.owner = U.objects.create_user('boss', password='pass')
+        self.make_owner(self.owner)
+        other = Company.objects.create(name='Other', slug='other')
+        tok = set_current_company(other)
+        try:
+            stranger = Branch.objects.create(company=other, name='Far', slug='far')
+        finally:
+            reset_current_company(tok)
+        self.login_as(self.owner)
+        r = self.client.post(f'/dashboard/branch/{stranger.slug}/tables/add/', {'label': 'x'})
+        self.assertEqual(r.status_code, 403)
