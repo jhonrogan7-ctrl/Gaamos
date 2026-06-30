@@ -354,8 +354,9 @@ def subcategory_delete(request, pk):
 
 @require_membership
 def qr_index(request):
+    from django.db.models import Count
     # TenantManager scopes this to request.company automatically
-    branches = Branch.objects.all()
+    branches = Branch.objects.annotate(table_count=Count('tables'))
     return render(request, 'dashboard/qr/index.html', {
         'active_tab': 'qr',
         'branches': branches,

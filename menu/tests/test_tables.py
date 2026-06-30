@@ -205,3 +205,19 @@ class OrdersGateTest(TenantTestCase):
         body = self.client.get(f'/dashboard/branch/{self.branch.slug}/orders/').content.decode()
         self.assertIn('Ordering ready', body)
         self.assertIn('Sample data', body)  # queue still sample until Spec 3
+
+
+class GlobalQrCountTest(TenantTestCase):
+    def setUp(self):
+        super().setUp()
+        U = get_user_model()
+        self.owner = U.objects.create_user('boss', password='pass')
+        self.make_owner(self.owner)
+        self.branch = Branch.objects.create(company=self.company, name='Lake', slug='lake')
+        self.login_as(self.owner)
+
+    def test_aggregate_shows_table_count(self):
+        Table.objects.create(branch=self.branch, label='1')
+        Table.objects.create(branch=self.branch, label='2')
+        body = self.client.get('/dashboard/qr/').content.decode()
+        self.assertIn('2 table QRs', body)
