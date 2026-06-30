@@ -1,6 +1,6 @@
 {% extends "dashboard/base.html" %}
 {% block title %}QR Codes{% endblock %}
-{% block page_title %}QR Codes<small>One QR per branch — scan to open the menu</small>{% endblock %}
+{% block page_title %}QR Codes<small>All branches — manage each branch's QR in its tab</small>{% endblock %}
 
 {% block content %}
 <div class="sec-h">
@@ -13,7 +13,8 @@
 </div>
 
 <div class="lib hint" style="position:static;background:var(--accent-soft);border:1.5px solid var(--accent);color:var(--accent-deep);border-radius:12px;padding:12px 14px;font-size:12px;font-weight:600;margin-bottom:16px">
-  <b style="font-weight:800;display:block;margin-bottom:2px">Per-table ordering</b>Each table gets its own QR. Scans land on the menu pre-tagged with the table number, so orders arrive labelled — no app, no login.
+  <b style="font-weight:800;display:block;margin-bottom:2px">Cross-branch overview</b>
+  Each branch has its own QR. Open a branch to generate, download, or (soon) map QRs to tables.
 </div>
 
 <div class="qgrid">
@@ -47,6 +48,7 @@
       </form>
       <a href="/?branch={{ branch.slug }}" target="_blank" class="btn ghost" style="width:100%;justify-content:center;margin-top:4px;">Preview</a>
     {% endif %}
+    <a href="{% url 'dashboard:branch_qr' branch.slug %}" class="btn btn-ghost" style="width:100%;justify-content:center;margin-top:4px;">Manage in branch →</a>
   </div>
   {% empty %}
   <p style="grid-column:1/-1;color:var(--ink-3);text-align:center;margin-top:32px;">No branches. Add one in Settings.</p>

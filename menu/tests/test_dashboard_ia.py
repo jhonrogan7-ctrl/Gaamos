@@ -123,3 +123,21 @@ class BranchOrdersTabContentTest(IaTestBase):
         # Honest about being sample + gated on QR ordering config.
         self.assertIn('Sample data', body)
         self.assertIn('configure QR codes to enable ordering', body)
+
+
+class GlobalQrAggregateTest(IaTestBase):
+    def setUp(self):
+        super().setUp()
+        self.b = self.branch()
+        self.login_as(self.owner)
+
+    def test_global_qr_links_into_branch_tab_and_no_false_claim(self):
+        body = self.client.get('/dashboard/qr/').content.decode()
+        # Links into the per-branch QR tab (the single editing surface).
+        self.assertIn(f'/dashboard/branch/{self.b.slug}/qr/', body)
+        # The old inaccurate "each table gets its own QR" claim is gone.
+        self.assertNotIn('Each table gets its own QR', body)
+
+    def test_branches_card_qr_action_targets_branch_tab(self):
+        body = self.client.get('/dashboard/branches/').content.decode()
+        self.assertIn(f'/dashboard/branch/{self.b.slug}/qr/', body)
