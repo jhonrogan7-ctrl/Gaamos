@@ -39,6 +39,8 @@ urlpatterns = [
     path('settings/members/<int:pk>/delete/', views.member_delete, name='member_delete'),
 
     path('branch/<slug:slug>/', views.branch_items, name='branch_items'),
+    path('branch/<slug:slug>/qr/', views.branch_qr, name='branch_qr'),
+    path('branch/<slug:slug>/orders/', views.branch_orders, name='branch_orders'),
     path('branch/<slug:slug>/composition/', views.branch_composition, name='branch_composition'),
     path('branch/<slug:slug>/item/<int:pk>/price/', views.branch_item_price, name='branch_item_price'),
     path('branch/<slug:slug>/category/', views.branch_category_add, name='branch_category_add'),

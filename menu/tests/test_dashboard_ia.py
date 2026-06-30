@@ -1,4 +1,8 @@
+from pathlib import Path
+
+from django.conf import settings
 from django.contrib.auth import get_user_model
+from django.test import SimpleTestCase
 from menu.models import Branch
 from menu.tests.base import TenantTestCase
 
@@ -29,3 +33,62 @@ class SidebarIaTest(IaTestBase):
         for grp in ('>Company<', '>Operations<', '>Account<'):
             self.assertIn(grp, body)
         self.assertNotIn('>Manage<', body)
+
+
+class BranchTabShellTest(IaTestBase):
+    def setUp(self):
+        super().setUp()
+        self.b = self.branch()
+        self.login_as(self.owner)
+
+    def test_menu_tab_shows_tab_bar_active_menu(self):
+        body = self.client.get(f'/dashboard/branch/{self.b.slug}/').content.decode()
+        # Tab bar present with all three tabs.
+        self.assertIn('class="tabs"', body)
+        for label in ('Menu', 'QR &amp; Tables', 'Orders'):
+            self.assertIn(label, body)
+        # Menu tab is active.
+        self.assertIn('class="tab on">Menu', body)
+
+    def test_qr_tab_renders_active(self):
+        r = self.client.get(f'/dashboard/branch/{self.b.slug}/qr/')
+        self.assertEqual(r.status_code, 200)
+        body = r.content.decode()
+        self.assertIn('class="tabs"', body)
+        self.assertIn('class="tab on">QR &amp; Tables', body)
+
+    def test_orders_tab_renders_active(self):
+        r = self.client.get(f'/dashboard/branch/{self.b.slug}/orders/')
+        self.assertEqual(r.status_code, 200)
+        body = r.content.decode()
+        self.assertIn('class="tabs"', body)
+        self.assertIn('class="tab on">Orders', body)
+
+    def test_branch_tabs_keep_branches_nav_highlighted(self):
+        # active_tab='branches' so the sidebar Branches entry stays lit on all tabs.
+        for suffix in ('', 'qr/', 'orders/'):
+            body = self.client.get(f'/dashboard/branch/{self.b.slug}/{suffix}').content.decode()
+            self.assertIn('class="nav on"', body)
+
+
+class BranchTabTenancyTest(IaTestBase):
+    def test_other_company_branch_forbidden(self):
+        from menu.models import Company
+        from menu.tenancy import set_current_company, reset_current_company
+        other = Company.objects.create(name='Other', slug='other')
+        tok = set_current_company(other)
+        try:
+            stranger = Branch.objects.create(company=other, name='Far', slug='far')
+        finally:
+            reset_current_company(tok)
+        self.login_as(self.owner)  # owner of self.company, not `other`
+        for suffix in ('qr/', 'orders/'):
+            r = self.client.get(f'/dashboard/branch/{stranger.slug}/{suffix}')
+            self.assertEqual(r.status_code, 403, suffix)
+
+
+class TabCssTest(SimpleTestCase):
+    def test_tab_component_present(self):
+        css = (Path(settings.BASE_DIR) / 'static/css/app.css').read_text()
+        for sel in ('.tabs', '.tab'):
+            self.assertIn(sel, css, f'missing tab style {sel}')

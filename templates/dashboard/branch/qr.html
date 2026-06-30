@@ -1,0 +1,10 @@
+{% extends "dashboard/base.html" %}
+{% block title %}{{ branch.name }} — QR & Tables{% endblock %}
+{% block page_title %}{{ branch.name }}<small>QR & Tables</small>{% endblock %}
+{% block header_action %}
+  <a href="{% url 'dashboard:branches' %}" style="color:rgba(255,255,255,.7);text-decoration:none;font-size:13px;">← Branches</a>
+{% endblock %}
+{% block content %}
+{% include 'dashboard/branch/_tabs.html' %}
+<div class="sec-h"><h3>QR &amp; Tables</h3></div>
+{% endblock %}

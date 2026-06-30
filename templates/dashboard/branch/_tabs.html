@@ -1,0 +1,6 @@
+{% comment %}Branch detail tab bar. Expects `branch` and `branch_tab` (menu|qr|orders).{% endcomment %}
+<nav class="tabs">
+  <a href="{% url 'dashboard:branch_items' branch.slug %}" class="tab {% if branch_tab == 'menu' %}on{% endif %}">Menu</a>
+  <a href="{% url 'dashboard:branch_qr' branch.slug %}" class="tab {% if branch_tab == 'qr' %}on{% endif %}">QR &amp; Tables</a>
+  <a href="{% url 'dashboard:branch_orders' branch.slug %}" class="tab {% if branch_tab == 'orders' %}on{% endif %}">Orders</a>
+</nav>
