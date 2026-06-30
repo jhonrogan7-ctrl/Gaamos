@@ -73,13 +73,14 @@ class OverviewStubTest(DashboardShellTest):
 
 
 class OrdersStubTest(DashboardShellTest):
-    def test_orders_renders_sample(self):
+    def test_orders_renders_live_queue(self):
+        # Spec 3: global Orders renders the real live-queue table (empty here).
         self.login_as(self.owner)
         r = self.client.get('/dashboard/orders/')
         self.assertEqual(r.status_code, 200)
         body = r.content.decode()
         self.assertIn('class="tbl"', body)
-        self.assertIn('Sample data', body)
+        self.assertIn('Live order queue', body)
 
 
 class BranchesScreenTest(DashboardShellTest):

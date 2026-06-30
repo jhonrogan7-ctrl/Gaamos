@@ -120,9 +120,8 @@ class BranchOrdersTabContentTest(IaTestBase):
         body = self.client.get(f'/dashboard/branch/{self.b.slug}/orders/').content.decode()
         # Scoped to this branch.
         self.assertIn(self.b.name, body)
-        # Honest about being sample + gated on QR ordering config.
-        self.assertIn('Sample data', body)
-        self.assertIn('Add table QRs to enable ordering', body)
+        # Spec 3: ordering is live; with no tables the branch shows takeaway ordering.
+        self.assertIn('Takeaway ordering active', body)
 
 
 class GlobalQrAggregateTest(IaTestBase):
@@ -144,8 +143,9 @@ class GlobalQrAggregateTest(IaTestBase):
 
 
 class GlobalOrdersReframeTest(IaTestBase):
-    def test_global_orders_is_all_branches_sample(self):
+    def test_global_orders_is_all_branches_live_queue(self):
+        # Spec 3: global Orders is the real all-branches live queue (no longer a sample).
         self.login_as(self.owner)
         body = self.client.get('/dashboard/orders/').content.decode()
         self.assertIn('All branches', body)
-        self.assertIn('Sample data', body)   # still honest
+        self.assertIn('Live order queue', body)

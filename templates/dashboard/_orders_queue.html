@@ -1,0 +1,32 @@
+{% comment %}Order queue rows. Expects: orders, show_branch (bool), status_filter.{% endcomment %}
+<table class="tbl">
+  <thead>
+    <tr>
+      <th>Order</th>{% if show_branch %}<th>Branch</th>{% endif %}<th>Table</th>
+      <th>Items</th><th>Total</th><th>Placed</th><th>Status</th><th></th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for o in orders %}
+    <tr>
+      <td class="ono">#{{ o.number }}</td>
+      {% if show_branch %}<td>{{ o.branch.name }}</td>{% endif %}
+      <td>{% if o.table_label %}<span class="tablechip">Table {{ o.table_label }}</span>{% else %}<span class="tablechip">Takeaway</span>{% endif %}</td>
+      <td>{% for i in o.items.all %}{{ i.name }} ×{{ i.qty }}{% if not forloop.last %}, {% endif %}{% endfor %}</td>
+      <td class="ono">Rs {{ o.total }}</td>
+      <td>{{ o.created_at|timesince }} ago</td>
+      <td><span class="status {% if o.status == 'served' %}done{% else %}new{% endif %}">{{ o.get_status_display }}</span></td>
+      <td>
+        {% if o.status == 'new' %}
+        <form method="post" action="{% url 'dashboard:order_serve' o.pk %}" style="display:inline;">
+          {% csrf_token %}
+          <button type="submit" class="lnk" style="background:none;border:none;cursor:pointer;">Mark served</button>
+        </form>
+        {% endif %}
+      </td>
+    </tr>
+    {% empty %}
+    <tr><td colspan="{% if show_branch %}8{% else %}7{% endif %}" style="color:var(--ink-3);padding:16px;">No orders yet.</td></tr>
+    {% endfor %}
+  </tbody>
+</table>

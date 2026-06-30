@@ -1,16 +1,18 @@
+import asyncio
 import json
 import os
 
+from asgiref.sync import sync_to_async
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import authenticate, login, logout
-from django.http import JsonResponse
+from django.http import JsonResponse, StreamingHttpResponse
 from django.views.decorators.http import require_POST
 from django.conf import settings as django_settings
 
 from django.db import models
 from menu.models import (
     Company, Branch, Category, SubCategory, MenuItem, BranchMenuItem,
-    BranchCategory, BranchSubCategory, BranchItemPlacement, Membership, Table,
+    BranchCategory, BranchSubCategory, BranchItemPlacement, Membership, Table, Order,
 )
 from menu.permissions import (
     require_membership, require_owner, ensure_can_manage_branch, forbidden,
@@ -74,7 +76,12 @@ def overview(request):
 
 @require_membership
 def orders(request):
-    return render(request, 'dashboard/orders.html', {'active_tab': 'orders'})
+    status = request.GET.get('status', 'all')
+    return render(request, 'dashboard/orders.html', {
+        'active_tab': 'orders',
+        'orders': _orders_for(Order.objects.all(), status),
+        'show_branch': True, 'status_filter': status,
+    })
 
 
 @require_membership
@@ -617,10 +624,96 @@ def branch_orders(request, slug):
     branch = get_object_or_404(Branch, slug=slug)
     if not ensure_can_manage_branch(request, branch):
         return forbidden(request)
+    status = request.GET.get('status', 'all')
     return render(request, 'dashboard/branch/orders.html', {
         'active_tab': 'branches', 'branch_tab': 'orders', 'branch': branch,
         'has_tables': branch.tables.exists(),
+        'orders': _orders_for(branch.orders.all(), status),
+        'show_branch': False, 'status_filter': status,
     })
+
+
+def _orders_for(qs, status):
+    qs = qs.select_related('branch', 'table').prefetch_related('items')
+    if status in (Order.STATUS_NEW, Order.STATUS_SERVED):
+        qs = qs.filter(status=status)
+    return list(qs)
+
+
+@require_membership
+def orders_queue(request):
+    status = request.GET.get('status', 'all')
+    return render(request, 'dashboard/_orders_queue.html', {
+        'orders': _orders_for(Order.objects.all(), status),
+        'show_branch': True, 'status_filter': status,
+    })
+
+
+@require_membership
+def branch_orders_queue(request, slug):
+    branch = get_object_or_404(Branch, slug=slug)
+    if not ensure_can_manage_branch(request, branch):
+        return forbidden(request)
+    status = request.GET.get('status', 'all')
+    return render(request, 'dashboard/_orders_queue.html', {
+        'orders': _orders_for(branch.orders.all(), status),
+        'show_branch': False, 'status_filter': status, 'branch': branch,
+    })
+
+
+def orders_payload(company_id, branch_id, after_id):
+    """Sync, async-safe: explicit company filter (no contextvar reliance)."""
+    qs = Order.all_objects.filter(company_id=company_id, pk__gt=after_id)
+    if branch_id is not None:
+        qs = qs.filter(branch_id=branch_id)
+    qs = qs.order_by('pk')
+    events, max_id = [], after_id
+    for o in qs:
+        events.append(f"data: #{o.number} {o.status}\n\n")
+        max_id = o.pk
+    return events, max_id
+
+
+async def _order_event_stream(company_id, branch_id, once):
+    after_id = 0
+    while True:
+        events, after_id = await sync_to_async(orders_payload)(company_id, branch_id, after_id)
+        for e in events:
+            yield e.encode()
+        if once:
+            return
+        await asyncio.sleep(2)
+
+
+@require_membership
+def orders_stream(request):
+    once = request.GET.get('once') == '1'
+    return StreamingHttpResponse(
+        _order_event_stream(request.company.id, None, once),
+        content_type='text/event-stream')
+
+
+@require_membership
+def branch_orders_stream(request, slug):
+    branch = get_object_or_404(Branch, slug=slug)
+    if not ensure_can_manage_branch(request, branch):
+        return forbidden(request)
+    once = request.GET.get('once') == '1'
+    return StreamingHttpResponse(
+        _order_event_stream(request.company.id, branch.id, once),
+        content_type='text/event-stream')
+
+
+@require_membership
+@require_POST
+def order_serve(request, pk):
+    order = get_object_or_404(Order, pk=pk)
+    if not ensure_can_manage_branch(request, order.branch):
+        return forbidden(request)
+    if order.status == Order.STATUS_NEW:
+        order.status = Order.STATUS_SERVED
+        order.save(update_fields=['status', 'updated_at'])
+    return redirect(request.META.get('HTTP_REFERER') or 'dashboard:orders')
 
 
 @require_membership

@@ -164,6 +164,7 @@ class PlaceOrderTest(TenantTestCase):
     def setUp(self):
         super().setUp()
         self.cat = Category.objects.create(name="Brunch", slug="brunch", icon_key="brunch", display_order=1)
+        self.branch = Branch.objects.create(company=self.company, name="Main", slug="main")
         self.item_a = MenuItem.objects.create(
             name="Item A", slug="item-a", price=200, order_count=0,
         )
@@ -174,7 +175,7 @@ class PlaceOrderTest(TenantTestCase):
     def test_place_order_increments_order_count_by_qty(self):
         resp = self.client.post(
             '/api/order/',
-            data=json.dumps({'items': [
+            data=json.dumps({'branch': 'main', 'items': [
                 {'id': self.item_a.id, 'qty': 3},
                 {'id': self.item_b.id, 'qty': 2},
             ]}),
@@ -187,11 +188,13 @@ class PlaceOrderTest(TenantTestCase):
         self.assertEqual(self.item_a.order_count, 3)
         self.assertEqual(self.item_b.order_count, 7)
 
-    def test_place_order_empty_items_is_ok_noop(self):
+    def test_place_order_empty_items_rejected(self):
+        # Spec 3: an order needs at least one valid item — empty is a 400, no-op.
         resp = self.client.post(
-            '/api/order/', data=json.dumps({'items': []}), content_type='application/json',
+            '/api/order/', data=json.dumps({'branch': 'main', 'items': []}),
+            content_type='application/json',
         )
-        self.assertEqual(resp.status_code, 200)
+        self.assertEqual(resp.status_code, 400)
         self.item_b.refresh_from_db()
         self.assertEqual(self.item_b.order_count, 5)
 
@@ -199,17 +202,18 @@ class PlaceOrderTest(TenantTestCase):
         resp = self.client.post('/api/order/', data='not json', content_type='application/json')
         self.assertIn(resp.status_code, (200, 400))
 
-    def test_place_order_ignores_unknown_and_bad_qty(self):
+    def test_place_order_all_bad_items_rejected(self):
+        # Unknown id + non-positive qty are skipped; with no valid lines → 400, no-op.
         resp = self.client.post(
             '/api/order/',
-            data=json.dumps({'items': [
+            data=json.dumps({'branch': 'main', 'items': [
                 {'id': 999999, 'qty': 2},
                 {'id': self.item_a.id, 'qty': 0},
                 {'id': self.item_a.id, 'qty': -4},
             ]}),
             content_type='application/json',
         )
-        self.assertEqual(resp.status_code, 200)
+        self.assertEqual(resp.status_code, 400)
         self.item_a.refresh_from_db()
         self.assertEqual(self.item_a.order_count, 0)
 
@@ -232,6 +236,7 @@ class PlaceOrderTenantIsolationTest(TestCase):
             content_type='application/json',
             HTTP_HOST='aco.zxyn.online',   # resolves to company A
         )
-        self.assertEqual(resp.status_code, 200)
+        # B's item is outside A's tenant scope → filtered out → no valid items → 400.
+        self.assertEqual(resp.status_code, 400)
         self.item_b.refresh_from_db()
         self.assertEqual(self.item_b.order_count, 0)  # B's item untouched by an A request

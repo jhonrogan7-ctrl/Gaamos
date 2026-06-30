@@ -3,7 +3,7 @@ import secrets
 from django.core.exceptions import ValidationError
 from django.db import models
 
-from .tenancy import TenantScopedModel
+from .tenancy import TenantScopedModel, get_current_company
 
 _TABLE_CODE_ALPHABET = 'abcdefghjkmnpqrstuvwxyz23456789'  # no 0/o/1/l/i
 
@@ -212,6 +212,62 @@ class Table(TenantScopedModel):
 
     def __str__(self):
         return f"{self.branch.name} / {self.label}"
+
+
+class Order(TenantScopedModel):
+    STATUS_NEW = 'new'
+    STATUS_SERVED = 'served'
+    STATUS_CHOICES = [(STATUS_NEW, 'New'), (STATUS_SERVED, 'Served')]
+
+    company = models.ForeignKey(Company, on_delete=models.CASCADE, related_name='orders')
+    branch = models.ForeignKey(Branch, on_delete=models.CASCADE, related_name='orders')
+    table = models.ForeignKey(Table, on_delete=models.SET_NULL, null=True, blank=True, related_name='orders')
+    table_label = models.CharField(max_length=40, blank=True)  # snapshot; "" => Takeaway
+    number = models.PositiveIntegerField(default=0)
+    status = models.CharField(max_length=12, choices=STATUS_CHOICES, default=STATUS_NEW)
+    total = models.PositiveIntegerField(default=0)  # Rs
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta(TenantScopedModel.Meta):
+        ordering = ['-created_at']
+        constraints = [models.UniqueConstraint(fields=['company', 'number'],
+                                               name='uniq_order_company_number')]
+
+    def clean(self):
+        super().clean()
+        if (self.table_id and self.company_id
+                and self.table.company_id != self.company_id):
+            raise ValidationError('Order table must belong to the same company.')
+
+    def save(self, *args, **kwargs):
+        if self.company_id is None:
+            current = get_current_company()
+            if current is not None:
+                self.company = current
+        if not self.number and self.company_id:
+            last = (Order.all_objects.filter(company_id=self.company_id)
+                    .aggregate(m=models.Max('number'))['m'] or 0)
+            self.number = last + 1
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+        return f"#{self.number} @ {self.branch.name}"
+
+
+class OrderItem(models.Model):
+    order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name='items')
+    menu_item = models.ForeignKey(MenuItem, on_delete=models.SET_NULL, null=True, blank=True)
+    name = models.CharField(max_length=120)       # snapshot
+    unit_price = models.PositiveIntegerField()    # Rs snapshot
+    qty = models.PositiveSmallIntegerField()
+
+    @property
+    def line_total(self):
+        return self.unit_price * self.qty
+
+    def __str__(self):
+        return f"{self.name} ×{self.qty}"
 
 
 class Membership(models.Model):
