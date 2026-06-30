@@ -161,3 +161,26 @@ class TableQrEndpointTest(TenantTestCase):
             reset_current_company(tok)
         r = self.client.get(f'/dashboard/branch/{stranger.slug}/table/{ftable.code}/qr/')
         self.assertEqual(r.status_code, 403)
+
+
+class QrTabContentTest(TenantTestCase):
+    def setUp(self):
+        super().setUp()
+        U = get_user_model()
+        self.owner = U.objects.create_user('boss', password='pass')
+        self.make_owner(self.owner)
+        self.branch = Branch.objects.create(company=self.company, name='Lake', slug='lake')
+        self.login_as(self.owner)
+
+    def test_tab_shows_real_table_section_not_stub(self):
+        Table.objects.create(branch=self.branch, label='7', code='abc123')
+        body = self.client.get(f'/dashboard/branch/{self.branch.slug}/qr/').content.decode()
+        # Spec-1 stub copy is gone.
+        self.assertNotIn('coming with ordering', body)
+        # Bulk + add forms present.
+        self.assertIn(f'/dashboard/branch/{self.branch.slug}/tables/bulk/', body)
+        self.assertIn(f'/dashboard/branch/{self.branch.slug}/tables/add/', body)
+        # Real table row + its lazy QR link + download-all.
+        self.assertIn('abc123', body)
+        self.assertIn(f'/dashboard/branch/{self.branch.slug}/table/abc123/qr/', body)
+        self.assertIn(f'/dashboard/branch/{self.branch.slug}/tables/qr.pdf', body)

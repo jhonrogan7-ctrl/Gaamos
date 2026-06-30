@@ -607,6 +607,7 @@ def branch_qr(request, slug):
         return forbidden(request)
     return render(request, 'dashboard/branch/qr.html', {
         'active_tab': 'branches', 'branch_tab': 'qr', 'branch': branch,
+        'tables': branch.tables.all(),
     })
 
 
