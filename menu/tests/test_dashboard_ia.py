@@ -120,9 +120,8 @@ class BranchOrdersTabContentTest(IaTestBase):
         body = self.client.get(f'/dashboard/branch/{self.b.slug}/orders/').content.decode()
         # Scoped to this branch.
         self.assertIn(self.b.name, body)
-        # Honest about being sample + gated on QR ordering config.
-        self.assertIn('Sample data', body)
-        self.assertIn('Add table QRs to enable ordering', body)
+        # Spec 3: ordering is live; with no tables the branch shows takeaway ordering.
+        self.assertIn('Takeaway ordering active', body)
 
 
 class GlobalQrAggregateTest(IaTestBase):

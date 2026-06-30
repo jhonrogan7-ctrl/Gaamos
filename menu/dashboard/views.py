@@ -76,7 +76,12 @@ def overview(request):
 
 @require_membership
 def orders(request):
-    return render(request, 'dashboard/orders.html', {'active_tab': 'orders'})
+    status = request.GET.get('status', 'all')
+    return render(request, 'dashboard/orders.html', {
+        'active_tab': 'orders',
+        'orders': _orders_for(Order.objects.all(), status),
+        'show_branch': True, 'status_filter': status,
+    })
 
 
 @require_membership
@@ -619,9 +624,12 @@ def branch_orders(request, slug):
     branch = get_object_or_404(Branch, slug=slug)
     if not ensure_can_manage_branch(request, branch):
         return forbidden(request)
+    status = request.GET.get('status', 'all')
     return render(request, 'dashboard/branch/orders.html', {
         'active_tab': 'branches', 'branch_tab': 'orders', 'branch': branch,
         'has_tables': branch.tables.exists(),
+        'orders': _orders_for(branch.orders.all(), status),
+        'show_branch': False, 'status_filter': status,
     })
 
 

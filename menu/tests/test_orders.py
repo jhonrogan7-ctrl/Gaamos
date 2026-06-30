@@ -171,3 +171,34 @@ class OrderStreamTest(TenantTestCase):
             reset_current_company(tok)
         r = self.client.get(f'/dashboard/branch/{fbranch.slug}/orders/stream/?once=1')
         self.assertEqual(r.status_code, 403)
+
+
+class OrdersScreenTest(TenantTestCase):
+    def setUp(self):
+        super().setUp()
+        U = get_user_model()
+        self.owner = U.objects.create_user('boss', password='pass')
+        self.make_owner(self.owner)
+        self.branch = Branch.objects.create(company=self.company, name='Lake', slug='lake')
+        self.order = Order.objects.create(branch=self.branch, table_label='7', total=300)
+        OrderItem.objects.create(order=self.order, name='Latte', unit_price=150, qty=2)
+        self.login_as(self.owner)
+
+    def test_branch_orders_shows_real_order_and_stream(self):
+        body = self.client.get(f'/dashboard/branch/{self.branch.slug}/orders/').content.decode()
+        self.assertIn(f'#{self.order.number}', body)
+        self.assertNotIn('#JC-2847', body)  # sample rows gone
+        self.assertIn(f'/dashboard/branch/{self.branch.slug}/orders/stream/', body)
+
+    def test_branch_orders_gate_copy(self):
+        body = self.client.get(f'/dashboard/branch/{self.branch.slug}/orders/').content.decode()
+        self.assertIn('Takeaway ordering active', body)  # no tables yet
+        Table.objects.create(branch=self.branch, label='1')
+        body2 = self.client.get(f'/dashboard/branch/{self.branch.slug}/orders/').content.decode()
+        self.assertIn('Table ordering active', body2)
+
+    def test_global_orders_shows_real_order_and_stream(self):
+        body = self.client.get('/dashboard/orders/').content.decode()
+        self.assertIn(f'#{self.order.number}', body)
+        self.assertNotIn('#JC-2847', body)
+        self.assertIn('/dashboard/orders/stream/', body)

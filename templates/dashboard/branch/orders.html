@@ -8,29 +8,23 @@
 {% include 'dashboard/branch/_tabs.html' %}
 
 <div class="sec-h">
-  <h3>Live order queue <span class="mini">Sample data — live orders arrive with table-mapped QR ordering</span></h3>
+  <h3>Live order queue <span class="mini">Updates in real time</span></h3>
 </div>
 
 <div class="lib hint" style="position:static;background:var(--accent-soft);border:1.5px solid var(--accent);color:var(--accent-deep);border-radius:12px;padding:12px 14px;font-size:12px;font-weight:600;margin-bottom:16px">
   {% if has_tables %}
-    <b style="font-weight:800;display:block;margin-bottom:2px">Ordering ready for {{ branch.name }}</b>
-    Table QRs are set up. Live orders will arrive here, labelled by table, when the ordering phase lands.
+    <b style="font-weight:800;display:block;margin-bottom:2px">Table ordering active for {{ branch.name }}</b>
+    Table QRs are set up — scans arrive tagged by table. Takeaway orders (general QR) appear here too.
   {% else %}
-    <b style="font-weight:800;display:block;margin-bottom:2px">Ordering not set up yet for {{ branch.name }}</b>
-    Add table QRs to enable ordering — open the QR &amp; Tables tab to create them. Orders will then arrive here, labelled by table.
+    <b style="font-weight:800;display:block;margin-bottom:2px">Takeaway ordering active for {{ branch.name }}</b>
+    Orders work now via the branch menu. Add table QRs in QR &amp; Tables for table-tagged orders.
   {% endif %}
 </div>
 
-<div class="panel">
-  <table class="tbl">
-    <thead>
-      <tr><th>Order</th><th>Table</th><th>Items</th><th>Total</th><th>Placed</th><th>Status</th></tr>
-    </thead>
-    <tbody>
-      <tr><td class="ono">#JC-2847</td><td><span class="tablechip">Table 7</span></td><td>Sea-Buckthorn (L), Sunrise Smoothie</td><td class="ono">Rs 1,071</td><td>just now</td><td><span class="status new">New</span></td></tr>
-      <tr><td class="ono">#JC-2846</td><td><span class="tablechip">Table 2</span></td><td>Turmeric Latte, Avocado Toast</td><td class="ono">Rs 540</td><td>2 min</td><td><span class="status prep">Preparing</span></td></tr>
-      <tr><td class="ono">#JC-2845</td><td><span class="tablechip">Table 9</span></td><td>Buff Momo (10pc)</td><td class="ono">Rs 760</td><td>4 min</td><td><span class="status done">Served</span></td></tr>
-    </tbody>
-  </table>
+<div class="panel"
+     x-data="{ init() { const es = new EventSource('{% url 'dashboard:branch_orders_stream' branch.slug %}'); es.onmessage = () => { fetch('{% url 'dashboard:branch_orders_queue' branch.slug %}').then(r => r.text()).then(h => { this.$refs.queue.innerHTML = h; }); }; } }">
+  <div x-ref="queue">
+    {% include 'dashboard/_orders_queue.html' %}
+  </div>
 </div>
 {% endblock %}

@@ -197,14 +197,12 @@ class OrdersGateTest(TenantTestCase):
 
     def test_gate_without_tables(self):
         body = self.client.get(f'/dashboard/branch/{self.branch.slug}/orders/').content.decode()
-        self.assertIn('Add table QRs to enable ordering', body)
-        self.assertIn('Sample data', body)  # queue still sample
+        self.assertIn('Takeaway ordering active', body)  # Spec 3: ordering always live
 
     def test_gate_with_tables(self):
         Table.objects.create(branch=self.branch, label='1')
         body = self.client.get(f'/dashboard/branch/{self.branch.slug}/orders/').content.decode()
-        self.assertIn('Ordering ready', body)
-        self.assertIn('Sample data', body)  # queue still sample until Spec 3
+        self.assertIn('Table ordering active', body)
 
 
 class GlobalQrCountTest(TenantTestCase):
