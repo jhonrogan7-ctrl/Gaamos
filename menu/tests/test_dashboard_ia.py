@@ -141,3 +141,11 @@ class GlobalQrAggregateTest(IaTestBase):
     def test_branches_card_qr_action_targets_branch_tab(self):
         body = self.client.get('/dashboard/branches/').content.decode()
         self.assertIn(f'/dashboard/branch/{self.b.slug}/qr/', body)
+
+
+class GlobalOrdersReframeTest(IaTestBase):
+    def test_global_orders_is_all_branches_sample(self):
+        self.login_as(self.owner)
+        body = self.client.get('/dashboard/orders/').content.decode()
+        self.assertIn('All branches', body)
+        self.assertIn('Sample data', body)   # still honest
