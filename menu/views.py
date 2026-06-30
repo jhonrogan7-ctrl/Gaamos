@@ -5,7 +5,7 @@ from django.http import JsonResponse
 from django.shortcuts import render
 from django.views.decorators.csrf import ensure_csrf_cookie
 from django.views.decorators.http import require_POST
-from .models import Branch, Category, BranchItemPlacement, BranchMenuItem, MenuItem
+from .models import Branch, Category, BranchItemPlacement, BranchMenuItem, MenuItem, Table, Order, OrderItem
 
 
 @ensure_csrf_cookie
@@ -21,6 +21,13 @@ def menu(request):
         branch = Branch.objects.filter(slug=branch_slug).first()
     if branch is None:
         branch = Branch.objects.first()
+
+    table = None
+    table_code = request.GET.get('t', '')
+    if table_code:
+        table = Table.objects.filter(code=table_code).first()
+        if table is not None:
+            branch = table.branch
 
     categories = []
     dishes = []
@@ -83,6 +90,7 @@ def menu(request):
             'slug': branch.slug if branch else '',
         },
         'selected_branch': branch.slug if branch else '',
+        'table': {'code': table.code, 'label': table.label} if table else None,
         'categories': categories,
         'dishes': dishes,
     }
@@ -91,20 +99,31 @@ def menu(request):
 
 @require_POST
 def place_order(request):
-    """Record an order: bump each item's order_count by the ordered quantity.
-
-    Body: {"items": [{"id": <int>, "qty": <int>}, ...]}. Real order routing
-    (dine-in / pickup / delivery) is deferred — this only tracks popularity.
+    """Create a real Order for the active tenant. Body:
+    {branch:<slug>, table:<code?>, items:[{id,qty}]}. Branch/table/items are
+    resolved only within request.company (fail-closed). Still bumps order_count.
     """
     try:
-        items = json.loads(request.body or '{}').get('items', [])
+        body = json.loads(request.body or '{}')
     except (json.JSONDecodeError, TypeError):
         return JsonResponse({'error': 'invalid body'}, status=400)
 
-    if not isinstance(items, list):
-        return JsonResponse({'error': 'invalid items'}, status=400)
+    raw_items = body.get('items', [])
+    if not isinstance(raw_items, list) or not raw_items:
+        return JsonResponse({'error': 'no items'}, status=400)
 
-    for entry in items:
+    branch = Branch.objects.filter(slug=body.get('branch', '')).first()
+    if branch is None:
+        branch = Branch.objects.first()
+    if branch is None:
+        return JsonResponse({'error': 'no branch'}, status=400)
+
+    table = None
+    if body.get('table'):
+        table = Table.objects.filter(code=body['table'], branch=branch).first()
+
+    lines, total = [], 0
+    for entry in raw_items:
         try:
             item_id = int(entry['id'])
             qty = int(entry['qty'])
@@ -112,12 +131,27 @@ def place_order(request):
             continue
         if qty <= 0:
             continue
-        # MenuItem.objects is the fail-closed TenantManager: get_queryset() filters
-        # by the request's active company, so this update can only touch the current
-        # tenant's items — a guest on tenant A cannot bump tenant B's order_count.
-        MenuItem.objects.filter(pk=item_id).update(order_count=F('order_count') + qty)
+        # MenuItem.objects is the fail-closed TenantManager: only this tenant's items.
+        item = MenuItem.objects.filter(pk=item_id).first()
+        if item is None:
+            continue
+        lines.append((item, qty))
+        total += item.price * qty
 
-    return JsonResponse({'ok': True})
+    if not lines:
+        return JsonResponse({'error': 'no valid items'}, status=400)
+
+    order = Order.objects.create(
+        branch=branch, table=table,
+        table_label=table.label if table else '',
+        total=total,
+    )
+    for item, qty in lines:
+        OrderItem.objects.create(order=order, menu_item=item,
+                                 name=item.name, unit_price=item.price, qty=qty)
+        MenuItem.objects.filter(pk=item.pk).update(order_count=F('order_count') + qty)
+
+    return JsonResponse({'ok': True, 'number': order.number})
 
 
 @ensure_csrf_cookie

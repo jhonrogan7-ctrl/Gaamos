@@ -48,6 +48,7 @@ document.addEventListener('alpine:init', () => {
     // ── Payload (set in init) ──────────────────────────
     restaurant: {},
     branch: {},
+    table: null,
     branches: [],
     categories: [],
     dishes: [],
@@ -88,6 +89,7 @@ document.addEventListener('alpine:init', () => {
         const data = JSON.parse(raw.textContent);
         this.restaurant = data.restaurant;
         this.branch     = data.branch || {};
+        this.table      = data.table || null;
         this.branches   = data.branches;
         this.categories = data.categories;
         this.dishes     = data.dishes;
@@ -267,14 +269,15 @@ document.addEventListener('alpine:init', () => {
       fetch('/api/order/', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCookie('csrftoken') },
-        body: JSON.stringify({ items }),
+        body: JSON.stringify({ branch: this.branch.slug, table: this.table ? this.table.code : null, items }),
       })
         .then(r => r.json())
-        .then(() => {
+        .then((res) => {
+          record.number = res.number;
           this.orders.unshift(record);
           this.saveOrders();
           this.clearCart();
-          this.showToast('Order placed ✓');
+          this.showToast(res.number ? ('Order #' + res.number + ' placed ✓') : 'Order placed ✓');
         })
         .catch(() => { this.showToast('Could not place order — try again'); })
         .finally(() => { this.placing = false; });
