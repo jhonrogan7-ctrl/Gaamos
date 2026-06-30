@@ -92,3 +92,19 @@ class TabCssTest(SimpleTestCase):
         css = (Path(settings.BASE_DIR) / 'static/css/app.css').read_text()
         for sel in ('.tabs', '.tab'):
             self.assertIn(sel, css, f'missing tab style {sel}')
+
+
+class BranchQrTabContentTest(IaTestBase):
+    def setUp(self):
+        super().setUp()
+        self.b = self.branch()
+        self.login_as(self.owner)
+
+    def test_qr_tab_has_branch_qr_and_tables_stub(self):
+        body = self.client.get(f'/dashboard/branch/{self.b.slug}/qr/').content.decode()
+        # Menu/general QR management for THIS branch.
+        self.assertIn('Generate QR', body)
+        self.assertIn(f'/?branch={self.b.slug}', body)
+        # Honest stub for per-table QRs (Spec 2), no false claims.
+        self.assertIn('Table QRs', body)
+        self.assertIn('coming with ordering', body)
