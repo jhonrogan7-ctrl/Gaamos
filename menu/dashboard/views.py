@@ -373,11 +373,11 @@ def qr_index(request):
 @require_membership
 @require_POST
 def qr_generate(request, branch_id):
-    from .utils import generate_qr_for_branch
+    from .utils import generate_qr_for_branch, request_base_url
     branch = get_object_or_404(Branch, pk=branch_id)
     if not ensure_can_manage_branch(request, branch):
         return forbidden(request)
-    generate_qr_for_branch(branch)
+    generate_qr_for_branch(branch, request_base_url(request))
     return redirect('dashboard:qr')
 
 
@@ -774,28 +774,29 @@ def table_delete(request, slug, code):
 @require_membership
 def table_qr(request, slug, code):
     from django.http import HttpResponse
-    from .utils import render_qr_png, table_qr_url, render_table_qr_pdf
+    from .utils import render_qr_png, table_qr_url, render_table_qr_pdf, request_base_url
     branch = get_object_or_404(Branch, slug=slug)
     if not ensure_can_manage_branch(request, branch):
         return forbidden(request)
     table = get_object_or_404(Table, code=code, branch=branch)
+    base_url = request_base_url(request)
     if request.GET.get('format') == 'pdf':
-        pdf = render_table_qr_pdf(branch, [table])
+        pdf = render_table_qr_pdf(base_url, branch, [table])
         resp = HttpResponse(pdf, content_type='application/pdf')
         resp['Content-Disposition'] = f'attachment; filename="qr-{branch.slug}-table-{table.code}.pdf"'
         return resp
-    png = render_qr_png(table_qr_url(branch, table), f"{branch.name} — {table.label}")
+    png = render_qr_png(table_qr_url(base_url, branch, table), f"{branch.name} — {table.label}")
     return HttpResponse(png, content_type='image/png')
 
 
 @require_membership
 def tables_qr_pdf(request, slug):
     from django.http import HttpResponse
-    from .utils import render_table_qr_pdf
+    from .utils import render_table_qr_pdf, request_base_url
     branch = get_object_or_404(Branch, slug=slug)
     if not ensure_can_manage_branch(request, branch):
         return forbidden(request)
-    pdf = render_table_qr_pdf(branch, list(branch.tables.all()))
+    pdf = render_table_qr_pdf(request_base_url(request), branch, list(branch.tables.all()))
     resp = HttpResponse(pdf, content_type='application/pdf')
     resp['Content-Disposition'] = f'attachment; filename="qr-{branch.slug}-tables.pdf"'
     return resp

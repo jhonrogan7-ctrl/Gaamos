@@ -56,17 +56,24 @@ class QrHelpersTest(TenantTestCase):
         data = render_qr_png('https://example.com/?branch=lake&t=abc123', 'Table 7')
         self.assertTrue(data.startswith(b'\x89PNG'))
 
-    def test_table_qr_url_shape(self):
+    def test_table_qr_url_uses_provided_base_not_donor_host(self):
         from menu.dashboard.utils import table_qr_url
         t = Table.objects.create(branch=self.branch, label='7', code='abc123')
-        url = table_qr_url(self.branch, t)
-        self.assertIn('?branch=lake', url)
-        self.assertIn('&t=abc123', url)
+        url = table_qr_url('https://testco.localhost:8005', self.branch, t)
+        self.assertEqual(url, 'https://testco.localhost:8005/?branch=lake&t=abc123')
+        # The donor host must not leak into a tenant's QR.
+        self.assertNotIn('thejuicerycafe', url)
+
+    def test_request_base_url_from_request_host(self):
+        from django.test import RequestFactory
+        from menu.dashboard.utils import request_base_url
+        req = RequestFactory().get('/dashboard/', HTTP_HOST='testco.localhost:8005')
+        self.assertEqual(request_base_url(req), 'http://testco.localhost:8005')
 
     def test_render_table_qr_pdf_returns_pdf(self):
         from menu.dashboard.utils import render_table_qr_pdf
         tables = [Table.objects.create(branch=self.branch, label=str(i)) for i in range(2)]
-        data = render_table_qr_pdf(self.branch, tables)
+        data = render_table_qr_pdf('https://testco.localhost', self.branch, tables)
         self.assertTrue(data.startswith(b'%PDF'))
 
 
