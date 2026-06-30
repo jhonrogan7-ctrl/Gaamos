@@ -21,7 +21,7 @@
         <div class="nm">Gaamos<small>{{ request.company.name }}</small></div>
       </a>
 
-      <div class="grp">Manage</div>
+      <div class="grp">Company</div>
 
       <a href="{% url 'dashboard:overview' %}" class="nav {% if active_tab == 'overview' %}on{% endif %}">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>
@@ -30,12 +30,12 @@
 
       <a href="{% url 'dashboard:items_list' %}" class="nav {% if active_tab == 'items' %}on{% endif %}">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h10"/></svg>
-        Menu
+        Items
       </a>
 
-      <a href="{% url 'dashboard:orders' %}" class="nav {% if active_tab == 'orders' %}on{% endif %}">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18M16 10a4 4 0 0 1-8 0"/></svg>
-        Orders
+      <a href="{% url 'dashboard:categories' %}" class="nav {% if active_tab == 'categories' %}on{% endif %}">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M3 12h18M3 18h18" opacity=".4"/><rect x="3" y="4" width="6" height="4" rx="1"/><rect x="3" y="16" width="6" height="4" rx="1"/></svg>
+        Categories
       </a>
 
       <a href="{% url 'dashboard:branches' %}" class="nav {% if active_tab == 'branches' %}on{% endif %}">
@@ -43,9 +43,16 @@
         Branches
       </a>
 
+      <div class="grp">Operations</div>
+
       <a href="{% url 'dashboard:qr' %}" class="nav {% if active_tab == 'qr' %}on{% endif %}">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="8" height="8" rx="1"/><rect x="13" y="3" width="8" height="8" rx="1"/><rect x="3" y="13" width="8" height="8" rx="1"/><path d="M13 13h3v3h-3zM19 19h2v2h-2z"/></svg>
         QR Codes
+      </a>
+
+      <a href="{% url 'dashboard:orders' %}" class="nav {% if active_tab == 'orders' %}on{% endif %}">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18M16 10a4 4 0 0 1-8 0"/></svg>
+        Orders
       </a>
 
       <div class="grp">Account</div>
