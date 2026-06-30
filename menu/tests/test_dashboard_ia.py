@@ -122,7 +122,7 @@ class BranchOrdersTabContentTest(IaTestBase):
         self.assertIn(self.b.name, body)
         # Honest about being sample + gated on QR ordering config.
         self.assertIn('Sample data', body)
-        self.assertIn('configure QR codes to enable ordering', body)
+        self.assertIn('Add table QRs to enable ordering', body)
 
 
 class GlobalQrAggregateTest(IaTestBase):

@@ -618,6 +618,7 @@ def branch_orders(request, slug):
         return forbidden(request)
     return render(request, 'dashboard/branch/orders.html', {
         'active_tab': 'branches', 'branch_tab': 'orders', 'branch': branch,
+        'has_tables': branch.tables.exists(),
     })
 
 

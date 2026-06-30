@@ -184,3 +184,24 @@ class QrTabContentTest(TenantTestCase):
         self.assertIn('abc123', body)
         self.assertIn(f'/dashboard/branch/{self.branch.slug}/table/abc123/qr/', body)
         self.assertIn(f'/dashboard/branch/{self.branch.slug}/tables/qr.pdf', body)
+
+
+class OrdersGateTest(TenantTestCase):
+    def setUp(self):
+        super().setUp()
+        U = get_user_model()
+        self.owner = U.objects.create_user('boss', password='pass')
+        self.make_owner(self.owner)
+        self.branch = Branch.objects.create(company=self.company, name='Lake', slug='lake')
+        self.login_as(self.owner)
+
+    def test_gate_without_tables(self):
+        body = self.client.get(f'/dashboard/branch/{self.branch.slug}/orders/').content.decode()
+        self.assertIn('Add table QRs to enable ordering', body)
+        self.assertIn('Sample data', body)  # queue still sample
+
+    def test_gate_with_tables(self):
+        Table.objects.create(branch=self.branch, label='1')
+        body = self.client.get(f'/dashboard/branch/{self.branch.slug}/orders/').content.decode()
+        self.assertIn('Ordering ready', body)
+        self.assertIn('Sample data', body)  # queue still sample until Spec 3
