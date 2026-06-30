@@ -132,3 +132,42 @@ class OrdersQueueTest(TenantTestCase):
             reset_current_company(tok)
         r = self.client.post(f'/dashboard/order/{forder.pk}/serve/')
         self.assertEqual(r.status_code, 403)
+
+
+class OrderStreamTest(TenantTestCase):
+    def setUp(self):
+        super().setUp()
+        U = get_user_model()
+        self.owner = U.objects.create_user('boss', password='pass')
+        self.make_owner(self.owner)
+        self.branch = Branch.objects.create(company=self.company, name='Lake', slug='lake')
+        self.login_as(self.owner)
+
+    def test_orders_payload_emits_new_order(self):
+        from menu.dashboard.views import orders_payload
+        o = Order.objects.create(branch=self.branch, total=0)
+        events, max_id = orders_payload(self.company.id, None, 0)
+        self.assertTrue(any(f'#{o.number}' in e for e in events))
+        self.assertEqual(max_id, o.pk)
+
+    def test_orders_payload_branch_scoped_and_cursor(self):
+        from menu.dashboard.views import orders_payload
+        o = Order.objects.create(branch=self.branch, total=0)
+        # after_id at o.pk → nothing new
+        events, _ = orders_payload(self.company.id, self.branch.id, o.pk)
+        self.assertEqual(events, [])
+
+    def test_stream_content_type(self):
+        r = self.client.get('/dashboard/orders/stream/?once=1')
+        self.assertEqual(r.status_code, 200)
+        self.assertEqual(r['Content-Type'], 'text/event-stream')
+
+    def test_branch_stream_forbidden_other_company(self):
+        other = Company.objects.create(name='Other', slug='other')
+        tok = set_current_company(other)
+        try:
+            fbranch = Branch.objects.create(company=other, name='Far', slug='far')
+        finally:
+            reset_current_company(tok)
+        r = self.client.get(f'/dashboard/branch/{fbranch.slug}/orders/stream/?once=1')
+        self.assertEqual(r.status_code, 403)
