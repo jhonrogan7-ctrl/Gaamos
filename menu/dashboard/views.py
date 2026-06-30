@@ -591,12 +591,32 @@ def branch_items(request, slug):
                for c in Category.objects.prefetch_related('subcategories').order_by('display_order')]
 
     return render(request, 'dashboard/branch/items.html', {
-        'active_tab': 'home', 'branch': branch,
+        'active_tab': 'branches', 'branch_tab': 'menu', 'branch': branch,
         'composition_json': json.dumps(composition),
         'library_json': json.dumps(library),
         'catalog_json': json.dumps(catalog),
         'branches_json': json.dumps(
             [{'slug': b.slug, 'name': b.name} for b in Branch.objects.exclude(pk=branch.pk)]),
+    })
+
+
+@require_membership
+def branch_qr(request, slug):
+    branch = get_object_or_404(Branch, slug=slug)
+    if not ensure_can_manage_branch(request, branch):
+        return forbidden(request)
+    return render(request, 'dashboard/branch/qr.html', {
+        'active_tab': 'branches', 'branch_tab': 'qr', 'branch': branch,
+    })
+
+
+@require_membership
+def branch_orders(request, slug):
+    branch = get_object_or_404(Branch, slug=slug)
+    if not ensure_can_manage_branch(request, branch):
+        return forbidden(request)
+    return render(request, 'dashboard/branch/orders.html', {
+        'active_tab': 'branches', 'branch_tab': 'orders', 'branch': branch,
     })
 
 

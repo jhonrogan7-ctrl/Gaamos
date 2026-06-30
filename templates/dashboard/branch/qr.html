@@ -1,0 +1,45 @@
+{% extends "dashboard/base.html" %}
+{% block title %}{{ branch.name }} — QR & Tables{% endblock %}
+{% block page_title %}{{ branch.name }}<small>QR & Tables</small>{% endblock %}
+{% block header_action %}
+  <a href="{% url 'dashboard:branches' %}" style="color:rgba(255,255,255,.7);text-decoration:none;font-size:13px;">← Branches</a>
+{% endblock %}
+{% block content %}
+{% include 'dashboard/branch/_tabs.html' %}
+
+<div class="sec-h"><h3>Menu QR</h3><span class="mini">One general QR for this branch's menu</span></div>
+<div class="qgrid">
+  <div class="qcard">
+    {% if branch.qr_image %}
+      <div class="qframe">
+        <img src="/media/{{ branch.qr_image }}" alt="QR for {{ branch.name }}" style="width:100%;height:100%;object-fit:contain;">
+      </div>
+      <div class="qn">{{ branch.name }}</div>
+      <div class="qu">/?branch={{ branch.slug }}</div>
+      <div style="display:flex;gap:6px;width:100%;margin-top:4px;">
+        <a href="{% url 'dashboard:qr_download' branch.pk %}?format=png" class="btn btn-primary" style="flex:1;justify-content:center;">Download</a>
+        <a href="{% url 'dashboard:qr_download' branch.pk %}?format=pdf" class="btn btn-ghost">PDF</a>
+        <a href="/?branch={{ branch.slug }}" target="_blank" class="btn btn-ghost">Preview</a>
+      </div>
+      <form method="post" action="{% url 'dashboard:qr_generate' branch.pk %}" style="width:100%;margin-top:4px;">
+        {% csrf_token %}
+        <button type="submit" class="btn ghost" style="width:100%;justify-content:center;">Regenerate</button>
+      </form>
+    {% else %}
+      <div class="qframe" style="display:flex;align-items:center;justify-content:center;color:var(--ink-3);font-size:12px;">No QR yet</div>
+      <div class="qn">{{ branch.name }}</div>
+      <div class="qu">/?branch={{ branch.slug }}</div>
+      <form method="post" action="{% url 'dashboard:qr_generate' branch.pk %}" style="width:100%;margin-top:8px;">
+        {% csrf_token %}
+        <button type="submit" class="btn primary" style="width:100%;justify-content:center;">Generate QR</button>
+      </form>
+    {% endif %}
+  </div>
+</div>
+
+<div class="sec-h" style="margin-top:24px;"><h3>Table QRs</h3></div>
+<div class="lib hint" style="position:static;background:var(--accent-soft);border:1.5px solid var(--accent);color:var(--accent-deep);border-radius:12px;padding:12px 14px;font-size:12px;font-weight:600;">
+  <b style="font-weight:800;display:block;margin-bottom:2px">Per-table ordering — coming with ordering</b>
+  Map QRs to tables so scans arrive labelled and orders route to the right table. Lands in the ordering phase.
+</div>
+{% endblock %}

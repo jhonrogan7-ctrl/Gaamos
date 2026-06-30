@@ -1,6 +1,6 @@
 {% extends "dashboard/base.html" %}
 {% block title %}{{ branch.name }}{% endblock %}
-{% block page_title %}{{ branch.name }} — Menu{% endblock %}
+{% block page_title %}{{ branch.name }}<small>Menu</small>{% endblock %}
 {% block header_action %}
   <button type="button" class="hdr-help" title="How to build your menu"
           onclick="window.dispatchEvent(new CustomEvent('open-manual'))">?</button>
@@ -8,6 +8,7 @@
 {% endblock %}
 
 {% block content %}
+{% include 'dashboard/branch/_tabs.html' %}
 <script id="composition-data" type="application/json">{{ composition_json|safe }}</script>
 <script id="library-data" type="application/json">{{ library_json|safe }}</script>
 <script id="catalog-data" type="application/json">{{ catalog_json|safe }}</script>
