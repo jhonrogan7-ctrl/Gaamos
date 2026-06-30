@@ -44,3 +44,27 @@ class TableModelTest(TenantTestCase):
         t = Table(company=self.company, branch=foreign_branch, label='x')
         with self.assertRaises(ValidationError):
             t.clean()
+
+
+class QrHelpersTest(TenantTestCase):
+    def setUp(self):
+        super().setUp()
+        self.branch = Branch.objects.create(company=self.company, name='Lake', slug='lake')
+
+    def test_render_qr_png_returns_png_bytes(self):
+        from menu.dashboard.utils import render_qr_png
+        data = render_qr_png('https://example.com/?branch=lake&t=abc123', 'Table 7')
+        self.assertTrue(data.startswith(b'\x89PNG'))
+
+    def test_table_qr_url_shape(self):
+        from menu.dashboard.utils import table_qr_url
+        t = Table.objects.create(branch=self.branch, label='7', code='abc123')
+        url = table_qr_url(self.branch, t)
+        self.assertIn('?branch=lake', url)
+        self.assertIn('&t=abc123', url)
+
+    def test_render_table_qr_pdf_returns_pdf(self):
+        from menu.dashboard.utils import render_table_qr_pdf
+        tables = [Table.objects.create(branch=self.branch, label=str(i)) for i in range(2)]
+        data = render_table_qr_pdf(self.branch, tables)
+        self.assertTrue(data.startswith(b'%PDF'))

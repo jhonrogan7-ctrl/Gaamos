@@ -7,11 +7,9 @@ from django.conf import settings
 COMPANY_NAME = "Twenty Two Tech Company"
 
 
-def generate_qr_for_branch(branch):
-    # NOTE: In multi-tenant Gaamos the QR URL will be subdomain-rooted, e.g.
-    # https://<company-slug>.gaamos.com/?branch=<branch-slug>. For now we keep
-    # the same URL shape as the donor while Phase 4 (custom domains) lands.
-    url = f"https://thejuicerycafe.cafe/?branch={branch.slug}"
+def render_qr_png(url, caption):
+    """Render a logo-embedded, captioned QR as PNG bytes (no disk write)."""
+    import io
     # High error correction (~30%) so the centred logo doesn't break scanning.
     qr = qrcode.QRCode(
         version=None,
@@ -37,7 +35,7 @@ def generate_qr_for_branch(branch):
         box.paste(logo, ((box_size - lw) // 2, (box_size - lh) // 2), logo)
         img.paste(box, ((qr_w - box_size) // 2, (qr_h - box_size) // 2))
 
-    # Caption the company name centred below the QR.
+    # Caption centred below the QR.
     qr_w, qr_h = img.size
     font_size = max(20, qr_w // 22)
     try:
@@ -46,26 +44,54 @@ def generate_qr_for_branch(branch):
         font = ImageFont.load_default()
     pad = int(font_size * 0.9)                            # breathing room above/below text
     measure = ImageDraw.Draw(img)
-    bbox = measure.textbbox((0, 0), COMPANY_NAME, font=font)
+    bbox = measure.textbbox((0, 0), caption, font=font)
     text_w, text_h = bbox[2] - bbox[0], bbox[3] - bbox[1]
     canvas = Image.new("RGB", (qr_w, qr_h + text_h + pad * 2), "white")
     canvas.paste(img, (0, 0))
     draw = ImageDraw.Draw(canvas)
     draw.text(
         ((qr_w - text_w) // 2 - bbox[0], qr_h + pad - bbox[1]),
-        COMPANY_NAME, fill="#1a1a2e", font=font,
+        caption, fill="#1a1a2e", font=font,
     )
-    img = canvas
 
+    out = io.BytesIO()
+    canvas.save(out, format='PNG')
+    return out.getvalue()
+
+
+def generate_qr_for_branch(branch):
+    # NOTE: In multi-tenant Gaamos the QR URL will be subdomain-rooted, e.g.
+    # https://<company-slug>.gaamos.com/?branch=<branch-slug>. For now we keep
+    # the same URL shape as the donor while Phase 4 (custom domains) lands.
+    url = f"https://thejuicerycafe.cafe/?branch={branch.slug}"
+    png = render_qr_png(url, COMPANY_NAME)
     dest_dir = os.path.join(settings.MEDIA_ROOT, 'qr')
     os.makedirs(dest_dir, exist_ok=True)
     filename = f"branch_{branch.slug}.png"
     path = os.path.join(dest_dir, filename)
-    img.save(path)
+    with open(path, 'wb') as f:
+        f.write(png)
 
     branch.qr_image = f"qr/{filename}"
     branch.save(update_fields=['qr_image'])
     return path
+
+
+def table_qr_url(branch, table):
+    return f"https://thejuicerycafe.cafe/?branch={branch.slug}&t={table.code}"
+
+
+def render_table_qr_pdf(branch, tables):
+    """One PDF page per table QR. Rendered on demand; nothing is stored."""
+    import io
+    pages = []
+    for t in tables:
+        png = render_qr_png(table_qr_url(branch, t), f"{branch.name} — {t.label}")
+        pages.append(Image.open(io.BytesIO(png)).convert('RGB'))
+    out = io.BytesIO()
+    if pages:
+        pages[0].save(out, format='PDF', save_all=True, append_images=pages[1:])
+    return out.getvalue()
 
 
 def generate_qr_pdf(branch):
