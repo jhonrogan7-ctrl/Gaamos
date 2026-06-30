@@ -6,5 +6,26 @@
 {% endblock %}
 {% block content %}
 {% include 'dashboard/branch/_tabs.html' %}
-<div class="sec-h"><h3>Orders</h3></div>
+
+<div class="sec-h">
+  <h3>Live order queue <span class="mini">Sample data — live orders arrive with table-mapped QR ordering</span></h3>
+</div>
+
+<div class="lib hint" style="position:static;background:var(--accent-soft);border:1.5px solid var(--accent);color:var(--accent-deep);border-radius:12px;padding:12px 14px;font-size:12px;font-weight:600;margin-bottom:16px">
+  <b style="font-weight:800;display:block;margin-bottom:2px">Ordering not set up yet for {{ branch.name }}</b>
+  Add table-mapped QR codes to configure QR codes to enable ordering — orders will then arrive here, labelled by table.
+</div>
+
+<div class="panel">
+  <table class="tbl">
+    <thead>
+      <tr><th>Order</th><th>Table</th><th>Items</th><th>Total</th><th>Placed</th><th>Status</th></tr>
+    </thead>
+    <tbody>
+      <tr><td class="ono">#JC-2847</td><td><span class="tablechip">Table 7</span></td><td>Sea-Buckthorn (L), Sunrise Smoothie</td><td class="ono">Rs 1,071</td><td>just now</td><td><span class="status new">New</span></td></tr>
+      <tr><td class="ono">#JC-2846</td><td><span class="tablechip">Table 2</span></td><td>Turmeric Latte, Avocado Toast</td><td class="ono">Rs 540</td><td>2 min</td><td><span class="status prep">Preparing</span></td></tr>
+      <tr><td class="ono">#JC-2845</td><td><span class="tablechip">Table 9</span></td><td>Buff Momo (10pc)</td><td class="ono">Rs 760</td><td>4 min</td><td><span class="status done">Served</span></td></tr>
+    </tbody>
+  </table>
+</div>
 {% endblock %}

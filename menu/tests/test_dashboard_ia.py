@@ -108,3 +108,18 @@ class BranchQrTabContentTest(IaTestBase):
         # Honest stub for per-table QRs (Spec 2), no false claims.
         self.assertIn('Table QRs', body)
         self.assertIn('coming with ordering', body)
+
+
+class BranchOrdersTabContentTest(IaTestBase):
+    def setUp(self):
+        super().setUp()
+        self.b = self.branch()
+        self.login_as(self.owner)
+
+    def test_orders_tab_is_branch_scoped_sample_with_notice(self):
+        body = self.client.get(f'/dashboard/branch/{self.b.slug}/orders/').content.decode()
+        # Scoped to this branch.
+        self.assertIn(self.b.name, body)
+        # Honest about being sample + gated on QR ordering config.
+        self.assertIn('Sample data', body)
+        self.assertIn('configure QR codes to enable ordering', body)
