@@ -9,6 +9,14 @@ ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS", "*").split(",")
 BASE_DOMAIN = os.environ.get("BASE_DOMAIN", "zxyn.online")
 RESERVED_SUBDOMAINS = {"app", "www", "menu", "admin", "api", "static", "media"}
 
+# Behind Cloudflare Tunnel — TLS terminated at the edge, forwarded as plain HTTP.
+# Trust the forwarded proto so Django treats requests as secure and CSRF accepts
+# the HTTPS origin (login/POST would otherwise 403). Locked stack decision.
+SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+CSRF_TRUSTED_ORIGINS = os.environ.get(
+    "CSRF_TRUSTED_ORIGINS", f"https://*.{BASE_DOMAIN}"
+).split(",")
+
 INSTALLED_APPS = [
     "django.contrib.contenttypes",
     "django.contrib.auth",
@@ -42,6 +50,7 @@ TEMPLATES = [{
         "django.template.context_processors.request",
         "django.contrib.auth.context_processors.auth",
         "django.contrib.messages.context_processors.messages",
+        "core.context_processors.asset_version",
     ]},
 }]
 

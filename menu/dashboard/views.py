@@ -68,6 +68,28 @@ def logout_view(request):
 
 
 @require_membership
+def overview(request):
+    return render(request, 'dashboard/overview.html', {'active_tab': 'overview'})
+
+
+@require_membership
+def orders(request):
+    return render(request, 'dashboard/orders.html', {'active_tab': 'orders'})
+
+
+@require_membership
+def branches(request):
+    m = request.membership
+    if request.user.is_superuser or (m and m.is_owner):
+        qs = Branch.objects.all()
+    elif m:
+        qs = Branch.objects.filter(pk__in=m.branches.values_list('pk', flat=True))
+    else:
+        qs = Branch.objects.none()
+    return render(request, 'dashboard/branches.html', {'active_tab': 'branches', 'branches': qs})
+
+
+@require_membership
 def home(request):
     restaurant = request.company
     total_count = MenuItem.objects.count()
@@ -153,9 +175,15 @@ def items_list(request):
         bool(diet_filter), bool(flag_filter), bool(price_min_raw or price_max_raw),
     ])
 
+    # Real categories shown as builder structure. Item→category placement is
+    # per-branch (BranchItemPlacement); the company dashboard has no branch context,
+    # so categories render as structure and items as a flat re-usable library.
+    categories = Category.objects.prefetch_related('subcategories').order_by('display_order')
+
     return render(request, 'dashboard/items/list.html', {
         'active_tab': 'items',
         'items': items,
+        'categories': categories,
         'diet_options': diet_options,
         'sort_options': [(val, label) for val, (label, _) in ITEM_SORTS.items()],
         'result_count': len(items),

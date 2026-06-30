@@ -1,0 +1,43 @@
+{% extends 'dashboard/base.html' %}
+
+{% block page_title %}Overview{% endblock %}
+{% block subtitle %}{{ request.company.name }} · today at a glance{% endblock %}
+
+{% block content %}
+<div class="stats">
+  <div class="stat"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="8" height="8" rx="1"/><rect x="13" y="3" width="8" height="8" rx="1"/><rect x="3" y="13" width="8" height="8" rx="1"/><path d="M13 13h3v3h-3z"/></svg></div><div class="val">1,284</div><div class="lbl">QR scans today</div><div class="delta">▲ 18% vs yesterday</div></div>
+  <div class="stat"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18M16 10a4 4 0 0 1-8 0"/></svg></div><div class="val">96</div><div class="lbl">Orders today</div><div class="delta">▲ 12% vs yesterday</div></div>
+  <div class="stat"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1v22M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div><div class="val">Rs 84,200</div><div class="lbl">Revenue today</div><div class="delta">▲ 9% vs yesterday</div></div>
+  <div class="stat"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg></div><div class="val">58</div><div class="lbl">Items live</div><div class="delta flat">6 hidden</div></div>
+</div>
+
+<div class="ov-grid">
+  <div class="panel chart">
+    <div class="ph" style="padding:0 0 12px;border:none"><h3>QR scans · last 7 days <span class="mini">Sample data — analytics arrive in a later phase</span></h3><div class="sp"></div><span class="mini">Lake Center branch</span></div>
+    <div class="bars">
+      <div class="bar"><span class="v">680</span><div class="col" style="height:42%"></div><span class="d">Mon</span></div>
+      <div class="bar"><span class="v">740</span><div class="col" style="height:48%"></div><span class="d">Tue</span></div>
+      <div class="bar"><span class="v">910</span><div class="col" style="height:60%"></div><span class="d">Wed</span></div>
+      <div class="bar"><span class="v">860</span><div class="col" style="height:56%"></div><span class="d">Thu</span></div>
+      <div class="bar"><span class="v">1,120</span><div class="col" style="height:74%"></div><span class="d">Fri</span></div>
+      <div class="bar peak"><span class="v">1,480</span><div class="col" style="height:100%"></div><span class="d">Sat</span></div>
+      <div class="bar"><span class="v">1,284</span><div class="col" style="height:86%"></div><span class="d">Sun</span></div>
+    </div>
+    <div class="toplist mt16" style="border-top:1px solid var(--line);padding-top:10px">
+      <div class="ph" style="padding:4px 16px 8px;border:none"><h3>Most viewed items</h3></div>
+      <div class="toprow"><span class="rk">1</span><div class="th" style="background-image:linear-gradient(145deg,#ffb02e,#ff7a45)"></div><div><div class="tn">Himalayan Sea-Buckthorn</div><div class="tm">Juices · Signature</div></div><span class="tv">312</span></div>
+      <div class="toprow"><span class="rk">2</span><div class="th" style="background-image:linear-gradient(145deg,#ff6a88,#ff99ac)"></div><div><div class="tn">Pokhara Sunrise Smoothie</div><div class="tm">Juices · Signature</div></div><span class="tv">248</span></div>
+      <div class="toprow"><span class="rk">3</span><div class="th" style="background-image:linear-gradient(145deg,#f97316,#ea580c)"></div><div><div class="tn">Buff Momo (10pc)</div><div class="tm">Momo</div></div><span class="tv">201</span></div>
+    </div>
+  </div>
+
+  <div class="panel feed">
+    <div class="ph"><h3>Live orders</h3><div class="sp"></div><span class="status new">12 active</span></div>
+    <div class="fi"><div class="fic" style="background:var(--accent-soft);color:var(--accent-deep)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18M16 10a4 4 0 0 1-8 0"/></svg></div><div><div class="ft">Table 7 · 3 items</div><div class="fm">Sea-Buckthorn, Smoothie…</div></div><div class="fr">Rs 1,071<small>just now</small></div></div>
+    <div class="fi"><div class="fic" style="background:var(--amber-soft);color:var(--amber)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg></div><div><div class="ft">Table 2 · 2 items</div><div class="fm">Turmeric Latte, Avocado…</div></div><div class="fr">Rs 540<small>2 min</small></div></div>
+    <div class="fi"><div class="fic" style="background:var(--green-soft);color:var(--green)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg></div><div><div class="ft">Table 11 · 5 items</div><div class="fm">Served</div></div><div class="fr">Rs 2,180<small>6 min</small></div></div>
+    <div class="fi"><div class="fic" style="background:var(--green-soft);color:var(--green)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg></div><div><div class="ft">Table 4 · 1 item</div><div class="fm">Served</div></div><div class="fr">Rs 320<small>9 min</small></div></div>
+    <div style="padding:12px 16px"><a class="lnk" href="{% url 'dashboard:orders' %}">View all orders →</a></div>
+  </div>
+</div>
+{% endblock %}
