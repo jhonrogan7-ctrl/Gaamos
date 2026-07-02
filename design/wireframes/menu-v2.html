@@ -190,6 +190,27 @@
   .va-dishes { padding: 2px 8px 8px; display: flex; flex-direction: column; gap: 8px; overflow: hidden; flex: 1; }
   .va-dishes .g-grp { padding: 10px 2px 0; }
 
+  /* ─────────── V-B · Top tabs + scroll-spy ─────────── */
+  .vb-head { flex-shrink: 0; background: var(--bar, var(--cream)); }
+  .vb-head .g-brandbar { background: none; }
+  .vb-tabs { display: flex; gap: 8px; padding: 2px 0 8px; overflow: hidden; }
+  .vb-tabs-in { display: flex; gap: 8px; padding-left: 12px; }
+  .vb-tab { display: inline-flex; align-items: center; gap: 7px; height: 44px; padding: 0 14px; border-radius: 999px; border: 1.5px solid var(--chip-bd); background: var(--card); color: var(--ink-2); font-size: 13px; font-weight: 700; flex-shrink: 0; white-space: nowrap; cursor: pointer; }
+  .vb-tab svg { width: 16px; height: 16px; }
+  .vb-tab .c { font-size: 10px; font-weight: 800; opacity: .6; }
+  .vb-tab.on { background: var(--accent-grad, var(--accent)); color: #fff; border-color: transparent; box-shadow: var(--chip-active-shadow); }
+  .vb-tab.on .c { opacity: .85; }
+  .vb-subrow { display: flex; gap: 6px; padding: 0 12px 10px; overflow: hidden; }
+  .vb-subrow .k-pill { height: 34px; font-size: 12px; padding: 0 13px; }
+  .vb-body { flex: 1; overflow: hidden; padding: 0 12px; display: flex; flex-direction: column; }
+  .vb-sec { display: flex; align-items: baseline; gap: 8px; padding: 12px 2px 4px; flex-shrink: 0; }
+  .vb-sec .t { font-family: var(--hd); font-size: 17px; font-weight: 800; letter-spacing: -.02em; color: var(--ink); }
+  .vb-sec .c { font-size: 11px; font-weight: 700; color: var(--ink-3); }
+  .vb-sec .hn { font-size: 9.5px; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; color: var(--accent-deep); background: var(--accent-soft); padding: 3px 8px; border-radius: 6px; margin-left: auto; }
+  .vb-sec--pinned { margin: 0 -12px; padding: 10px 14px 8px; background: var(--cream); border-bottom: 1px solid var(--line); box-shadow: 0 8px 14px -12px rgba(0,0,0,.25); }
+  .vb-list { display: flex; flex-direction: column; gap: 8px; overflow: hidden; }
+  .vb-list .g-grp { padding: 8px 2px 0; }
+
   /* ─────────── detail sheet ─────────── */
   .d-photo { height: 240px; flex-shrink: 0; background-color: var(--accent-soft); background-size: cover; background-position: center; position: relative; }
   .d-photo.k-monogram svg { width: 54px; height: 54px; }
@@ -605,6 +626,41 @@ const vaAbout = D => `
     </div>
   </div>`;
 
+/* ─────────── V-B · Top tabs + scroll-spy templates ─────────── */
+const vbMenu = D => {
+  const sek = D.cats[2], noo = D.cats[3];
+  // mock mid-scroll: Sekuwa tab active + its section header pinned; the inner
+  // tab strip is translated so the active tab reads as auto-centred.
+  const tabs = D.cats.map((c, i) => `
+    <div class="vb-tab ${i === 2 ? 'on' : ''}">${I[c.icon]}<span>${c.name}</span><span class="c">${c.count}</span></div>`).join('');
+  const subs = [['All', sek.count, true], ...sek.subs.map(([s, n]) => [s, n, false])]
+    .map(([s, n, on]) => `<span class="k-pill ${on ? 'on' : ''}">${s} <span class="c">${n}</span></span>`).join('');
+  const sec = (cat, pinned) => `
+    <div class="vb-sec ${pinned ? 'vb-sec--pinned' : ''}">
+      <span class="t">${cat.name}</span><span class="c">${cat.count} dishes</span>
+      ${cat.note ? `<span class="hn">${cat.note}</span>` : ''}
+    </div>`;
+  const wide = it => cardHTML(it, sek, false);
+  return `
+    <div class="vb-head">
+      ${brandbarHTML(D.venue)}
+      <div class="vb-tabs"><div class="vb-tabs-in" style="transform:translateX(-268px)">${tabs}</div></div>
+      <div class="vb-subrow">${subs}</div>
+    </div>
+    <div class="vb-body">
+      ${sec(sek, true)}
+      <div class="vb-list">
+        ${grpHTML('Chicken', 3)}
+        ${wide(D.items.sekuwa[0])}
+        ${grpHTML('Others', 1)}
+        ${wide(D.items.sekuwa[2])}
+        ${sec(noo, false)}
+        ${cardHTML(D.items.noodles[0], noo, false)}
+      </div>
+    </div>
+    ${cartbarHTML()}`;
+};
+
 /* ─────────── page wiring ─────────── */
 const VARIANTS = ['va', 'vb', 'vc'];
 const SCREENS = ['menu', 'detail', 'cart', 'placed', 'about'];
@@ -612,7 +668,7 @@ const VNAMES = { va: 'V-A · Baseline+', vb: 'V-B · Top tabs + scroll-spy', vc:
 
 const TEMPLATES = {
   va: { menu: vaMenu, detail: vaDetail, cart: vaCart, placed: vaPlaced, about: vaAbout },
-  vb: null, // Task 5
+  vb: { menu: vbMenu, detail: vaDetail, cart: vaCart, placed: vaPlaced, about: vaAbout },
   vc: null, // Task 6
 };
 
@@ -624,7 +680,13 @@ const CAPTIONS = {
     placed: '<b>Persistent confirmation</b> (F11): prominent order number, status pill, full receipt. Positive receipt badge — nothing that reads as delete (F12).',
     about: 'Venue monogram + real testco contact data (F2). Branch cards with FLAGSHIP / NEW tags. Copyright is the venue\'s own — no donor/agency branding (F13).',
   },
-  vb: { menu: '<b>Top category tabs + one continuous scroll-spy list.</b> Built in Task 5.' },
+  vb: {
+    menu: '<b>Top tabs + one continuous list.</b> Tabs track scroll (scroll-spy); tapping a tab jumps to its section. Mock shows mid-scroll: “Sekuwa & Grill” tab active, its header pinned. No rail → <b>full-width kit cards</b> (88px photo + description + inline price). The “Others” group renders the un-subcategorised Mixed Grill Platter (F14); sticky headers give in-category wayfinding for mega-categories (F10).',
+    detail: 'Same shared-kit detail sheet as V-A — the variant question is navigation, not components (F3 fix included).',
+    cart: 'Same shared-kit cart as V-A (F4, F7).',
+    placed: 'Same shared-kit confirmation as V-A (F11, F12).',
+    about: 'Same shared-kit about sheet as V-A (F2, F13).',
+  },
   vc: { menu: '<b>56px icon rail + thumb-reach subcategory chips.</b> Built in Task 6.' },
 };
 
