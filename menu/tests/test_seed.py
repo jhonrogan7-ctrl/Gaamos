@@ -42,3 +42,69 @@ class SeedJuiceryTest(TestCase):
         self.assertEqual(MenuItem.all_objects.count(), items_first)
         self.assertEqual(Company.objects.filter(slug='juicery').count(), 1)
         self.assertEqual(BranchItemPlacement.objects.count(), placements_first)
+
+
+class SeedTestcoTest(TestCase):
+    def tearDown(self):
+        token = set_current_company(None)
+        reset_current_company(token)
+        super().tearDown()
+
+    def _company(self):
+        return Company.objects.get(slug='testco')
+
+    def test_seed_creates_sherpa_house(self):
+        call_command('seed_testco')
+        company = self._company()
+        self.assertEqual(company.name, 'Sherpa House Kitchen & Bar')
+        self.assertEqual(Branch.all_objects.filter(company=company).count(), 2)
+        self.assertEqual(Category.all_objects.filter(company=company).count(), 8)
+        self.assertEqual(SubCategory.all_objects.filter(company=company).count(), 17)
+        self.assertEqual(MenuItem.all_objects.filter(company=company).count(), 68)
+        # every item placed in BOTH branches
+        self.assertEqual(
+            BranchItemPlacement.objects.filter(branch__company=company).count(), 136)
+
+    def test_seed_wipes_existing_junk(self):
+        company, _ = Company.objects.update_or_create(
+            slug='testco', defaults={'name': 'Test Co'})
+        junk_branch = Branch.all_objects.create(
+            company=company, name='new branch', slug='new-branch', address='x')
+        junk_cat = Category.all_objects.create(
+            company=company, name='gggg', slug='gggg')
+        junk_item = MenuItem.all_objects.create(
+            company=company, name='junk', slug='junk', price=1)
+        call_command('seed_testco')
+        self.assertFalse(Branch.all_objects.filter(pk=junk_branch.pk).exists())
+        self.assertFalse(Category.all_objects.filter(pk=junk_cat.pk).exists())
+        self.assertFalse(MenuItem.all_objects.filter(pk=junk_item.pk).exists())
+
+    def test_seed_is_idempotent(self):
+        call_command('seed_testco')
+        counts = (MenuItem.all_objects.count(), SubCategory.all_objects.count(),
+                  BranchItemPlacement.objects.count())
+        call_command('seed_testco')
+        self.assertEqual(
+            (MenuItem.all_objects.count(), SubCategory.all_objects.count(),
+             BranchItemPlacement.objects.count()), counts)
+        self.assertEqual(Company.objects.filter(slug='testco').count(), 1)
+
+    def test_seed_does_not_touch_other_tenants(self):
+        call_command('seed_juicery')
+        juicery = Company.objects.get(slug='juicery')
+        before = MenuItem.all_objects.filter(company=juicery).count()
+        call_command('seed_testco')
+        self.assertEqual(MenuItem.all_objects.filter(company=juicery).count(), before)
+
+    def test_patan_price_overrides(self):
+        from menu.models import BranchMenuItem
+        call_command('seed_testco')
+        company = self._company()
+        patan = Branch.all_objects.get(company=company, slug='patan')
+        momo = MenuItem.all_objects.get(company=company, slug='chicken-momo')
+        link = BranchMenuItem.objects.get(branch=patan, menu_item=momo)
+        self.assertEqual(link.price_override, 240)
+        self.assertEqual(link.effective_price, 240)
+        thamel = Branch.all_objects.get(company=company, slug='thamel')
+        link_t = BranchMenuItem.objects.get(branch=thamel, menu_item=momo)
+        self.assertIsNone(link_t.price_override)
