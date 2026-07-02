@@ -211,6 +211,21 @@
   .vb-list { display: flex; flex-direction: column; gap: 8px; overflow: hidden; }
   .vb-list .g-grp { padding: 8px 2px 0; }
 
+  /* ─────────── V-C · Icon rail + chips ─────────── */
+  .vc-shell { display: flex; flex: 1; min-height: 0; overflow: hidden; }
+  .vc-rail { width: 56px; flex-shrink: 0; background: var(--rail-bg); overflow: hidden; padding: 8px 0; display: flex; flex-direction: column; align-items: center; gap: 7px; }
+  .vc-item { display: flex; flex-direction: column; align-items: center; gap: 3px; flex-shrink: 0; }
+  .vc-ti { position: relative; width: 44px; height: 44px; border-radius: 14px; background: var(--chip-bg); color: var(--chip-ink); border: 1px solid var(--chip-bd); display: flex; align-items: center; justify-content: center; cursor: pointer; }
+  .vc-ti svg { width: 20px; height: 20px; }
+  .vc-ti .b { position: absolute; top: -4px; right: -4px; min-width: 16px; height: 16px; border-radius: 8px; background: var(--accent); color: #fff; font-size: 8.5px; font-weight: 800; display: flex; align-items: center; justify-content: center; padding: 0 4px; border: 1.5px solid var(--cream); }
+  .vc-item.on .vc-ti { background: var(--accent-grad, var(--accent)); color: #fff; border-color: transparent; box-shadow: var(--chip-active-shadow); }
+  .vc-lb { font-size: 8.5px; font-weight: 800; color: var(--ink); display: none; text-align: center; line-height: 1.1; max-width: 52px; }
+  .vc-item.on .vc-lb { display: block; }
+  .vc-main { flex: 1; display: flex; flex-direction: column; min-width: 0; background: var(--cream); }
+  .vc-chips { overflow: hidden; padding: 8px 0 4px; flex-shrink: 0; }
+  .vc-chips-in { display: flex; gap: 6px; padding-left: 12px; }
+  .vc-hint { font-size: 11px; color: var(--ink-3); font-weight: 600; text-align: center; padding: 8px 0 2px; }
+
   /* ─────────── detail sheet ─────────── */
   .d-photo { height: 240px; flex-shrink: 0; background-color: var(--accent-soft); background-size: cover; background-position: center; position: relative; }
   .d-photo.k-monogram svg { width: 54px; height: 54px; }
@@ -661,6 +676,34 @@ const vbMenu = D => {
     ${cartbarHTML()}`;
 };
 
+/* ─────────── V-C · Icon rail + chips templates ─────────── */
+const vcMenu = D => {
+  const drinks = D.cats[6];
+  const rail = D.cats.map((c, i) => `
+    <div class="vc-item ${i === 6 ? 'on' : ''}">
+      <div class="vc-ti">${I[c.icon]}<span class="b">${c.count}</span></div>
+      <div class="vc-lb">${c.name.split(' ')[0]}</div>
+    </div>`).join('');
+  const chips = [['All', drinks.count, false], ...drinks.subs.map(([s, n]) => [s, n, s === 'Lassi'])]
+    .map(([s, n, on]) => `<span class="k-pill ${on ? 'on' : ''}">${s} <span class="c">${n}</span></span>`).join('');
+  const lassi = D.items.drinks.filter(it => it.sub === 'Lassi');
+  return `
+    ${brandbarHTML(D.venue)}
+    <div class="vc-shell">
+      <div class="vc-rail">${rail}</div>
+      <div class="vc-main">
+        <div class="va-cathead"><h2>${drinks.name}</h2><button class="g-ib">${I.search}</button><button class="g-ib solid">${I.filter}</button></div>
+        <div class="va-subline">${drinks.count} dishes · hot, cold, lassi & fresh juice</div>
+        <div class="vc-chips"><div class="vc-chips-in" style="transform:translateX(-56px)">${chips}</div></div>
+        <div class="va-dishes">
+          ${lassi.map(it => cardHTML(it, drinks, true)).join('')}
+          <div class="vc-hint">Showing Lassi · 3 of 13 drinks — tap All to clear</div>
+        </div>
+        ${cartbarHTML()}
+      </div>
+    </div>`;
+};
+
 /* ─────────── page wiring ─────────── */
 const VARIANTS = ['va', 'vb', 'vc'];
 const SCREENS = ['menu', 'detail', 'cart', 'placed', 'about'];
@@ -669,7 +712,7 @@ const VNAMES = { va: 'V-A · Baseline+', vb: 'V-B · Top tabs + scroll-spy', vc:
 const TEMPLATES = {
   va: { menu: vaMenu, detail: vaDetail, cart: vaCart, placed: vaPlaced, about: vaAbout },
   vb: { menu: vbMenu, detail: vaDetail, cart: vaCart, placed: vaPlaced, about: vaAbout },
-  vc: null, // Task 6
+  vc: { menu: vcMenu, detail: vaDetail, cart: vaCart, placed: vaPlaced, about: vaAbout },
 };
 
 const CAPTIONS = {
@@ -687,7 +730,13 @@ const CAPTIONS = {
     placed: 'Same shared-kit confirmation as V-A (F11, F12).',
     about: 'Same shared-kit about sheet as V-A (F2, F13).',
   },
-  vc: { menu: '<b>56px icon rail + thumb-reach subcategory chips.</b> Built in Task 6.' },
+  vc: {
+    menu: '<b>Icon-only 56px rail + thumb-reach chips.</b> The category map stays always-visible like today (audit strength), but the rail shrinks to icon tiles (count badges; active tile shows its label) and returns ~32px of card width. Subcategory switching moves to chips under the header — in thumb reach (F4\'s spirit). Mock: Drinks active, “Lassi” chip selected, honest filtered-state hint.',
+    detail: 'Same shared-kit detail sheet as V-A — the variant question is navigation, not components (F3 fix included).',
+    cart: 'Same shared-kit cart as V-A (F4, F7).',
+    placed: 'Same shared-kit confirmation as V-A (F11, F12).',
+    about: 'Same shared-kit about sheet as V-A (F2, F13).',
+  },
 };
 
 let variant = 'va', theme = 'v-saffron';
