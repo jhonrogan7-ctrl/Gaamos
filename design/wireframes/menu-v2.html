@@ -1,0 +1,773 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>gaamos — guest menu v2 exploration</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500..800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  /* ─────────── page chrome (same canvas as flow.html) ─────────── */
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  :root { --hd: 'Bricolage Grotesque', sans-serif; --bd: 'Plus Jakarta Sans', sans-serif; }
+  body { font-family: var(--bd); background: #0f1014; color: #e7e7ea; -webkit-font-smoothing: antialiased; padding: 30px 20px 70px; }
+
+  .lead { max-width: 1280px; margin: 0 auto 18px; }
+  .lead .kicker { font-family: var(--hd); font-weight: 800; letter-spacing: .18em; text-transform: uppercase; font-size: 12px; color: #ff8a5c; }
+  .lead h1 { font-family: var(--hd); font-weight: 800; font-size: 30px; letter-spacing: -.02em; margin: 6px 0 8px; color: #fff; }
+  .lead p { font-size: 14px; line-height: 1.6; color: #a4a4ad; max-width: 820px; }
+
+  .switch { max-width: 1280px; margin: 16px auto 8px; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+  .switch .lbl { font-size: 12px; font-weight: 700; color: #9a9aa3; min-width: 56px; }
+  .seg { display: inline-flex; background: #1a1b21; border: 1px solid #2a2b33; border-radius: 12px; padding: 4px; gap: 4px; flex-wrap: wrap; }
+  .seg button { font-family: var(--bd); font-weight: 700; font-size: 13px; color: #b9b9c2; background: none; border: none; padding: 8px 16px; border-radius: 9px; cursor: pointer; display: flex; align-items: center; gap: 8px; }
+  .seg button .d { width: 13px; height: 13px; border-radius: 4px; }
+  .seg button.on { color: #fff; background: #2c2d36; }
+  .seg button small { font-weight: 600; color: #85858f; }
+  .seg button.on small { color: #b9b9c2; }
+
+  .stage { display: flex; gap: 26px; justify-content: flex-start; align-items: flex-start; max-width: 1280px; margin: 22px auto 0; overflow-x: auto; padding-bottom: 16px; scrollbar-width: thin; }
+  .col { flex-shrink: 0; width: 340px; }
+  .col .cap { text-align: center; margin-bottom: 12px; }
+  .col .cap .step { font-family: var(--hd); font-weight: 800; font-size: 11px; letter-spacing: .14em; text-transform: uppercase; color: #ff8a5c; }
+  .col .cap .nm { font-family: var(--hd); font-weight: 800; font-size: 16px; color: #fff; margin-top: 3px; }
+  .col .note { margin-top: 12px; font-size: 11.5px; line-height: 1.55; color: #8f8f99; }
+  .col .note b { color: #c6c6cf; font-weight: 700; }
+
+  .phone { width: 340px; height: 738px; border-radius: 40px; padding: 10px; background: linear-gradient(160deg,#2b2c34,#161519); box-shadow: 0 30px 70px -24px rgba(0,0,0,.8), 0 0 0 1px rgba(255,255,255,.05) inset; }
+  .screen { width: 100%; height: 100%; border-radius: 32px; overflow: hidden; display: flex; flex-direction: column; position: relative; background: var(--cream); }
+  .todo { flex: 1; display: flex; align-items: center; justify-content: center; text-align: center; padding: 30px; font-size: 13px; font-weight: 700; color: var(--ink-3); }
+
+  .notes { max-width: 1280px; margin: 34px auto 0; border-top: 1px solid #26272e; padding-top: 22px; display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 22px; }
+  .notes h3 { font-family: var(--hd); font-size: 13px; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; color: #ff8a5c; margin-bottom: 9px; }
+  .notes ul { list-style: none; }
+  .notes li { font-size: 12px; line-height: 1.55; color: #a4a4ad; padding-left: 14px; position: relative; margin-bottom: 6px; }
+  .notes li::before { content: '·'; position: absolute; left: 2px; color: #ff8a5c; font-weight: 800; }
+  .notes b { color: #d6d6de; font-weight: 700; }
+
+  /* ─────────── guest screen base ─────────── */
+  .v, .v * { font-family: var(--bd); }
+
+  /* ════════ THEME A — SAFFRON FESTIVAL (verbatim from flow.html) ════════ */
+  .v-saffron {
+    --cream:#fff6e9; --ink:#2a1726; --ink-2:#6e5560; --ink-3:#a9909c; --line:#f0e2cf; --line-2:#e3d2bb;
+    --card:#fff; --card-shadow:0 1px 0 rgba(42,23,38,.04),0 12px 26px -16px rgba(226,55,68,.35);
+    --accent:#e23744; --accent-deep:#b3232f; --accent-soft:#ffe2dd; --accent-grad:linear-gradient(140deg,#ff9f1c,#e23744);
+    --price:#e23744; --logo-bg:linear-gradient(140deg,#ff9f1c,#e23744); --logo-shadow:0 8px 18px -6px rgba(226,55,68,.55);
+    --rail-bg:linear-gradient(180deg,#fff0d6,#ffe6d2); --rail-ink:#8a6f5e;
+    --chip-bg:#fff; --chip-ink:#e2802a; --chip-bd:#f4ddc2; --chip-active-shadow:0 8px 16px -5px rgba(226,55,68,.5);
+    --btn-bg:#fff; --btn-bd:#f0e2cf; --btn-ink:#2a1726; --bar:linear-gradient(180deg,#fff0d6,#fff6e9);
+    --plus-shadow:0 6px 14px -4px rgba(226,55,68,.5);
+    --cta-bg:linear-gradient(135deg,#2a1726,#4a1f2e); --cta-chip:rgba(255,159,28,.28); --cta-shadow:0 16px 34px -14px rgba(42,23,38,.6);
+  }
+  /* ════════ THEME B — ELECTRIC BERRY (verbatim from flow.html) ════════ */
+  .v-berry {
+    --cream:#f6f4ff; --ink:#1c1340; --ink-2:#5b5180; --ink-3:#9991bd; --line:#e7e1ff; --line-2:#d8d0f5;
+    --card:#fff; --card-shadow:0 1px 0 rgba(28,19,64,.04),0 12px 26px -16px rgba(124,58,237,.4);
+    --accent:#7c3aed; --accent-deep:#5b21b6; --accent-soft:#ece2ff; --accent-grad:linear-gradient(140deg,#ec4899,#7c3aed);
+    --price:#db2777; --logo-bg:linear-gradient(140deg,#ec4899,#7c3aed); --logo-shadow:0 8px 18px -6px rgba(124,58,237,.6);
+    --rail-bg:linear-gradient(180deg,#efe8ff,#f6e9ff); --rail-ink:#7b6fa6;
+    --chip-bg:#fff; --chip-ink:#7c3aed; --chip-bd:#e7e1ff; --chip-active-shadow:0 8px 16px -5px rgba(124,58,237,.55);
+    --btn-bg:#fff; --btn-bd:#e7e1ff; --btn-ink:#1c1340; --bar:linear-gradient(180deg,#efe8ff,#f6f4ff);
+    --plus-shadow:0 6px 14px -4px rgba(124,58,237,.55);
+    --cta-bg:linear-gradient(135deg,#7c3aed,#db2777); --cta-chip:rgba(255,255,255,.22); --cta-shadow:0 16px 34px -14px rgba(124,58,237,.6);
+  }
+  /* ════════ THEME C — TROPICAL JUICE (verbatim from flow.html) ════════ */
+  .v-juice {
+    --cream:#fff; --ink:#0d2b2b; --ink-2:#4d6b6b; --ink-3:#93aaaa; --line:#e6f0ee; --line-2:#d4e6e2;
+    --card:#fff; --card-shadow:0 1px 0 rgba(13,43,43,.04),0 12px 26px -16px rgba(6,182,212,.34);
+    --accent:#06b6d4; --accent-deep:#0e7490; --accent-soft:#d3f4fa; --accent-grad:linear-gradient(140deg,#ffb02e,#ff3d71);
+    --price:#ff3d71; --logo-bg:linear-gradient(140deg,#ffb02e,#ff3d71); --logo-shadow:0 8px 18px -6px rgba(255,61,113,.5);
+    --rail-bg:linear-gradient(180deg,#effbf9,#fff4ec); --rail-ink:#5e807e;
+    --chip-bg:#fff; --chip-ink:#08a3bf; --chip-bd:#def2ef; --chip-active-shadow:0 8px 16px -5px rgba(255,61,113,.45);
+    --btn-bg:#fff; --btn-bd:#e6f0ee; --btn-ink:#0d2b2b; --bar:linear-gradient(180deg,#effbf9,#fff);
+    --plus-shadow:0 6px 14px -4px rgba(255,61,113,.5);
+    --cta-bg:linear-gradient(135deg,#06b6d4,#ff3d71); --cta-chip:rgba(255,255,255,.24); --cta-shadow:0 16px 34px -14px rgba(6,182,212,.55);
+  }
+
+  /* ═══════════════════════════════════════════════════════════════════
+     SHARED COMPONENT KIT — one implementation, every variant uses it.
+     Type scale 22/17/15/13/12/10 · spacing 4-8-12-16-20 · hairline = --line.
+     Deviations from the plan kit spec (audit-driven, see page footer):
+     · .k-qty buttons are 44px not 36px (F4: ≥44px tap targets)
+     · .k-price uses the theme's --price var, not accent-deep (theme contract)
+     ═══════════════════════════════════════════════════════════════════ */
+  .k-card { display: flex; gap: 12px; padding: 12px; border-radius: 20px; background: var(--card); border: 1px solid var(--line); flex-shrink: 0; }
+  .k-card:active { box-shadow: var(--card-shadow); }
+  .k-card--s { gap: 10px; padding: 10px; }
+  .k-card--s .k-tags { flex: none; }
+  .k-card--s .k-ph { width: 72px; height: 72px; border-radius: 14px; }
+  .k-card--s .k-monogram svg { width: 24px; height: 24px; }
+  .k-ph { width: 88px; height: 88px; border-radius: 18px; flex-shrink: 0; background-color: var(--accent-soft); background-size: cover; background-position: var(--focal, center); }
+  .k-monogram { display: flex; align-items: center; justify-content: center; background: var(--accent-soft); color: var(--accent-deep); }
+  .k-monogram svg { width: 28px; height: 28px; }
+  .k-in { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+  .k-r1 { display: flex; gap: 8px; align-items: flex-start; }
+  .k-name { flex: 1; font-family: var(--hd); font-size: 15px; font-weight: 650; letter-spacing: -.01em; color: var(--ink); line-height: 1.18; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+  .k-price { font-family: var(--hd); font-size: 15px; font-weight: 750; color: var(--price); white-space: nowrap; text-align: right; min-width: 52px; }
+  .k-price--ln { text-align: left; min-width: 0; margin-top: 3px; }
+  .k-desc { font-size: 12px; line-height: 1.35; color: var(--ink-2); margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .k-r2 { display: flex; align-items: flex-end; justify-content: space-between; gap: 8px; margin-top: auto; padding-top: 4px; }
+  .k-tags { display: flex; gap: 4px; flex-wrap: wrap; min-height: 18px; align-items: flex-end; flex: 1; min-width: 0; overflow: hidden; }
+  .k-tag { font-size: 10px; font-weight: 800; letter-spacing: .04em; text-transform: uppercase; padding: 3px 7px; border-radius: 6px; }
+  .k-tag.veg { color: #1f7a3d; background: #d8f3e0; }
+  .k-tag.vegan { color: #166534; background: #c9f1d8; }
+  .k-tag.halal { color: #155e75; background: #d2f0f7; }
+  .k-tag.gf { color: #9a6b16; background: #fbecc8; }
+  .k-tag.spicy { color: #c0392b; background: #ffe0d6; }
+  .k-tag.raw { color: #9d174d; background: #ffdcec; }
+  .k-tag.pop { color: var(--accent-deep); background: var(--accent-soft); }
+  .k-add { width: 44px; height: 44px; border-radius: 16px; border: none; background: var(--accent-grad, var(--accent)); color: #fff; font-size: 20px; font-weight: 700; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: var(--plus-shadow); flex-shrink: 0; }
+
+  .k-btn { width: 100%; height: 52px; border-radius: 999px; border: none; background: var(--accent-grad, var(--accent)); color: #fff; font-family: var(--bd); font-size: 15px; font-weight: 700; display: flex; align-items: center; justify-content: center; gap: 10px; padding: 0 22px; cursor: pointer; box-shadow: var(--cta-shadow); white-space: nowrap; }
+  .d-cta .k-btn { justify-content: space-between; }
+  .k-btn .pr { font-family: var(--hd); font-weight: 800; font-size: 17px; }
+  .k-btn--ghost { background: transparent; color: var(--ink); border: 1.5px solid var(--line-2); box-shadow: none; }
+
+  .k-qty { display: flex; align-items: center; gap: 8px; }
+  .k-qty button { width: 44px; height: 44px; border-radius: 50%; border: 1px solid var(--line-2); background: var(--card); color: var(--ink); font-size: 19px; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .k-qty button.p { background: var(--accent-grad, var(--accent)); color: #fff; border-color: transparent; box-shadow: var(--plus-shadow); }
+  .k-qty .n { font-family: var(--hd); font-weight: 800; font-size: 17px; min-width: 20px; text-align: center; color: var(--ink); }
+  .k-qty--s button { width: 44px; height: 44px; }
+
+  .k-searchbar { height: 40px; border-radius: 999px; border: 1px solid var(--line); background: var(--card); display: flex; align-items: center; gap: 8px; padding: 0 14px; color: var(--ink-3); font-size: 13px; font-weight: 600; }
+  .k-searchbar svg { width: 16px; height: 16px; flex-shrink: 0; }
+
+  .k-pill { height: 40px; padding: 0 15px; border-radius: 999px; border: 1.5px solid var(--chip-bd); background: var(--card); color: var(--ink-2); font-size: 13px; font-weight: 700; display: inline-flex; align-items: center; gap: 6px; cursor: pointer; flex-shrink: 0; white-space: nowrap; }
+  .k-pill.on { background: var(--accent-soft); color: var(--accent-deep); border-color: var(--accent); }
+  .k-pill .c { font-size: 10px; font-weight: 800; opacity: .65; }
+
+  .k-scrim { position: absolute; inset: 0; background: rgba(20,16,18,.4); backdrop-filter: blur(2px); }
+  .k-sheet { position: relative; z-index: 2; margin-top: auto; background: var(--cream); border-radius: 28px 28px 0 0; display: flex; flex-direction: column; max-height: 95%; overflow: hidden; }
+  .k-handle { width: 40px; height: 4px; border-radius: 2px; background: var(--line-2); margin: 10px auto 6px; flex-shrink: 0; }
+  .k-handle--over { position: absolute; top: 10px; left: 50%; transform: translateX(-50%); margin: 0; background: rgba(255,255,255,.85); z-index: 3; }
+
+  /* ─────────── shared guest chrome (brand bar, header buttons, cart bar) ─────────── */
+  .g-brandbar { padding: 14px 14px 10px; display: flex; align-items: center; gap: 10px; flex-shrink: 0; background: var(--bar, var(--cream)); }
+  .g-mono { width: 44px; height: 44px; border-radius: 14px; flex-shrink: 0; background: var(--logo-bg); color: #fff; font-family: var(--hd); font-weight: 800; font-size: 16px; letter-spacing: .01em; display: flex; align-items: center; justify-content: center; box-shadow: var(--logo-shadow); }
+  .g-vn { flex: 1; min-width: 0; }
+  .g-vn .t { font-family: var(--hd); font-weight: 800; font-size: 15px; letter-spacing: -.015em; color: var(--ink); line-height: 1.1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .g-vn small { display: block; font-size: 10px; color: var(--ink-3); font-weight: 600; margin-top: 2px; }
+  .g-ib { width: 44px; height: 44px; border-radius: 14px; flex-shrink: 0; background: var(--btn-bg); border: 1px solid var(--btn-bd); color: var(--btn-ink); display: flex; align-items: center; justify-content: center; position: relative; cursor: pointer; }
+  .g-ib svg { width: 19px; height: 19px; }
+  .g-ib .badge { position: absolute; top: -5px; right: -5px; min-width: 18px; height: 18px; border-radius: 9px; background: var(--accent); color: #fff; font-size: 10px; font-weight: 800; display: flex; align-items: center; justify-content: center; padding: 0 5px; border: 2px solid var(--cream); }
+
+  .g-cartbar { flex-shrink: 0; margin: auto 12px 12px; padding: 12px 16px; border-radius: 18px; background: var(--cta-bg); color: #fff; display: flex; align-items: center; justify-content: space-between; box-shadow: var(--cta-shadow); cursor: pointer; position: relative; z-index: 2; }
+  .g-cartbar .l { display: flex; align-items: center; gap: 10px; }
+  .g-cartbar .qb { width: 30px; height: 30px; border-radius: 9px; background: var(--cta-chip); display: flex; align-items: center; justify-content: center; font-family: var(--hd); font-weight: 800; font-size: 13px; }
+  .g-cartbar .t { font-size: 13px; font-weight: 700; }
+  .g-cartbar .t small { display: block; font-size: 10px; opacity: .72; font-weight: 600; }
+  .g-cartbar .pr { font-family: var(--hd); font-weight: 800; font-size: 17px; }
+
+  .g-grp { padding: 12px 0 4px; display: flex; align-items: center; gap: 9px; flex-shrink: 0; }
+  .g-grp .gt { font-family: var(--hd); font-size: 11px; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; color: var(--ink); }
+  .g-grp .gc { font-size: 10px; font-weight: 700; color: var(--ink-3); }
+  .g-grp .ln { flex: 1; height: 2px; border-radius: 2px; background: var(--accent); opacity: .45; }
+
+  /* ─────────── V-A · Baseline+ (rail + accordion, rebuilt on the kit) ─────────── */
+  .va-shell { display: flex; flex: 1; min-height: 0; overflow: hidden; }
+  .va-rail { width: 88px; flex-shrink: 0; background: var(--rail-bg); overflow: hidden; padding-top: 4px; }
+  .va-ri { padding: 10px 4px; display: flex; flex-direction: column; align-items: center; gap: 4px; border-left: 3px solid transparent; cursor: pointer; }
+  .va-ri.active { background: var(--cream); border-left-color: var(--accent); }
+  .va-ri .rc { width: 44px; height: 44px; border-radius: 15px; background: var(--chip-bg); color: var(--chip-ink); border: 1px solid var(--chip-bd); display: flex; align-items: center; justify-content: center; }
+  .va-ri .rc svg { width: 21px; height: 21px; }
+  .va-ri.active .rc { background: var(--accent-grad, var(--accent)); color: #fff; border-color: transparent; box-shadow: var(--chip-active-shadow); }
+  .va-ri .n { font-size: 10px; font-weight: 700; color: var(--rail-ink); text-align: center; line-height: 1.15; }
+  .va-ri.active .n { color: var(--ink); }
+  .va-ri .c { font-size: 9px; font-weight: 600; color: var(--ink-3); }
+  .va-acc { background: var(--cream); border-left: 3px solid var(--accent); padding: 0 4px 8px; }
+  .va-sub { padding: 7px 4px 7px 8px; font-size: 9.5px; font-weight: 700; color: var(--ink-2); display: flex; justify-content: space-between; align-items: center; gap: 3px; border-radius: 8px; }
+  .va-sub.on { color: var(--accent-deep); background: var(--accent-soft); }
+  .va-sub .sc { font-size: 8.5px; color: var(--ink-3); font-weight: 600; }
+
+  .va-main { flex: 1; display: flex; flex-direction: column; min-width: 0; background: var(--cream); }
+  .va-cathead { padding: 12px 14px 0; display: flex; align-items: flex-start; gap: 8px; }
+  .va-cathead h2 { font-family: var(--hd); font-size: 22px; font-weight: 800; letter-spacing: -.025em; color: var(--ink); line-height: 1.04; flex: 1; }
+  .va-cathead .g-ib { width: 44px; height: 44px; }
+  .va-cathead .g-ib.solid { background: var(--accent-grad, var(--accent)); color: #fff; border-color: transparent; }
+  .va-subline { padding: 4px 14px 0; font-size: 11px; color: var(--ink-3); font-weight: 600; }
+  .va-dishes { padding: 2px 8px 8px; display: flex; flex-direction: column; gap: 8px; overflow: hidden; flex: 1; }
+  .va-dishes .g-grp { padding: 10px 2px 0; }
+
+  /* ─────────── V-B · Top tabs + scroll-spy ─────────── */
+  .vb-head { flex-shrink: 0; background: var(--bar, var(--cream)); }
+  .vb-head .g-brandbar { background: none; }
+  .vb-tabs { display: flex; gap: 8px; padding: 2px 0 8px; overflow: hidden; }
+  .vb-tabs-in { display: flex; gap: 8px; padding-left: 12px; }
+  .vb-tab { display: inline-flex; align-items: center; gap: 7px; height: 44px; padding: 0 14px; border-radius: 999px; border: 1.5px solid var(--chip-bd); background: var(--card); color: var(--ink-2); font-size: 13px; font-weight: 700; flex-shrink: 0; white-space: nowrap; cursor: pointer; }
+  .vb-tab svg { width: 16px; height: 16px; }
+  .vb-tab .c { font-size: 10px; font-weight: 800; opacity: .6; }
+  .vb-tab.on { background: var(--accent-grad, var(--accent)); color: #fff; border-color: transparent; box-shadow: var(--chip-active-shadow); }
+  .vb-tab.on .c { opacity: .85; }
+  .vb-subrow { display: flex; gap: 6px; padding: 0 12px 10px; overflow: hidden; }
+  .vb-subrow .k-pill { height: 34px; font-size: 12px; padding: 0 13px; }
+  .vb-body { flex: 1; overflow: hidden; padding: 0 12px; display: flex; flex-direction: column; }
+  .vb-sec { display: flex; align-items: baseline; gap: 8px; padding: 12px 2px 4px; flex-shrink: 0; }
+  .vb-sec .t { font-family: var(--hd); font-size: 17px; font-weight: 800; letter-spacing: -.02em; color: var(--ink); }
+  .vb-sec .c { font-size: 11px; font-weight: 700; color: var(--ink-3); }
+  .vb-sec .hn { font-size: 9.5px; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; color: var(--accent-deep); background: var(--accent-soft); padding: 3px 8px; border-radius: 6px; margin-left: auto; }
+  .vb-sec--pinned { margin: 0 -12px; padding: 10px 14px 8px; background: var(--cream); border-bottom: 1px solid var(--line); box-shadow: 0 8px 14px -12px rgba(0,0,0,.25); }
+  .vb-list { display: flex; flex-direction: column; gap: 8px; overflow: hidden; }
+  .vb-list .g-grp { padding: 8px 2px 0; }
+
+  /* ─────────── V-C · Icon rail + chips ─────────── */
+  .vc-shell { display: flex; flex: 1; min-height: 0; overflow: hidden; }
+  .vc-rail { width: 56px; flex-shrink: 0; background: var(--rail-bg); overflow: hidden; padding: 8px 0; display: flex; flex-direction: column; align-items: center; gap: 7px; }
+  .vc-item { display: flex; flex-direction: column; align-items: center; gap: 3px; flex-shrink: 0; }
+  .vc-ti { position: relative; width: 44px; height: 44px; border-radius: 14px; background: var(--chip-bg); color: var(--chip-ink); border: 1px solid var(--chip-bd); display: flex; align-items: center; justify-content: center; cursor: pointer; }
+  .vc-ti svg { width: 20px; height: 20px; }
+  .vc-ti .b { position: absolute; top: -4px; right: -4px; min-width: 16px; height: 16px; border-radius: 8px; background: var(--accent); color: #fff; font-size: 8.5px; font-weight: 800; display: flex; align-items: center; justify-content: center; padding: 0 4px; border: 1.5px solid var(--cream); }
+  .vc-item.on .vc-ti { background: var(--accent-grad, var(--accent)); color: #fff; border-color: transparent; box-shadow: var(--chip-active-shadow); }
+  .vc-lb { font-size: 8.5px; font-weight: 800; color: var(--ink); display: none; text-align: center; line-height: 1.1; max-width: 52px; }
+  .vc-item.on .vc-lb { display: block; }
+  .vc-main { flex: 1; display: flex; flex-direction: column; min-width: 0; background: var(--cream); }
+  .vc-chips { overflow: hidden; padding: 8px 0 4px; flex-shrink: 0; }
+  .vc-chips-in { display: flex; gap: 6px; padding-left: 12px; }
+  .vc-hint { font-size: 11px; color: var(--ink-3); font-weight: 600; text-align: center; padding: 8px 0 2px; }
+
+  /* ─────────── detail sheet ─────────── */
+  .d-photo { height: 240px; flex-shrink: 0; background-color: var(--accent-soft); background-size: cover; background-position: center; position: relative; }
+  .d-photo.k-monogram svg { width: 54px; height: 54px; }
+  .d-body { padding: 16px 16px 8px; overflow: hidden; }
+  .d-r1 { display: flex; align-items: flex-start; gap: 12px; }
+  .d-r1 h1 { flex: 1; font-family: var(--hd); font-size: 22px; font-weight: 800; letter-spacing: -.02em; color: var(--ink); line-height: 1.1; }
+  .d-r1 .k-price { font-size: 20px; margin-top: 2px; }
+  .d-tags { display: flex; gap: 5px; margin-top: 8px; }
+  .d-desc { font-size: 13px; color: var(--ink-2); line-height: 1.55; margin-top: 10px; }
+  .d-meta { display: flex; align-items: center; gap: 7px; margin-top: 12px; font-size: 11px; font-weight: 700; color: var(--ink-3); }
+  .d-meta svg { width: 14px; height: 14px; }
+  .d-cta { display: flex; flex-direction: column; gap: 10px; align-items: center; padding: 12px 16px 18px; border-top: 1px solid var(--line); background: var(--cream); position: relative; z-index: 4; flex-shrink: 0; }
+
+  /* ─────────── cart / placed ─────────── */
+  .s-head { padding: 16px 16px 8px; display: flex; align-items: center; gap: 11px; flex-shrink: 0; }
+  .s-head h1 { font-family: var(--hd); font-size: 22px; font-weight: 800; letter-spacing: -.02em; color: var(--ink); flex: 1; line-height: 1.05; }
+  .s-head h1 small { display: block; font-family: var(--bd); font-size: 10.5px; color: var(--ink-3); font-weight: 600; margin-top: 3px; }
+  .s-tbadge { display: inline-flex; align-items: center; gap: 6px; font-size: 11px; font-weight: 800; letter-spacing: .04em; color: var(--accent-deep); background: var(--accent-soft); padding: 7px 12px; border-radius: 999px; white-space: nowrap; }
+  .s-tbadge svg { width: 13px; height: 13px; }
+
+  .c-body { flex: 1; overflow: hidden; padding: 4px 16px; }
+  .c-item { display: flex; gap: 11px; padding: 10px; border-radius: 18px; background: var(--card); border: 1px solid var(--line); margin-bottom: 9px; align-items: center; }
+  .c-ph { width: 56px; height: 56px; border-radius: 14px; flex-shrink: 0; background-color: var(--accent-soft); background-size: cover; background-position: center; }
+  .c-ph.k-monogram svg { width: 20px; height: 20px; }
+  .c-in { flex: 1; min-width: 0; }
+  .c-in .cn { font-family: var(--hd); font-size: 13px; font-weight: 650; color: var(--ink); line-height: 1.15; }
+  .c-in .cp { font-family: var(--hd); font-weight: 750; font-size: 13px; color: var(--price); margin-top: 3px; }
+  .c-sum { padding: 14px; border-radius: 18px; background: var(--card); border: 1px solid var(--line); display: flex; flex-direction: column; gap: 8px; margin-top: 4px; }
+  .c-sm { display: flex; justify-content: space-between; font-size: 12px; color: var(--ink-2); font-weight: 600; }
+  .c-sm.tot { font-family: var(--hd); font-size: 17px; font-weight: 800; color: var(--ink); padding-top: 10px; border-top: 1px solid var(--line); margin-top: 2px; }
+  .c-sm.tot .am { color: var(--price); }
+  .c-foot { flex-shrink: 0; padding: 12px 16px 18px; }
+
+  .ok-wrap { flex: 1; display: flex; flex-direction: column; padding: 0 16px; overflow: hidden; }
+  .ok-head { text-align: center; padding: 26px 0 14px; }
+  .ok-badge { width: 68px; height: 68px; border-radius: 22px; margin: 0 auto 14px; background: var(--accent-grad, var(--accent)); color: #fff; display: flex; align-items: center; justify-content: center; box-shadow: var(--cta-shadow); }
+  .ok-badge svg { width: 34px; height: 34px; }
+  .ok-head h1 { font-family: var(--hd); font-size: 22px; font-weight: 800; letter-spacing: -.02em; color: var(--ink); }
+  .ok-head .num { font-family: var(--hd); font-size: 17px; font-weight: 800; color: var(--accent-deep); margin-top: 6px; }
+  .ok-head .om { font-size: 12px; color: var(--ink-2); margin-top: 5px; font-weight: 600; }
+  .ok-status { display: inline-flex; align-items: center; gap: 7px; margin-top: 12px; font-size: 11px; font-weight: 800; letter-spacing: .04em; color: var(--accent-deep); background: var(--accent-soft); padding: 7px 13px; border-radius: 999px; }
+  .ok-status .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--accent); }
+  .ok-receipt { background: var(--card); border: 1px solid var(--line); border-radius: 18px; padding: 14px; }
+  .ok-ri { display: flex; align-items: center; gap: 10px; padding: 8px 0; }
+  .ok-ri + .ok-ri { border-top: 1px solid var(--line); }
+  .ok-ri .q { font-size: 11px; font-weight: 800; color: var(--accent-deep); background: var(--accent-soft); padding: 3px 8px; border-radius: 999px; flex-shrink: 0; }
+  .ok-ri .rn { flex: 1; font-size: 12.5px; font-weight: 700; color: var(--ink); min-width: 0; }
+  .ok-ri .rp { font-family: var(--hd); font-weight: 750; font-size: 13px; color: var(--ink); }
+  .ok-tot { display: flex; align-items: center; justify-content: space-between; margin-top: 8px; padding-top: 13px; border-top: 2px dashed var(--line-2); }
+  .ok-tot .l { font-size: 13px; font-weight: 700; color: var(--ink-2); }
+  .ok-tot strong { font-family: var(--hd); font-size: 21px; font-weight: 800; color: var(--price); }
+  .ok-hint { text-align: center; font-size: 11px; color: var(--ink-3); font-weight: 600; margin-top: 12px; line-height: 1.5; }
+  .ok-foot { margin-top: auto; padding: 12px 0 18px; }
+
+  /* ─────────── about sheet ─────────── */
+  .ab-hero { padding: 20px 22px 16px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 6px; background: linear-gradient(180deg, var(--accent-soft) 0%, transparent 100%); }
+  .ab-hero .g-mono { width: 70px; height: 70px; border-radius: 22px; font-size: 28px; margin-bottom: 4px; }
+  .ab-hero h2 { font-family: var(--hd); font-size: 21px; font-weight: 800; letter-spacing: -.02em; color: var(--ink); line-height: 1.1; }
+  .ab-hero .tag { font-size: 10px; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; color: var(--accent-deep); }
+  .ab-sec { padding: 12px 16px 0; overflow: hidden; }
+  .ab-lbl { font-size: 10px; letter-spacing: .14em; text-transform: uppercase; color: var(--ink-3); font-weight: 800; margin-bottom: 8px; }
+  .ab-row { display: flex; align-items: center; gap: 12px; padding: 11px 13px; background: var(--card); border: 1px solid var(--line); border-radius: 14px; margin-bottom: 8px; }
+  .ab-row .ic { width: 38px; height: 38px; border-radius: 12px; background: var(--accent-soft); color: var(--accent-deep); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .ab-row .ic svg { width: 17px; height: 17px; }
+  .ab-row .lb { font-size: 9.5px; font-weight: 700; color: var(--ink-3); letter-spacing: .08em; text-transform: uppercase; }
+  .ab-row .vl { font-family: var(--hd); font-size: 13px; font-weight: 750; color: var(--ink); margin-top: 2px; }
+  .ab-br { border: 1px solid var(--line); border-radius: 16px; background: var(--card); padding: 12px 13px; margin-bottom: 8px; }
+  .ab-br .r { display: flex; align-items: center; gap: 8px; }
+  .ab-br .nm { font-family: var(--hd); font-size: 14px; font-weight: 800; color: var(--ink); flex: 1; }
+  .ab-br .bt { font-size: 8.5px; font-weight: 800; letter-spacing: .1em; color: var(--accent-deep); background: var(--accent-soft); padding: 3px 7px; border-radius: 6px; }
+  .ab-br .ad { font-size: 11px; color: var(--ink-2); line-height: 1.4; margin-top: 4px; }
+  .ab-copy { text-align: center; font-size: 10px; color: var(--ink-3); font-weight: 600; padding: 10px 0 16px; }
+</style>
+</head>
+<body>
+
+<div class="lead">
+  <div class="kicker">Gaamos · Guest Menu v2</div>
+  <h1>Guest menu v2 — layout exploration</h1>
+  <p>
+    Three variants, one component kit. Same Sherpa House (testco) content, same approved themes.
+    <b>V-A</b> keeps today's rail + accordion, rebuilt on the polished kit. <b>V-B</b> moves categories to top
+    tabs with one continuous scroll-spy list. <b>V-C</b> shrinks the rail to icons and moves subcategories to
+    thumb-reach chips. Pick per-screen or whole-variant; mixing allowed (e.g. V-B navigation + V-A cards).
+    Every variant bakes in the audit fixes (F1–F14) listed at the bottom of this page.
+  </p>
+</div>
+
+<div class="switch">
+  <span class="lbl">Variant:</span>
+  <nav class="seg" id="variant-tabs">
+    <button data-variant="va" class="on">V-A <small>· Baseline+</small></button>
+    <button data-variant="vb">V-B <small>· Top tabs + scroll-spy</small></button>
+    <button data-variant="vc">V-C <small>· Icon rail + chips</small></button>
+  </nav>
+</div>
+<div class="switch">
+  <span class="lbl">Theme:</span>
+  <nav class="seg" id="theme-tabs">
+    <button data-t="v-saffron" class="on"><span class="d" style="background:#e23744"></span>Saffron Festival</button>
+    <button data-t="v-berry"><span class="d" style="background:#7c3aed"></span>Electric Berry</button>
+    <button data-t="v-juice"><span class="d" style="background:#06b6d4"></span>Tropical Juice</button>
+  </nav>
+</div>
+
+<main class="stage" id="frames"></main>
+
+<div class="notes">
+  <div>
+    <h3>Kit fixes baked into every variant</h3>
+    <ul>
+      <li><b>F1</b> — first category open on load (all mocks assume <code>categories[0]</code>, no hardcoded id).</li>
+      <li><b>F2</b> — venue <b>monogram</b> generated from the name; no hardcoded logo anywhere.</li>
+      <li><b>F3</b> — detail CTA sits in its own layer above the body; content can never paint over it.</li>
+      <li><b>F4</b> — all add/stepper controls ≥44px (kit deviation: qty buttons 44px, not the spec'd 36px).</li>
+      <li><b>F5/F6</b> — photo-less cards get a deliberate category-icon monogram tile, same geometry; wrong-subject photos fall back to it rather than shipping mismatched stock.</li>
+      <li><b>F7</b> — promo code and sort-by are omitted until they exist; no dead controls.</li>
+      <li><b>F9</b> — dish name may wrap 2 lines; price has its own reserved column and never collides.</li>
+      <li><b>F11/F12</b> — persistent order-placed screen with prominent number, status pill and receipt; positive check badge, nothing trash-like.</li>
+      <li><b>F13</b> — footer/copyright is the venue's own; no donor or agency branding.</li>
+      <li>Deviation: <b>.k-price</b> uses the theme's <code>--price</code> variable (not accent-deep) to honour the approved CSS-var theme contract.</li>
+      <li>Deviation: rail variants (V-A/V-C) use the <b>compact card</b> — 72px photo, price stacked on its own row (F9) — because the rail leaves a ~232px column; V-B's full-width list shows the full 88px kit card. Photo-less geometry stays identical in both.</li>
+    </ul>
+  </div>
+  <div>
+    <h3>What each variant answers</h3>
+    <ul>
+      <li><b>V-A Baseline+</b> — keeps the audit's praised rail + accordion wayfinding untouched; pure component polish. Lowest-risk pick.</li>
+      <li><b>V-B Top tabs</b> — full-width cards (~88px wider), one continuous browse, sticky section headers give in-category wayfinding for mega-categories (F10); shows the "Others" group fix for un-subcategorised dishes (F14 — Mixed Grill Platter).</li>
+      <li><b>V-C Icon rail + chips</b> — keeps the always-visible category map but returns ~32px of card width; subcategory switching moves into thumb reach (chips), helping one-handed use (F4's spirit).</li>
+    </ul>
+    <h3 style="margin-top:16px">Sources</h3>
+    <ul>
+      <li>Audit: <code>digest/audits/2026-07-02-guest-menu-audit.md</code> (F1–F14).</li>
+      <li>Content: <code>menu/fixtures/testco.json</code> — names, prices, tags verbatim; Rs integers only.</li>
+      <li>Themes: copied verbatim from the approved <code>flow.html</code> wireframe.</li>
+    </ul>
+  </div>
+</div>
+
+<script>
+/* ─────────── icons ─────────── */
+const I = {
+  search:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>',
+  filter:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M3 5h18M6 12h12M10 19h4"/></svg>',
+  back:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>',
+  info:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>',
+  bag:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 7h12l1 14H5L6 7Z"/><path d="M9 10V6a3 3 0 0 1 6 0v4"/></svg>',
+  check:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>',
+  receipt:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 3h14v18l-2.5-1.5L14 21l-2-1.5L10 21l-2.5-1.5L5 21Z"/><path d="M9 8h6M9 12h4"/></svg>',
+  phone:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3 19.5 19.5 0 0 1-6-6 19.8 19.8 0 0 1-3-8.6A2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 1.9.7 2.8a2 2 0 0 1-.5 2.1L8.1 9.9a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.8.7a2 2 0 0 1 1.7 2Z"/></svg>',
+  pin:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>',
+  clock:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>',
+  insta:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="2.5" width="19" height="19" rx="5"/><circle cx="12" cy="12" r="4.2"/><path d="M17.6 6.4h.01"/></svg>',
+  fb:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h-2a4 4 0 0 0-4 4v3H6v4h3v7h4v-7h3l1-4h-4V7a1 1 0 0 1 1-1h2Z"/></svg>',
+  mail:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="5" width="19" height="14" rx="3"/><path d="m3 7 9 6 9-6"/></svg>',
+  /* category icons (subject-matched to testco's icon keys) */
+  momo:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 14a9 5 0 0 0 18 0M3 14c0-3 4-6 9-6s9 3 9 6"/></svg>',
+  rice:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 13h18a9 9 0 0 1-18 0Z"/><path d="M7.5 13c0-2.6 2-4.7 4.5-4.7s4.5 2.1 4.5 4.7"/></svg>',
+  meat:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20 20 4"/><circle cx="9" cy="15" r="2.2"/><circle cx="13" cy="11" r="2.2"/><circle cx="17" cy="7" r="2.2"/></svg>',
+  noodles:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12h16a8 8 0 0 1-16 0Z"/><path d="M7 12V6M11 12V5M15 12V6M19 12V5"/></svg>',
+  snack:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M9.5 9.8h.01M14.5 9h.01M12 13.5h.01M9 14.5h.01M15 14h.01"/></svg>',
+  brunch:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 3v2M12 19v2M3 12h2M19 12h2M5.6 5.6 7 7M17 17l1.4 1.4M5.6 18.4 7 17M17 7l1.4-1.4"/></svg>',
+  juice:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 8h14l-1.5 12h-11L5 8Z"/><path d="M5 8 4 4h7"/></svg>',
+  dessert:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 21h16v-7H4z"/><path d="M4 14c2 0 2 2 4 2s2-2 4-2 2 2 4 2 2-2 4-2"/></svg>',
+};
+
+/* ─────────── DATA — Sherpa House Kitchen & Bar (testco), names/prices verbatim
+   from menu/fixtures/testco.json. Momo + Drinks fully populated for density;
+   other categories carry 3 representative items each (incl. photo-less, the
+   40-char long-name dish, tag coverage, and the sub:null Mixed Grill Platter). */
+const U = s => `https://images.unsplash.com/${s}?auto=format&fit=crop&w=800&q=60`;
+const DATA = {
+  venue: { name: 'Sherpa House Kitchen & Bar', mono: 'SH',
+           tagline: 'Himalayan comfort food in the heart of Thamel',
+           phone: '+977 1 4412345', email: 'hello@sherpahouse.com.np',
+           instagram: '@sherpahousektm', facebook: '/sherpahousektm',
+           table: 'Table 4 · Thamel' },
+  branches: [
+    { name: 'Thamel', tag: 'FLAGSHIP', address: 'Mandala Street, Thamel · Kathmandu' },
+    { name: 'Patan', tag: 'NEW', address: 'Durbar Square North Gate · Lalitpur' },
+  ],
+  cats: [
+    { id: 'momo', name: 'Momo & Dumplings', icon: 'momo', count: 10, note: '', subs: [['Steamed',4],['Fried',2],['Jhol',2],['Kothey',2]] },
+    { id: 'thakali', name: 'Thakali & Thali', icon: 'rice', count: 6, note: '', subs: [['Veg',3],['Non-veg',3]] },
+    { id: 'sekuwa', name: 'Sekuwa & Grill', icon: 'meat', count: 9, note: 'From 3 PM', subs: [['Chicken',3],['Mutton',2],['Pork',3]] },
+    { id: 'noodles', name: 'Chowmein & Noodles', icon: 'noodles', count: 8, note: '', subs: [['Chowmein',5],['Thukpa & Soups',3]] },
+    { id: 'newari', name: 'Newari Khaja', icon: 'snack', count: 8, note: '', subs: [] },
+    { id: 'breakfast', name: 'Breakfast', icon: 'brunch', count: 8, note: 'Until 11 AM', subs: [['Eggs & Toast',3],['Pancakes & Sets',5]] },
+    { id: 'drinks', name: 'Drinks', icon: 'juice', count: 13, note: '', subs: [['Hot',4],['Cold',3],['Lassi',3],['Juice',3]] },
+    { id: 'desserts', name: 'Desserts', icon: 'dessert', count: 6, note: '', subs: [] },
+  ],
+  items: {
+    momo: [
+      { n: 'Chicken Momo', p: 220, sub: 'Steamed', tags: [], pop: true, img: U('photo-1496116218417-1a781b1c416c'), d: 'Ten steamed chicken momo with sesame-tomato achar.' },
+      { n: 'Buff Momo', p: 200, sub: 'Steamed', tags: [], img: null, d: 'Kathmandu-style minced buff with ginger and coriander.' },
+      { n: 'Veg Momo', p: 180, sub: 'Steamed', tags: ['VEG'], img: null, d: 'Cabbage, carrot and paneer crumble; served with achar.' },
+      { n: 'Paneer Momo', p: 240, sub: 'Steamed', tags: ['VEG'], img: U('photo-1563245372-f21724e3856d'), d: 'Soft paneer and spring-onion filling.' },
+      { n: 'Fried Chicken Momo', p: 260, sub: 'Fried', tags: [], img: U('photo-1541696432-82c6da8ce7bf'), d: 'Golden-fried momo, crisp outside, juicy inside.' },
+      { n: 'Chilli Momo', p: 280, sub: 'Fried', tags: ['SPICY'], pop: true, img: U('photo-1563245372-f21724e3856d'), d: 'Fried momo tossed in chilli-garlic sauce with peppers.' },
+      { n: 'Jhol Momo', p: 250, sub: 'Jhol', tags: ['SPICY'], feat: true, img: U('photo-1547592180-85f173990554'), d: 'Steamed momo swimming in warm sesame-timur jhol.' },
+      { n: 'Veg Jhol Momo', p: 220, sub: 'Jhol', tags: ['VEG','SPICY'], img: null, d: 'Veg momo in the same warming jhol broth.' },
+      { n: 'Kothey Momo', p: 260, sub: 'Kothey', tags: [], img: U('photo-1585032226651-759b368d7246'), d: 'Pan-seared momo — steamed top, caramelised base.' },
+      { n: 'Open Momo', p: 290, sub: 'Kothey', tags: [], img: null, d: 'Open-faced momo topped with spiced chicken keema.' },
+    ],
+    thakali: [
+      { n: 'Veg Thakali Set', p: 380, sub: 'Veg', tags: ['VEG'], feat: true, img: U('photo-1585937421612-70a008356fbe'), d: 'Dal, bhat, seasonal tarkari, saag, gundruk, achar and ghee.' },
+      { n: 'Chicken Thakali Set', p: 480, sub: 'Non-veg', tags: [], pop: true, img: U('photo-1631515243349-e0cb75fb8d3a'), d: 'Thakali khana with village-style chicken curry.' },
+      { n: 'Mutton Thakali Khana Set (rice or dhido)', p: 650, sub: 'Non-veg', tags: [], img: U('photo-1601050690597-df0568f70950'), d: 'Slow-cooked mutton, choice of rice or dhido, full thali sides.' },
+    ],
+    sekuwa: [
+      { n: 'Chicken Sekuwa', p: 320, sub: 'Chicken', tags: [], pop: true, img: U('photo-1544025162-d76694265947'), d: 'Charcoal-grilled chicken marinated in Himalayan spices.' },
+      { n: 'Sticky Pork Ribs', p: 520, sub: 'Pork', tags: [], feat: true, img: U('photo-1544025162-d76694265947'), d: 'Slow-grilled ribs glazed with honey-chilli.' },
+      { n: 'Mixed Grill Platter', p: 620, sub: null, tags: [], img: U('photo-1504674900247-0877df9cc836'), d: 'Chicken, mutton and pork sekuwa for two, with sides.' },
+    ],
+    noodles: [
+      { n: 'Chicken Chowmein', p: 220, sub: 'Chowmein', tags: [], pop: true, img: U('photo-1585032226651-759b368d7246'), d: 'Street-style stir-fried noodles with chicken.' },
+      { n: 'Veg Chowmein', p: 180, sub: 'Chowmein', tags: ['VEG'], img: U('photo-1512058564366-18510be2db19'), d: 'Wok-tossed noodles with seasonal vegetables.' },
+      { n: 'Chicken Thukpa', p: 280, sub: 'Thukpa & Soups', tags: [], img: U('photo-1569718212165-3a8278d5f624'), d: 'Himalayan noodle soup, clear chicken broth.' },
+    ],
+    newari: [
+      { n: 'Samay Baji Set', p: 450, sub: null, tags: [], feat: true, img: U('photo-1517244683847-7456b63c5969'), d: 'Traditional Newari platter — chiura, choila, bara, aloo, egg, achar.' },
+      { n: 'Bara (2 pcs)', p: 180, sub: null, tags: ['VEG','GF'], img: U('photo-1601050690597-df0568f70950'), d: 'Soft lentil patties, griddled fresh.' },
+      { n: 'Kachila', p: 350, sub: null, tags: ['SPICY','RAW'], img: null, d: 'Newari-style spiced raw minced buff — for the brave.' },
+    ],
+    breakfast: [
+      { n: 'Banana Pancakes', p: 320, sub: 'Pancakes & Sets', tags: ['VEG'], pop: true, img: U('photo-1567620905732-2d1ec7ab7445'), d: 'Fluffy stack with caramelised banana.' },
+      { n: 'Masala Omelette Toast', p: 250, sub: 'Eggs & Toast', tags: [], img: U('photo-1525351484163-7529414344d8'), d: 'Two-egg masala omelette on sourdough toast.' },
+      { n: 'Sherpa Breakfast Set', p: 450, sub: 'Pancakes & Sets', tags: [], feat: true, img: U('photo-1504674900247-0877df9cc836'), d: 'Eggs, tibetan bread, potatoes, sausage and chiya.' },
+    ],
+    drinks: [
+      { n: 'Nepali Chiya', p: 120, sub: 'Hot', tags: ['VEG'], pop: true, img: U('photo-1544787219-7f47ccb76574'), d: 'Milk tea brewed with cardamom and ginger.' },
+      { n: 'Black Coffee', p: 150, sub: 'Hot', tags: ['VEGAN'], img: U('photo-1461023058943-07fcbe16d735'), d: 'Himalayan arabica, french press.' },
+      { n: 'Milk Coffee', p: 180, sub: 'Hot', tags: [], img: U('photo-1509042239860-f550ce710b93'), d: 'Espresso with steamed milk.' },
+      { n: 'Hot Lemon Honey Ginger', p: 160, sub: 'Hot', tags: ['VEGAN','GF'], img: U('photo-1497534446932-c925b458314e'), d: "The trekker's cure-all." },
+      { n: 'Coke / Fanta / Sprite', p: 120, sub: 'Cold', tags: [], img: null, d: 'Chilled, 250 ml bottle.' },
+      { n: 'Iced Lemon Tea', p: 180, sub: 'Cold', tags: ['VEGAN'], img: U('photo-1556679343-c7306c1976bc'), d: 'House-brewed black tea over ice with lemon.' },
+      { n: 'Iced Coffee', p: 220, sub: 'Cold', tags: [], img: U('photo-1517701550927-30cf4ba1dba5'), d: 'Cold espresso shaken with milk and ice.' },
+      { n: 'Sweet Lassi', p: 200, sub: 'Lassi', tags: ['VEG'], img: U('photo-1553530666-ba11a7da3888'), d: 'Thick churned yogurt, lightly sweetened.' },
+      { n: 'Banana Lassi', p: 240, sub: 'Lassi', tags: ['VEG'], img: null, d: 'Lassi blended with ripe banana.' },
+      { n: 'Mango Lassi', p: 260, sub: 'Lassi', tags: ['VEG'], pop: true, img: U('photo-1546173159-315724a31696'), d: 'The crowd favourite, made with real mango pulp. Rs 280 at Patan.' },
+      { n: 'Fresh Orange Juice', p: 250, sub: 'Juice', tags: ['VEGAN','GF'], img: U('photo-1600271886742-f049cd451bba'), d: 'Squeezed to order.' },
+      { n: 'Mixed Fruit Juice', p: 280, sub: 'Juice', tags: ['VEGAN'], img: U('photo-1546069901-ba9599a7e63c'), d: 'Seasonal fruits, no added sugar.' },
+      { n: 'Watermelon Juice', p: 220, sub: 'Juice', tags: ['VEGAN','GF'], img: null, d: 'Cold-pressed watermelon, mint garnish.' },
+    ],
+    desserts: [
+      { n: 'Juju Dhau (King Curd)', p: 180, sub: null, tags: ['VEG','GF'], pop: true, img: U('photo-1488477181946-6428a0291777'), d: "Bhaktapur's famous sweet set curd, in clay." },
+      { n: 'Sikarni', p: 220, sub: null, tags: ['VEG','GF'], img: U('photo-1551024506-0bccd828d307'), d: 'Hung yogurt whipped with cardamom, saffron and nuts.' },
+      { n: 'Rice Pudding (Kheer)', p: 200, sub: null, tags: ['VEG'], img: null, d: 'Slow-cooked rice pudding with cashews and raisins.' },
+    ],
+  },
+};
+
+/* ─────────── shared partials (kit HTML) ─────────── */
+const TAGC = { VEG: 'veg', VEGAN: 'vegan', HALAL: 'halal', GF: 'gf', SPICY: 'spicy', RAW: 'raw' };
+const rs = n => 'Rs ' + n.toLocaleString('en-IN');
+const tagsHTML = it => [
+  ...(it.pop ? ['<span class="k-tag pop">Popular</span>'] : []),
+  ...(it.feat ? ['<span class="k-tag pop">Featured</span>'] : []),
+  ...it.tags.map(t => `<span class="k-tag ${TAGC[t]}">${t}</span>`),
+].join('');
+const phHTML = (it, cat) => it.img
+  ? `<div class="k-ph" style="background-image:url('${it.img}')"></div>`
+  : `<div class="k-ph k-monogram">${I[cat.icon]}</div>`;
+/* narrow=true stacks the price on its own line — F9's "price gets its own
+   space" fix for the rail variants' slimmer main column; V-B's full-width
+   cards keep the classic right-aligned price column. */
+const cardHTML = (it, cat, narrow) => `
+  <div class="k-card ${narrow ? 'k-card--s' : ''}">
+    ${phHTML(it, cat)}
+    <div class="k-in">
+      ${narrow
+        ? `<div class="k-name">${it.n}</div>
+           ${tagsHTML(it) ? `<div class="k-tags" style="margin-top:4px">${tagsHTML(it)}</div>` : ''}
+           <div class="k-r2"><div class="k-price k-price--ln">${rs(it.p)}</div><button class="k-add">+</button></div>`
+        : `<div class="k-r1"><div class="k-name">${it.n}</div><div class="k-price">${rs(it.p)}</div></div>
+           <div class="k-desc">${it.d}</div>
+           <div class="k-r2"><div class="k-tags">${tagsHTML(it)}</div><button class="k-add">+</button></div>`}
+    </div>
+  </div>`;
+const grpHTML = (t, c) => `<div class="g-grp"><span class="gt">${t}</span><span class="gc">${c}</span><span class="ln"></span></div>`;
+const brandbarHTML = v => `
+  <div class="g-brandbar">
+    <div class="g-mono">${v.mono}</div>
+    <div class="g-vn"><div class="t">${v.name}</div><small>${v.table}</small></div>
+    <button class="g-ib">${I.bag}<span class="badge">3</span></button>
+    <button class="g-ib">${I.info}</button>
+  </div>`;
+const cartbarHTML = () => `
+  <div class="g-cartbar"><div class="l"><div class="qb">6</div><div class="t">View order<small>4 dishes · 6 items</small></div></div><div class="pr">${rs(1110)}</div></div>`;
+
+/* ─────────── V-A · Baseline+ templates ─────────── */
+const vaMenu = D => {
+  const momo = D.cats[0];
+  const rail = D.cats.map((c, i) => {
+    const item = `
+      <div class="va-ri ${i === 0 ? 'active' : ''}">
+        <div class="rc">${I[c.icon]}</div><div class="n">${c.name.split(' ')[0]}</div><div class="c">${c.count}</div>
+      </div>`;
+    if (i !== 0 || !c.subs.length) return item;
+    return item + `<div class="va-acc">
+      ${c.subs.map(([s, n], j) => `<div class="va-sub ${j === 0 ? 'on' : ''}"><span>${s}</span><span class="sc">${n}</span></div>`).join('')}
+    </div>`;
+  }).join('');
+  const grp = (sub, items) => grpHTML(sub[0], sub[1]) + items.map(it => cardHTML(it, momo, true)).join('');
+  const bySub = s => D.items.momo.filter(it => it.sub === s);
+  return `
+    ${brandbarHTML(D.venue)}
+    <div class="va-shell">
+      <div class="va-rail">${rail}</div>
+      <div class="va-main">
+        <div class="va-cathead"><h2>${momo.name}</h2><button class="g-ib">${I.search}</button><button class="g-ib solid">${I.filter}</button></div>
+        <div class="va-subline">${momo.count} dishes · steamed fresh all day</div>
+        <div class="va-dishes">
+          ${grp(momo.subs[0], bySub('Steamed').slice(0, 2))}
+          ${grp(momo.subs[1], bySub('Fried').slice(1, 2))}
+          ${grp(momo.subs[2], bySub('Jhol').slice(0, 1))}
+        </div>
+        ${cartbarHTML()}
+      </div>
+    </div>`;
+};
+
+const vaDetail = D => {
+  const it = D.items.momo[6]; // Jhol Momo
+  return `
+    <div class="k-scrim"></div>
+    <div class="k-sheet" style="height:95%">
+      <div class="d-photo" style="background-image:url('${it.img}')"></div>
+      <div class="k-handle k-handle--over"></div>
+      <div class="d-body">
+        <div class="d-r1"><h1>${it.n}</h1><div class="k-price">${rs(it.p)}</div></div>
+        <div class="d-tags">${tagsHTML(it)}</div>
+        <div class="d-desc">${it.d} Ten pieces, house-ground timur and toasted sesame; ask for extra jhol on the side.</div>
+        <div class="d-meta">${I.clock}<span>Kitchen: 12–15 min</span><span>·</span><span>Momo & Dumplings</span></div>
+      </div>
+      <div class="d-cta">
+        <div class="k-qty"><button>−</button><span class="n">1</span><button class="p">+</button></div>
+        <button class="k-btn"><span>Add to order</span><span class="pr">${rs(it.p)}</span></button>
+      </div>
+    </div>`;
+};
+
+const vaCart = D => {
+  const line = (it, cat, q, note) => `
+    <div class="c-item">
+      ${it.img ? `<div class="c-ph" style="background-image:url('${it.img}')"></div>` : `<div class="c-ph k-monogram">${I[cat.icon]}</div>`}
+      <div class="c-in"><div class="cn">${it.n}</div><div class="cp">${rs(it.p * q)}${note ? ` <small style="color:var(--ink-3);font-weight:600">· ${note}</small>` : ''}</div></div>
+      <div class="k-qty k-qty--s"><button>−</button><span class="n">${q}</span><button class="p">+</button></div>
+    </div>`;
+  const m = D.items.momo, dr = D.items.drinks;
+  return `
+    <div class="s-head"><button class="g-ib">${I.back}</button><h1>Your order<small>${D.venue.name}</small></h1><span class="s-tbadge">${I.pin} ${D.venue.table}</span></div>
+    <div class="c-body">
+      ${line(m[0], D.cats[0], 2, rs(m[0].p) + ' each')}
+      ${line(m[2], D.cats[0], 1, '')}
+      ${line(m[6], D.cats[0], 1, '')}
+      ${line(dr[0], D.cats[6], 2, rs(dr[0].p) + ' each')}
+      <div class="c-sum">
+        <div class="c-sm"><span>Subtotal · 6 items</span><span>${rs(1110)}</span></div>
+        <div class="c-sm"><span>Pay at the counter — no service charge</span><span></span></div>
+        <div class="c-sm tot"><span>Total</span><span class="am">${rs(1110)}</span></div>
+      </div>
+    </div>
+    <div class="c-foot"><button class="k-btn"><span>Place order · ${D.venue.table.split(' · ')[0]}</span><span class="pr">${rs(1110)}</span></button></div>`;
+};
+
+const vaPlaced = D => {
+  const m = D.items.momo, dr = D.items.drinks;
+  const ri = (q, n, p) => `<div class="ok-ri"><span class="q">${q}×</span><span class="rn">${n}</span><span class="rp">${rs(p)}</span></div>`;
+  return `
+    <div class="ok-wrap">
+      <div class="ok-head">
+        <div class="ok-badge">${I.receipt}</div>
+        <h1>Order placed!</h1>
+        <div class="num">Order #14</div>
+        <div class="om">${D.venue.name} · ${D.venue.table}</div>
+        <div class="ok-status"><span class="dot"></span>Received — the kitchen has it</div>
+      </div>
+      <div class="ok-receipt">
+        ${ri(2, m[0].n, m[0].p * 2)}
+        ${ri(1, m[2].n, m[2].p)}
+        ${ri(1, m[6].n, m[6].p)}
+        ${ri(2, dr[0].n, dr[0].p * 2)}
+        <div class="ok-tot"><span class="l">Pay at the counter</span><strong>${rs(1110)}</strong></div>
+      </div>
+      <div class="ok-hint">Show this screen to staff if asked.<br>This order stays under “Your orders” on the menu.</div>
+      <div class="ok-foot"><button class="k-btn k-btn--ghost">Back to menu</button></div>
+    </div>`;
+};
+
+const vaAbout = D => `
+  <div class="k-scrim"></div>
+  <div class="k-sheet" style="height:93%">
+    <div class="k-handle"></div>
+    <div class="ab-hero">
+      <div class="g-mono">${D.venue.mono}</div>
+      <h2>${D.venue.name}</h2>
+      <div class="tag">${D.venue.tagline}</div>
+    </div>
+    <div class="ab-sec">
+      <div class="ab-lbl">Get in touch</div>
+      <div class="ab-row"><div class="ic">${I.phone}</div><div><div class="lb">Call</div><div class="vl">${D.venue.phone}</div></div></div>
+      <div class="ab-row"><div class="ic">${I.insta}</div><div><div class="lb">Instagram</div><div class="vl">${D.venue.instagram}</div></div></div>
+      <div class="ab-row"><div class="ic">${I.mail}</div><div><div class="lb">Email</div><div class="vl">${D.venue.email}</div></div></div>
+      <div class="ab-lbl" style="margin-top:12px">Our branches</div>
+      ${D.branches.map(b => `
+        <div class="ab-br">
+          <div class="r"><span class="nm">${b.name}</span><span class="bt">${b.tag}</span></div>
+          <div class="ad">${b.address}</div>
+        </div>`).join('')}
+      <div class="ab-copy">© 2026 ${D.venue.name}</div>
+    </div>
+  </div>`;
+
+/* ─────────── V-B · Top tabs + scroll-spy templates ─────────── */
+const vbMenu = D => {
+  const sek = D.cats[2], noo = D.cats[3];
+  // mock mid-scroll: Sekuwa tab active + its section header pinned; the inner
+  // tab strip is translated so the active tab reads as auto-centred.
+  const tabs = D.cats.map((c, i) => `
+    <div class="vb-tab ${i === 2 ? 'on' : ''}">${I[c.icon]}<span>${c.name}</span><span class="c">${c.count}</span></div>`).join('');
+  const subs = [['All', sek.count, true], ...sek.subs.map(([s, n]) => [s, n, false])]
+    .map(([s, n, on]) => `<span class="k-pill ${on ? 'on' : ''}">${s} <span class="c">${n}</span></span>`).join('');
+  const sec = (cat, pinned) => `
+    <div class="vb-sec ${pinned ? 'vb-sec--pinned' : ''}">
+      <span class="t">${cat.name}</span><span class="c">${cat.count} dishes</span>
+      ${cat.note ? `<span class="hn">${cat.note}</span>` : ''}
+    </div>`;
+  const wide = it => cardHTML(it, sek, false);
+  return `
+    <div class="vb-head">
+      ${brandbarHTML(D.venue)}
+      <div class="vb-tabs"><div class="vb-tabs-in" style="transform:translateX(-268px)">${tabs}</div></div>
+      <div class="vb-subrow">${subs}</div>
+    </div>
+    <div class="vb-body">
+      ${sec(sek, true)}
+      <div class="vb-list">
+        ${grpHTML('Chicken', 3)}
+        ${wide(D.items.sekuwa[0])}
+        ${grpHTML('Others', 1)}
+        ${wide(D.items.sekuwa[2])}
+        ${sec(noo, false)}
+        ${cardHTML(D.items.noodles[0], noo, false)}
+      </div>
+    </div>
+    ${cartbarHTML()}`;
+};
+
+/* ─────────── V-C · Icon rail + chips templates ─────────── */
+const vcMenu = D => {
+  const drinks = D.cats[6];
+  const rail = D.cats.map((c, i) => `
+    <div class="vc-item ${i === 6 ? 'on' : ''}">
+      <div class="vc-ti">${I[c.icon]}<span class="b">${c.count}</span></div>
+      <div class="vc-lb">${c.name.split(' ')[0]}</div>
+    </div>`).join('');
+  const chips = [['All', drinks.count, false], ...drinks.subs.map(([s, n]) => [s, n, s === 'Lassi'])]
+    .map(([s, n, on]) => `<span class="k-pill ${on ? 'on' : ''}">${s} <span class="c">${n}</span></span>`).join('');
+  const lassi = D.items.drinks.filter(it => it.sub === 'Lassi');
+  return `
+    ${brandbarHTML(D.venue)}
+    <div class="vc-shell">
+      <div class="vc-rail">${rail}</div>
+      <div class="vc-main">
+        <div class="va-cathead"><h2>${drinks.name}</h2><button class="g-ib">${I.search}</button><button class="g-ib solid">${I.filter}</button></div>
+        <div class="va-subline">${drinks.count} dishes · hot, cold, lassi & fresh juice</div>
+        <div class="vc-chips"><div class="vc-chips-in" style="transform:translateX(-56px)">${chips}</div></div>
+        <div class="va-dishes">
+          ${lassi.map(it => cardHTML(it, drinks, true)).join('')}
+          <div class="vc-hint">Showing Lassi · 3 of 13 drinks — tap All to clear</div>
+        </div>
+        ${cartbarHTML()}
+      </div>
+    </div>`;
+};
+
+/* ─────────── page wiring ─────────── */
+const VARIANTS = ['va', 'vb', 'vc'];
+const SCREENS = ['menu', 'detail', 'cart', 'placed', 'about'];
+const VNAMES = { va: 'V-A · Baseline+', vb: 'V-B · Top tabs + scroll-spy', vc: 'V-C · Icon rail + chips' };
+
+const TEMPLATES = {
+  va: { menu: vaMenu, detail: vaDetail, cart: vaCart, placed: vaPlaced, about: vaAbout },
+  vb: { menu: vbMenu, detail: vaDetail, cart: vaCart, placed: vaPlaced, about: vaAbout },
+  vc: { menu: vcMenu, detail: vaDetail, cart: vaCart, placed: vaPlaced, about: vaAbout },
+};
+
+const CAPTIONS = {
+  va: {
+    menu: '<b>Rail + accordion kept 1:1</b> (audit: “do not regress”). First category open on load (F1), monogram brand (F2), 44px targets (F4), monogram tile on photo-less Veg Momo (F6), price column never collides with the 2-line name (F9).',
+    detail: 'Detail as a <b>bottom sheet</b>, 4:3 photo. The CTA row is its own layer above the body — it can never be painted over (F3). Photo-less dishes reuse the category-icon monogram in the photo slot.',
+    cart: 'Line items with 44px steppers (F4), honest totals — <b>no promo field, no fake discounts</b> (F7). Table badge pins the order to “Table 4 · Thamel”.',
+    placed: '<b>Persistent confirmation</b> (F11): prominent order number, status pill, full receipt. Positive receipt badge — nothing that reads as delete (F12).',
+    about: 'Venue monogram + real testco contact data (F2). Branch cards with FLAGSHIP / NEW tags. Copyright is the venue\'s own — no donor/agency branding (F13).',
+  },
+  vb: {
+    menu: '<b>Top tabs + one continuous list.</b> Tabs track scroll (scroll-spy); tapping a tab jumps to its section. Mock shows mid-scroll: “Sekuwa & Grill” tab active, its header pinned. No rail → <b>full-width kit cards</b> (88px photo + description + inline price). The “Others” group renders the un-subcategorised Mixed Grill Platter (F14); sticky headers give in-category wayfinding for mega-categories (F10).',
+    detail: 'Same shared-kit detail sheet as V-A — the variant question is navigation, not components (F3 fix included).',
+    cart: 'Same shared-kit cart as V-A (F4, F7).',
+    placed: 'Same shared-kit confirmation as V-A (F11, F12).',
+    about: 'Same shared-kit about sheet as V-A (F2, F13).',
+  },
+  vc: {
+    menu: '<b>Icon-only 56px rail + thumb-reach chips.</b> The category map stays always-visible like today (audit strength), but the rail shrinks to icon tiles (count badges; active tile shows its label) and returns ~32px of card width. Subcategory switching moves to chips under the header — in thumb reach (F4\'s spirit). Mock: Drinks active, “Lassi” chip selected, honest filtered-state hint.',
+    detail: 'Same shared-kit detail sheet as V-A — the variant question is navigation, not components (F3 fix included).',
+    cart: 'Same shared-kit cart as V-A (F4, F7).',
+    placed: 'Same shared-kit confirmation as V-A (F11, F12).',
+    about: 'Same shared-kit about sheet as V-A (F2, F13).',
+  },
+};
+
+let variant = 'va', theme = 'v-saffron';
+
+function render() {
+  const t = TEMPLATES[variant];
+  document.getElementById('frames').innerHTML = SCREENS.map((s, i) => {
+    const body = t && t[s]
+      ? t[s](DATA)
+      : `<div class="todo">${VNAMES[variant]}<br><br>“${s}” screen lands in a later task.</div>`;
+    const cap = (CAPTIONS[variant] && CAPTIONS[variant][s]) || CAPTIONS.va[s] || '';
+    return `
+      <div class="col">
+        <div class="cap"><div class="step">Screen ${i + 1} · ${VNAMES[variant]}</div><div class="nm">${s[0].toUpperCase() + s.slice(1)}</div></div>
+        <div class="phone"><div class="screen v ${theme}">${body}</div></div>
+        <div class="note">${cap}</div>
+      </div>`;
+  }).join('');
+}
+render();
+
+document.getElementById('variant-tabs').addEventListener('click', e => {
+  const b = e.target.closest('button'); if (!b) return;
+  document.querySelectorAll('#variant-tabs button').forEach(x => x.classList.remove('on'));
+  b.classList.add('on'); variant = b.dataset.variant; render();
+});
+document.getElementById('theme-tabs').addEventListener('click', e => {
+  const b = e.target.closest('button'); if (!b) return;
+  document.querySelectorAll('#theme-tabs button').forEach(x => x.classList.remove('on'));
+  b.classList.add('on'); theme = b.dataset.t; render();
+});
+</script>
+</body>
+</html>
