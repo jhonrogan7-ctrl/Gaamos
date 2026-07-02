@@ -54,3 +54,12 @@ class BranchMenuItemTest(TenantTestCase):
         BranchMenuItem.objects.create(branch=self.branch, menu_item=self.item)
         with self.assertRaises(IntegrityError):
             BranchMenuItem.objects.create(branch=self.branch, menu_item=self.item)
+
+
+class CompanyMenuLayoutTest(TenantTestCase):
+    def test_default_is_baseline(self):
+        self.assertEqual(self.company.menu_layout, 'baseline')
+
+    def test_choices(self):
+        keys = {k for k, _ in Company.MENU_LAYOUT_CHOICES}
+        self.assertEqual(keys, {'baseline', 'tabs', 'iconrail'})
