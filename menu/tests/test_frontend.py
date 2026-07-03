@@ -248,3 +248,25 @@ class HomeSkinTest(DashboardShellTest):
         self.assertIn('bcard', body)              # themed card component
         self.assertNotIn('branch-card', body)     # old unstyled markup gone
         self.assertNotIn('🏪', body)              # no emoji
+
+
+class GuestKitCssTest(SimpleTestCase):
+    def _css(self):
+        return (Path(settings.BASE_DIR) / 'static/css/app.css').read_text()
+
+    def test_kit_classes_present(self):
+        css = self._css()
+        for sel in ['.k-card', '.k-monogram', '.k-price', '.k-tag', '.k-btn',
+                    '.k-qty', '.k-pill', '.g-mono']:
+            self.assertIn(sel, css, f'missing guest kit class {sel}')
+
+    def test_price_token_defined_per_theme(self):
+        src = (Path(settings.BASE_DIR) / 'static/css/input.css').read_text()
+        self.assertEqual(src.count('--price:'), 3, 'expect one --price per theme')
+
+    def test_sticky_cta_layered_above_detail(self):
+        # F3: the detail CTA must carry an explicit stacking context.
+        css = self._css()
+        self.assertIn('.sticky-cta', css)
+        src = (Path(settings.BASE_DIR) / 'static/css/input.css').read_text()
+        self.assertRegex(src, r'\.sticky-cta\s*\{[^}]*z-index')
