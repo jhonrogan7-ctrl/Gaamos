@@ -240,3 +240,26 @@ class PlaceOrderTenantIsolationTest(TestCase):
         self.assertEqual(resp.status_code, 400)
         self.item_b.refresh_from_db()
         self.assertEqual(self.item_b.order_count, 0)  # B's item untouched by an A request
+
+
+class MenuLayoutTest(TenantTestCase):
+    def _payload(self, url='/'):
+        response = self.client.get(url)
+        match = re.search(
+            r'<script id="menu-data" type="application/json">(.*?)</script>',
+            response.content.decode(), re.DOTALL)
+        return json.loads(match.group(1))
+
+    def test_payload_carries_company_layout(self):
+        self.company.menu_layout = 'tabs'
+        self.company.save()
+        self.assertEqual(self._payload()['layout'], 'tabs')
+
+    def test_default_layout_baseline(self):
+        self.assertEqual(self._payload()['layout'], 'baseline')
+
+    def test_preview_param_overrides(self):
+        self.assertEqual(self._payload('/?layout=iconrail')['layout'], 'iconrail')
+
+    def test_invalid_param_falls_back_to_company(self):
+        self.assertEqual(self._payload('/?layout=bogus')['layout'], 'baseline')

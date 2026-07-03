@@ -248,3 +248,89 @@ class HomeSkinTest(DashboardShellTest):
         self.assertIn('bcard', body)              # themed card component
         self.assertNotIn('branch-card', body)     # old unstyled markup gone
         self.assertNotIn('🏪', body)              # no emoji
+
+
+class GuestKitCssTest(SimpleTestCase):
+    def _css(self):
+        return (Path(settings.BASE_DIR) / 'static/css/app.css').read_text()
+
+    def test_kit_classes_present(self):
+        css = self._css()
+        for sel in ['.k-card', '.k-monogram', '.k-price', '.k-tag', '.k-btn',
+                    '.k-qty', '.k-pill', '.g-mono', '.vb-tab', '.vc-ti']:
+            self.assertIn(sel, css, f'missing guest kit class {sel}')
+
+    def test_price_token_defined_per_theme(self):
+        src = (Path(settings.BASE_DIR) / 'static/css/input.css').read_text()
+        self.assertEqual(src.count('--price:'), 3, 'expect one --price per theme')
+
+    def test_sticky_cta_layered_above_detail(self):
+        # F3: the detail CTA must carry an explicit stacking context.
+        css = self._css()
+        self.assertIn('.sticky-cta', css)
+        src = (Path(settings.BASE_DIR) / 'static/css/input.css').read_text()
+        self.assertRegex(src, r'\.sticky-cta\s*\{[^}]*z-index')
+
+
+class GuestAppJsTest(SimpleTestCase):
+    def _js(self):
+        return (Path(settings.BASE_DIR) / 'static/js/app.js').read_text()
+
+    def test_no_hardcoded_brunch_default(self):
+        self.assertNotIn("'brunch'", self._js(),
+                         'F1: default category must come from the payload')
+
+    def test_others_group_rendered(self):
+        self.assertIn("'Others'", self._js(),
+                      'F14: un-subcategorised dishes must render in an Others group')
+
+    def test_monogram_helper_and_layout_state(self):
+        js = self._js()
+        self.assertIn('monogram()', js)
+        self.assertIn('layout:', js)
+
+    def test_base_template_busts_js_cache(self):
+        html = (Path(settings.BASE_DIR) / 'templates/menu/_base.html').read_text()
+        self.assertIn("app.js' %}?v=14", html.replace('"', "'"))
+
+
+class GuestSharedScreensTest(TenantTestCase):
+    def _html(self):
+        return self.client.get('/').content.decode()
+
+    def test_no_hardcoded_juicery_logo(self):
+        # F2: brand comes from the tenant; no donor logo anywhere.
+        self.assertNotIn('juicery_logo', self._html())
+
+    def test_no_agency_or_donor_footer(self):
+        # F13
+        html = self._html()
+        self.assertNotIn('Twenty Two Tech', html)
+        self.assertNotIn('The Juicery Cafe.', html)
+
+    def test_no_dead_promo_or_sort_controls(self):
+        # F7
+        html = self._html()
+        self.assertNotIn('Promo code', html)
+        self.assertNotIn('Sort by', html)
+
+    def test_placed_screen_present(self):
+        # F11: persistent confirmation screen exists in the SPA template.
+        html = self._html()
+        self.assertIn("screen === 'placed'", html)
+        self.assertIn('Order placed', html)
+
+
+class MenuLayoutPartialsTest(TenantTestCase):
+    def test_baseline_partial_served_by_default(self):
+        html = self.client.get('/').content.decode()
+        self.assertIn('data-layout="baseline"', html)
+
+    def test_tabs_partial_served_on_preview(self):
+        html = self.client.get('/?layout=tabs').content.decode()
+        self.assertIn('data-layout="tabs"', html)
+        self.assertNotIn('data-layout="baseline"', html)
+
+    def test_iconrail_partial_served_on_preview(self):
+        html = self.client.get('/?layout=iconrail').content.decode()
+        self.assertIn('data-layout="iconrail"', html)

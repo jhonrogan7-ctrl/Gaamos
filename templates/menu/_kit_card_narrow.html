@@ -1,0 +1,29 @@
+{# Compact kit dish card (menu-v2 cardHTML narrow=true) — expects `dish` in Alpine scope. #}
+<div class="k-card k-card--s" @click="openDish(dish.id)">
+  <template x-if="dish.image_url">
+    <div class="k-ph" x-lazy-bg="dish.image_url"
+         :style="'background-position:' + (dish.focal_x ?? 50) + '% ' + (dish.focal_y ?? 50) + '%'"></div>
+  </template>
+  <template x-if="!dish.image_url">
+    <div class="k-ph k-monogram" x-html="icon(currentCategory.icon_key || 'dish')"></div>
+  </template>
+  <div class="k-in">
+    <div class="k-name" x-text="dish.name"></div>
+    <template x-if="dish.dietary_tags.length || dish.is_popular">
+      <div class="k-tags" style="margin-top:4px">
+        <span class="k-tag pop" x-show="dish.is_popular">Popular</span>
+        <template x-for="tag in dish.dietary_tags" :key="tag">
+          <span :class="dietClass(tag)" x-text="dietLabel(tag)"></span>
+        </template>
+      </div>
+    </template>
+    <div class="k-r2">
+      <div class="k-price k-price--ln" x-text="'Rs ' + dish.price"></div>
+      <div class="dish-qty">
+        <template x-if="cartQtyOf(dish.id) > 0"><button class="plus minus" @click.stop="quickRemove(dish.id)">−</button></template>
+        <template x-if="cartQtyOf(dish.id) > 0"><span class="qn" x-text="cartQtyOf(dish.id)"></span></template>
+        <button class="k-add" @click.stop="quickAdd(dish.id)">+</button>
+      </div>
+    </div>
+  </div>
+</div>

@@ -24,6 +24,13 @@ class Company(models.Model):
     instagram = models.CharField(max_length=120, blank=True)
     facebook = models.CharField(max_length=120, blank=True)
     tiktok = models.CharField(max_length=120, blank=True)
+    MENU_LAYOUT_CHOICES = [
+        ('baseline', 'Baseline — rail + accordion'),
+        ('tabs', 'Top tabs + scroll-spy'),
+        ('iconrail', 'Icon rail + chips'),
+    ]
+    menu_layout = models.CharField(
+        max_length=20, default='baseline', choices=MENU_LAYOUT_CHOICES)
 
     objects = models.Manager()   # plain — Company is the tenant root, not scoped
 

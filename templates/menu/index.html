@@ -6,191 +6,11 @@
 <div class="screen-wrap" x-data="menuApp" x-init="init()">
 
   <!-- ═══════════════════════════════════════════════
-       SCREEN 1 — MENU
+       SCREEN 1 — MENU (per-company layout partial)
   ══════════════════════════════════════════════════ -->
-  <template x-if="screen === 'menu'">
-    <div style="display:flex;flex-direction:column;flex:1;min-height:0;overflow:hidden;">
-
-      <!-- Brand bar -->
-      <div class="brandbar">
-        <div class="brand">
-          <img src="{% static 'images/juicery_logo.png' %}" alt="Juicery Cafe" class="logo-img">
-          <div class="name">
-            <span x-text="restaurant.name"></span>
-            <small x-text="branch.name + (branch.address ? ' · ' + branch.address : '')"></small>
-          </div>
-        </div>
-        <div style="display:flex;gap:6px;">
-          <button class="icon-btn" @click="screen='cart'" aria-label="View order">
-            <span x-html="icon('heart')"></span>
-            <span class="badge" x-show="cartCount > 0" x-text="cartCount"></span>
-          </button>
-          <button class="icon-btn" @click="contactOpen=true" aria-label="About & contact">
-            <span x-html="icon('info')"></span>
-          </button>
-        </div>
-      </div>
-
-      <!-- Menu shell: rail + main column -->
-      <div class="menu-shell">
-
-        <!-- Category rail (accordion: subcategories slide down under active category) -->
-        <div class="rail">
-          <template x-for="cat in categories" :key="cat.id">
-            <div class="rail-cat">
-              <div :class="{'rail-item':true, 'active': cat.id === activeCategory}"
-                   @click="toggleCategory(cat.id)">
-                <template x-if="(cat.subcategories || []).length > 0">
-                  <span class="rail-chev" :class="{'open': cat.id === expandedCategory}">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m6 9 6 6 6-6"/></svg>
-                  </span>
-                </template>
-                <div class="rc" x-html="icon(cat.icon_key)"></div>
-                <div class="nm" x-text="cat.name"></div>
-                <div class="ct" x-text="categoryDishCount(cat.id)"></div>
-              </div>
-              <!-- Subcategory accordion -->
-              <template x-if="cat.id === expandedCategory && currentCategorySubcats.length > 0">
-                <div class="rail-subs">
-                  <template x-for="sub in currentCategorySubcats" :key="sub.name">
-                    <div :class="{'rail-sub':true, 'active': sub.name === activeSubcat}"
-                         @click="activeSubcat = sub.name">
-                      <span class="rsi" x-html="icon(sub.icon_key)"></span>
-                      <span class="rsn" x-text="sub.name"></span>
-                    </div>
-                  </template>
-                </div>
-              </template>
-            </div>
-          </template>
-        </div>
-
-        <!-- Main column -->
-        <div class="main-col">
-
-          <!-- Category header -->
-          <div class="cat-head">
-            <div class="ttl-block">
-              <h2 x-text="currentCategory.name"></h2>
-              <div class="sub">
-                <span x-text="categoryDishCount(activeCategory) + ' dishes'"></span>
-                <template x-if="currentCategory.hours_note">
-                  <><span>·</span><span x-text="currentCategory.hours_note"></span></>
-                </template>
-              </div>
-            </div>
-            <div class="head-icons">
-              <button class="hbtn" :class="{'active': searchOpen}"
-                      @click="searchOpen ? closeSearch() : openSearch()" aria-label="Search">
-                <span x-html="icon('search')"></span>
-              </button>
-              <button class="hbtn solid" @click="filterOpen=true" aria-label="Filter">
-                <span x-html="icon('filter')"></span>
-                <span class="dot-n" x-show="activeDiets.length > 0"></span>
-              </button>
-            </div>
-          </div>
-
-          <!-- Search bar -->
-          <template x-if="searchOpen">
-            <div class="search-bar">
-              <span class="si" x-html="icon('search')"></span>
-              <input type="text" x-model.debounce.150ms="searchQuery" x-ref="searchInput"
-                     placeholder="Search dishes…" @keydown.escape="closeSearch()">
-              <button class="sx" @click="closeSearch()" aria-label="Close search">
-                <span x-html="icon('x')"></span>
-              </button>
-            </div>
-          </template>
-
-          <!-- Active dietary filter pills -->
-          <template x-if="activeDiets.length > 0">
-            <div class="active-filters">
-              <template x-for="k in activeDiets" :key="k">
-                <span class="fp">
-                  <span x-text="k"></span>
-                  <span class="xx" @click="toggleDiet(k)">×</span>
-                </span>
-              </template>
-              <span class="fp clear" @click="activeDiets=[]">Clear all</span>
-            </div>
-          </template>
-
-          <!-- Grouped dish list -->
-          <div class="menu-body">
-            <template x-if="visibleDishes.length === 0">
-              <div class="empty-state">
-                <div class="title" x-text="isSearching ? 'No dishes found' : 'Nothing matches'"></div>
-                <div class="hint"
-                     x-text="isSearching
-                       ? 'No dishes match “' + searchQuery + '”. Try another term.'
-                       : 'Try removing a dietary filter or pick a different subcategory.'"></div>
-                <template x-if="isSearching">
-                  <button class="clear-btn" @click="searchQuery=''">Clear search</button>
-                </template>
-                <template x-if="!isSearching && activeDiets.length > 0">
-                  <button class="clear-btn" @click="activeDiets=[]">Clear filters</button>
-                </template>
-              </div>
-            </template>
-
-            <template x-for="group in groupedDishes" :key="group.sub">
-              <div class="sub-group">
-                <template x-if="showGroupHeader()">
-                  <div class="sub-group-head">
-                    <span class="nm" x-text="group.sub"></span>
-                    <span class="ct" x-text="group.dishes.length + ' dishes'"></span>
-                  </div>
-                </template>
-                <div class="menu-dish-list">
-                  <template x-for="dish in group.dishes" :key="dish.id">
-                    <div class="menu-dish" @click="openDish(dish.id)">
-                      <div class="img"
-                           x-lazy-bg="dish.image_url"
-                           :style="'background-position:' + (dish.focal_x ?? 50) + '% ' + (dish.focal_y ?? 50) + '%'"></div>
-                      <div class="info">
-                        <div class="r1">
-                          <div class="nm" x-text="dish.name"></div>
-                          <div class="pr" x-text="'Rs ' + dish.price"></div>
-                        </div>
-                        <template x-if="dish.dietary_tags.length > 0">
-                          <div class="diets">
-                            <template x-for="tag in dish.dietary_tags" :key="tag">
-                              <span :class="dietClass(tag)" x-text="dietLabel(tag)"></span>
-                            </template>
-                          </div>
-                        </template>
-                        <div class="dc" x-text="dish.description"></div>
-                        <div class="r2">
-                          <div class="dish-qty">
-                            <template x-if="cartQtyOf(dish.id) > 0">
-                              <button class="plus minus" @click.stop="quickRemove(dish.id)">−</button>
-                            </template>
-                            <template x-if="cartQtyOf(dish.id) > 0">
-                              <span class="qn" x-text="cartQtyOf(dish.id)"></span>
-                            </template>
-                            <button class="plus" @click.stop="quickAdd(dish.id)">+</button>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </template>
-                </div>
-              </div>
-            </template>
-
-            <!-- Footer credit -->
-            <div class="menu-credit">
-              © 2026 <span x-text="restaurant.name"></span>. All rights reserved.<br>
-              Designed &amp; developed by <strong>Twenty Two Tech Company</strong>
-            </div>
-          </div><!-- /menu-body -->
-
-        </div><!-- /main-col -->
-      </div><!-- /menu-shell -->
-
-    </div>
-  </template>
+  {% if payload.layout == 'tabs' %}{% include 'menu/_menu_tabs.html' %}
+  {% elif payload.layout == 'iconrail' %}{% include 'menu/_menu_iconrail.html' %}
+  {% else %}{% include 'menu/_menu_baseline.html' %}{% endif %}
   <!-- END SCREEN 1 -->
 
   <!-- ═══════════════════════════════════════════════
@@ -200,7 +20,7 @@
     <div style="display:flex;flex-direction:column;flex:1;min-height:0;overflow:hidden;position:relative;">
 
       <!-- Hero image — tap to view the full (uncropped) image -->
-      <div class="detail-img" :class="{ zoomable: selectedDish.image_url }"
+      <div class="detail-img" :class="{ zoomable: selectedDish.image_url, 'k-monogram': !selectedDish.image_url }"
            :style="selectedDish.image_url ? 'background-image:url('+selectedDish.image_url+');background-position:'+(selectedDish.focal_x ?? 50)+'% '+(selectedDish.focal_y ?? 50)+'%' : ''"
            @click="selectedDish.image_url && (lightbox = selectedDish.image_url)">
         <div class="grad"></div>
@@ -222,6 +42,7 @@
             <span :class="dietClass(tag)" x-text="dietLabel(tag)"></span>
           </template>
         </div>
+        <span x-show="!selectedDish.image_url" x-html="icon('dish')" style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;"></span>
       </div>
 
       <!-- Scrollable detail body -->
@@ -300,7 +121,8 @@
             <!-- Cart items -->
             <template x-for="(item, idx) in cart" :key="item.id">
               <div class="citem">
-                <div class="img" x-lazy-bg="item.image_url"></div>
+                <template x-if="item.image_url"><div class="img" x-lazy-bg="item.image_url"></div></template>
+                <template x-if="!item.image_url"><div class="img k-monogram"><span x-html="icon('dish')"></span></div></template>
                 <div class="info">
                   <div class="nm" x-text="item.name"></div>
                   <div class="ft">
@@ -314,13 +136,6 @@
                 </div>
               </div>
             </template>
-
-            <!-- Promo code -->
-            <div class="promo">
-              <span x-html="icon('promoIcon')"></span>
-              <input placeholder="Promo code">
-              <span class="apply">Apply</span>
-            </div>
 
             <!-- Order summary -->
             <div class="summary">
@@ -347,7 +162,7 @@
                     <div class="othumb" x-lazy-bg="o.items[0].image_url"></div>
                   </template>
                   <template x-if="!(o.items[0] && o.items[0].image_url)">
-                    <div class="othumb othumb-ph"><span x-html="icon('bag')"></span></div>
+                    <div class="othumb othumb-ph"><span x-html="icon('dish')"></span></div>
                   </template>
                   <span class="othumb-more" x-show="o.items.length > 1" x-text="'+' + (o.items.length - 1)"></span>
                 </div>
@@ -389,6 +204,36 @@
   <!-- END SCREEN 3 -->
 
   <!-- ═══════════════════════════════════════════════
+       SCREEN 4 — ORDER PLACED (F11/F12)
+  ══════════════════════════════════════════════════ -->
+  <template x-if="screen === 'placed' && lastOrder">
+    <div style="display:flex;flex-direction:column;flex:1;min-height:0;overflow:hidden;position:relative;">
+      <div class="ok-wrap">
+        <div class="ok-head">
+          <div class="ok-badge"><span x-html="icon('receipt')"></span></div>
+          <h1>Order placed!</h1>
+          <div class="num" x-show="lastOrder.number" x-text="'Order #' + lastOrder.number"></div>
+          <div class="om"><span x-text="restaurant.name"></span><template x-if="table"><span x-text="' · ' + table.label"></span></template></div>
+          <div class="ok-status"><span class="dot"></span>Received — the kitchen has it</div>
+        </div>
+        <div class="ok-receipt">
+          <template x-for="i in lastOrder.items" :key="i.name">
+            <div class="ok-ri">
+              <span class="q" x-text="i.qty + '×'"></span>
+              <span class="rn" x-text="i.name"></span>
+              <span class="rp" x-text="'Rs ' + (i.price * i.qty)"></span>
+            </div>
+          </template>
+          <div class="ok-tot"><span class="l">Pay at the counter</span><strong x-text="'Rs ' + lastOrder.total"></strong></div>
+        </div>
+        <div class="ok-hint">Show this screen to staff if asked.<br>This order stays under “Your orders”.</div>
+        <div class="ok-foot"><button class="k-btn k-btn--ghost" @click="goBack()">Back to menu</button></div>
+      </div>
+    </div>
+  </template>
+  <!-- END SCREEN 4 -->
+
+  <!-- ═══════════════════════════════════════════════
        OVERLAY — CONTACT MODAL
   ══════════════════════════════════════════════════ -->
   <template x-if="contactOpen">
@@ -398,7 +243,7 @@
         <button class="close" @click="contactOpen=false"><span x-html="icon('x')"></span></button>
 
         <div class="hero">
-          <img src="{% static 'images/juicery_logo.png' %}" alt="Juicery Cafe" class="logo-big-img">
+          <div class="g-mono g-mono--lg" x-text="monogram()"></div>
 
           <h2 x-text="restaurant.name"></h2>
           <div class="sub" x-text="restaurant.tagline"></div>
@@ -449,10 +294,7 @@
           </template>
         </div>
 
-        <div class="ft-credit">
-          <strong>© 2026 The Juicery Cafe.</strong> All rights reserved.<br>
-          Designed &amp; developed by <strong>Twenty Two Tech Company</strong>
-        </div>
+        <div class="ft-credit">© 2026 <span x-text="restaurant.name"></span>. All rights reserved.</div>
       </div>
     </div>
   </template>
@@ -488,16 +330,6 @@
           </div>
         </div>
 
-        <div class="fsec">
-          <div class="l">Sort by</div>
-          <div class="fch-row">
-            <span class="fch on">Recommended</span>
-            <span class="fch">Price ↑</span>
-            <span class="fch">Price ↓</span>
-            <span class="fch">Popular</span>
-          </div>
-        </div>
-
         <button class="fapply" @click="filterOpen=false"
                 x-text="'Show ' + filteredDishes.length + ' dishes'"></button>
       </div>
@@ -512,7 +344,7 @@
         <button class="close" @click="openedOrder = null"><span x-html="icon('x')"></span></button>
 
         <div class="om-head">
-          <div class="om-badge"><span x-html="icon('bag')"></span></div>
+          <div class="om-badge"><span x-html="icon('receipt')"></span></div>
           <h2>Order placed</h2>
           <div class="om-meta">
             <span x-text="orderTime(openedOrder)"></span>
@@ -528,7 +360,7 @@
                 <div class="om-thumb" x-lazy-bg="i.image_url"></div>
               </template>
               <template x-if="!i.image_url">
-                <div class="om-thumb om-thumb-ph"><span x-html="icon('bag')"></span></div>
+                <div class="om-thumb om-thumb-ph"><span x-html="icon('dish')"></span></div>
               </template>
               <div class="om-it-info">
                 <div class="om-it-nm" x-text="i.name"></div>

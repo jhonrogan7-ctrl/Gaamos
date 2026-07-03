@@ -54,9 +54,10 @@ document.addEventListener('alpine:init', () => {
     dishes: [],
 
     // ── Navigation ────────────────────────────────────
-    screen: 'menu',       // 'menu' | 'detail' | 'cart'
-    activeCategory: 'brunch',
-    expandedCategory: 'brunch',   // which category's accordion is open (null = none)
+    screen: 'menu',       // 'menu' | 'detail' | 'cart' | 'placed'
+    layout: 'baseline',   // set from payload in init()
+    activeCategory: null,
+    expandedCategory: null,   // which category's accordion is open (null = none)
     activeSubcat: 'All',
 
     // ── Overlays ──────────────────────────────────────
@@ -81,6 +82,7 @@ document.addEventListener('alpine:init', () => {
     toast: '',
     orders: [],          // placed orders, persisted on this device (newest first)
     openedOrder: null,   // order shown in the detail modal
+    lastOrder: null,     // order just placed, shown on the 'placed' screen (F11)
 
     // ── Init ──────────────────────────────────────────
     init() {
@@ -93,6 +95,11 @@ document.addEventListener('alpine:init', () => {
         this.branches   = data.branches;
         this.categories = data.categories;
         this.dishes     = data.dishes;
+        this.layout = data.layout || 'baseline';
+        // F1: open the first category of THIS venue's menu, never a hardcoded id.
+        const first = this.categories[0];
+        this.activeCategory = first ? first.id : null;
+        this.expandedCategory = this.activeCategory;
       }
       const saved = localStorage.getItem('jc_cart');
       if (saved) {
@@ -102,6 +109,43 @@ document.addEventListener('alpine:init', () => {
       if (savedOrders) {
         try { this.orders = JSON.parse(savedOrders); } catch (e) { this.orders = []; }
       }
+      this.initSpy();
+    },
+
+    // ── Tabs layout (scroll-spy) ───────────────────────
+    spyCategory: null,
+    initSpy() {
+      if (this.layout !== 'tabs') return;
+      this.spyCategory = (this.categories[0] || {}).id || null;
+      this.$nextTick(() => {
+        const rootEl = this.$refs.tabsBody;
+        if (!rootEl || typeof IntersectionObserver === 'undefined') return;
+        const obs = new IntersectionObserver(entries => {
+          entries.forEach(e => { if (e.isIntersecting) this.spyCategory = e.target.dataset.cat; });
+        }, { root: rootEl, rootMargin: '0px 0px -70% 0px' });
+        rootEl.querySelectorAll('[data-cat-section]').forEach(el => obs.observe(el));
+      });
+    },
+    jumpTo(catId) {
+      this.spyCategory = catId;
+      const el = (this.$refs.tabsBody || document).querySelector(`[data-cat-section][data-cat="${catId}"]`);
+      if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    },
+    sectionGroups(catId) {
+      const cat = this.categories.find(c => c.id === catId) || { subcategories: [] };
+      let list = this.dishes.filter(d => d.cat === catId);
+      if (this.activeDiets.length) list = list.filter(d => this.activeDiets.every(k => d.dietary_tags.includes(k)));
+      const subs = (cat.subcategories || []).map(s => s.name);
+      if (!subs.length) return list.length ? [{ sub: '', dishes: list }] : [];
+      const named = new Set(subs);
+      const groups = subs.map(sub => ({ sub, dishes: list.filter(d => d.sub === sub) }));
+      const others = list.filter(d => !named.has(d.sub));
+      if (others.length) groups.push({ sub: 'Others', dishes: others });
+      return groups.filter(g => g.dishes.length > 0);
+    },
+    subChipsFor(catId) {
+      const cat = this.categories.find(c => c.id === catId);
+      return cat && cat.subcategories.length ? cat.subcategories.map(s => s.name) : [];
     },
 
     // ── Helpers ───────────────────────────────────────
@@ -109,6 +153,11 @@ document.addEventListener('alpine:init', () => {
 
     dietClass(tag) { return 'diet ' + (DIET_MAP[tag]?.cls || ''); },
     dietLabel(tag) { return DIET_MAP[tag]?.label || tag; },
+
+    monogram() {
+      const words = (this.restaurant.name || '').trim().split(/\s+/).filter(Boolean);
+      return words.slice(0, 2).map(w => w[0]).join('').toUpperCase() || '·';
+    },
 
     saveCart() { localStorage.setItem('jc_cart', JSON.stringify(this.cart)); },
 
@@ -154,9 +203,12 @@ document.addEventListener('alpine:init', () => {
       if (!subs.length || this.activeSubcat !== 'All') {
         return [{ sub: this.activeSubcat, dishes: this.filteredDishes }];
       }
-      return subs
-        .map(sub => ({ sub, dishes: this.filteredDishes.filter(d => d.sub === sub) }))
-        .filter(g => g.dishes.length > 0);
+      const named = new Set(subs);
+      const groups = subs.map(sub => ({ sub, dishes: this.filteredDishes.filter(d => d.sub === sub) }));
+      // F14: dishes whose sub matches no named subcategory must still render.
+      const others = this.filteredDishes.filter(d => !named.has(d.sub));
+      if (others.length) groups.push({ sub: 'Others', dishes: others });
+      return groups.filter(g => g.dishes.length > 0);
     },
     get selectedDish() {
       return this.dishes.find(d => d.id === this.selectedDishId) || null;
@@ -277,7 +329,8 @@ document.addEventListener('alpine:init', () => {
           this.orders.unshift(record);
           this.saveOrders();
           this.clearCart();
-          this.showToast(res.number ? ('Order #' + res.number + ' placed ✓') : 'Order placed ✓');
+          this.lastOrder = record;
+          this.screen = 'placed';
         })
         .catch(() => { this.showToast('Could not place order — try again'); })
         .finally(() => { this.placing = false; });
@@ -300,6 +353,6 @@ document.addEventListener('alpine:init', () => {
       const i = this.activeDiets.indexOf(key);
       if (i >= 0) this.activeDiets.splice(i, 1); else this.activeDiets.push(key);
     },
-    goBack() { this.screen = 'menu'; this.selectedDishId = null; },
+    goBack() { this.screen = 'menu'; this.selectedDishId = null; this.lastOrder = null; },
   }));
 });
