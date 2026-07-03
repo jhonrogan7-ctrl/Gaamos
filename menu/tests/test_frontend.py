@@ -270,3 +270,25 @@ class GuestKitCssTest(SimpleTestCase):
         self.assertIn('.sticky-cta', css)
         src = (Path(settings.BASE_DIR) / 'static/css/input.css').read_text()
         self.assertRegex(src, r'\.sticky-cta\s*\{[^}]*z-index')
+
+
+class GuestAppJsTest(SimpleTestCase):
+    def _js(self):
+        return (Path(settings.BASE_DIR) / 'static/js/app.js').read_text()
+
+    def test_no_hardcoded_brunch_default(self):
+        self.assertNotIn("'brunch'", self._js(),
+                         'F1: default category must come from the payload')
+
+    def test_others_group_rendered(self):
+        self.assertIn("'Others'", self._js(),
+                      'F14: un-subcategorised dishes must render in an Others group')
+
+    def test_monogram_helper_and_layout_state(self):
+        js = self._js()
+        self.assertIn('monogram()', js)
+        self.assertIn('layout:', js)
+
+    def test_base_template_busts_js_cache(self):
+        html = (Path(settings.BASE_DIR) / 'templates/menu/_base.html').read_text()
+        self.assertIn("app.js' %}?v=14", html.replace('"', "'"))
