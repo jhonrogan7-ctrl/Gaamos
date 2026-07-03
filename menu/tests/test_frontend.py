@@ -319,3 +319,9 @@ class GuestSharedScreensTest(TenantTestCase):
         html = self._html()
         self.assertIn("screen === 'placed'", html)
         self.assertIn('Order placed', html)
+
+
+class MenuLayoutPartialsTest(TenantTestCase):
+    def test_baseline_partial_served_by_default(self):
+        html = self.client.get('/').content.decode()
+        self.assertIn('data-layout="baseline"', html)

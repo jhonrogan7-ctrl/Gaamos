@@ -1,0 +1,19 @@
+{# Shared guest brand bar — tenant monogram + venue name + order/about buttons (F2). #}
+<div class="brandbar">
+  <div class="brand">
+    <div class="g-mono" x-text="monogram()"></div>
+    <div class="name">
+      <span x-text="restaurant.name"></span>
+      <small x-text="branch.name + (branch.address ? ' · ' + branch.address : '')"></small>
+    </div>
+  </div>
+  <div style="display:flex;gap:6px;">
+    <button class="icon-btn" @click="screen='cart'" aria-label="View order">
+      <span x-html="icon('heart')"></span>
+      <span class="badge" x-show="cartCount > 0" x-text="cartCount"></span>
+    </button>
+    <button class="icon-btn" @click="contactOpen=true" aria-label="About & contact">
+      <span x-html="icon('info')"></span>
+    </button>
+  </div>
+</div>
