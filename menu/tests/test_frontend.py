@@ -292,3 +292,30 @@ class GuestAppJsTest(SimpleTestCase):
     def test_base_template_busts_js_cache(self):
         html = (Path(settings.BASE_DIR) / 'templates/menu/_base.html').read_text()
         self.assertIn("app.js' %}?v=14", html.replace('"', "'"))
+
+
+class GuestSharedScreensTest(TenantTestCase):
+    def _html(self):
+        return self.client.get('/').content.decode()
+
+    def test_no_hardcoded_juicery_logo(self):
+        # F2: brand comes from the tenant; no donor logo anywhere.
+        self.assertNotIn('juicery_logo', self._html())
+
+    def test_no_agency_or_donor_footer(self):
+        # F13
+        html = self._html()
+        self.assertNotIn('Twenty Two Tech', html)
+        self.assertNotIn('The Juicery Cafe.', html)
+
+    def test_no_dead_promo_or_sort_controls(self):
+        # F7
+        html = self._html()
+        self.assertNotIn('Promo code', html)
+        self.assertNotIn('Sort by', html)
+
+    def test_placed_screen_present(self):
+        # F11: persistent confirmation screen exists in the SPA template.
+        html = self._html()
+        self.assertIn("screen === 'placed'", html)
+        self.assertIn('Order placed', html)

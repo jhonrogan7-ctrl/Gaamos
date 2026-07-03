@@ -82,6 +82,7 @@ document.addEventListener('alpine:init', () => {
     toast: '',
     orders: [],          // placed orders, persisted on this device (newest first)
     openedOrder: null,   // order shown in the detail modal
+    lastOrder: null,     // order just placed, shown on the 'placed' screen (F11)
 
     // ── Init ──────────────────────────────────────────
     init() {
@@ -291,7 +292,8 @@ document.addEventListener('alpine:init', () => {
           this.orders.unshift(record);
           this.saveOrders();
           this.clearCart();
-          this.showToast(res.number ? ('Order #' + res.number + ' placed ✓') : 'Order placed ✓');
+          this.lastOrder = record;
+          this.screen = 'placed';
         })
         .catch(() => { this.showToast('Could not place order — try again'); })
         .finally(() => { this.placing = false; });
@@ -314,6 +316,6 @@ document.addEventListener('alpine:init', () => {
       const i = this.activeDiets.indexOf(key);
       if (i >= 0) this.activeDiets.splice(i, 1); else this.activeDiets.push(key);
     },
-    goBack() { this.screen = 'menu'; this.selectedDishId = null; },
+    goBack() { this.screen = 'menu'; this.selectedDishId = null; this.lastOrder = null; },
   }));
 });

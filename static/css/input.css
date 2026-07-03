@@ -1404,3 +1404,25 @@ h1,h2,h3 { font-family: var(--hd); }
   font-weight: 800; font-size: 16px; display: flex; align-items: center;
   justify-content: center; box-shadow: 0 8px 18px -6px var(--brand); }
 .g-mono--lg { width: 70px; height: 70px; border-radius: 22px; font-size: 28px; }
+
+/* ── Order-placed confirmation screen (F11/F12), from menu-v2 wireframe ── */
+.ok-wrap { flex: 1; display: flex; flex-direction: column; padding: 0 16px; overflow: hidden; }
+.ok-head { text-align: center; padding: 26px 0 14px; }
+.ok-badge { width: 68px; height: 68px; border-radius: 22px; margin: 0 auto 14px; background: var(--accent-grad, var(--brand)); color: #fff; display: flex; align-items: center; justify-content: center; box-shadow: 0 16px 34px -14px rgba(28,26,23,.5); }
+.ok-badge svg { width: 34px; height: 34px; }
+.ok-head h1 { font-family: var(--hd); font-size: 22px; font-weight: 800; letter-spacing: -.02em; color: var(--ink); }
+.ok-head .num { font-family: var(--hd); font-size: 17px; font-weight: 800; color: var(--brand-deep); margin-top: 6px; }
+.ok-head .om { font-size: 12px; color: var(--ink-2); margin-top: 5px; font-weight: 600; }
+.ok-status { display: inline-flex; align-items: center; gap: 7px; margin-top: 12px; font-size: 11px; font-weight: 800; letter-spacing: .04em; color: var(--brand-deep); background: var(--brand-soft); padding: 7px 13px; border-radius: 999px; }
+.ok-status .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--brand); }
+.ok-receipt { background: var(--card); border: 1px solid var(--line); border-radius: 18px; padding: 14px; }
+.ok-ri { display: flex; align-items: center; gap: 10px; padding: 8px 0; }
+.ok-ri + .ok-ri { border-top: 1px solid var(--line); }
+.ok-ri .q { font-size: 11px; font-weight: 800; color: var(--brand-deep); background: var(--brand-soft); padding: 3px 8px; border-radius: 999px; flex-shrink: 0; }
+.ok-ri .rn { flex: 1; font-size: 12.5px; font-weight: 700; color: var(--ink); min-width: 0; }
+.ok-ri .rp { font-family: var(--hd); font-weight: 750; font-size: 13px; color: var(--ink); }
+.ok-tot { display: flex; align-items: center; justify-content: space-between; margin-top: 8px; padding-top: 13px; border-top: 2px dashed var(--line-2); }
+.ok-tot .l { font-size: 13px; font-weight: 700; color: var(--ink-2); }
+.ok-tot strong { font-family: var(--hd); font-size: 21px; font-weight: 800; color: var(--price); }
+.ok-hint { text-align: center; font-size: 11px; color: var(--ink-3); font-weight: 600; margin-top: 12px; line-height: 1.5; }
+.ok-foot { margin-top: auto; padding: 12px 0 18px; }

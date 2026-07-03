@@ -14,7 +14,7 @@
       <!-- Brand bar -->
       <div class="brandbar">
         <div class="brand">
-          <img src="{% static 'images/juicery_logo.png' %}" alt="Juicery Cafe" class="logo-img">
+          <div class="g-mono" x-text="monogram()"></div>
           <div class="name">
             <span x-text="restaurant.name"></span>
             <small x-text="branch.name + (branch.address ? ' · ' + branch.address : '')"></small>
@@ -180,10 +180,7 @@
             </template>
 
             <!-- Footer credit -->
-            <div class="menu-credit">
-              © 2026 <span x-text="restaurant.name"></span>. All rights reserved.<br>
-              Designed &amp; developed by <strong>Twenty Two Tech Company</strong>
-            </div>
+            <div class="menu-credit">© 2026 <span x-text="restaurant.name"></span>. All rights reserved.</div>
           </div><!-- /menu-body -->
 
         </div><!-- /main-col -->
@@ -200,7 +197,7 @@
     <div style="display:flex;flex-direction:column;flex:1;min-height:0;overflow:hidden;position:relative;">
 
       <!-- Hero image — tap to view the full (uncropped) image -->
-      <div class="detail-img" :class="{ zoomable: selectedDish.image_url }"
+      <div class="detail-img" :class="{ zoomable: selectedDish.image_url, 'k-monogram': !selectedDish.image_url }"
            :style="selectedDish.image_url ? 'background-image:url('+selectedDish.image_url+');background-position:'+(selectedDish.focal_x ?? 50)+'% '+(selectedDish.focal_y ?? 50)+'%' : ''"
            @click="selectedDish.image_url && (lightbox = selectedDish.image_url)">
         <div class="grad"></div>
@@ -222,6 +219,7 @@
             <span :class="dietClass(tag)" x-text="dietLabel(tag)"></span>
           </template>
         </div>
+        <span x-show="!selectedDish.image_url" x-html="icon('dish')" style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;"></span>
       </div>
 
       <!-- Scrollable detail body -->
@@ -300,7 +298,8 @@
             <!-- Cart items -->
             <template x-for="(item, idx) in cart" :key="item.id">
               <div class="citem">
-                <div class="img" x-lazy-bg="item.image_url"></div>
+                <template x-if="item.image_url"><div class="img" x-lazy-bg="item.image_url"></div></template>
+                <template x-if="!item.image_url"><div class="img k-monogram"><span x-html="icon('dish')"></span></div></template>
                 <div class="info">
                   <div class="nm" x-text="item.name"></div>
                   <div class="ft">
@@ -314,13 +313,6 @@
                 </div>
               </div>
             </template>
-
-            <!-- Promo code -->
-            <div class="promo">
-              <span x-html="icon('promoIcon')"></span>
-              <input placeholder="Promo code">
-              <span class="apply">Apply</span>
-            </div>
 
             <!-- Order summary -->
             <div class="summary">
@@ -347,7 +339,7 @@
                     <div class="othumb" x-lazy-bg="o.items[0].image_url"></div>
                   </template>
                   <template x-if="!(o.items[0] && o.items[0].image_url)">
-                    <div class="othumb othumb-ph"><span x-html="icon('bag')"></span></div>
+                    <div class="othumb othumb-ph"><span x-html="icon('dish')"></span></div>
                   </template>
                   <span class="othumb-more" x-show="o.items.length > 1" x-text="'+' + (o.items.length - 1)"></span>
                 </div>
@@ -389,6 +381,36 @@
   <!-- END SCREEN 3 -->
 
   <!-- ═══════════════════════════════════════════════
+       SCREEN 4 — ORDER PLACED (F11/F12)
+  ══════════════════════════════════════════════════ -->
+  <template x-if="screen === 'placed' && lastOrder">
+    <div style="display:flex;flex-direction:column;flex:1;min-height:0;overflow:hidden;position:relative;">
+      <div class="ok-wrap">
+        <div class="ok-head">
+          <div class="ok-badge"><span x-html="icon('receipt')"></span></div>
+          <h1>Order placed!</h1>
+          <div class="num" x-show="lastOrder.number" x-text="'Order #' + lastOrder.number"></div>
+          <div class="om"><span x-text="restaurant.name"></span><template x-if="table"><span x-text="' · ' + table.label"></span></template></div>
+          <div class="ok-status"><span class="dot"></span>Received — the kitchen has it</div>
+        </div>
+        <div class="ok-receipt">
+          <template x-for="i in lastOrder.items" :key="i.name">
+            <div class="ok-ri">
+              <span class="q" x-text="i.qty + '×'"></span>
+              <span class="rn" x-text="i.name"></span>
+              <span class="rp" x-text="'Rs ' + (i.price * i.qty)"></span>
+            </div>
+          </template>
+          <div class="ok-tot"><span class="l">Pay at the counter</span><strong x-text="'Rs ' + lastOrder.total"></strong></div>
+        </div>
+        <div class="ok-hint">Show this screen to staff if asked.<br>This order stays under “Your orders”.</div>
+        <div class="ok-foot"><button class="k-btn k-btn--ghost" @click="goBack()">Back to menu</button></div>
+      </div>
+    </div>
+  </template>
+  <!-- END SCREEN 4 -->
+
+  <!-- ═══════════════════════════════════════════════
        OVERLAY — CONTACT MODAL
   ══════════════════════════════════════════════════ -->
   <template x-if="contactOpen">
@@ -398,7 +420,7 @@
         <button class="close" @click="contactOpen=false"><span x-html="icon('x')"></span></button>
 
         <div class="hero">
-          <img src="{% static 'images/juicery_logo.png' %}" alt="Juicery Cafe" class="logo-big-img">
+          <div class="g-mono g-mono--lg" x-text="monogram()"></div>
 
           <h2 x-text="restaurant.name"></h2>
           <div class="sub" x-text="restaurant.tagline"></div>
@@ -449,10 +471,7 @@
           </template>
         </div>
 
-        <div class="ft-credit">
-          <strong>© 2026 The Juicery Cafe.</strong> All rights reserved.<br>
-          Designed &amp; developed by <strong>Twenty Two Tech Company</strong>
-        </div>
+        <div class="ft-credit">© 2026 <span x-text="restaurant.name"></span>. All rights reserved.</div>
       </div>
     </div>
   </template>
@@ -488,16 +507,6 @@
           </div>
         </div>
 
-        <div class="fsec">
-          <div class="l">Sort by</div>
-          <div class="fch-row">
-            <span class="fch on">Recommended</span>
-            <span class="fch">Price ↑</span>
-            <span class="fch">Price ↓</span>
-            <span class="fch">Popular</span>
-          </div>
-        </div>
-
         <button class="fapply" @click="filterOpen=false"
                 x-text="'Show ' + filteredDishes.length + ' dishes'"></button>
       </div>
@@ -512,7 +521,7 @@
         <button class="close" @click="openedOrder = null"><span x-html="icon('x')"></span></button>
 
         <div class="om-head">
-          <div class="om-badge"><span x-html="icon('bag')"></span></div>
+          <div class="om-badge"><span x-html="icon('receipt')"></span></div>
           <h2>Order placed</h2>
           <div class="om-meta">
             <span x-text="orderTime(openedOrder)"></span>
@@ -528,7 +537,7 @@
                 <div class="om-thumb" x-lazy-bg="i.image_url"></div>
               </template>
               <template x-if="!i.image_url">
-                <div class="om-thumb om-thumb-ph"><span x-html="icon('bag')"></span></div>
+                <div class="om-thumb om-thumb-ph"><span x-html="icon('dish')"></span></div>
               </template>
               <div class="om-it-info">
                 <div class="om-it-nm" x-text="i.name"></div>
