@@ -257,7 +257,7 @@ class GuestKitCssTest(SimpleTestCase):
     def test_kit_classes_present(self):
         css = self._css()
         for sel in ['.k-card', '.k-monogram', '.k-price', '.k-tag', '.k-btn',
-                    '.k-qty', '.k-pill', '.g-mono', '.vb-tab']:
+                    '.k-qty', '.k-pill', '.g-mono', '.vb-tab', '.vc-ti']:
             self.assertIn(sel, css, f'missing guest kit class {sel}')
 
     def test_price_token_defined_per_theme(self):
@@ -330,3 +330,7 @@ class MenuLayoutPartialsTest(TenantTestCase):
         html = self.client.get('/?layout=tabs').content.decode()
         self.assertIn('data-layout="tabs"', html)
         self.assertNotIn('data-layout="baseline"', html)
+
+    def test_iconrail_partial_served_on_preview(self):
+        html = self.client.get('/?layout=iconrail').content.decode()
+        self.assertIn('data-layout="iconrail"', html)

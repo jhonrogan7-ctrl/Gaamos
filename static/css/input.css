@@ -1453,3 +1453,19 @@ h1,h2,h3 { font-family: var(--hd); }
 .vb-sec .hn { font-size: 9.5px; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; color: var(--brand-deep); background: var(--brand-soft); padding: 3px 8px; border-radius: 6px; margin-left: auto; }
 .vb-list { display: flex; flex-direction: column; gap: 8px; }
 .vb-list .g-grp { padding: 8px 2px 0; }
+
+/* ── Iconrail layout (V-C): slim icon rail + subcategory chips ── */
+.vc-shell { display: flex; flex: 1; min-height: 0; overflow: hidden; }
+.vc-rail { width: 56px; flex-shrink: 0; background: var(--brand-soft); overflow-y: auto; scrollbar-width: none; padding: 8px 0; display: flex; flex-direction: column; align-items: center; gap: 7px; }
+.vc-rail::-webkit-scrollbar { display: none; }
+.vc-item { display: flex; flex-direction: column; align-items: center; gap: 3px; flex-shrink: 0; cursor: pointer; }
+.vc-ti { position: relative; width: 44px; height: 44px; border-radius: 14px; background: #fff; color: var(--brand-deep); border: 1px solid var(--line); display: flex; align-items: center; justify-content: center; }
+.vc-ti svg { width: 20px; height: 20px; }
+.vc-ti .b { position: absolute; top: -4px; right: -4px; min-width: 16px; height: 16px; border-radius: 8px; background: var(--brand); color: #fff; font-size: 8.5px; font-weight: 800; display: flex; align-items: center; justify-content: center; padding: 0 4px; border: 1.5px solid var(--cream); }
+.vc-item.on .vc-ti { background: var(--accent-grad, var(--brand)); color: #fff; border-color: transparent; box-shadow: 0 8px 16px -5px var(--brand); }
+.vc-lb { font-size: 8.5px; font-weight: 800; color: var(--ink); display: none; text-align: center; line-height: 1.1; max-width: 52px; }
+.vc-item.on .vc-lb { display: block; }
+.vc-main { flex: 1; display: flex; flex-direction: column; min-width: 0; background: var(--cream); }
+.vc-chips { overflow-x: auto; scrollbar-width: none; padding: 8px 0 4px; flex-shrink: 0; }
+.vc-chips::-webkit-scrollbar { display: none; }
+.vc-chips-in { display: flex; gap: 6px; padding: 0 12px; }
