@@ -1,0 +1,44 @@
+{# Guest menu screen — layout: tabs (V-B top tabs + scroll-spy). #}
+<template x-if="screen === 'menu'">
+  <div data-layout="tabs" style="display:flex;flex-direction:column;flex:1;min-height:0;overflow:hidden;">
+    {% include 'menu/_brandbar.html' %}
+    <div class="vb-head">
+      <div class="vb-tabs"><div class="vb-tabs-in">
+        <template x-for="cat in categories" :key="cat.id">
+          <button class="vb-tab" :class="{ on: cat.id === spyCategory }" @click="jumpTo(cat.id)">
+            <span x-html="icon(cat.icon_key)"></span>
+            <span x-text="cat.name"></span>
+            <span class="c" x-text="categoryDishCount(cat.id)"></span>
+          </button>
+        </template>
+      </div></div>
+      <div class="vb-subrow" x-show="subChipsFor(spyCategory).length">
+        <template x-for="s in subChipsFor(spyCategory)" :key="s">
+          <span class="k-pill" @click="jumpTo(spyCategory)" x-text="s"></span>
+        </template>
+      </div>
+    </div>
+    <div class="vb-body" x-ref="tabsBody" style="overflow-y:auto;">
+      <template x-for="cat in categories" :key="cat.id">
+        <div>
+          <div class="vb-sec" data-cat-section :data-cat="cat.id">
+            <span class="t" x-text="cat.name"></span>
+            <span class="c" x-text="categoryDishCount(cat.id) + ' dishes'"></span>
+            <span class="hn" x-show="cat.hours_note" x-text="cat.hours_note"></span>
+          </div>
+          <div class="vb-list">
+            <template x-for="group in sectionGroups(cat.id)" :key="cat.id + group.sub">
+              <div>
+                <div class="g-grp" x-show="group.sub"><span class="gt" x-text="group.sub"></span><span class="gc" x-text="group.dishes.length"></span><span class="ln"></span></div>
+                <template x-for="dish in group.dishes" :key="dish.id">
+                  {% include 'menu/_kit_card_wide.html' %}
+                </template>
+              </div>
+            </template>
+          </div>
+        </div>
+      </template>
+      <div class="menu-credit">© 2026 <span x-text="restaurant.name"></span>. All rights reserved.</div>
+    </div>
+  </div>
+</template>

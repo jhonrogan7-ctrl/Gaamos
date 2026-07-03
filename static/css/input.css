@@ -1426,3 +1426,30 @@ h1,h2,h3 { font-family: var(--hd); }
 .ok-tot strong { font-family: var(--hd); font-size: 21px; font-weight: 800; color: var(--price); }
 .ok-hint { text-align: center; font-size: 11px; color: var(--ink-3); font-weight: 600; margin-top: 12px; line-height: 1.5; }
 .ok-foot { margin-top: auto; padding: 12px 0 18px; }
+
+/* ── Tabs layout (V-B): top category tabs + scroll-spy sections ── */
+.g-grp { padding: 12px 0 4px; display: flex; align-items: center; gap: 9px; flex-shrink: 0; }
+.g-grp .gt { font-family: var(--hd); font-size: 11px; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; color: var(--ink); }
+.g-grp .gc { font-size: 10px; font-weight: 700; color: var(--ink-3); }
+.g-grp .ln { flex: 1; height: 2px; border-radius: 2px; background: var(--brand); opacity: .45; }
+
+.vb-head { flex-shrink: 0; background: var(--cream); }
+.vb-head .brandbar { background: none; }
+.vb-tabs { display: flex; gap: 8px; padding: 2px 0 8px; overflow-x: auto; scrollbar-width: none; }
+.vb-tabs::-webkit-scrollbar { display: none; }
+.vb-tabs-in { display: flex; gap: 8px; padding: 0 12px; }
+.vb-tab { display: inline-flex; align-items: center; gap: 7px; height: 44px; padding: 0 14px; border-radius: 999px; border: 1.5px solid var(--line-2); background: var(--card); color: var(--ink-2); font-size: 13px; font-weight: 700; flex-shrink: 0; white-space: nowrap; cursor: pointer; }
+.vb-tab svg { width: 16px; height: 16px; }
+.vb-tab .c { font-size: 10px; font-weight: 800; opacity: .6; }
+.vb-tab.on { background: var(--accent-grad, var(--brand)); color: #fff; border-color: transparent; box-shadow: 0 8px 16px -5px var(--brand); }
+.vb-tab.on .c { opacity: .85; }
+.vb-subrow { display: flex; gap: 6px; padding: 0 12px 10px; overflow-x: auto; scrollbar-width: none; }
+.vb-subrow::-webkit-scrollbar { display: none; }
+.vb-subrow .k-pill { height: 34px; font-size: 12px; padding: 0 13px; }
+.vb-body { flex: 1; padding: 0 12px; display: flex; flex-direction: column; }
+.vb-sec { display: flex; align-items: baseline; gap: 8px; padding: 12px 2px 4px; flex-shrink: 0; position: sticky; top: 0; background: var(--cream); z-index: 2; }
+.vb-sec .t { font-family: var(--hd); font-size: 17px; font-weight: 800; letter-spacing: -.02em; color: var(--ink); }
+.vb-sec .c { font-size: 11px; font-weight: 700; color: var(--ink-3); }
+.vb-sec .hn { font-size: 9.5px; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; color: var(--brand-deep); background: var(--brand-soft); padding: 3px 8px; border-radius: 6px; margin-left: auto; }
+.vb-list { display: flex; flex-direction: column; gap: 8px; }
+.vb-list .g-grp { padding: 8px 2px 0; }

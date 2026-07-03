@@ -109,6 +109,43 @@ document.addEventListener('alpine:init', () => {
       if (savedOrders) {
         try { this.orders = JSON.parse(savedOrders); } catch (e) { this.orders = []; }
       }
+      this.initSpy();
+    },
+
+    // ── Tabs layout (scroll-spy) ───────────────────────
+    spyCategory: null,
+    initSpy() {
+      if (this.layout !== 'tabs') return;
+      this.spyCategory = (this.categories[0] || {}).id || null;
+      this.$nextTick(() => {
+        const rootEl = this.$refs.tabsBody;
+        if (!rootEl || typeof IntersectionObserver === 'undefined') return;
+        const obs = new IntersectionObserver(entries => {
+          entries.forEach(e => { if (e.isIntersecting) this.spyCategory = e.target.dataset.cat; });
+        }, { root: rootEl, rootMargin: '0px 0px -70% 0px' });
+        rootEl.querySelectorAll('[data-cat-section]').forEach(el => obs.observe(el));
+      });
+    },
+    jumpTo(catId) {
+      this.spyCategory = catId;
+      const el = (this.$refs.tabsBody || document).querySelector(`[data-cat-section][data-cat="${catId}"]`);
+      if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    },
+    sectionGroups(catId) {
+      const cat = this.categories.find(c => c.id === catId) || { subcategories: [] };
+      let list = this.dishes.filter(d => d.cat === catId);
+      if (this.activeDiets.length) list = list.filter(d => this.activeDiets.every(k => d.dietary_tags.includes(k)));
+      const subs = (cat.subcategories || []).map(s => s.name);
+      if (!subs.length) return list.length ? [{ sub: '', dishes: list }] : [];
+      const named = new Set(subs);
+      const groups = subs.map(sub => ({ sub, dishes: list.filter(d => d.sub === sub) }));
+      const others = list.filter(d => !named.has(d.sub));
+      if (others.length) groups.push({ sub: 'Others', dishes: others });
+      return groups.filter(g => g.dishes.length > 0);
+    },
+    subChipsFor(catId) {
+      const cat = this.categories.find(c => c.id === catId);
+      return cat && cat.subcategories.length ? cat.subcategories.map(s => s.name) : [];
     },
 
     // ── Helpers ───────────────────────────────────────
