@@ -1,0 +1,44 @@
+<form id="contact-panel" class="mk-card p-6 md:p-8"
+      hx-post="/contact" hx-target="#contact-panel" hx-swap="outerHTML"
+      x-data="{ vtype: '{{ values.venue_type|default:'Café'|escapejs }}' }">
+  {% csrf_token %}
+  <div class="grid gap-4 sm:grid-cols-2">
+    <label class="block text-sm font-medium text-ink-2">Your name *
+      <input name="name" value="{{ values.name|default:'' }}" placeholder="Aashish Sharma"
+             class="mk-input" required>
+    </label>
+    <label class="block text-sm font-medium text-ink-2">Venue name *
+      <input name="venue_name" value="{{ values.venue_name|default:'' }}" placeholder="Chill Zone Café"
+             class="mk-input" required>
+    </label>
+  </div>
+  <div class="grid gap-4 sm:grid-cols-2 mt-4">
+    <label class="block text-sm font-medium text-ink-2">Phone *
+      <input name="phone" value="{{ values.phone|default:'' }}" placeholder="+977 98XX-XXXXXX"
+             class="mk-input" required>
+    </label>
+    <label class="block text-sm font-medium text-ink-2">Email
+      <input name="email" type="email" value="{{ values.email|default:'' }}" placeholder="you@cafe.com"
+             class="mk-input">
+    </label>
+  </div>
+  <label class="block text-sm font-medium text-ink-2 mt-4">Venue type
+    <div class="flex flex-wrap gap-2 mt-2">
+      {% for label in venue_types %}
+      <button type="button" @click="vtype = '{{ label }}'"
+              :class="vtype === '{{ label }}' ? 'border-accent bg-accent-soft text-accent-deep' : 'border-line text-ink-2'"
+              class="px-4 py-2 rounded-full border text-sm font-medium transition">{{ label }}</button>
+      {% endfor %}
+    </div>
+    <input type="hidden" name="venue_type" :value="vtype">
+  </label>
+  <label class="block text-sm font-medium text-ink-2 mt-4">What do you need?
+    <textarea name="message" rows="3" placeholder="e.g. 2 branches, ~60 menu items, table ordering…"
+              class="mk-input">{{ values.message|default:'' }}</textarea>
+  </label>
+  {% if error %}
+  <div class="mt-3 text-sm text-accent-deep bg-accent-soft rounded-lg px-3 py-2">{{ error }}</div>
+  {% endif %}
+  <button type="submit" class="mk-btn-primary w-full mt-5">Request a callback</button>
+  <p class="text-xs text-ink-3 mt-3">We'll only use your details to contact you about Gaamos.</p>
+</form>

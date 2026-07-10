@@ -1,8 +1,27 @@
 {% extends "base.html" %}
-{% block title %}Gaamos — QR menus for Nepali restaurants{% endblock %}
+{% block title %}Gaamos — QR menus &amp; live orders for cafés, restaurants and bars{% endblock %}
 {% block content %}
-<main class="max-w-3xl mx-auto p-10">
-  <h1 class="text-3xl font-extrabold">Gaamos</h1>
-  <p class="mt-3 text-[#5a616e]">Self-serve QR menus for Nepali restaurants. Skeleton online.</p>
+<script>document.documentElement.classList.add('js');</script>
+{% include "marketing/_nav.html" %}
+<main>
+  {% include "marketing/_hero.html" %}
+  {% include "marketing/_social_proof.html" %}
+  {% include "marketing/_features.html" %}
+  {% include "marketing/_how.html" %}
+  {% include "marketing/_multibranch.html" %}
+  {% include "marketing/_pricing.html" %}
+  {% include "marketing/_contact.html" %}
+  {% include "marketing/_final_cta.html" %}
 </main>
+{% include "marketing/_footer.html" %}
+<script>
+  (function () {
+    var els = document.querySelectorAll('.mk-reveal');
+    if (!('IntersectionObserver' in window)) { els.forEach(function (e) { e.classList.add('is-in'); }); return; }
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) { if (e.isIntersecting) { e.target.classList.add('is-in'); io.unobserve(e.target); } });
+    }, { threshold: 0.12 });
+    els.forEach(function (e) { io.observe(e); });
+  })();
+</script>
 {% endblock %}

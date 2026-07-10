@@ -1,0 +1,23 @@
+<section class="bg-side text-white">
+  <div class="mk-wrap py-20 grid md:grid-cols-2 gap-12 items-center">
+    <div>
+      <div class="mk-eyebrow">Multi-branch</div>
+      <h2 class="font-hd text-3xl md:text-4xl font-extrabold mt-2">Every location. One dashboard.</h2>
+      <p class="text-side-ink mt-4">Run two branches or twenty. Each gets its own menu, its own QR codes, and its own orders — while you watch everything from a single screen. Clone a menu to a new branch and open the doors the same day.</p>
+      <div class="grid grid-cols-3 gap-4 mt-8 text-center">
+        <div><div class="font-hd text-3xl font-extrabold mk-grad-text">1</div><div class="text-xs text-side-ink mt-1">dashboard</div></div>
+        <div><div class="font-hd text-3xl font-extrabold mk-grad-text">∞</div><div class="text-xs text-side-ink mt-1">branches</div></div>
+        <div><div class="font-hd text-3xl font-extrabold mk-grad-text">0</div><div class="text-xs text-side-ink mt-1">extra logins</div></div>
+      </div>
+    </div>
+    <div class="space-y-3">
+      {% for br in branches %}
+      <div class="flex items-center gap-3 bg-side-2 rounded-xl2 p-4 border border-white/5 hover:border-accent/50 transition">
+        <span class="w-9 h-9 rounded-lg mk-grad text-white text-sm font-bold flex items-center justify-center">{{ br.initials }}</span>
+        <span class="flex-1 leading-tight"><span class="block text-sm font-semibold">{{ br.name }}</span><span class="block text-xs text-side-ink">{{ br.prefix }}.{{ base_domain }}</span></span>
+        <span class="text-right leading-tight"><span class="block font-bold">{{ br.orders }}</span><span class="block text-xs text-side-ink">orders today</span></span>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
