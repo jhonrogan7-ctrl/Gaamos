@@ -40,3 +40,12 @@ def test_landing_pricing_and_footer(client):
     assert "Most popular" in body            # Pro is highlighted
     assert "Prices are placeholders" in body
     assert "© 2026 Gaamos" in body
+
+
+@pytest.mark.django_db
+def test_landing_contact_section(client):
+    body = client.get("/").content.decode()
+    assert "Tell us about your venue" in body
+    assert 'hx-post="/contact"' in body
+    assert 'id="contact"' in body
+    assert "Restaurant" in body and "Bar" in body  # venue-type chips

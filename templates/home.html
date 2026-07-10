@@ -9,7 +9,18 @@
   {% include "marketing/_how.html" %}
   {% include "marketing/_multibranch.html" %}
   {% include "marketing/_pricing.html" %}
+  {% include "marketing/_contact.html" %}
   {% include "marketing/_final_cta.html" %}
 </main>
 {% include "marketing/_footer.html" %}
+<script>
+  (function () {
+    var els = document.querySelectorAll('.mk-reveal');
+    if (!('IntersectionObserver' in window)) { els.forEach(function (e) { e.classList.add('is-in'); }); return; }
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) { if (e.isIntersecting) { e.target.classList.add('is-in'); io.unobserve(e.target); } });
+    }, { threshold: 0.12 });
+    els.forEach(function (e) { io.observe(e); });
+  })();
+</script>
 {% endblock %}
