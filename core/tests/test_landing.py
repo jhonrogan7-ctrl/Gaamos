@@ -21,3 +21,12 @@ def test_landing_features_section(client):
     assert "Live Orders" in body
     assert "QR Codes" in body
     assert "Build your menu in minutes" in body
+
+
+@pytest.mark.django_db
+def test_landing_how_and_multibranch(client):
+    body = client.get("/").content.decode()
+    assert "Live by lunchtime" in body
+    assert "Print your QRs" in body
+    assert "Every location. One dashboard." in body
+    assert "theterrace." in body  # branch domain built from base_domain
