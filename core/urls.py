@@ -5,4 +5,5 @@ urlpatterns = [
     path("", views.home, name="home"),
     path("healthz", views.healthz, name="healthz"),
     path("sw.js", views.service_worker, name="service_worker"),
+    path("contact", views.contact, name="contact"),
 ]
