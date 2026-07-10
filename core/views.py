@@ -1,6 +1,6 @@
 from django.conf import settings
 from django.http import HttpResponse, JsonResponse
-from django.shortcuts import render
+from django.shortcuts import redirect, render
 
 from .models import Lead
 
@@ -62,8 +62,8 @@ TIERS = [
 TABLE_QRS = ["1", "2", "3", "4", "5", "6", "7", "8"]
 
 
-def home(request):
-    return render(request, "home.html", {
+def _landing_context(**extra):
+    ctx = {
         "hero_orders": HERO_ORDERS,
         "live_orders": LIVE_ORDERS,
         "hero_dishes": HERO_DISHES,
@@ -73,12 +73,19 @@ def home(request):
         "tiers": TIERS,
         "table_qrs": TABLE_QRS,
         "venue_types": VENUE_TYPES,
-    })
+    }
+    ctx.update(extra)
+    return ctx
+
+
+def home(request):
+    return render(request, "home.html", _landing_context())
 
 
 def contact(request):
-    """Landing lead-capture. GET renders a blank form (HTMX "send another");
-    POST validates and persists a Lead, else re-renders the form with errors."""
+    """Landing lead-capture. HTMX requests get form/success fragments;
+    non-HTMX requests get the full landing page (progressive enhancement)."""
+    is_htmx = request.headers.get("HX-Request") == "true"
     if request.method == "POST":
         values = {
             "name": request.POST.get("name", "").strip(),
@@ -88,12 +95,22 @@ def contact(request):
             "venue_type": request.POST.get("venue_type", "Café").strip() or "Café",
             "message": request.POST.get("message", "").strip(),
         }
+        if values["venue_type"] not in VENUE_TYPES:
+            values["venue_type"] = "Café"
         if not (values["name"] and values["venue_name"] and values["phone"]):
-            return render(request, "marketing/_contact_form.html", {
-                "error": "Please fill in your name, venue name and phone number.",
-                "values": values,
-                "venue_types": VENUE_TYPES,
-            })
+            error = "Please fill in your name, venue name and phone number."
+            if is_htmx:
+                return render(request, "marketing/_contact_form.html", {
+                    "error": error, "values": values, "venue_types": VENUE_TYPES,
+                })
+            return render(request, "home.html", _landing_context(
+                contact_error=error, contact_values=values,
+            ))
         Lead.objects.create(**values)
-        return render(request, "marketing/_contact_success.html")
-    return render(request, "marketing/_contact_form.html", {"venue_types": VENUE_TYPES})
+        if is_htmx:
+            return render(request, "marketing/_contact_success.html")
+        return render(request, "home.html", _landing_context(contact_sent=True))
+    # GET
+    if is_htmx:
+        return render(request, "marketing/_contact_form.html", {"venue_types": VENUE_TYPES})
+    return redirect("/#contact")

@@ -11,7 +11,11 @@
       </div>
     </div>
     <div>
-      {% include "marketing/_contact_form.html" %}
+      {% if contact_sent %}
+        {% include "marketing/_contact_success.html" %}
+      {% else %}
+        {% include "marketing/_contact_form.html" with error=contact_error values=contact_values %}
+      {% endif %}
     </div>
   </div>
 </section>

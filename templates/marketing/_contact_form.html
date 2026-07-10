@@ -1,6 +1,6 @@
 <form id="contact-panel" class="mk-card p-6 md:p-8"
       hx-post="/contact" hx-target="#contact-panel" hx-swap="outerHTML"
-      x-data="{ vtype: '{{ values.venue_type|default:'Café' }}' }">
+      x-data="{ vtype: '{{ values.venue_type|default:'Café'|escapejs }}' }">
   {% csrf_token %}
   <div class="grid gap-4 sm:grid-cols-2">
     <label class="block text-sm font-medium text-ink-2">Your name *

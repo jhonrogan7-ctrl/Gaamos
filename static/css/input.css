@@ -601,8 +601,8 @@ h1,h2,h3 { font-family: var(--hd); }
   .mk-input:focus { border-color: var(--accent); background: #fff; }
   .mk-badge-new { @apply text-[11px] font-semibold px-2 py-0.5 rounded-full; background: var(--accent-soft); color: var(--accent-deep); }
   .mk-badge-served { @apply text-[11px] font-semibold px-2 py-0.5 rounded-full; background: var(--green-soft); color: var(--green); }
-  .mk-reveal { opacity: 0; transform: translateY(22px); transition: opacity .7s ease, transform .7s ease; }
-  .mk-reveal.is-in { opacity: 1; transform: none; }
+  .js .mk-reveal { opacity: 0; transform: translateY(22px); transition: opacity .7s ease, transform .7s ease; }
+  .js .mk-reveal.is-in { opacity: 1; transform: none; }
 }
 
 html { scroll-behavior: smooth; }
