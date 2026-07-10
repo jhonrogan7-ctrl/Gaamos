@@ -1,0 +1,1880 @@
+{
+  "company": {
+    "name": "Chill Zone",
+    "tagline": "Chill out with great food, drinks and vibes",
+    "phone": "",
+    "email": "",
+    "instagram": "",
+    "facebook": "",
+    "tiktok": ""
+  },
+  "branches": [
+    {
+      "slug": "main",
+      "name": "Chill Zone",
+      "address": "",
+      "tag": "FLAGSHIP"
+    }
+  ],
+  "categories": [
+    {
+      "slug": "hot-drinks",
+      "name": "Hot Drinks",
+      "icon_key": "coffee",
+      "hours_note": "",
+      "display_order": 0,
+      "subcategories": []
+    },
+    {
+      "slug": "breakfast",
+      "name": "Breakfast",
+      "icon_key": "brunch",
+      "hours_note": "",
+      "display_order": 1,
+      "subcategories": []
+    },
+    {
+      "slug": "toast",
+      "name": "Toast",
+      "icon_key": "snack",
+      "hours_note": "",
+      "display_order": 2,
+      "subcategories": []
+    },
+    {
+      "slug": "eggs",
+      "name": "Egg (2 Eggs)",
+      "icon_key": "brunch",
+      "hours_note": "",
+      "display_order": 3,
+      "subcategories": []
+    },
+    {
+      "slug": "muesli-porridge",
+      "name": "Muesli & Porridge",
+      "icon_key": "bowl",
+      "hours_note": "",
+      "display_order": 4,
+      "subcategories": []
+    },
+    {
+      "slug": "sandwich-burger",
+      "name": "Sandwich & Burger",
+      "icon_key": "snack",
+      "hours_note": "",
+      "display_order": 5,
+      "subcategories": []
+    },
+    {
+      "slug": "soft-drinks",
+      "name": "Soft Drinks",
+      "icon_key": "bar",
+      "hours_note": "",
+      "display_order": 6,
+      "subcategories": []
+    },
+    {
+      "slug": "soups",
+      "name": "Soups",
+      "icon_key": "bowl",
+      "hours_note": "",
+      "display_order": 7,
+      "subcategories": []
+    },
+    {
+      "slug": "rice",
+      "name": "Rice",
+      "icon_key": "rice",
+      "hours_note": "",
+      "display_order": 8,
+      "subcategories": []
+    },
+    {
+      "slug": "biryani",
+      "name": "Biryani",
+      "icon_key": "rice",
+      "hours_note": "",
+      "display_order": 9,
+      "subcategories": []
+    },
+    {
+      "slug": "indian-style",
+      "name": "Indian Style",
+      "icon_key": "dinner",
+      "hours_note": "",
+      "display_order": 10,
+      "subcategories": []
+    },
+    {
+      "slug": "nepali-thali",
+      "name": "Nepali Thali",
+      "icon_key": "special",
+      "hours_note": "",
+      "display_order": 11,
+      "subcategories": []
+    },
+    {
+      "slug": "khaja-set",
+      "name": "Khaja Set",
+      "icon_key": "snack",
+      "hours_note": "",
+      "display_order": 12,
+      "subcategories": []
+    },
+    {
+      "slug": "momo",
+      "name": "Mo:Mo",
+      "icon_key": "dinner",
+      "hours_note": "",
+      "display_order": 13,
+      "subcategories": []
+    },
+    {
+      "slug": "pakoda",
+      "name": "Pakoda",
+      "icon_key": "snack",
+      "hours_note": "",
+      "display_order": 14,
+      "subcategories": []
+    },
+    {
+      "slug": "rice-roti",
+      "name": "Rice & Roti (Chapati)",
+      "icon_key": "rice",
+      "hours_note": "",
+      "display_order": 15,
+      "subcategories": []
+    },
+    {
+      "slug": "pasta",
+      "name": "Pasta & Spaghetti",
+      "icon_key": "pizza",
+      "hours_note": "",
+      "display_order": 16,
+      "subcategories": []
+    },
+    {
+      "slug": "snacks",
+      "name": "Snacks",
+      "icon_key": "snack",
+      "hours_note": "",
+      "display_order": 17,
+      "subcategories": []
+    },
+    {
+      "slug": "chowmin-thukpa",
+      "name": "Chowmin/Thukpa",
+      "icon_key": "noodles",
+      "hours_note": "",
+      "display_order": 18,
+      "subcategories": []
+    },
+    {
+      "slug": "wrap",
+      "name": "Wrap",
+      "icon_key": "snack",
+      "hours_note": "",
+      "display_order": 19,
+      "subcategories": []
+    },
+    {
+      "slug": "salad",
+      "name": "Salad",
+      "icon_key": "bowl",
+      "hours_note": "",
+      "display_order": 20,
+      "subcategories": []
+    },
+    {
+      "slug": "chill-zone-special",
+      "name": "Chill Zone Special",
+      "icon_key": "special",
+      "hours_note": "",
+      "display_order": 21,
+      "subcategories": []
+    },
+    {
+      "slug": "fresh-juice",
+      "name": "Fresh Juice",
+      "icon_key": "juice",
+      "hours_note": "",
+      "display_order": 22,
+      "subcategories": []
+    },
+    {
+      "slug": "lassi-shake",
+      "name": "Lassi/Shake",
+      "icon_key": "smoothie",
+      "hours_note": "",
+      "display_order": 23,
+      "subcategories": []
+    }
+  ],
+  "items": [
+    {
+      "slug": "black-tea",
+      "name": "Black Tea",
+      "price": 40,
+      "cat": "hot-drinks",
+      "sub": null,
+      "tags": [
+        "VEG"
+      ],
+      "popular": false,
+      "featured": false,
+      "image": "https://images.unsplash.com/photo-1683533698664-12ee473e8c9d?auto=format&fit=crop&w=800&q=60",
+      "description": "Classic black tea, brewed strong."
+    },
+    {
+      "slug": "milk-tea",
+      "name": "Milk Tea",
+      "price": 60,
+      "cat": "hot-drinks",
+      "sub": null,
+      "tags": [
+        "VEG"
+      ],
+      "popular": true,
+      "featured": false,
+      "image": "https://images.unsplash.com/photo-1683533698664-12ee473e8c9d?auto=format&fit=crop&w=800&q=60",
+      "description": "Nepali-style milk tea, lightly spiced."
+    },
+    {
+      "slug": "masala-tea",
+      "name": "Masala Tea",
+      "price": 70,
+      "cat": "hot-drinks",
+      "sub": null,
+      "tags": [
+        "VEG"
+      ],
+      "popular": false,
+      "featured": false,
+      "image": "https://images.unsplash.com/photo-1683533698664-12ee473e8c9d?auto=format&fit=crop&w=800&q=60",
+      "description": "Milk tea brewed with cardamom, cinnamon and ginger."
+    },
+    {
+      "slug": "lemon-tea",
+      "name": "Lemon Tea",
+      "price": 50,
+      "cat": "hot-drinks",
+      "sub": null,
+      "tags": [
+        "VEG"
+      ],
+      "popular": false,
+      "featured": false,
+      "image": null,
+      "description": "Black tea with fresh lemon."
+    },
+    {
+      "slug": "ginger-lemon-honey",
+      "name": "Ginger Lemon Honey",
+      "price": 120,
+      "cat": "hot-drinks",
+      "sub": null,
+      "tags": [
+        "VEG"
+      ],
+      "popular": false,
+      "featured": false,
+      "image": null,
+      "description": "Hot water steeped with ginger, lemon and honey."
+    },
+    {
+      "slug": "milk-coffee",
+      "name": "Milk Coffee",
+      "price": 90,
+      "cat": "hot-drinks",
+      "sub": null,
+      "tags": [
+        "VEG"
+      ],
+      "popular": false,
+      "featured": false,
+      "image": "https://images.unsplash.com/photo-1497515114629-f71d768fd07c?auto=format&fit=crop&w=800&q=60",
+      "description": "Coffee with steamed milk."
+    },
+    {
+      "slug": "black-coffee",
+      "name": "Black Coffee",
+      "price": 70,
+      "cat": "hot-drinks",
+      "sub": null,
+      "tags": [
+        "VEG"
+      ],
+      "popular": false,
+      "featured": false,
+      "image": "https://images.unsplash.com/photo-1497515114629-f71d768fd07c?auto=format&fit=crop&w=800&q=60",
+      "description": "Simple brewed black coffee."
+    },
+    {
+      "slug": "hot-chocolate",
+      "name": "Hot Chocolate",
+      "price": 210,
+      "cat": "hot-drinks",
+      "sub": null,
+      "tags": [
+        "VEG"
+      ],
+      "popular": false,
+      "featured": false,
+      "image": "https://images.unsplash.com/photo-1542990253-0d0f5be5f0ed?auto=format&fit=crop&w=800&q=60",
+      "description": "Rich hot chocolate, topped with cream."
+    },
+    {
+      "slug": "organic-americano-hot-ice",
+      "name": "Organic Americano (Hot/Ice)",
+      "price": 130,
+      "cat": "hot-drinks",
+      "sub": null,
+      "tags": [
+        "VEG"
+      ],
+      "popular": false,
+      "featured": false,
+      "image": "https://images.unsplash.com/photo-1579992357154-faf4bde95b3d?auto=format&fit=crop&w=800&q=60",
+      "description": "Organic single-origin beans, hot or over ice."
+    },
+    {
+      "slug": "organic-espresso-hot-ice",
+      "name": "Organic Espresso (Hot/Ice)",
+      "price": 110,
+      "cat": "hot-drinks",
+      "sub": null,
+      "tags": [
+        "VEG"
+      ],
+      "popular": false,
+      "featured": false,
+      "image": "https://images.unsplash.com/photo-1579992357154-faf4bde95b3d?auto=format&fit=crop&w=800&q=60",
+      "description": "Organic single-origin espresso shot, hot or over ice."
+    },
+    {
+      "slug": "simple-breakfast",
+      "name": "Simple Breakfast",
+      "price": 250,
+      "cat": "breakfast",
+      "sub": null,
+      "tags": [
+        "VEG"
+      ],
+      "popular": false,
+      "featured": false,
+      "image": "https://images.unsplash.com/photo-1525184782196-8e2ded604bf7?auto=format&fit=crop&w=800&q=60",
+      "description": "Eggs, toast and a side of the day."
+    },
+    {
+      "slug": "american-breakfast",
+      "name": "American Breakfast",
+      "price": 360,
+      "cat": "breakfast",
+      "sub": null,
+      "tags": [
+        "VEG"
+      ],
+      "popular": false,
+      "featured": false,
+      "image": "https://images.unsplash.com/photo-1525184782196-8e2ded604bf7?auto=format&fit=crop&w=800&q=60",
+      "description": "Eggs, toast, hash browns, sausage and beans."
+    },
+    {
+      "slug": "chill-zone-special-breakfast",
+      "name": "Chill Zone Special Breakfast",
+      "price": 420,
+      "cat": "breakfast",
+      "sub": null,
+      "tags": [
+        "VEG"
+      ],
+      "popular": true,
+      "featured": true,
+      "image": "https://images.unsplash.com/photo-1550304939-ee0be36f980f?auto=format&fit=crop&w=800&q=60",
+      "description": "Our loaded house breakfast platter."
+    },
+    {
+      "slug": "plain-toast",
+      "name": "Plain Toast",
+      "price": 100,
+      "cat": "toast",
+      "sub": null,
+      "tags": [
+        "VEG"
+      ],
+      "popular": false,
+      "featured": false,
+      "image": "https://images.unsplash.com/photo-1643473806845-485d1f11688c?auto=format&fit=crop&w=800&q=60",
+      "description": "Toasted bread, butter on the side."
+    },
+    {
+      "slug": "cheese-toast",
+      "name": "Cheese Toast",
+      "price": 180,
+      "cat": "toast",
+      "sub": null,
+      "tags": [
+        "VEG"
+      ],
+      "popular": false,
+      "featured": false,
+      "image": "https://images.unsplash.com/photo-1643473806845-485d1f11688c?auto=format&fit=crop&w=800&q=60",
+      "description": "Melted cheese on toasted bread."
+    },
+    {
+      "slug": "cheese-tomato-toast",
+      "name": "Cheese Tomato Toast",
+      "price": 200,
+      "cat": "toast",
+      "sub": null,
+      "tags": [
+        "VEG"
+      ],
+      "popular": false,
+      "featured": false,
+      "image": "https://images.unsplash.com/photo-1647338732688-6c1930461cc3?auto=format&fit=crop&w=800&q=60",
+      "description": "Melted cheese and tomato on toast."
+    },
+    {
+      "slug": "french-toast",
+      "name": "French Toast",
+      "price": 210,
+      "cat": "toast",
+      "sub": null,
+      "tags": [
+        "VEG"
+      ],
+      "popular": false,
+      "featured": false,
+      "image": "https://images.unsplash.com/photo-1595044643502-616eeebbdff3?auto=format&fit=crop&w=800&q=60",
+      "description": "Egg-dipped toast, pan-fried golden."
+    },
+    {
+      "slug": "boiled-egg",
+      "name": "Boiled Egg",
+      "price": 120,
+      "cat": "eggs",
+      "sub": null,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "image": "https://images.unsplash.com/photo-1618666185561-baed3459ff18?auto=format&fit=crop&w=800&q=60",
+      "description": "Two eggs, boiled to order."
+    },
+    {
+      "slug": "fried-egg",
+      "name": "Fried Egg",
+      "price": 130,
+      "cat": "eggs",
+      "sub": null,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "image": "https://images.unsplash.com/photo-1618666185561-baed3459ff18?auto=format&fit=crop&w=800&q=60",
+      "description": "Two eggs, fried sunny side up."
+    },
+    {
+      "slug": "scrambled-egg",
+      "name": "Scrambled Egg",
+      "price": 140,
+      "cat": "eggs",
+      "sub": null,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "image": "https://images.unsplash.com/photo-1612451223000-8605c4f730fe?auto=format&fit=crop&w=800&q=60",
+      "description": "Two eggs, soft scrambled."
+    },
+    {
+      "slug": "masala-omelette",
+      "name": "Masala Omelette",
+      "price": 160,
+      "cat": "eggs",
+      "sub": null,
+      "tags": [
+        "VEG"
+      ],
+      "popular": true,
+      "featured": false,
+      "image": "https://images.unsplash.com/photo-1612528449289-9936d474b8f4?auto=format&fit=crop&w=800&q=60",
+      "description": "Two-egg omelette with onion, tomato and spices."
+    },
+    {
+      "slug": "cheese-omelette",
+      "name": "Cheese Omelette",
+      "price": 220,
+      "cat": "eggs",
+      "sub": null,
+      "tags": [
+        "VEG"
+      ],
+      "popular": false,
+      "featured": false,
+      "image": "https://images.unsplash.com/photo-1612528449289-9936d474b8f4?auto=format&fit=crop&w=800&q=60",
+      "description": "Two-egg omelette with melted cheese."
+    },
+    {
+      "slug": "plain-omelette",
+      "name": "Plain Omelette",
+      "price": 120,
+      "cat": "eggs",
+      "sub": null,
+      "tags": [
+        "VEG"
+      ],
+      "popular": false,
+      "featured": false,
+      "image": "https://images.unsplash.com/photo-1612528449289-9936d474b8f4?auto=format&fit=crop&w=800&q=60",
+      "description": "Simple two-egg omelette."
+    },
+    {
+      "slug": "plain-muesli-with-curd-or-milk",
+      "name": "Plain Muesli with Curd or Milk",
+      "price": 250,
+      "cat": "muesli-porridge",
+      "sub": null,
+      "tags": [
+        "VEG"
+      ],
+      "popular": false,
+      "featured": false,
+      "image": "https://images.unsplash.com/photo-1614961234274-f204d01c115e?auto=format&fit=crop&w=800&q=60",
+      "description": "House muesli, served with curd or milk."
+    },
+    {
+      "slug": "mix-fruit-muesli-with-curd",
+      "name": "Mix Fruit Muesli with Curd",
+      "price": 330,
+      "cat": "muesli-porridge",
+      "sub": null,
+      "tags": [
+        "VEG"
+      ],
+      "popular": false,
+      "featured": false,
+      "image": "https://images.unsplash.com/photo-1614961234274-f204d01c115e?auto=format&fit=crop&w=800&q=60",
+      "description": "Muesli topped with seasonal mixed fruit and curd."
+    },
+    {
+      "slug": "porridge-plain",
+      "name": "Porridge (Plain)",
+      "price": 190,
+      "cat": "muesli-porridge",
+      "sub": null,
+      "tags": [
+        "VEG"
+      ],
+      "popular": false,
+      "featured": false,
+      "image": "https://images.unsplash.com/photo-1610406765661-57646c40da59?auto=format&fit=crop&w=800&q=60",
+      "description": "Warm oat porridge."
+    },
+    {
+      "slug": "porridge-banana",
+      "name": "Porridge (Banana)",
+      "price": 230,
+      "cat": "muesli-porridge",
+      "sub": null,
+      "tags": [
+        "VEG"
+      ],
+      "popular": false,
+      "featured": false,
+      "image": "https://images.unsplash.com/photo-1610406765661-57646c40da59?auto=format&fit=crop&w=800&q=60",
+      "description": "Warm oat porridge topped with banana."
+    },
+    {
+      "slug": "pancake-plain",
+      "name": "Pancake (Plain)",
+      "price": 170,
+      "cat": "muesli-porridge",
+      "sub": null,
+      "tags": [
+        "VEG"
+      ],
+      "popular": false,
+      "featured": false,
+      "image": "https://images.unsplash.com/photo-1610406765661-57646c40da59?auto=format&fit=crop&w=800&q=60",
+      "description": "Stack of plain pancakes."
+    },
+    {
+      "slug": "pancake-honey-banana",
+      "name": "Pancake (Honey/Banana)",
+      "price": 210,
+      "cat": "muesli-porridge",
+      "sub": null,
+      "tags": [
+        "VEG"
+      ],
+      "popular": false,
+      "featured": false,
+      "image": "https://images.unsplash.com/photo-1610406765661-57646c40da59?auto=format&fit=crop&w=800&q=60",
+      "description": "Pancake stack with honey or banana."
+    },
+    {
+      "slug": "veg-sandwich",
+      "name": "Veg Sandwich",
+      "price": 290,
+      "cat": "sandwich-burger",
+      "sub": null,
+      "tags": [
+        "VEG"
+      ],
+      "popular": false,
+      "featured": false,
+      "image": "https://images.unsplash.com/photo-1665233272941-ae681d11fc06?auto=format&fit=crop&w=800&q=60",
+      "description": "Fresh vegetables layered on toasted bread."
+    },
+    {
+      "slug": "chicken-sandwich",
+      "name": "Chicken Sandwich",
+      "price": 380,
+      "cat": "sandwich-burger",
+      "sub": null,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "image": "https://images.unsplash.com/photo-1665233272941-ae681d11fc06?auto=format&fit=crop&w=800&q=60",
+      "description": "Grilled chicken sandwich with veggies."
+    },
+    {
+      "slug": "tuna-sandwich",
+      "name": "Tuna Sandwich",
+      "price": 410,
+      "cat": "sandwich-burger",
+      "sub": null,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "image": "https://images.unsplash.com/photo-1665233272941-ae681d11fc06?auto=format&fit=crop&w=800&q=60",
+      "description": "Tuna salad sandwich."
+    },
+    {
+      "slug": "bacon-sandwich",
+      "name": "Bacon Sandwich",
+      "price": 450,
+      "cat": "sandwich-burger",
+      "sub": null,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "image": "https://images.unsplash.com/photo-1665233272941-ae681d11fc06?auto=format&fit=crop&w=800&q=60",
+      "description": "Crispy bacon sandwich."
+    },
+    {
+      "slug": "club-sandwich",
+      "name": "Club Sandwich",
+      "price": 460,
+      "cat": "sandwich-burger",
+      "sub": null,
+      "tags": [
+        "VEG"
+      ],
+      "popular": true,
+      "featured": false,
+      "image": "https://images.unsplash.com/photo-1665233272941-ae681d11fc06?auto=format&fit=crop&w=800&q=60",
+      "description": "Triple-decker club with chicken, egg and bacon."
+    },
+    {
+      "slug": "cheese-tomato-sandwich",
+      "name": "Cheese Tomato Sandwich",
+      "price": 320,
+      "cat": "sandwich-burger",
+      "sub": null,
+      "tags": [
+        "VEG"
+      ],
+      "popular": false,
+      "featured": false,
+      "image": "https://images.unsplash.com/photo-1665233272941-ae681d11fc06?auto=format&fit=crop&w=800&q=60",
+      "description": "Cheese and tomato sandwich, toasted."
+    },
+    {
+      "slug": "coke-fanta-sprite",
+      "name": "Coke / Fanta / Sprite",
+      "price": 100,
+      "cat": "soft-drinks",
+      "sub": null,
+      "tags": [
+        "VEG"
+      ],
+      "popular": false,
+      "featured": false,
+      "image": "https://images.unsplash.com/photo-1567977701640-3b6cf5037f19?auto=format&fit=crop&w=800&q=60",
+      "description": "Chilled, 250 ml bottle."
+    },
+    {
+      "slug": "fresh-lemon-soda",
+      "name": "Fresh Lemon Soda",
+      "price": 120,
+      "cat": "soft-drinks",
+      "sub": null,
+      "tags": [
+        "VEG"
+      ],
+      "popular": false,
+      "featured": false,
+      "image": "https://images.unsplash.com/photo-1567977701640-3b6cf5037f19?auto=format&fit=crop&w=800&q=60",
+      "description": "Soda water with fresh lime."
+    },
+    {
+      "slug": "mint-lemonade",
+      "name": "Mint Lemonade",
+      "price": 250,
+      "cat": "soft-drinks",
+      "sub": null,
+      "tags": [
+        "VEG"
+      ],
+      "popular": false,
+      "featured": false,
+      "image": "https://images.unsplash.com/photo-1567977701640-3b6cf5037f19?auto=format&fit=crop&w=800&q=60",
+      "description": "Fresh mint and lemon lemonade."
+    },
+    {
+      "slug": "xtreme",
+      "name": "Xtreme",
+      "price": 260,
+      "cat": "soft-drinks",
+      "sub": null,
+      "tags": [
+        "VEG"
+      ],
+      "popular": false,
+      "featured": false,
+      "image": "https://images.unsplash.com/photo-1567977701640-3b6cf5037f19?auto=format&fit=crop&w=800&q=60",
+      "description": "Chilled Xtreme energy drink."
+    },
+    {
+      "slug": "red-bull-blue",
+      "name": "Red Bull Blue",
+      "price": 430,
+      "cat": "soft-drinks",
+      "sub": null,
+      "tags": [
+        "VEG"
+      ],
+      "popular": false,
+      "featured": false,
+      "image": "https://images.unsplash.com/photo-1560689189-65b6ed6228e7?auto=format&fit=crop&w=800&q=60",
+      "description": "Red Bull energy drink, blue edition."
+    },
+    {
+      "slug": "mineral-water",
+      "name": "Mineral Water",
+      "price": 40,
+      "cat": "soft-drinks",
+      "sub": null,
+      "tags": [
+        "VEG"
+      ],
+      "popular": false,
+      "featured": false,
+      "image": "https://images.unsplash.com/photo-1567977701640-3b6cf5037f19?auto=format&fit=crop&w=800&q=60",
+      "description": "Bottled mineral water."
+    },
+    {
+      "slug": "tomato-soup",
+      "name": "Tomato Soup",
+      "price": 180,
+      "cat": "soups",
+      "sub": null,
+      "tags": [
+        "VEG"
+      ],
+      "popular": false,
+      "featured": false,
+      "image": "https://images.unsplash.com/photo-1629978444632-9f63ba0eff47?auto=format&fit=crop&w=800&q=60",
+      "description": "Classic tomato soup."
+    },
+    {
+      "slug": "creamy-soup",
+      "name": "Creamy Soup",
+      "price": 210,
+      "cat": "soups",
+      "sub": null,
+      "tags": [
+        "VEG"
+      ],
+      "popular": false,
+      "featured": false,
+      "image": "https://images.unsplash.com/photo-1620418025834-f4379baf1de9?auto=format&fit=crop&w=800&q=60",
+      "description": "Rich, creamy vegetable soup."
+    },
+    {
+      "slug": "hot-sour-soup",
+      "name": "Hot & Sour Soup",
+      "price": 220,
+      "cat": "soups",
+      "sub": null,
+      "tags": [
+        "VEG"
+      ],
+      "popular": false,
+      "featured": false,
+      "image": "https://images.unsplash.com/photo-1613844237701-8f3664fc2eff?auto=format&fit=crop&w=800&q=60",
+      "description": "Spicy and tangy Asian-style soup."
+    },
+    {
+      "slug": "mushroom-soup",
+      "name": "Mushroom Soup",
+      "price": 230,
+      "cat": "soups",
+      "sub": null,
+      "tags": [
+        "VEG"
+      ],
+      "popular": false,
+      "featured": false,
+      "image": "https://images.unsplash.com/photo-1759689975548-2e3a06b3d816?auto=format&fit=crop&w=800&q=60",
+      "description": "Creamy mushroom soup."
+    },
+    {
+      "slug": "chicken-soup",
+      "name": "Chicken Soup",
+      "price": 250,
+      "cat": "soups",
+      "sub": null,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "image": "https://images.unsplash.com/photo-1665593998976-d957f2827fe7?auto=format&fit=crop&w=800&q=60",
+      "description": "Clear chicken broth soup."
+    },
+    {
+      "slug": "chicken-mushroom-soup",
+      "name": "Chicken Mushroom Soup",
+      "price": 280,
+      "cat": "soups",
+      "sub": null,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "image": "https://images.unsplash.com/photo-1584972922016-912db9f3df22?auto=format&fit=crop&w=800&q=60",
+      "description": "Chicken soup with mushroom."
+    },
+    {
+      "slug": "veg-fried-rice",
+      "name": "Veg Fried Rice",
+      "price": 200,
+      "cat": "rice",
+      "sub": null,
+      "tags": [
+        "VEG"
+      ],
+      "popular": false,
+      "featured": false,
+      "image": "https://images.unsplash.com/photo-1584269600464-37b1b58a9fe7?auto=format&fit=crop&w=800&q=60",
+      "description": "Wok-tossed rice with seasonal vegetables."
+    },
+    {
+      "slug": "egg-fried-rice",
+      "name": "Egg Fried Rice",
+      "price": 240,
+      "cat": "rice",
+      "sub": null,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "image": "https://images.unsplash.com/photo-1603133872878-684f208fb84b?auto=format&fit=crop&w=800&q=60",
+      "description": "Fried rice with scrambled egg."
+    },
+    {
+      "slug": "chicken-fried-rice",
+      "name": "Chicken Fried Rice",
+      "price": 300,
+      "cat": "rice",
+      "sub": null,
+      "tags": [],
+      "popular": true,
+      "featured": false,
+      "image": "https://images.unsplash.com/photo-1540100716001-4b432820e37f?auto=format&fit=crop&w=800&q=60",
+      "description": "Fried rice with diced chicken."
+    },
+    {
+      "slug": "mix-fried-rice",
+      "name": "Mix Fried Rice",
+      "price": 320,
+      "cat": "rice",
+      "sub": null,
+      "tags": [
+        "VEG"
+      ],
+      "popular": false,
+      "featured": false,
+      "image": "https://images.unsplash.com/photo-1705088293300-8fc8c7be90e2?auto=format&fit=crop&w=800&q=60",
+      "description": "Fried rice with chicken, egg and vegetables."
+    },
+    {
+      "slug": "chicken-biryani",
+      "name": "Chicken Biryani",
+      "price": 450,
+      "cat": "biryani",
+      "sub": null,
+      "tags": [
+        "SPICY"
+      ],
+      "popular": true,
+      "featured": true,
+      "image": "https://images.unsplash.com/photo-1589302168068-964664d93dc0?auto=format&fit=crop&w=800&q=60",
+      "description": "Fragrant basmati rice layered with spiced chicken."
+    },
+    {
+      "slug": "mutton-biryani",
+      "name": "Mutton Biryani",
+      "price": 570,
+      "cat": "biryani",
+      "sub": null,
+      "tags": [
+        "SPICY"
+      ],
+      "popular": false,
+      "featured": false,
+      "image": "https://images.unsplash.com/photo-1606843046080-45bf7a23c39f?auto=format&fit=crop&w=800&q=60",
+      "description": "Fragrant basmati rice layered with slow-cooked mutton."
+    },
+    {
+      "slug": "veg-curry",
+      "name": "Veg Curry",
+      "price": 270,
+      "cat": "indian-style",
+      "sub": null,
+      "tags": [
+        "VEG"
+      ],
+      "popular": false,
+      "featured": false,
+      "image": "https://images.unsplash.com/photo-1554054204-b2f70b09d031?auto=format&fit=crop&w=800&q=60",
+      "description": "Mixed vegetable curry."
+    },
+    {
+      "slug": "chicken-curry",
+      "name": "Chicken Curry",
+      "price": 370,
+      "cat": "indian-style",
+      "sub": null,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "image": "https://images.unsplash.com/photo-1603894584373-5ac82b2ae398?auto=format&fit=crop&w=800&q=60",
+      "description": "Home-style chicken curry."
+    },
+    {
+      "slug": "butter-chicken",
+      "name": "Butter Chicken",
+      "price": 390,
+      "cat": "indian-style",
+      "sub": null,
+      "tags": [],
+      "popular": true,
+      "featured": true,
+      "image": "https://images.unsplash.com/photo-1603894584373-5ac82b2ae398?auto=format&fit=crop&w=800&q=60",
+      "description": "Chicken simmered in a creamy tomato-butter sauce."
+    },
+    {
+      "slug": "palak-paneer",
+      "name": "Palak Paneer",
+      "price": 390,
+      "cat": "indian-style",
+      "sub": null,
+      "tags": [
+        "VEG"
+      ],
+      "popular": false,
+      "featured": false,
+      "image": "https://images.unsplash.com/photo-1589647363585-f4a7d3877b10?auto=format&fit=crop&w=800&q=60",
+      "description": "Paneer cubes in a spiced spinach gravy."
+    },
+    {
+      "slug": "veg-thali",
+      "name": "Veg Thali",
+      "price": 280,
+      "cat": "nepali-thali",
+      "sub": null,
+      "tags": [
+        "VEG"
+      ],
+      "popular": false,
+      "featured": false,
+      "image": "https://images.unsplash.com/photo-1588644525273-f37b60d78512?auto=format&fit=crop&w=800&q=60",
+      "description": "Dal, bhat, tarkari, saag and achar."
+    },
+    {
+      "slug": "chicken-thali",
+      "name": "Chicken Thali",
+      "price": 430,
+      "cat": "nepali-thali",
+      "sub": null,
+      "tags": [],
+      "popular": true,
+      "featured": false,
+      "image": "https://images.unsplash.com/photo-1588644525273-f37b60d78512?auto=format&fit=crop&w=800&q=60",
+      "description": "Full thali with chicken curry."
+    },
+    {
+      "slug": "mutton-thali",
+      "name": "Mutton Thali",
+      "price": 600,
+      "cat": "nepali-thali",
+      "sub": null,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "image": "https://images.unsplash.com/photo-1588644525273-f37b60d78512?auto=format&fit=crop&w=800&q=60",
+      "description": "Full thali with mutton curry."
+    },
+    {
+      "slug": "veg-khaja-set",
+      "name": "Veg Khaja Set",
+      "price": 360,
+      "cat": "khaja-set",
+      "sub": null,
+      "tags": [
+        "VEG"
+      ],
+      "popular": false,
+      "featured": false,
+      "image": "https://images.unsplash.com/photo-1593252719532-53f183016149?auto=format&fit=crop&w=800&q=60",
+      "description": "Traditional veg khaja platter."
+    },
+    {
+      "slug": "non-veg-khaja-set",
+      "name": "Non Veg Khaja Set",
+      "price": 470,
+      "cat": "khaja-set",
+      "sub": null,
+      "tags": [
+        "VEG"
+      ],
+      "popular": false,
+      "featured": false,
+      "image": "https://images.unsplash.com/photo-1593252719532-53f183016149?auto=format&fit=crop&w=800&q=60",
+      "description": "Traditional khaja platter with meat."
+    },
+    {
+      "slug": "jhol-momo-veg",
+      "name": "Jhol Momo (Veg)",
+      "price": 200,
+      "cat": "momo",
+      "sub": null,
+      "tags": [
+        "VEG",
+        "SPICY"
+      ],
+      "popular": false,
+      "featured": false,
+      "image": "https://images.unsplash.com/photo-1694923450868-b432a8ee52aa?auto=format&fit=crop&w=800&q=60",
+      "description": "Steamed veg momo in warm sesame-timur jhol."
+    },
+    {
+      "slug": "jhol-momo-non-veg",
+      "name": "Jhol Momo (Non Veg)",
+      "price": 260,
+      "cat": "momo",
+      "sub": null,
+      "tags": [
+        "VEG",
+        "SPICY"
+      ],
+      "popular": true,
+      "featured": false,
+      "image": "https://images.unsplash.com/photo-1694923450868-b432a8ee52aa?auto=format&fit=crop&w=800&q=60",
+      "description": "Steamed momo swimming in warm sesame-timur jhol."
+    },
+    {
+      "slug": "veg-momo",
+      "name": "Veg Momo",
+      "price": 190,
+      "cat": "momo",
+      "sub": null,
+      "tags": [
+        "VEG"
+      ],
+      "popular": false,
+      "featured": false,
+      "image": "https://images.unsplash.com/photo-1518983546435-91f8b87fe561?auto=format&fit=crop&w=800&q=60",
+      "description": "Steamed vegetable momo, served with achar."
+    },
+    {
+      "slug": "chicken-momo",
+      "name": "Chicken Momo",
+      "price": 230,
+      "cat": "momo",
+      "sub": null,
+      "tags": [],
+      "popular": true,
+      "featured": false,
+      "image": "https://images.unsplash.com/photo-1589047133481-02b4a5327d89?auto=format&fit=crop&w=800&q=60",
+      "description": "Steamed chicken momo with sesame-tomato achar."
+    },
+    {
+      "slug": "buff-momo",
+      "name": "Buff Momo",
+      "price": 260,
+      "cat": "momo",
+      "sub": null,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "image": "https://images.unsplash.com/photo-1638502338747-f7f368214cce?auto=format&fit=crop&w=800&q=60",
+      "description": "Kathmandu-style minced buff momo."
+    },
+    {
+      "slug": "paneer-momo",
+      "name": "Paneer Momo",
+      "price": 260,
+      "cat": "momo",
+      "sub": null,
+      "tags": [
+        "VEG"
+      ],
+      "popular": false,
+      "featured": false,
+      "image": "https://images.unsplash.com/photo-1604632910985-5a738e3237d2?auto=format&fit=crop&w=800&q=60",
+      "description": "Soft paneer and spring-onion filling."
+    },
+    {
+      "slug": "chilly-momo",
+      "name": "Chilly Momo",
+      "price": 320,
+      "cat": "momo",
+      "sub": null,
+      "tags": [
+        "VEG",
+        "SPICY"
+      ],
+      "popular": true,
+      "featured": false,
+      "image": "https://images.unsplash.com/photo-1675774644393-7bcfa424dec7?auto=format&fit=crop&w=800&q=60",
+      "description": "Fried momo tossed in chilli-garlic sauce."
+    },
+    {
+      "slug": "momo-platter",
+      "name": "Momo Platter",
+      "price": 430,
+      "cat": "momo",
+      "sub": null,
+      "tags": [
+        "VEG"
+      ],
+      "popular": false,
+      "featured": true,
+      "image": "https://images.unsplash.com/photo-1694850184798-320a8e10bb5e?auto=format&fit=crop&w=800&q=60",
+      "description": "Assorted momo platter for sharing."
+    },
+    {
+      "slug": "paneer-pakoda",
+      "name": "Paneer Pakoda",
+      "price": 400,
+      "cat": "pakoda",
+      "sub": null,
+      "tags": [
+        "VEG"
+      ],
+      "popular": false,
+      "featured": false,
+      "image": "https://images.unsplash.com/photo-1613764816537-a43baeb559c1?auto=format&fit=crop&w=800&q=60",
+      "description": "Batter-fried paneer fritters."
+    },
+    {
+      "slug": "veg-pakoda",
+      "name": "Veg Pakoda",
+      "price": 280,
+      "cat": "pakoda",
+      "sub": null,
+      "tags": [
+        "VEG"
+      ],
+      "popular": false,
+      "featured": false,
+      "image": "https://images.unsplash.com/photo-1767114915965-7abe87d7c7d8?auto=format&fit=crop&w=800&q=60",
+      "description": "Mixed vegetable fritters."
+    },
+    {
+      "slug": "plain-rice",
+      "name": "Plain Rice",
+      "price": 140,
+      "cat": "rice-roti",
+      "sub": null,
+      "tags": [
+        "VEG"
+      ],
+      "popular": false,
+      "featured": false,
+      "image": "https://images.unsplash.com/photo-1536304993881-ff6e9eefa2a6?auto=format&fit=crop&w=800&q=60",
+      "description": "Steamed white rice."
+    },
+    {
+      "slug": "jeera-rice",
+      "name": "Jeera Rice",
+      "price": 180,
+      "cat": "rice-roti",
+      "sub": null,
+      "tags": [
+        "VEG"
+      ],
+      "popular": false,
+      "featured": false,
+      "image": "https://images.unsplash.com/photo-1536304993881-ff6e9eefa2a6?auto=format&fit=crop&w=800&q=60",
+      "description": "Cumin-tempered steamed rice."
+    },
+    {
+      "slug": "roti-chapati-per-pcs",
+      "name": "Roti (Chapati) per pcs",
+      "price": 40,
+      "cat": "rice-roti",
+      "sub": null,
+      "tags": [
+        "VEG"
+      ],
+      "popular": false,
+      "featured": false,
+      "image": "https://images.unsplash.com/photo-1708782343717-be4ea260249a?auto=format&fit=crop&w=800&q=60",
+      "description": "Fresh-rolled chapati, per piece."
+    },
+    {
+      "slug": "carbonara",
+      "name": "Carbonara",
+      "price": 750,
+      "cat": "pasta",
+      "sub": null,
+      "tags": [
+        "VEG"
+      ],
+      "popular": false,
+      "featured": false,
+      "image": "https://images.unsplash.com/photo-1546549032-9571cd6b27df?auto=format&fit=crop&w=800&q=60",
+      "description": "Creamy carbonara with bacon and parmesan."
+    },
+    {
+      "slug": "bolognese",
+      "name": "Bolognese",
+      "price": 660,
+      "cat": "pasta",
+      "sub": null,
+      "tags": [
+        "VEG"
+      ],
+      "popular": false,
+      "featured": false,
+      "image": "https://images.unsplash.com/photo-1551892374-ecf8754cf8b0?auto=format&fit=crop&w=800&q=60",
+      "description": "Spaghetti with slow-cooked meat sauce."
+    },
+    {
+      "slug": "siciliana",
+      "name": "Siciliana",
+      "price": 590,
+      "cat": "pasta",
+      "sub": null,
+      "tags": [
+        "VEG"
+      ],
+      "popular": false,
+      "featured": false,
+      "image": "https://images.unsplash.com/photo-1608219992759-8d74ed8d76eb?auto=format&fit=crop&w=800&q=60",
+      "description": "Pasta with a rich Sicilian tomato sauce."
+    },
+    {
+      "slug": "ivory",
+      "name": "Ivory",
+      "price": 600,
+      "cat": "pasta",
+      "sub": null,
+      "tags": [
+        "VEG"
+      ],
+      "popular": false,
+      "featured": false,
+      "image": "https://images.unsplash.com/photo-1612152328178-4a6c83d96429?auto=format&fit=crop&w=800&q=60",
+      "description": "Creamy white-sauce pasta."
+    },
+    {
+      "slug": "chicken-chily",
+      "name": "Chicken Chily",
+      "price": 400,
+      "cat": "snacks",
+      "sub": null,
+      "tags": [
+        "SPICY"
+      ],
+      "popular": true,
+      "featured": false,
+      "image": "https://images.unsplash.com/photo-1603496987351-f84a3ba5ec85?auto=format&fit=crop&w=800&q=60",
+      "description": "Wok-tossed chicken in a spicy chilli-garlic sauce."
+    },
+    {
+      "slug": "chi-lollipop",
+      "name": "Chi. Lollipop",
+      "price": 390,
+      "cat": "snacks",
+      "sub": null,
+      "tags": [
+        "VEG"
+      ],
+      "popular": false,
+      "featured": false,
+      "image": "https://images.unsplash.com/photo-1766589221509-61951995e435?auto=format&fit=crop&w=800&q=60",
+      "description": "Frenched chicken drumettes, deep fried and tossed."
+    },
+    {
+      "slug": "buffalo-wings",
+      "name": "Buffalo Wings",
+      "price": 450,
+      "cat": "snacks",
+      "sub": null,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "image": "https://images.unsplash.com/photo-1649808382945-c87ccf84bf3f?auto=format&fit=crop&w=800&q=60",
+      "description": "Crispy chicken wings in buffalo sauce."
+    },
+    {
+      "slug": "chicken-sadeko",
+      "name": "Chicken Sadeko",
+      "price": 370,
+      "cat": "snacks",
+      "sub": null,
+      "tags": [
+        "SPICY"
+      ],
+      "popular": false,
+      "featured": false,
+      "image": "https://images.unsplash.com/photo-1716535232842-d10da4eb33d5?auto=format&fit=crop&w=800&q=60",
+      "description": "Nepali-style spiced shredded chicken salad."
+    },
+    {
+      "slug": "mustang-alu",
+      "name": "Mustang Alu",
+      "price": 290,
+      "cat": "snacks",
+      "sub": null,
+      "tags": [
+        "VEG"
+      ],
+      "popular": false,
+      "featured": false,
+      "image": "https://images.unsplash.com/photo-1776857215448-ebebd8ebb35e?auto=format&fit=crop&w=800&q=60",
+      "description": "Mustang-style spicy potato salad."
+    },
+    {
+      "slug": "fried-chicken",
+      "name": "Fried Chicken",
+      "price": 410,
+      "cat": "snacks",
+      "sub": null,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "image": "https://images.unsplash.com/photo-1586793783658-261cddf883ef?auto=format&fit=crop&w=800&q=60",
+      "description": "Crispy deep-fried chicken pieces."
+    },
+    {
+      "slug": "french-fry",
+      "name": "French Fry",
+      "price": 230,
+      "cat": "snacks",
+      "sub": null,
+      "tags": [
+        "VEG"
+      ],
+      "popular": true,
+      "featured": false,
+      "image": "https://images.unsplash.com/photo-1630384060421-cb20d0e0649d?auto=format&fit=crop&w=800&q=60",
+      "description": "Golden crispy fries."
+    },
+    {
+      "slug": "cheese-ball-veg-chicken",
+      "name": "Cheese Ball (Veg/Chicken)",
+      "price": 350,
+      "cat": "snacks",
+      "sub": null,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "image": "https://images.unsplash.com/photo-1714256635057-2a831a5c7e8d?auto=format&fit=crop&w=800&q=60",
+      "description": "Deep-fried cheese balls, veg or chicken."
+    },
+    {
+      "slug": "sausage-chilly",
+      "name": "Sausage (Chilly)",
+      "price": 370,
+      "cat": "snacks",
+      "sub": null,
+      "tags": [
+        "SPICY"
+      ],
+      "popular": false,
+      "featured": false,
+      "image": "https://images.unsplash.com/photo-1585325701165-351af916e581?auto=format&fit=crop&w=800&q=60",
+      "description": "Sausage tossed in chilli sauce."
+    },
+    {
+      "slug": "sausage-fried",
+      "name": "Sausage (Fried)",
+      "price": 340,
+      "cat": "snacks",
+      "sub": null,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "image": "https://images.unsplash.com/photo-1585325701165-351af916e581?auto=format&fit=crop&w=800&q=60",
+      "description": "Pan-fried sausage."
+    },
+    {
+      "slug": "chicken-pathai",
+      "name": "Chicken Pathai",
+      "price": 460,
+      "cat": "snacks",
+      "sub": null,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "image": "https://images.unsplash.com/photo-1603496987351-f84a3ba5ec85?auto=format&fit=crop&w=800&q=60",
+      "description": "Spiced stir-fried chicken."
+    },
+    {
+      "slug": "bhatta-chauchau-sadheko",
+      "name": "Bhatta/Chauchau Sadheko",
+      "price": 200,
+      "cat": "snacks",
+      "sub": null,
+      "tags": [
+        "VEG",
+        "SPICY"
+      ],
+      "popular": false,
+      "featured": false,
+      "image": "https://images.unsplash.com/photo-1565976469782-7c92daebc42e?auto=format&fit=crop&w=800&q=60",
+      "description": "Spiced soybean and instant-noodle salad."
+    },
+    {
+      "slug": "pork-tawa",
+      "name": "Pork Tawa",
+      "price": 380,
+      "cat": "snacks",
+      "sub": null,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "image": "https://images.unsplash.com/photo-1564834724105-918b73d1b9e0?auto=format&fit=crop&w=800&q=60",
+      "description": "Pan-seared pork, tawa style."
+    },
+    {
+      "slug": "timur-chicken",
+      "name": "Timur Chicken",
+      "price": 350,
+      "cat": "snacks",
+      "sub": null,
+      "tags": [
+        "SPICY"
+      ],
+      "popular": false,
+      "featured": false,
+      "image": "https://images.unsplash.com/photo-1603496987351-f84a3ba5ec85?auto=format&fit=crop&w=800&q=60",
+      "description": "Chicken tossed with Himalayan timur pepper."
+    },
+    {
+      "slug": "alu-fried",
+      "name": "Alu Fried",
+      "price": 190,
+      "cat": "snacks",
+      "sub": null,
+      "tags": [
+        "VEG"
+      ],
+      "popular": false,
+      "featured": false,
+      "image": "https://images.unsplash.com/photo-1630384060421-cb20d0e0649d?auto=format&fit=crop&w=800&q=60",
+      "description": "Deep-fried potato wedges."
+    },
+    {
+      "slug": "alu-sadeko",
+      "name": "Alu Sadeko",
+      "price": 230,
+      "cat": "snacks",
+      "sub": null,
+      "tags": [
+        "VEG",
+        "SPICY"
+      ],
+      "popular": false,
+      "featured": false,
+      "image": "https://images.unsplash.com/photo-1593895648796-9139c6bee45c?auto=format&fit=crop&w=800&q=60",
+      "description": "Spiced potato salad with mustard oil."
+    },
+    {
+      "slug": "nachose",
+      "name": "Nachose",
+      "price": 210,
+      "cat": "snacks",
+      "sub": null,
+      "tags": [
+        "VEG"
+      ],
+      "popular": false,
+      "featured": false,
+      "image": "https://images.unsplash.com/photo-1669624272709-c5b91f66b1b7?auto=format&fit=crop&w=800&q=60",
+      "description": "Crispy nachos with cheese and salsa."
+    },
+    {
+      "slug": "veg-chowmein-thukpa",
+      "name": "Veg Chowmein/Thukpa",
+      "price": 190,
+      "cat": "chowmin-thukpa",
+      "sub": null,
+      "tags": [
+        "VEG"
+      ],
+      "popular": false,
+      "featured": false,
+      "image": "https://images.unsplash.com/photo-1585032226651-759b368d7246?auto=format&fit=crop&w=800&q=60",
+      "description": "Vegetable noodles, chowmein or thukpa style."
+    },
+    {
+      "slug": "chicken-chowmein-thukpa",
+      "name": "Chicken Chowmein/Thukpa",
+      "price": 240,
+      "cat": "chowmin-thukpa",
+      "sub": null,
+      "tags": [],
+      "popular": true,
+      "featured": false,
+      "image": "https://images.unsplash.com/photo-1585032226651-759b368d7246?auto=format&fit=crop&w=800&q=60",
+      "description": "Chicken noodles, chowmein or thukpa style."
+    },
+    {
+      "slug": "buff-chowmein-thukpa",
+      "name": "Buff Chowmein/Thukpa",
+      "price": 240,
+      "cat": "chowmin-thukpa",
+      "sub": null,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "image": "https://images.unsplash.com/photo-1585032226651-759b368d7246?auto=format&fit=crop&w=800&q=60",
+      "description": "Buff noodles, chowmein or thukpa style."
+    },
+    {
+      "slug": "mix-chowmein-thukpa",
+      "name": "Mix Chowmein/Thukpa",
+      "price": 290,
+      "cat": "chowmin-thukpa",
+      "sub": null,
+      "tags": [
+        "VEG"
+      ],
+      "popular": false,
+      "featured": false,
+      "image": "https://images.unsplash.com/photo-1585032226651-759b368d7246?auto=format&fit=crop&w=800&q=60",
+      "description": "Mixed noodles, chowmein or thukpa style."
+    },
+    {
+      "slug": "veg-wrap",
+      "name": "Veg Wrap",
+      "price": 300,
+      "cat": "wrap",
+      "sub": null,
+      "tags": [
+        "VEG"
+      ],
+      "popular": false,
+      "featured": false,
+      "image": "https://images.unsplash.com/photo-1626700051175-6818013e1d4f?auto=format&fit=crop&w=800&q=60",
+      "description": "Grilled vegetables rolled in a soft wrap."
+    },
+    {
+      "slug": "chicken-wrap",
+      "name": "Chicken Wrap",
+      "price": 350,
+      "cat": "wrap",
+      "sub": null,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "image": "https://images.unsplash.com/photo-1626700051175-6818013e1d4f?auto=format&fit=crop&w=800&q=60",
+      "description": "Grilled chicken rolled in a soft wrap."
+    },
+    {
+      "slug": "mix-wrap",
+      "name": "Mix Wrap",
+      "price": 390,
+      "cat": "wrap",
+      "sub": null,
+      "tags": [
+        "VEG"
+      ],
+      "popular": false,
+      "featured": false,
+      "image": "https://images.unsplash.com/photo-1719282431723-9d0f4370d4bc?auto=format&fit=crop&w=800&q=60",
+      "description": "Mixed filling wrap."
+    },
+    {
+      "slug": "kati-roll",
+      "name": "Kati Roll",
+      "price": 430,
+      "cat": "wrap",
+      "sub": null,
+      "tags": [
+        "VEG"
+      ],
+      "popular": false,
+      "featured": false,
+      "image": "https://images.unsplash.com/photo-1719282431723-9d0f4370d4bc?auto=format&fit=crop&w=800&q=60",
+      "description": "Spiced filling rolled in a paratha."
+    },
+    {
+      "slug": "green-salad",
+      "name": "Green Salad",
+      "price": 250,
+      "cat": "salad",
+      "sub": null,
+      "tags": [
+        "VEG"
+      ],
+      "popular": false,
+      "featured": false,
+      "image": "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=800&q=60",
+      "description": "Fresh mixed greens."
+    },
+    {
+      "slug": "greek-salad",
+      "name": "Greek Salad",
+      "price": 380,
+      "cat": "salad",
+      "sub": null,
+      "tags": [
+        "VEG"
+      ],
+      "popular": false,
+      "featured": false,
+      "image": "https://images.unsplash.com/photo-1657195721656-8254f104f289?auto=format&fit=crop&w=800&q=60",
+      "description": "Tomato, cucumber, olives and feta."
+    },
+    {
+      "slug": "fruit-salad",
+      "name": "Fruit Salad",
+      "price": 370,
+      "cat": "salad",
+      "sub": null,
+      "tags": [
+        "VEG"
+      ],
+      "popular": false,
+      "featured": false,
+      "image": "https://images.unsplash.com/photo-1519996529931-28324d5a630e?auto=format&fit=crop&w=800&q=60",
+      "description": "Seasonal fresh fruit."
+    },
+    {
+      "slug": "roasted-veg-salad",
+      "name": "Roasted Veg Salad",
+      "price": 380,
+      "cat": "salad",
+      "sub": null,
+      "tags": [
+        "VEG"
+      ],
+      "popular": false,
+      "featured": false,
+      "image": "https://images.unsplash.com/photo-1606791422814-b32c705e3e2f?auto=format&fit=crop&w=800&q=60",
+      "description": "Oven-roasted seasonal vegetables."
+    },
+    {
+      "slug": "sweet-corn-salad",
+      "name": "Sweet Corn Salad",
+      "price": 350,
+      "cat": "salad",
+      "sub": null,
+      "tags": [
+        "VEG"
+      ],
+      "popular": false,
+      "featured": false,
+      "image": "https://images.unsplash.com/photo-1559317996-d154e05c76fb?auto=format&fit=crop&w=800&q=60",
+      "description": "Sweet corn tossed with herbs and lime."
+    },
+    {
+      "slug": "russian-salad",
+      "name": "Russian Salad",
+      "price": 430,
+      "cat": "salad",
+      "sub": null,
+      "tags": [
+        "VEG"
+      ],
+      "popular": false,
+      "featured": false,
+      "image": "https://images.unsplash.com/photo-1631412727237-226e759778d7?auto=format&fit=crop&w=800&q=60",
+      "description": "Creamy mayo-dressed vegetable salad."
+    },
+    {
+      "slug": "rosemary-chicken",
+      "name": "Rosemary Chicken",
+      "price": 890,
+      "cat": "chill-zone-special",
+      "sub": null,
+      "tags": [],
+      "popular": false,
+      "featured": true,
+      "image": "https://images.unsplash.com/photo-1615557960916-5f4791effe9d?auto=format&fit=crop&w=800&q=60",
+      "description": "Rosemary-marinated roasted chicken."
+    },
+    {
+      "slug": "lemon-honey-chicken",
+      "name": "Lemon Honey Chicken",
+      "price": 890,
+      "cat": "chill-zone-special",
+      "sub": null,
+      "tags": [],
+      "popular": false,
+      "featured": true,
+      "image": "https://images.unsplash.com/photo-1532550907401-a500c9a57435?auto=format&fit=crop&w=800&q=60",
+      "description": "Grilled chicken glazed with lemon and honey."
+    },
+    {
+      "slug": "chicken-sizzler",
+      "name": "Chicken Sizzler",
+      "price": 940,
+      "cat": "chill-zone-special",
+      "sub": null,
+      "tags": [],
+      "popular": true,
+      "featured": true,
+      "image": "https://images.unsplash.com/photo-1598515214211-89d3c73ae83b?auto=format&fit=crop&w=800&q=60",
+      "description": "Chicken sizzler served on a hot plate with sides."
+    },
+    {
+      "slug": "grilled-chicken",
+      "name": "Grilled Chicken",
+      "price": 690,
+      "cat": "chill-zone-special",
+      "sub": null,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "image": "https://images.unsplash.com/photo-1612871689804-26a67131416e?auto=format&fit=crop&w=800&q=60",
+      "description": "Char-grilled chicken breast with sides."
+    },
+    {
+      "slug": "rolled-chicken",
+      "name": "Rolled Chicken",
+      "price": 880,
+      "cat": "chill-zone-special",
+      "sub": null,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "image": "https://images.unsplash.com/photo-1642689690500-f429a042cad1?auto=format&fit=crop&w=800&q=60",
+      "description": "Stuffed, rolled and roasted chicken."
+    },
+    {
+      "slug": "grilled-fish",
+      "name": "Grilled Fish",
+      "price": 890,
+      "cat": "chill-zone-special",
+      "sub": null,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "image": "https://images.unsplash.com/photo-1737140789642-9788a3388494?auto=format&fit=crop&w=800&q=60",
+      "description": "Char-grilled fish fillet with sides."
+    },
+    {
+      "slug": "watermelon-juice",
+      "name": "Watermelon Juice",
+      "price": 290,
+      "cat": "fresh-juice",
+      "sub": null,
+      "tags": [
+        "VEG"
+      ],
+      "popular": false,
+      "featured": false,
+      "image": "https://images.unsplash.com/photo-1683531658992-b78c311900a3?auto=format&fit=crop&w=800&q=60",
+      "description": "Cold-pressed watermelon juice."
+    },
+    {
+      "slug": "orange-juice",
+      "name": "Orange Juice",
+      "price": 330,
+      "cat": "fresh-juice",
+      "sub": null,
+      "tags": [
+        "VEG"
+      ],
+      "popular": false,
+      "featured": false,
+      "image": "https://images.unsplash.com/photo-1600271886742-f049cd451bba?auto=format&fit=crop&w=800&q=60",
+      "description": "Fresh-squeezed orange juice."
+    },
+    {
+      "slug": "mix-fruit-juice",
+      "name": "Mix Fruit Juice",
+      "price": 360,
+      "cat": "fresh-juice",
+      "sub": null,
+      "tags": [
+        "VEG"
+      ],
+      "popular": false,
+      "featured": false,
+      "image": "https://images.unsplash.com/photo-1622597467821-df79dcb4f94d?auto=format&fit=crop&w=800&q=60",
+      "description": "Seasonal mixed-fruit juice."
+    },
+    {
+      "slug": "plain-shake",
+      "name": "Plain Shake",
+      "price": 150,
+      "cat": "lassi-shake",
+      "sub": null,
+      "tags": [
+        "VEG"
+      ],
+      "popular": false,
+      "featured": false,
+      "image": "https://images.unsplash.com/photo-1619158403521-ed9795026d47?auto=format&fit=crop&w=800&q=60",
+      "description": "Classic plain milkshake."
+    },
+    {
+      "slug": "banana-mango-shake",
+      "name": "Banana/Mango Shake",
+      "price": 230,
+      "cat": "lassi-shake",
+      "sub": null,
+      "tags": [
+        "VEG"
+      ],
+      "popular": false,
+      "featured": false,
+      "image": "https://images.unsplash.com/photo-1568901839119-631418a3910d?auto=format&fit=crop&w=800&q=60",
+      "description": "Milkshake blended with banana or mango."
+    },
+    {
+      "slug": "mixed-lassi",
+      "name": "Mixed Lassi",
+      "price": 260,
+      "cat": "lassi-shake",
+      "sub": null,
+      "tags": [
+        "VEG"
+      ],
+      "popular": false,
+      "featured": false,
+      "image": "https://images.unsplash.com/photo-1623065422902-30a2d299bbe4?auto=format&fit=crop&w=800&q=60",
+      "description": "Churned yogurt lassi with mixed fruit."
+    },
+    {
+      "slug": "sweet-lassi",
+      "name": "Sweet Lassi",
+      "price": 170,
+      "cat": "lassi-shake",
+      "sub": null,
+      "tags": [
+        "VEG"
+      ],
+      "popular": false,
+      "featured": false,
+      "image": "https://images.unsplash.com/photo-1546173159-315724a31696?auto=format&fit=crop&w=800&q=60",
+      "description": "Thick churned yogurt, lightly sweetened."
+    }
+  ]
+}
