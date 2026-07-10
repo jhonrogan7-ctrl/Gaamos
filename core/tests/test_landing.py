@@ -30,3 +30,13 @@ def test_landing_how_and_multibranch(client):
     assert "Print your QRs" in body
     assert "Every location. One dashboard." in body
     assert "theterrace." in body  # branch domain built from base_domain
+
+
+@pytest.mark.django_db
+def test_landing_pricing_and_footer(client):
+    body = client.get("/").content.decode()
+    assert "Simple pricing that grows with you" in body
+    assert "Starter" in body and "Business" in body
+    assert "Most popular" in body            # Pro is highlighted
+    assert "Prices are placeholders" in body
+    assert "© 2026 Gaamos" in body
