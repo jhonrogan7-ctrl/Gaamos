@@ -7,14 +7,14 @@ SECRET_KEY = os.environ.get("SECRET_KEY", "django-insecure-dev-only")
 DEBUG = os.environ.get("DEBUG", "0") == "1"
 ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS", "*").split(",")
 BASE_DOMAIN = os.environ.get("BASE_DOMAIN", "gaamos.io")
-RESERVED_SUBDOMAINS = {"app", "www", "menu", "admin", "api", "static", "media"}
+RESERVED_SUBDOMAINS = {"app", "www", "menu", "admin", "api", "static", "media", "gaamos"}
 
 # Behind Cloudflare Tunnel — TLS terminated at the edge, forwarded as plain HTTP.
 # Trust the forwarded proto so Django treats requests as secure and CSRF accepts
 # the HTTPS origin (login/POST would otherwise 403). Locked stack decision.
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 CSRF_TRUSTED_ORIGINS = os.environ.get(
-    "CSRF_TRUSTED_ORIGINS", f"https://*.{BASE_DOMAIN}"
+    "CSRF_TRUSTED_ORIGINS", f"https://{BASE_DOMAIN},https://*.{BASE_DOMAIN}"
 ).split(",")
 
 # Production-only hardening. Skipped under DEBUG (local dev over plain HTTP),
@@ -64,6 +64,7 @@ TEMPLATES = [{
         "django.contrib.auth.context_processors.auth",
         "django.contrib.messages.context_processors.messages",
         "core.context_processors.asset_version",
+        "core.context_processors.base_domain",
     ]},
 }]
 

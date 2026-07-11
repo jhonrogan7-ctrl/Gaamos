@@ -17,3 +17,12 @@ def asset_version(request):
     except OSError:
         version = "dev"
     return {"asset_v": version}
+
+
+def base_domain(request):
+    """Apex domain for marketing copy (e.g. yourcafe.{{ base_domain }}).
+
+    Driven from settings so landing copy always matches the deployed host
+    instead of a hardcoded placeholder.
+    """
+    return {"base_domain": settings.BASE_DOMAIN}

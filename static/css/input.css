@@ -8,6 +8,7 @@
   --bg: #eef0f4; --panel: #fff; --ink: #171a21; --ink-2: #5a616e; --ink-3: #98a0ad;
   --line: #e7e9ef; --line-2: #dde0e8; --side: #15171d; --side-2: #1f222b; --side-ink: #aeb4c2;
   --accent: #e23744; --accent-deep: #b3232f; --accent-soft: #ffe3df;
+  --accent-2: #ff9f1c;
   --accent-grad: linear-gradient(135deg,#ff9f1c,#e23744); --accent-ink: #fff;
   --green: #1f9d57; --green-soft: #e3f6ec; --amber: #c98a00; --amber-soft: #fdf0d4;
 }
@@ -584,7 +585,28 @@ h1,h2,h3 { font-family: var(--hd); }
   .oprow .on { font-weight: 700; }
   .oprow .op { margin-left: auto; font-family: var(--hd); font-weight: 800; color: var(--ink-2); }
   .oprow .gr { color: var(--ink-3); cursor: grab; }
+
+  /* ── marketing landing ── */
+  .mk-wrap { @apply max-w-6xl mx-auto px-5; }
+  .mk-eyebrow { @apply text-xs font-semibold tracking-widest uppercase; color: var(--accent); }
+  .mk-grad { background: var(--accent-grad); }
+  .mk-grad-text { background: var(--accent-grad); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .mk-btn { @apply inline-flex items-center justify-center rounded-full px-6 py-3 font-semibold text-sm transition; }
+  .mk-btn-primary { @apply mk-btn text-white; background: var(--accent-grad); box-shadow: 0 8px 20px rgba(226,55,68,.35); }
+  .mk-btn-primary:hover { transform: translateY(-2px); }
+  .mk-btn-ghost { @apply mk-btn text-ink bg-panel; border: 1px solid var(--line); }
+  .mk-btn-ghost:hover { transform: translateY(-2px); }
+  .mk-card { @apply bg-panel rounded-2xl; border: 1px solid var(--line); box-shadow: 0 2px 10px rgba(20,23,31,.05); }
+  .mk-input { @apply w-full mt-1 rounded-lg px-3 py-2 text-sm text-ink bg-bg outline-none; border: 1px solid var(--line); }
+  .mk-input:focus { border-color: var(--accent); background: #fff; }
+  .mk-badge-new { @apply text-[11px] font-semibold px-2 py-0.5 rounded-full; background: var(--accent-soft); color: var(--accent-deep); }
+  .mk-badge-served { @apply text-[11px] font-semibold px-2 py-0.5 rounded-full; background: var(--green-soft); color: var(--green); }
+  .js .mk-reveal { opacity: 0; transform: translateY(22px); transition: opacity .7s ease, transform .7s ease; }
+  .js .mk-reveal.is-in { opacity: 1; transform: none; }
 }
+
+html { scroll-behavior: smooth; }
+[id] { scroll-margin-top: 80px; }
 
 /* ══════════════════════════════════════════════════════════════════════
    GUEST MENU (ported from donor menu.css — qr_manu UX kept 1:1).
