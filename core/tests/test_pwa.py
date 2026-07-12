@@ -35,3 +35,15 @@ def test_manifests_have_distinct_ids():
     assert dash["id"] == "/dashboard/" and dash["start_url"] == "/dashboard/"
     assert guest["name"] == "Gaamos Menu" and dash["name"] == "Gaamos Dashboard"
     assert {i["src"] for i in guest["icons"]} == {i["src"] for i in dash["icons"]}
+
+
+@pytest.mark.django_db
+def test_offline_page_on_apex(client):
+    resp = client.get("/offline/")
+    assert resp.status_code == 200
+    body = resp.content.decode()
+    assert "offline" in body.lower()
+    assert "Gaamos" in body
+    # standalone: no external assets — the SW must be able to serve this with zero network
+    assert "fonts.googleapis.com" not in body
+    assert "app.css" not in body

@@ -28,3 +28,10 @@ class DashboardPwaTest(TenantTestCase):
         self.assertIn('pwa/manifest-dashboard.webmanifest', body)
         self.assertIn('serviceWorker', body)
         self.assertIn('apple-touch-icon', body)
+
+
+class OfflinePageTest(TenantTestCase):
+    def test_offline_page_on_tenant_host(self):
+        r = self.client.get('/offline/')
+        self.assertEqual(r.status_code, 200)
+        self.assertIn('Gaamos', r.content.decode())
