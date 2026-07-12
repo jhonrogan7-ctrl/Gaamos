@@ -419,5 +419,16 @@ class MobileShellTest(TenantTestCase):
     def test_desktop_signout_tagged_for_hiding(self):
         # The top-bar sign-out form carries top-signout so CSS can hide it <900px
         # (the More sheet holds the mobile sign out).
+        import re
         body = self.client.get('/dashboard/overview/').content.decode()
         self.assertIn('top-signout', body)
+        # No inline style= on that form tag: an inline display would outrank
+        # the stylesheet's display:none and keep the button visible <900px.
+        m = re.search(r'<form[^>]*class="top-signout"[^>]*>', body)
+        self.assertIsNotNone(m, 'top-signout form tag not found')
+        self.assertNotIn('style=', m.group(0),
+                         'inline style outranks .top .top-signout{display:none}')
+        # And the built CSS actually hides it (allow minified output).
+        css = (Path(settings.BASE_DIR) / 'static/css/app.css').read_text()
+        self.assertRegex(css, r'\.top .top-signout\s*\{\s*display:\s*none',
+                         'app.css must hide .top-signout under 900px')
