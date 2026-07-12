@@ -70,11 +70,8 @@ class TenantMiddleware:
                 raise Http404('company not found')
             return company
 
-        # reserved host / apex / bare localhost → no tenant.
-        # Phase 1 compatibility shim: if exactly one company exists, use it.
-        # (Removed in Phase 3 when real multi-company hosting goes live.)
-        if Company.objects.count() == 1:
-            return Company.objects.first()
+        # reserved host / apex / bare localhost → no tenant → marketing landing.
+        # (Tenants are always reached via their own <slug>.<base> subdomain.)
         return None
 
 
