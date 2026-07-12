@@ -449,6 +449,21 @@ class TableScrollTest(TenantTestCase):
         css = (Path(settings.BASE_DIR) / 'static/css/app.css').read_text()
         self.assertIn('.table-scroll', css)
 
+    def test_set_grid_mobile_override_after_base_rule(self):
+        # Cascade guard: the <900px .set-grid collapse must appear AFTER the base
+        # 200px 1fr rule in the built CSS — same specificity means source order
+        # decides, and media-query nesting does not change cascade order. If the
+        # override drifts back above the base rule it silently never applies.
+        import re
+        css = (Path(settings.BASE_DIR) / 'static/css/app.css').read_text()
+        base = re.search(r'\.set-grid\s*\{[^}]*200px 1fr', css)
+        override = re.search(r'\.set-grid\s*\{\s*grid-template-columns:\s*1fr\s*\}', css)
+        self.assertIsNotNone(base, 'base .set-grid (200px 1fr) rule missing from app.css')
+        self.assertIsNotNone(override, 'mobile .set-grid { 1fr } override missing from app.css')
+        self.assertGreater(override.start(), base.start(),
+                           '.set-grid mobile override must come after the base rule '
+                           'or the settings grid never collapses under 900px')
+
     def test_orders_queue_table_wrapped(self):
         body = self.client.get('/dashboard/orders/').content.decode()
         self.assertIn('table-scroll', body)
