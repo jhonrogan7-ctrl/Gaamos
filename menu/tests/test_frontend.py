@@ -432,3 +432,35 @@ class MobileShellTest(TenantTestCase):
         css = (Path(settings.BASE_DIR) / 'static/css/app.css').read_text()
         self.assertRegex(css, r'\.top .top-signout\s*\{\s*display:\s*none',
                          'app.css must hide .top-signout under 900px')
+
+
+class TableScrollTest(TenantTestCase):
+    """Wide data tables scroll horizontally inside .table-scroll under 900px
+    instead of stretching the page (no card-ification in this slice)."""
+
+    def setUp(self):
+        super().setUp()
+        U = get_user_model()
+        self.owner = U.objects.create_user('boss', password='pass')
+        self.make_owner(self.owner)
+        self.login_as(self.owner)
+
+    def test_css_table_scroll_present(self):
+        css = (Path(settings.BASE_DIR) / 'static/css/app.css').read_text()
+        self.assertIn('.table-scroll', css)
+
+    def test_orders_queue_table_wrapped(self):
+        body = self.client.get('/dashboard/orders/').content.decode()
+        self.assertIn('table-scroll', body)
+
+    def test_branch_tables_list_wrapped(self):
+        # Deviation from brief: menu.models has no Restaurant model, and Branch
+        # has no restaurant FK (see menu/tests/test_tables.py for the real
+        # constructor shape). The branch-QR URL is namespaced 'branch/<slug>/qr/'
+        # (menu/dashboard/urls.py), not 'branches/<slug>/qr/'.
+        from menu.models import Branch, Table
+        branch = Branch.objects.create(company=self.company, name='Main', slug='main')
+        Table.objects.create(branch=branch, label='Patio 1')
+        r = self.client.get(f'/dashboard/branch/{branch.slug}/qr/')
+        self.assertEqual(r.status_code, 200)
+        self.assertIn('table-scroll', r.content.decode())

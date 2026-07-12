@@ -91,6 +91,11 @@ h1,h2,h3 { font-family: var(--hd); }
   .more-sheet .ms-signout { width: 100%; }
   @media (min-width: 900px) { .more-sheet { display: none; } }
 
+  /* horizontal-scroll container for wide data tables (all widths; only kicks in
+     when the table's min-width exceeds the container) */
+  .table-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  .table-scroll > .tbl { min-width: 560px; }
+
   @media (max-width: 899.98px) {
     .app { grid-template-columns: 1fr; }
     .side { display: none; }
@@ -114,6 +119,8 @@ h1,h2,h3 { font-family: var(--hd); }
     }
     .tabbar .tb svg { width: 22px; height: 22px; }
     .tabbar .tb.on { color: var(--accent-deep); }
+
+    .set-grid { grid-template-columns: 1fr; }
   }
 
   /* ══════════════════════════════════════════
