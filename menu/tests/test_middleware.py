@@ -36,11 +36,14 @@ class TenantMiddlewareTest(TestCase):
         resp = self.mw(req)
         self.assertEqual(resp.status_code, 404)
 
-    def test_single_company_shim(self):
-        only = Company.objects.create(name='Only', slug='only')
+    def test_apex_no_tenant_even_with_single_company(self):
+        # The Phase-1 single-company shim was removed: apex/reserved hosts always
+        # resolve to no tenant (→ marketing landing), even when exactly one company
+        # exists. Tenants are only reached via their own <slug>.<base> subdomain.
+        Company.objects.create(name='Only', slug='only')
         req = self.rf.get('/', HTTP_HOST='zxyn.online')  # apex, no subdomain
         self.mw(req)
-        self.assertEqual(req.company, only)
+        self.assertIsNone(req.company)
 
     def test_context_reset_between_requests(self):
         a = Company.objects.create(name='A', slug='a')

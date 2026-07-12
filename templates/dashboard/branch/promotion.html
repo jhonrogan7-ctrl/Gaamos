@@ -1,0 +1,52 @@
+{% extends "dashboard/base.html" %}
+{% block title %}{{ branch.name }} — Promotion{% endblock %}
+{% block page_title %}{{ branch.name }}<small>Promotion</small>{% endblock %}
+{% block header_action %}
+  <a href="{% url 'dashboard:branches' %}" style="color:rgba(255,255,255,.7);text-decoration:none;font-size:13px;">← Branches</a>
+{% endblock %}
+{% block content %}
+{% include 'dashboard/branch/_tabs.html' %}
+
+<div class="sec-h"><h3>Menu promotion</h3><span class="mini">Full-screen image shown once per visit when a guest opens this branch's menu</span></div>
+
+{% if error %}
+  <div class="panel" style="margin-bottom:14px;padding:12px 14px;color:#b3261e;font-size:13px;">{{ error }}</div>
+{% endif %}
+
+{% if ad %}
+  <div class="panel" style="padding:16px;max-width:520px;">
+    <img src="{{ ad.image_url }}" alt="Promotion for {{ branch.name }}"
+         style="width:100%;max-height:340px;object-fit:contain;border-radius:10px;background:#111;">
+    <div style="display:flex;align-items:center;gap:10px;margin-top:12px;">
+      {% if ad.is_active %}
+        <span class="mini" style="font-weight:700;color:#1a7f37;">Live on the menu</span>
+      {% else %}
+        <span class="mini" style="font-weight:700;color:var(--ink-3);">Off</span>
+      {% endif %}
+      <div class="sp"></div>
+      <form method="post" action="{% url 'dashboard:branch_promotion_toggle' branch.slug %}">
+        {% csrf_token %}
+        <button type="submit" class="btn primary">{% if ad.is_active %}Deactivate{% else %}Activate{% endif %}</button>
+      </form>
+      <form method="post" action="{% url 'dashboard:branch_promotion_delete' branch.slug %}">
+        {% csrf_token %}
+        <button type="submit" class="btn ghost">Remove</button>
+      </form>
+    </div>
+  </div>
+{% else %}
+  <div class="panel" style="padding:16px;max-width:520px;">
+    <div class="mini">No promotion yet — upload an image to get started.</div>
+  </div>
+{% endif %}
+
+<div class="sec-h" style="margin-top:20px;"><h3>{% if ad %}Replace image{% else %}Upload image{% endif %}</h3></div>
+<form method="post" action="{% url 'dashboard:branch_promotion_save' branch.slug %}"
+      enctype="multipart/form-data" class="panel"
+      style="padding:16px;max-width:520px;display:flex;gap:10px;align-items:center;">
+  {% csrf_token %}
+  <input type="file" name="image_file" accept=".jpg,.jpeg,.png,.webp" required>
+  <button type="submit" class="btn primary">Save image</button>
+</form>
+<div class="mini" style="margin-top:8px;">JPG, PNG or WEBP · max 5 MB · portrait works best on phones</div>
+{% endblock %}

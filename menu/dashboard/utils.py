@@ -1,6 +1,6 @@
 import os
 import qrcode
-from qrcode.constants import ERROR_CORRECT_H
+from qrcode.constants import ERROR_CORRECT_M
 from PIL import Image, ImageDraw, ImageFont
 from django.conf import settings
 
@@ -8,32 +8,19 @@ COMPANY_NAME = "Twenty Two Tech Company"
 
 
 def render_qr_png(url, caption):
-    """Render a logo-embedded, captioned QR as PNG bytes (no disk write)."""
+    """Render a plain captioned QR as PNG bytes (no disk write). No embedded
+    logo: per-tenant QR branding arrives with Phase 4; the donor logo must not
+    appear on tenant codes. Level M suffices without a centre overlay."""
     import io
-    # High error correction (~30%) so the centred logo doesn't break scanning.
     qr = qrcode.QRCode(
         version=None,
-        error_correction=ERROR_CORRECT_H,
+        error_correction=ERROR_CORRECT_M,
         box_size=10,
         border=4,
     )
     qr.add_data(url)
     qr.make(fit=True)
     img = qr.make_image(fill_color="#1a1a2e", back_color="white").convert("RGB")
-
-    # Embed the Juicery logo in the centre, on a white pad for contrast.
-    logo_path = os.path.join(settings.BASE_DIR, 'static', 'images', 'juicery_logo.png')
-    if os.path.exists(logo_path):
-        logo = Image.open(logo_path).convert("RGBA")
-        qr_w, qr_h = img.size
-        box_size = int(qr_w * 0.32)                      # white square footprint (kept)
-        pad = max(4, int(box_size * 0.05))               # thin white margin
-        logo_target = box_size - pad * 2                 # logo fills the square
-        logo.thumbnail((logo_target, logo_target), Image.LANCZOS)
-        lw, lh = logo.size
-        box = Image.new("RGB", (box_size, box_size), "white")
-        box.paste(logo, ((box_size - lw) // 2, (box_size - lh) // 2), logo)
-        img.paste(box, ((qr_w - box_size) // 2, (qr_h - box_size) // 2))
 
     # Caption centred below the QR.
     qr_w, qr_h = img.size

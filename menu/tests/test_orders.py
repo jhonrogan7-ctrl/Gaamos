@@ -131,7 +131,8 @@ class OrdersQueueTest(TenantTestCase):
         finally:
             reset_current_company(tok)
         r = self.client.post(f'/dashboard/order/{forder.pk}/serve/')
-        self.assertEqual(r.status_code, 403)
+        # Another company's order is outside our tenant scope → 404 (hidden), not served.
+        self.assertEqual(r.status_code, 404)
 
 
 class OrderStreamTest(TenantTestCase):
@@ -170,7 +171,8 @@ class OrderStreamTest(TenantTestCase):
         finally:
             reset_current_company(tok)
         r = self.client.get(f'/dashboard/branch/{fbranch.slug}/orders/stream/?once=1')
-        self.assertEqual(r.status_code, 403)
+        # Foreign branch is outside our tenant scope → 404 (hidden), stream denied.
+        self.assertEqual(r.status_code, 404)
 
 
 class OrdersScreenTest(TenantTestCase):

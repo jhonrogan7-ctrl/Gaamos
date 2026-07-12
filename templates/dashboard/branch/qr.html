@@ -65,6 +65,7 @@
 
 {% if tables %}
 <div class="panel">
+  <div class="table-scroll">
   <table class="tbl">
     <thead><tr><th>Table</th><th>Code</th><th>QR</th><th></th></tr></thead>
     <tbody>
@@ -92,6 +93,7 @@
       {% endfor %}
     </tbody>
   </table>
+  </div>
 </div>
 {% else %}
 <p style="color:var(--ink-3);font-size:13px;">No table QRs yet. Add a range or a single table above.</p>

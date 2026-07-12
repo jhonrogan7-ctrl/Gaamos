@@ -161,8 +161,7 @@
   </div>
 
   <!-- backdrop for mobile add-item sheet (hidden on desktop where library is a column) -->
-  <div class="sheet-backdrop add-backdrop" x-show="addTarget !== null" @click.self="closeAdd()" x-cloak
-       style="z-index:25;"></div>
+  <div class="sheet-backdrop add-backdrop" x-show="addTarget !== null" @click.self="closeAdd()" x-cloak></div>
 
   <!-- ===================== ADD CATEGORY PICKER ===================== -->
   <div class="sheet-backdrop" x-show="catPickerOpen" @click.self="catPickerOpen = false" x-cloak>
@@ -211,7 +210,7 @@
   </div>
 
   <!-- ===================== MANUAL (how-to) ===================== -->
-  <div class="sheet-backdrop" x-show="manualOpen" @click.self="manualOpen = false" x-cloak style="z-index:40;">
+  <div class="sheet-backdrop" x-show="manualOpen" @click.self="manualOpen = false" x-cloak>
     <div class="sheet manual-sheet">
       <div class="sheet-handle"></div>
       <div class="manual-head">
@@ -409,7 +408,13 @@ function branchBuilder() {
       return new Set(list.map(p => p.item_id));
     },
     isPlaced(itemId) { return this.placedItemIds().has(itemId); },
-    toggleSelect(itemId) { this.selected[itemId] = !this.selected[itemId]; },
+    toggleSelect(itemId) {
+      // No target -> no selection: on desktop the library column is always
+      // visible, and ticking items with nowhere to add them left the button
+      // reading "Add N selected" while silently disabled.
+      if (!this.addTarget) return;
+      this.selected[itemId] = !this.selected[itemId];
+    },
     selectedCount() { return Object.values(this.selected).filter(Boolean).length; },
     async addSelected() {
       if (!this.addTarget || this.selectedCount() === 0) return;
@@ -419,7 +424,15 @@ function branchBuilder() {
       params.append('category_id', this.addTarget.cat_id);
       if (this.addTarget.sub_id != null) params.append('sub_category_id', this.addTarget.sub_id);
       const res = await this.post('placements/', params.toString());
-      if (res.ok) { this.closeAdd(); await this.refresh(); }
+      if (res.ok) {
+        // Keep the target on desktop (the library is a permanent column
+        // there) so more items can be added in place; on mobile the library
+        // is a bottom sheet, so close it like any confirmed sheet action.
+        // 900px mirrors the .lib-pane presentation breakpoint in input.css.
+        this.selected = {};
+        if (!window.matchMedia('(min-width: 900px)').matches) this.addTarget = null;
+        await this.refresh();
+      }
     },
 
     // ---- categories / sub-categories ----

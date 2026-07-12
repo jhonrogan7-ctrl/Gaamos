@@ -17,6 +17,11 @@ def service_worker(request):
     return response
 
 
+def offline(request):
+    """Precached by the service worker; served on failed navigations."""
+    return render(request, "offline.html")
+
+
 VENUE_TYPES = [c[0] for c in Lead.VENUE_TYPES]
 
 HERO_ORDERS = [

@@ -221,6 +221,25 @@ class Table(TenantScopedModel):
         return f"{self.branch.name} / {self.label}"
 
 
+class BranchAd(TenantScopedModel):
+    """Per-branch promo interstitial shown once per visit on the guest menu.
+    One ad per branch; image stays saved while toggled off."""
+    company = models.ForeignKey(Company, on_delete=models.CASCADE, related_name='branch_ads')
+    branch = models.OneToOneField(Branch, on_delete=models.CASCADE, related_name='ad')
+    image_url = models.CharField(max_length=500, blank=True)
+    is_active = models.BooleanField(default=False)
+    updated_at = models.DateTimeField(auto_now=True)  # guest-side re-show "version"
+
+    def clean(self):
+        super().clean()
+        if (self.branch_id and self.company_id
+                and self.branch.company_id != self.company_id):
+            raise ValidationError('Ad branch must belong to the same company.')
+
+    def __str__(self):
+        return f"{self.branch.name} ad"
+
+
 class Order(TenantScopedModel):
     STATUS_NEW = 'new'
     STATUS_SERVED = 'served'

@@ -44,6 +44,30 @@ document.addEventListener('alpine:init', () => {
     cleanup(() => { if (observer) observer.disconnect(); });
   });
 
+  // Promo ad interstitial — shows once per visit per branch+version.
+  // sessionStorage dies with the tab, so a fresh scan shows the ad again;
+  // the version in the key re-shows a replaced image even mid-visit.
+  Alpine.data('adOverlay', (branch, version) => ({
+    open: false,
+    key: 'gaamos-ad-' + branch + '-' + version,
+    init() {
+      let seen = false;
+      try { seen = !!sessionStorage.getItem(this.key); } catch (e) {}
+      if (!seen) {
+        this.open = true;
+        document.body.style.overflow = 'hidden';
+      }
+    },
+    hide() {  // image failed to load — fail open, but don't mark as seen
+      this.open = false;
+      document.body.style.overflow = '';
+    },
+    close() {
+      this.hide();
+      try { sessionStorage.setItem(this.key, '1'); } catch (e) {}
+    },
+  }));
+
   Alpine.data('menuApp', () => ({
     // ── Payload (set in init) ──────────────────────────
     restaurant: {},

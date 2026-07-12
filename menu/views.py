@@ -5,7 +5,7 @@ from django.http import JsonResponse
 from django.shortcuts import render
 from django.views.decorators.csrf import ensure_csrf_cookie
 from django.views.decorators.http import require_POST
-from .models import Branch, Category, BranchItemPlacement, BranchMenuItem, MenuItem, Table, Order, OrderItem, Company
+from .models import Branch, BranchAd, Category, BranchItemPlacement, BranchMenuItem, MenuItem, Table, Order, OrderItem, Company
 
 
 @ensure_csrf_cookie
@@ -75,6 +75,16 @@ def menu(request):
                 'sub': pl.sub_category.name if pl.sub_category else '',
             })
 
+    ad = None
+    if branch:
+        branch_ad = (BranchAd.objects
+                     .filter(branch=branch, is_active=True)
+                     .exclude(image_url='')
+                     .first())
+        if branch_ad:
+            ad = {'image_url': branch_ad.image_url,
+                  'version': int(branch_ad.updated_at.timestamp())}
+
     valid_layouts = {k for k, _ in Company.MENU_LAYOUT_CHOICES}
     requested = request.GET.get('layout', '')
     layout = requested if requested in valid_layouts else (
@@ -100,7 +110,7 @@ def menu(request):
         'dishes': dishes,
         'layout': layout,
     }
-    return render(request, 'menu/index.html', {'payload': payload})
+    return render(request, 'menu/index.html', {'payload': payload, 'ad': ad})
 
 
 @require_POST

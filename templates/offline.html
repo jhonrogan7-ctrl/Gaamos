@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Offline — Gaamos</title>
+  <style>
+    :root { --accent: #e23744; --bg: #eef0f4; --ink: #171a21; --ink-3: #7a8090; }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+      background: var(--bg); color: var(--ink); min-height: 100vh;
+      display: flex; align-items: center; justify-content: center; padding: 24px;
+    }
+    .card { text-align: center; max-width: 340px; }
+    .logo {
+      width: 56px; height: 56px; border-radius: 16px; background: var(--accent);
+      color: #fff; font-weight: 800; font-size: 26px; line-height: 56px;
+      margin: 0 auto 18px;
+    }
+    h1 { font-size: 20px; font-weight: 800; letter-spacing: -.01em; margin-bottom: 8px; }
+    p { font-size: 13.5px; color: var(--ink-3); line-height: 1.5; margin-bottom: 20px; }
+    button {
+      font: inherit; font-weight: 700; font-size: 14px; color: #fff;
+      background: var(--accent); border: none; border-radius: 12px;
+      padding: 12px 28px; cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="logo">G</div>
+    <h1>You&rsquo;re offline</h1>
+    <p>Gaamos needs a connection to load menus and orders. Reconnect to continue.</p>
+    <button onclick="location.reload()">Retry</button>
+  </div>
+</body>
+</html>

@@ -11,6 +11,9 @@
   <link rel="stylesheet" href="{% static 'css/app.css' %}?v={{ asset_v }}">
   <link rel="manifest" href="{% static 'pwa/manifest.webmanifest' %}">
   <meta name="theme-color" content="#e23744">
+  <link rel="apple-touch-icon" href="{% static 'pwa/icon-192.png' %}">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
   <script defer src="{% static 'vendor/alpine.min.js' %}"></script>
   <script src="{% static 'vendor/htmx.min.js' %}"></script>
 </head>
