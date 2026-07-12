@@ -96,31 +96,6 @@ h1,h2,h3 { font-family: var(--hd); }
   .table-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
   .table-scroll > .tbl { min-width: 560px; }
 
-  @media (max-width: 899.98px) {
-    .app { grid-template-columns: 1fr; }
-    .side { display: none; }
-    .body { padding: 14px; padding-bottom: calc(76px + env(safe-area-inset-bottom)); }
-    .top { padding: 0 14px; gap: 10px; }
-    .top h2 { min-width: 0; }
-    .top h2, .top h2 small { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .top .top-signout { display: none; }
-
-    .tabbar {
-      position: fixed; left: 0; right: 0; bottom: 0; z-index: 40;
-      display: flex; align-items: stretch;
-      background: #fff; border-top: 1px solid var(--line);
-      padding-bottom: env(safe-area-inset-bottom);
-    }
-    .tabbar .tb {
-      flex: 1; min-height: 56px;
-      @apply flex flex-col items-center justify-center gap-1;
-      font-family: var(--bd); font-size: 11px; font-weight: 700; color: var(--ink-3);
-      text-decoration: none; background: none; border: none; cursor: pointer;
-    }
-    .tabbar .tb svg { width: 22px; height: 22px; }
-    .tabbar .tb.on { color: var(--accent-deep); }
-  }
-
   /* ══════════════════════════════════════════
      OVERVIEW (KPIs · chart · top list · live feed)
   ══════════════════════════════════════════ */
@@ -669,6 +644,37 @@ h1,h2,h3 { font-family: var(--hd); }
   .mk-badge-served { @apply text-[11px] font-semibold px-2 py-0.5 rounded-full; background: var(--green-soft); color: var(--green); }
   .js .mk-reveal { opacity: 0; transform: translateY(22px); transition: opacity .7s ease, transform .7s ease; }
   .js .mk-reveal.is-in { opacity: 1; transform: none; }
+
+  /* ══════════════════════════════════════════
+     MOBILE DASHBOARD SHELL — <900px overrides.
+     MUST stay at the END of @layer components: .side/.top overrides share
+     specificity with their base rules above, so source order decides
+     (media-query nesting does not change cascade order).
+  ══════════════════════════════════════════ */
+  @media (max-width: 899.98px) {
+    .app { grid-template-columns: 1fr; }
+    .side { display: none; }
+    .body { padding: 14px; padding-bottom: calc(76px + env(safe-area-inset-bottom)); }
+    .top { padding: 0 14px; gap: 10px; }
+    .top h2 { min-width: 0; }
+    .top h2, .top h2 small { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .top .top-signout { display: none; }
+
+    .tabbar {
+      position: fixed; left: 0; right: 0; bottom: 0; z-index: 40;
+      display: flex; align-items: stretch;
+      background: #fff; border-top: 1px solid var(--line);
+      padding-bottom: env(safe-area-inset-bottom);
+    }
+    .tabbar .tb {
+      flex: 1; min-height: 56px;
+      @apply flex flex-col items-center justify-center gap-1;
+      font-family: var(--bd); font-size: 11px; font-weight: 700; color: var(--ink-3);
+      text-decoration: none; background: none; border: none; cursor: pointer;
+    }
+    .tabbar .tb svg { width: 22px; height: 22px; }
+    .tabbar .tb.on { color: var(--accent-deep); }
+  }
 }
 
 html { scroll-behavior: smooth; }

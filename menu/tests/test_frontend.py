@@ -384,6 +384,36 @@ class MobileShellCssTest(SimpleTestCase):
         self.assertIn('899.98px', css, 'missing <900px shell breakpoint')
         self.assertIn('env(safe-area-inset-bottom', css, 'missing iOS safe-area padding')
 
+    def test_sidebar_hide_override_after_base_rule(self):
+        # Cascade guard: the <900px .side{display:none} must appear AFTER the base
+        # .side rule (which sets display:flex) in the built CSS — same specificity
+        # means source order decides, and media-query nesting does not change
+        # cascade order. If the override drifts back above the base rule, the
+        # sidebar renders above the content on every mobile screen.
+        import re
+        css = self._css()
+        base = re.search(r'\.side\s*\{[^}]*flex', css)
+        override = re.search(r'\.side\s*\{\s*display:\s*none\s*\}', css)
+        self.assertIsNotNone(base, 'base .side (flex) rule missing from app.css')
+        self.assertIsNotNone(override, 'mobile .side{display:none} missing from app.css')
+        self.assertGreater(override.start(), base.start(),
+                           '.side{display:none} must come after the base .side rule '
+                           'or the sidebar never hides under 900px')
+
+    def test_top_compact_override_after_base_rule(self):
+        # Same cascade guard for the top bar: the <900px compaction
+        # (.top{gap:10px;padding:0 14px}) must follow the base .top rule
+        # (min-height:62px; padding:0 24px) or the top bar never compacts.
+        import re
+        css = self._css()
+        base = re.search(r'\.top\s*\{[^}]*62px', css)
+        override = re.search(r'\.top\s*\{[^}]*gap:\s*10px[^}]*\}', css)
+        self.assertIsNotNone(base, 'base .top (62px) rule missing from app.css')
+        self.assertIsNotNone(override, 'mobile .top compaction rule missing from app.css')
+        self.assertGreater(override.start(), base.start(),
+                           'mobile .top override must come after the base rule '
+                           'or the top bar never compacts under 900px')
+
 
 class MobileShellTest(TenantTestCase):
     """Bottom tab bar + More sheet markup in the dashboard base template.
