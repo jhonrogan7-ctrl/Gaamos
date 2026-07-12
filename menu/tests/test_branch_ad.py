@@ -216,3 +216,50 @@ class PromotionManageTest(TenantTestCase):
         self.login_as(self.owner)
         for url in (self.save_url, self.toggle_url, self.delete_url):
             self.assertEqual(self.client.get(url).status_code, 405)
+
+
+class GuestAdOverlayTest(TenantTestCase):
+    def setUp(self):
+        super().setUp()
+        self.branch = Branch.objects.create(company=self.company, name='Lake', slug='lake')
+
+    def _menu(self):
+        return self.client.get('/', {'branch': self.branch.slug})
+
+    def test_active_ad_renders_overlay(self):
+        ad = BranchAd.objects.create(branch=self.branch,
+                                     image_url='/media/ads/ad_1.png', is_active=True)
+        resp = self._menu()
+        self.assertContains(resp, 'ad-overlay')
+        self.assertContains(resp, '/media/ads/ad_1.png')
+        self.assertContains(resp, f"adOverlay('lake', {int(ad.updated_at.timestamp())})")
+
+    def test_inactive_ad_not_rendered(self):
+        BranchAd.objects.create(branch=self.branch,
+                                image_url='/media/ads/ad_1.png', is_active=False)
+        self.assertNotContains(self._menu(), 'ad-overlay')
+
+    def test_no_ad_not_rendered(self):
+        self.assertNotContains(self._menu(), 'ad-overlay')
+
+    def test_active_ad_without_image_not_rendered(self):
+        BranchAd.objects.create(branch=self.branch, image_url='', is_active=True)
+        self.assertNotContains(self._menu(), 'ad-overlay')
+
+    def test_ad_is_per_branch(self):
+        other = Branch.objects.create(company=self.company, name='Hill', slug='hill')
+        BranchAd.objects.create(branch=other,
+                                image_url='/media/ads/ad_9.png', is_active=True)
+        self.assertNotContains(self._menu(), 'ad-overlay')
+
+    def test_cross_tenant_ad_never_leaks(self):
+        other_co = Company.objects.create(name='Other', slug='other')
+        tok = set_current_company(other_co)
+        try:
+            other_branch = Branch.objects.create(company=other_co, name='Far', slug='lake')
+            BranchAd.objects.create(branch=other_branch,
+                                    image_url='/media/ads/theirs.png', is_active=True)
+        finally:
+            reset_current_company(tok)
+        resp = self._menu()  # host is testco's subdomain; same branch slug 'lake'
+        self.assertNotContains(resp, '/media/ads/theirs.png')
