@@ -365,3 +365,59 @@ class DashboardCsrfHelperTest(TenantTestCase):
         if 'getCookie(' in body:
             self.assertIn('function getCookie', body,
                           'categories page calls getCookie but never defines it')
+
+
+class MobileShellCssTest(SimpleTestCase):
+    """CSS for the <900px dashboard shell: bottom tab bar + More sheet.
+    Desktop (>=900px) keeps the sidebar; exactly one nav is visible at any width."""
+
+    def _css(self):
+        return (Path(settings.BASE_DIR) / 'static/css/app.css').read_text()
+
+    def test_mobile_shell_classes_present(self):
+        css = self._css()
+        for sel in ['.tabbar', '.more-sheet', '.ms-panel', '.ms-backdrop']:
+            self.assertIn(sel, css, f'missing mobile shell class {sel}')
+
+    def test_shell_breakpoint_and_safe_area(self):
+        css = self._css()
+        self.assertIn('899.98px', css, 'missing <900px shell breakpoint')
+        self.assertIn('env(safe-area-inset-bottom', css, 'missing iOS safe-area padding')
+
+
+class MobileShellTest(TenantTestCase):
+    """Bottom tab bar + More sheet markup in the dashboard base template.
+    Rendered at every width (CSS hides it >=900px), driven by active_tab."""
+
+    def setUp(self):
+        super().setUp()
+        U = get_user_model()
+        self.owner = U.objects.create_user('boss', password='pass')
+        self.make_owner(self.owner)
+        self.login_as(self.owner)
+
+    def test_tabbar_present_with_four_tabs_and_more(self):
+        body = self.client.get('/dashboard/overview/').content.decode()
+        self.assertIn('class="tabbar"', body)
+        for href in ['/dashboard/overview/', '/dashboard/orders/',
+                     '/dashboard/branches/', '/dashboard/items/']:
+            self.assertIn(href, body)
+        self.assertIn('more-sheet', body)
+        # More sheet contents: the three secondary links + sign out
+        self.assertIn('/dashboard/categories/', body)
+        self.assertIn('/dashboard/qr/', body)
+        self.assertIn('/dashboard/settings/', body)
+
+    def test_active_states(self):
+        # Items screen -> Items tab on, More off
+        body = self.client.get('/dashboard/items/').content.decode()
+        self.assertRegex(body, r'class="tb on"[^>]*>\s*<svg[^>]*>.*?</svg>\s*<span>Items</span>')
+        # Categories screen -> More button on (categories|qr|settings roll up to More)
+        body = self.client.get('/dashboard/categories/').content.decode()
+        self.assertRegex(body, r'<button[^>]*class="tb on"')
+
+    def test_desktop_signout_tagged_for_hiding(self):
+        # The top-bar sign-out form carries top-signout so CSS can hide it <900px
+        # (the More sheet holds the mobile sign out).
+        body = self.client.get('/dashboard/overview/').content.decode()
+        self.assertIn('top-signout', body)

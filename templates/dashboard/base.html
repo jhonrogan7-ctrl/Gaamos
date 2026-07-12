@@ -74,7 +74,7 @@
         <h2 id="title">{% block page_title %}Dashboard{% endblock %}<small>{% block subtitle %}{% endblock %}</small></h2>
         <div class="spacer"></div>
         {% block header_action %}{% endblock %}
-        <form method="post" action="{% url 'dashboard:logout' %}" style="display:inline;">
+        <form method="post" action="{% url 'dashboard:logout' %}" class="top-signout" style="display:inline;">
           {% csrf_token %}
           <button type="submit" class="btn">Sign out</button>
         </form>
@@ -82,6 +82,59 @@
 
       <div class="body">
         {% block content %}{% endblock %}
+      </div>
+    </div>
+
+    <!-- mobile shell (<900px): bottom tab bar + More sheet. Hidden ≥900px by CSS -->
+    <div x-data="{ more: false }" @keydown.escape.window="more = false">
+      <nav class="tabbar" aria-label="Dashboard">
+        <a href="{% url 'dashboard:overview' %}" class="tb {% if active_tab == 'overview' %}on{% endif %}">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>
+          <span>Overview</span>
+        </a>
+        <a href="{% url 'dashboard:orders' %}" class="tb {% if active_tab == 'orders' %}on{% endif %}">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18M16 10a4 4 0 0 1-8 0"/></svg>
+          <span>Orders</span>
+        </a>
+        <a href="{% url 'dashboard:branches' %}" class="tb {% if active_tab == 'branches' %}on{% endif %}">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21V8l9-5 9 5v13"/><path d="M9 21v-6h6v6"/></svg>
+          <span>Branches</span>
+        </a>
+        <a href="{% url 'dashboard:items_list' %}" class="tb {% if active_tab == 'items' %}on{% endif %}">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h10"/></svg>
+          <span>Items</span>
+        </a>
+        <button type="button" class="tb {% if active_tab == 'categories' or active_tab == 'qr' or active_tab == 'settings' %}on{% endif %}" @click="more = true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="5" cy="12" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="19" cy="12" r="1.6"/></svg>
+          <span>More</span>
+        </button>
+      </nav>
+
+      <div class="more-sheet" x-show="more" x-cloak>
+        <div class="ms-backdrop" @click="more = false"></div>
+        <div class="ms-panel">
+          <div class="ms-grab"></div>
+          <a href="{% url 'dashboard:categories' %}" class="ms-link {% if active_tab == 'categories' %}on{% endif %}">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M3 12h18M3 18h18" opacity=".4"/><rect x="3" y="4" width="6" height="4" rx="1"/><rect x="3" y="16" width="6" height="4" rx="1"/></svg>
+            Categories
+          </a>
+          <a href="{% url 'dashboard:qr' %}" class="ms-link {% if active_tab == 'qr' %}on{% endif %}">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="8" height="8" rx="1"/><rect x="13" y="3" width="8" height="8" rx="1"/><rect x="3" y="13" width="8" height="8" rx="1"/><path d="M13 13h3v3h-3zM19 19h2v2h-2z"/></svg>
+            QR Codes
+          </a>
+          <a href="{% url 'dashboard:settings' %}" class="ms-link {% if active_tab == 'settings' %}on{% endif %}">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-2.81 1.17V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 8 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.6 14H4.5a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 6.18 8.4l-.33-.32a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 11 4.6h.09A2 2 0 0 1 13 4.5v.09a1.65 1.65 0 0 0 2.82 1.17l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 11h.1a2 2 0 0 1 0 4Z"/></svg>
+            Settings
+          </a>
+          <div class="ms-user">
+            <div class="av">{{ request.user.get_username|slice:":2"|upper }}</div>
+            <div class="vn">{{ request.user.get_username }}<small>{% if request.membership %}{{ request.membership.role|title }}{% endif %}</small></div>
+          </div>
+          <form method="post" action="{% url 'dashboard:logout' %}">
+            {% csrf_token %}
+            <button type="submit" class="btn ms-signout">Sign out</button>
+          </form>
+        </div>
       </div>
     </div>
 
