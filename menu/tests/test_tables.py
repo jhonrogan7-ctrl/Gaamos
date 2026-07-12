@@ -229,3 +229,26 @@ class GlobalQrCountTest(TenantTestCase):
         Table.objects.create(branch=self.branch, label='2')
         body = self.client.get('/dashboard/qr/').content.decode()
         self.assertIn('2 table QRs', body)
+
+
+class QrNoLogoTest(TenantTestCase):
+    """Branch/table QRs must be plain scannable codes — no embedded logo.
+    The donor-era juicery logo was hardcoded into every tenant's QR."""
+
+    def test_qr_region_is_pristine_no_logo_overlay(self):
+        import io
+        import qrcode as qrlib
+        from qrcode.constants import ERROR_CORRECT_M
+        from PIL import Image
+        from menu.dashboard.utils import render_qr_png
+        url = 'https://example.com/?branch=lake&t=abc123'
+        rendered = Image.open(io.BytesIO(render_qr_png(url, 'Table 7'))).convert('RGB')
+        ref_qr = qrlib.QRCode(version=None, error_correction=ERROR_CORRECT_M,
+                              box_size=10, border=4)
+        ref_qr.add_data(url)
+        ref_qr.make(fit=True)
+        ref = ref_qr.make_image(fill_color='#1a1a2e', back_color='white').convert('RGB')
+        # QR sits at the top-left of the captioned canvas; it must equal the
+        # pristine reference bitmap pixel-for-pixel (any logo box would differ).
+        region = rendered.crop((0, 0, ref.size[0], ref.size[1]))
+        self.assertEqual(region.tobytes(), ref.tobytes())
