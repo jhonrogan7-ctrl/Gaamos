@@ -3,6 +3,17 @@
 {% block content %}
 {{ payload|json_script:"menu-data" }}
 
+{% if ad %}
+<!-- Promo ad interstitial — shown once per visit (sessionStorage); X / Esc / backdrop closes -->
+<div class="ad-overlay" x-data="adOverlay('{{ payload.selected_branch }}', {{ ad.version }})"
+     x-show="open" x-cloak role="dialog" aria-label="Promotion"
+     @keydown.escape.window="close()" @click="close()">
+  <button class="ad-close" type="button" @click="close()" aria-label="Close promotion">✕</button>
+  <img class="ad-img" src="{{ ad.image_url }}?v={{ ad.version }}" alt="Promotion"
+       @click.stop @error="hide()">
+</div>
+{% endif %}
+
 <div class="screen-wrap" x-data="menuApp" x-init="init()">
 
   <!-- ═══════════════════════════════════════════════

@@ -13,6 +13,7 @@ from django.db import models
 from menu.models import (
     Company, Branch, Category, SubCategory, MenuItem, BranchMenuItem,
     BranchCategory, BranchSubCategory, BranchItemPlacement, Membership, Table, Order,
+    BranchAd,
 )
 from menu.permissions import (
     require_membership, require_owner, ensure_can_manage_branch, forbidden,
@@ -44,6 +45,28 @@ def save_item_image(item, upload):
     item.focal_x, item.focal_y = compute_focal_point(path)
     item.save(update_fields=['image_url', 'focal_x', 'focal_y'])
     return item.image_url
+
+
+AD_UPLOAD_ERROR = 'Image must be JPG, PNG or WEBP and under 5 MB.'
+
+
+def save_ad_image(ad, upload):
+    """Persist an uploaded promo image for ``ad``. Returns the public media URL,
+    or None if the upload was rejected (bad extension / too large). Same
+    validation as item images; no focal point — the ad is shown uncropped."""
+    ext = os.path.splitext(upload.name)[1].lower()
+    if ext not in ALLOWED_IMAGE_EXTS or upload.size > MAX_IMAGE_BYTES:
+        return None
+    dest_dir = os.path.join(django_settings.MEDIA_ROOT, 'ads')
+    os.makedirs(dest_dir, exist_ok=True)
+    filename = f"ad_{ad.pk}{ext}"
+    path = os.path.join(dest_dir, filename)
+    with open(path, 'wb') as f:
+        for chunk in upload.chunks():
+            f.write(chunk)
+    ad.image_url = f"{django_settings.MEDIA_URL}ads/{filename}"
+    ad.save(update_fields=['image_url', 'updated_at'])
+    return ad.image_url
 
 
 def login_view(request):
@@ -631,6 +654,63 @@ def branch_orders(request, slug):
         'orders': _orders_for(branch.orders.all(), status),
         'show_branch': False, 'status_filter': status,
     })
+
+
+@require_membership
+def branch_promotion(request, slug):
+    branch = get_object_or_404(Branch, slug=slug)
+    if not ensure_can_manage_branch(request, branch):
+        return forbidden(request)
+    return render(request, 'dashboard/branch/promotion.html', {
+        'active_tab': 'branches', 'branch_tab': 'promotion', 'branch': branch,
+        'ad': BranchAd.objects.filter(branch=branch).first(),
+    })
+
+
+@require_membership
+@require_POST
+def branch_promotion_save(request, slug):
+    branch = get_object_or_404(Branch, slug=slug)
+    if not ensure_can_manage_branch(request, branch):
+        return forbidden(request)
+    upload = request.FILES.get('image_file')
+    error = ''
+    if upload is None:
+        error = 'Choose an image to upload.'
+    else:
+        ad, created = BranchAd.objects.get_or_create(branch=branch)
+        if save_ad_image(ad, upload) is None:
+            if created:
+                ad.delete()
+            error = AD_UPLOAD_ERROR
+    if error:
+        return render(request, 'dashboard/branch/promotion.html', {
+            'active_tab': 'branches', 'branch_tab': 'promotion', 'branch': branch,
+            'ad': BranchAd.objects.filter(branch=branch).first(), 'error': error,
+        })
+    return redirect('dashboard:branch_promotion', slug=branch.slug)
+
+
+@require_membership
+@require_POST
+def branch_promotion_toggle(request, slug):
+    branch = get_object_or_404(Branch, slug=slug)
+    if not ensure_can_manage_branch(request, branch):
+        return forbidden(request)
+    ad = get_object_or_404(BranchAd, branch=branch)
+    ad.is_active = not ad.is_active
+    ad.save(update_fields=['is_active'])  # deliberately not updated_at: pausing is not a new version
+    return redirect('dashboard:branch_promotion', slug=branch.slug)
+
+
+@require_membership
+@require_POST
+def branch_promotion_delete(request, slug):
+    branch = get_object_or_404(Branch, slug=slug)
+    if not ensure_can_manage_branch(request, branch):
+        return forbidden(request)
+    BranchAd.objects.filter(branch=branch).delete()
+    return redirect('dashboard:branch_promotion', slug=branch.slug)
 
 
 def _orders_for(qs, status):
