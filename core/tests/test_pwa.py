@@ -47,3 +47,15 @@ def test_offline_page_on_apex(client):
     # standalone: no external assets — the SW must be able to serve this with zero network
     assert "fonts.googleapis.com" not in body
     assert "app.css" not in body
+
+
+@pytest.mark.django_db
+def test_sw_v2_behaviour_markers(client):
+    """The rewritten SW: versioned cache, /offline/ precached, network-first
+    navigations, and no naive cache-everything fallback to '/'."""
+    body = client.get("/sw.js").content.decode()
+    assert 'VERSION = "v2"' in body
+    assert '"/offline/"' in body
+    assert "navigate" in body                 # navigation branch exists
+    assert 'c.addAll(["/"])' not in body      # old stub's cache-of-'/' is gone
+    assert "ignoreSearch" in body             # static matching tolerates ?v= busters
