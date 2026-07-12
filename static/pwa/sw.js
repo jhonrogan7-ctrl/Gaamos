@@ -1,7 +1,8 @@
 /* Gaamos service worker.
- * VERSION bump convention: bump whenever the precache list or caching
- * strategy changes (mirrors the template `asset_v` ?v= cache-buster
- * convention for CSS/JS). Old-version caches are purged on activate.
+ * VERSION bump convention: bump on any change to precached asset content,
+ * the precache list, or strategy (mirrors the template `asset_v` ?v=
+ * cache-buster convention for CSS/JS). Old-version caches are purged on
+ * activate.
  *
  * Strategy:
  *   navigations  -> network-first, offline fallback page; HTML never cached
@@ -48,13 +49,18 @@ self.addEventListener("fetch", (e) => {
 
   const url = new URL(req.url);
   if (req.method === "GET" && url.origin === location.origin && url.pathname.startsWith("/static/")) {
+    // Key by pathname only: precache uses bare keys and pages append ?v=
+    // cache-busters — one entry per asset, refreshed in place.
+    const key = url.origin + url.pathname;
     e.respondWith(
       caches.open(CACHE).then((cache) =>
-        cache.match(req, { ignoreSearch: true }).then((cached) => {
-          const refresh = fetch(req).then((resp) => {
-            if (resp.ok) cache.put(req, resp.clone());
-            return resp;
-          });
+        cache.match(key, { ignoreSearch: true }).then((cached) => {
+          const refresh = fetch(req)
+            .then((resp) => {
+              if (resp.ok) cache.put(key, resp.clone());
+              return resp;
+            })
+            .catch(() => cached);
           return cached || refresh;
         })
       )
