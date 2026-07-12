@@ -1,0 +1,25 @@
+# Production overrides for the Gaamos stack.
+# Usage:
+#   docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d
+#   (add: --profile edge   to also start the Cloudflare tunnel once TUNNEL_TOKEN is set)
+#
+# Requires Docker Compose v2.24+ for the !override merge tags.
+
+services:
+  web:
+    # Production ASGI server: no --reload, multiple workers.
+    # Runs CSS build + migrations + collectstatic at boot, then serves.
+    command: sh -c "bash bin/build-css.sh build && python manage.py migrate --noinput && python manage.py collectstatic --noinput && uvicorn config.asgi:application --host 0.0.0.0 --port 8000 --workers 3"
+    # Drop the dev bind-mount (.:/app) so the container runs the baked image.
+    volumes: !override []
+    # Bind the host port to loopback ONLY. The tunnel reaches the app as
+    # http://web:8000 over the compose network, so nothing needs public exposure.
+    ports: !override
+      - "127.0.0.1:8005:8000"
+    restart: unless-stopped
+
+  db:
+    restart: unless-stopped
+
+  cloudflared:
+    restart: unless-stopped
