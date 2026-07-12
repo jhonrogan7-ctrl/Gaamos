@@ -1,6 +1,6 @@
 from pathlib import Path
 from django.conf import settings
-from django.test import SimpleTestCase
+from django.test import SimpleTestCase, override_settings
 from django.contrib.auth import get_user_model
 from menu.tests.base import TenantTestCase
 
@@ -334,3 +334,34 @@ class MenuLayoutPartialsTest(TenantTestCase):
     def test_iconrail_partial_served_on_preview(self):
         html = self.client.get('/?layout=iconrail').content.decode()
         self.assertIn('data-layout="iconrail"', html)
+
+
+@override_settings(BASE_DOMAIN='zxyn.online', ALLOWED_HOSTS=['.zxyn.online', 'testserver'])
+class DashboardCsrfHelperTest(TenantTestCase):
+    """The dashboard's fetch() POSTs (branch builder delete/add, categories
+    add/remove) send `X-CSRFToken: getCookie('csrftoken')`. The guest `app.js`
+    that defines getCookie is NOT loaded on dashboard pages, so getCookie must be
+    defined there or every POST throws ReferenceError and silently no-ops."""
+
+    HOST = 'testco.zxyn.online'  # resolves to the TenantTestCase company (slug=testco)
+
+    def setUp(self):
+        super().setUp()
+        from menu.models import Branch
+        User = get_user_model()
+        u = User.objects.create_user('mgr', password='pass', is_staff=True)
+        self.make_owner(u)
+        self.client.login(username='mgr', password='pass')
+        Branch.objects.create(company=self.company, name='Main', slug='main', address='X')
+
+    def test_branch_builder_page_defines_getcookie(self):
+        body = self.client.get('/dashboard/branch/main/', HTTP_HOST=self.HOST).content.decode()
+        self.assertIn('getCookie(', body, 'branch builder should reference getCookie')
+        self.assertIn('function getCookie', body,
+                      'branch builder calls getCookie but never defines it — POSTs no-op')
+
+    def test_categories_page_defines_getcookie(self):
+        body = self.client.get('/dashboard/categories/', HTTP_HOST=self.HOST).content.decode()
+        if 'getCookie(' in body:
+            self.assertIn('function getCookie', body,
+                          'categories page calls getCookie but never defines it')

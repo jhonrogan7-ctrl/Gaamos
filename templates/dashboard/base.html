@@ -89,6 +89,15 @@
   {% endblock %}
   <script src="//unpkg.com/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
   <script src="{% static 'js/icons.js' %}?v=1"></script>
+  <script>
+    // CSRF cookie reader for dashboard fetch() POSTs (branch builder, categories).
+    // The guest app.js that defines this is not loaded here, so define it locally —
+    // without it every X-CSRFToken header is undefined and POSTs silently no-op.
+    function getCookie(name) {
+      const m = document.cookie.match('(^|;)\\s*' + name + '\\s*=\\s*([^;]+)');
+      return m ? decodeURIComponent(m[2]) : '';
+    }
+  </script>
   {% block extra_scripts %}{% endblock %}
 </body>
 </html>
