@@ -509,3 +509,64 @@ class TableScrollTest(TenantTestCase):
         r = self.client.get(f'/dashboard/branch/{branch.slug}/qr/')
         self.assertEqual(r.status_code, 200)
         self.assertIn('table-scroll', r.content.decode())
+
+
+class BuilderSheetStackingTest(TenantTestCase):
+    """The mobile bottom tab bar (z-index 40) must never cover the builder's
+    library sheet or its Add-selected button. Regression: after the tab bar
+    shipped, .lib-pane (z 30) rendered underneath it, hiding the button on
+    phones/PWA. Assert real z values from the built CSS, not string presence."""
+
+    def _z(self, css, selector_re):
+        import re
+        m = re.search(selector_re, css)
+        self.assertIsNotNone(m, f'no z-index found for {selector_re}')
+        return int(m.group(1))
+
+    def test_lib_sheet_stacks_above_tabbar(self):
+        css = (Path(settings.BASE_DIR) / 'static/css/app.css').read_text()
+        z_tabbar = self._z(css, r'\.tabbar\{[^}]*z-index:(\d+)')
+        z_libpane = self._z(css, r'\.lib-pane\{[^}]*z-index:(\d+)')
+        z_backdrop = self._z(css, r'\.sheet-backdrop\.add-backdrop\{[^}]*z-index:(\d+)')
+        self.assertGreater(z_backdrop, z_tabbar,
+                           'add-item backdrop must dim/cover the tab bar')
+        self.assertGreater(z_libpane, z_backdrop,
+                           'library sheet must paint above its backdrop')
+
+    def test_builder_page_has_no_inline_zindex_overrides(self):
+        # Inline z-index styles beat every stylesheet rule and reintroduced the
+        # tab-bar overlap; keep stacking in the CSS scale only.
+        from menu.models import Branch
+        U = get_user_model()
+        owner = U.objects.create_user('boss', password='pass')
+        self.make_owner(owner)
+        self.login_as(owner)
+        branch = Branch.objects.create(company=self.company, name='Main', slug='main')
+        body = self.client.get(f'/dashboard/branch/{branch.slug}/').content.decode()
+        self.assertNotIn('style="z-index:25;"', body)
+        self.assertNotIn('style="z-index:40;"', body)
+
+
+class BuilderAddSelectedGuardTest(TenantTestCase):
+    """Second-add regression: after a successful add cleared addTarget, the
+    always-visible desktop library still let items be ticked and showed an
+    'Add N selected' button that was silently disabled. Pin the two JS guards."""
+
+    def _builder_body(self):
+        from menu.models import Branch
+        U = get_user_model()
+        owner = U.objects.create_user('boss', password='pass')
+        self.make_owner(owner)
+        self.login_as(owner)
+        branch = Branch.objects.create(company=self.company, name='Main', slug='main')
+        return self.client.get(f'/dashboard/branch/{branch.slug}/').content.decode()
+
+    def test_toggle_select_requires_add_target(self):
+        body = self._builder_body()
+        self.assertIn('if (!this.addTarget) return;', body)
+
+    def test_successful_add_keeps_target_on_desktop(self):
+        body = self._builder_body()
+        # success path clears selection and only closes the sheet on mobile
+        self.assertIn("window.matchMedia('(min-width: 900px)')", body)
+        self.assertNotIn('if (res.ok) { this.closeAdd(); await this.refresh(); }', body)

@@ -517,8 +517,11 @@ h1,h2,h3 { font-family: var(--hd); }
   .builder .add.cat-add .ic { background: var(--bg); color: var(--ink-2); }
 
   /* library pane (bottom sheet on mobile · column on desktop) */
-  .lib-pane { display: none; position: fixed; left: 0; right: 0; bottom: 0; z-index: 30; background: #fff; border-radius: 18px 18px 0 0; box-shadow: 0 -6px 30px -8px rgba(0,0,0,.18); padding: 14px 14px 20px; max-height: 80vh; flex-direction: column; }
+  /* Stacks above the mobile tab bar (z 40) but below the full sheets (z 60),
+     so the Add-selected button is reachable on phones/PWA. */
+  .lib-pane { display: none; position: fixed; left: 0; right: 0; bottom: 0; z-index: 50; background: #fff; border-radius: 18px 18px 0 0; box-shadow: 0 -6px 30px -8px rgba(0,0,0,.18); padding: 14px 14px calc(20px + env(safe-area-inset-bottom)); max-height: 80vh; flex-direction: column; }
   .lib-pane.show { display: flex; }
+  .sheet-backdrop.add-backdrop { z-index: 45; }
   .lib-head { @apply flex items-center; margin-bottom: 4px; }
   .lib-head h4 { font-family: var(--hd); font-size: 13px; font-weight: 800; text-transform: uppercase; letter-spacing: .04em; color: var(--accent-deep); }
   .lib-close { margin-left: auto; cursor: pointer; color: var(--ink-3); font-size: 16px; line-height: 1; }
