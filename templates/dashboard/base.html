@@ -8,6 +8,11 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="{% static 'css/app.css' %}?v={{ asset_v }}">
+  <link rel="manifest" href="{% static 'pwa/manifest-dashboard.webmanifest' %}">
+  <meta name="theme-color" content="#15171d">
+  <link rel="apple-touch-icon" href="{% static 'pwa/icon-192.png' %}">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   {% block extra_head %}{% endblock %}
 </head>
 <body>
@@ -149,6 +154,11 @@
     function getCookie(name) {
       const m = document.cookie.match('(^|;)\\s*' + name + '\\s*=\\s*([^;]+)');
       return m ? decodeURIComponent(m[2]) : '';
+    }
+  </script>
+  <script>
+    if ("serviceWorker" in navigator) {
+      navigator.serviceWorker.register("/sw.js", { scope: "/" });
     }
   </script>
   {% block extra_scripts %}{% endblock %}

@@ -16,3 +16,22 @@ def test_service_worker_served_at_root_with_scope_header(client):
     assert resp["Content-Type"].startswith("application/javascript")
     assert resp["Service-Worker-Allowed"] == "/"
     assert b"gaamos-shell" in resp.content
+
+
+@pytest.mark.django_db
+def test_marketing_base_has_ios_meta(client):
+    body = client.get("/").content.decode()
+    assert "apple-touch-icon" in body
+    assert "apple-mobile-web-app-capable" in body
+
+
+def test_manifests_have_distinct_ids():
+    import json
+    from django.conf import settings
+    pwa = settings.BASE_DIR / "static" / "pwa"
+    guest = json.loads((pwa / "manifest.webmanifest").read_text())
+    dash = json.loads((pwa / "manifest-dashboard.webmanifest").read_text())
+    assert guest["id"] == "/" and guest["start_url"] == "/"
+    assert dash["id"] == "/dashboard/" and dash["start_url"] == "/dashboard/"
+    assert guest["name"] == "Gaamos Menu" and dash["name"] == "Gaamos Dashboard"
+    assert {i["src"] for i in guest["icons"]} == {i["src"] for i in dash["icons"]}

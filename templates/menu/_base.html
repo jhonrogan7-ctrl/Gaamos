@@ -11,11 +11,21 @@
   <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@10..48,400;10..48,500;10..48,600;10..48,700;10..48,800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
   <meta name="robots" content="noindex">
   <link rel="stylesheet" href="{% static 'css/app.css' %}?v={{ asset_v }}">
+  <link rel="manifest" href="{% static 'pwa/manifest.webmanifest' %}">
+  <meta name="theme-color" content="#e23744">
+  <link rel="apple-touch-icon" href="{% static 'pwa/icon-192.png' %}">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
 </head>
 <body>
   {% block content %}{% endblock %}
   <script src="{% static 'js/icons.js' %}?v=3"></script>
   <script src="{% static 'js/app.js' %}?v=15"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.14.9/dist/cdn.min.js"></script>
+  <script>
+    if ("serviceWorker" in navigator) {
+      navigator.serviceWorker.register("/sw.js", { scope: "/" });
+    }
+  </script>
 </body>
 </html>
