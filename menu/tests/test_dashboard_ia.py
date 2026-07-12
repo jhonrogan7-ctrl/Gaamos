@@ -84,7 +84,8 @@ class BranchTabTenancyTest(IaTestBase):
         self.login_as(self.owner)  # owner of self.company, not `other`
         for suffix in ('qr/', 'orders/'):
             r = self.client.get(f'/dashboard/branch/{stranger.slug}/{suffix}')
-            self.assertEqual(r.status_code, 403, suffix)
+            # Foreign branch is outside our tenant scope → 404 (hidden), still denied.
+            self.assertEqual(r.status_code, 404, suffix)
 
 
 class TabCssTest(SimpleTestCase):

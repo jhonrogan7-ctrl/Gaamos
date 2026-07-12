@@ -128,7 +128,9 @@ class TableCrudTenancyTest(TenantTestCase):
             reset_current_company(tok)
         self.login_as(self.owner)
         r = self.client.post(f'/dashboard/branch/{stranger.slug}/tables/add/', {'label': 'x'})
-        self.assertEqual(r.status_code, 403)
+        # On our own tenant host, a foreign company's branch is outside our scope,
+        # so it 404s at lookup (hidden) before any table is created — still denied.
+        self.assertEqual(r.status_code, 404)
 
 
 class TableQrEndpointTest(TenantTestCase):
@@ -167,7 +169,8 @@ class TableQrEndpointTest(TenantTestCase):
         finally:
             reset_current_company(tok)
         r = self.client.get(f'/dashboard/branch/{stranger.slug}/table/{ftable.code}/qr/')
-        self.assertEqual(r.status_code, 403)
+        # Foreign branch is outside our tenant scope → 404 (hidden), still denied.
+        self.assertEqual(r.status_code, 404)
 
 
 class QrTabContentTest(TenantTestCase):
