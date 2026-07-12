@@ -41,6 +41,7 @@ urlpatterns = [
     path('branch/<slug:slug>/', views.branch_items, name='branch_items'),
     path('branch/<slug:slug>/qr/', views.branch_qr, name='branch_qr'),
     path('branch/<slug:slug>/orders/', views.branch_orders, name='branch_orders'),
+    path('branch/<slug:slug>/promotion/', views.branch_promotion, name='branch_promotion'),
     path('orders/queue/', views.orders_queue, name='orders_queue'),
     path('branch/<slug:slug>/orders/queue/', views.branch_orders_queue, name='branch_orders_queue'),
     path('order/<int:pk>/serve/', views.order_serve, name='order_serve'),

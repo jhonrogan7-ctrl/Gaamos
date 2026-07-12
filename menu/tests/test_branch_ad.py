@@ -3,6 +3,7 @@ import base64
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
 from django.db import IntegrityError, transaction
+from django.urls import reverse
 
 from menu.models import Branch, BranchAd, Company
 from menu.tenancy import (
@@ -70,3 +71,48 @@ class BranchAdModelTest(TenantTestCase):
         ad = BranchAd(company=self.company, branch=foreign_branch)
         with self.assertRaises(ValidationError):
             ad.clean()
+
+
+class PromotionTabAccessTest(TenantTestCase):
+    def setUp(self):
+        super().setUp()
+        self.branch = Branch.objects.create(company=self.company, name='Lake', slug='lake')
+        self.other_branch = Branch.objects.create(company=self.company, name='Hill', slug='hill')
+        User = get_user_model()
+        self.owner = User.objects.create_user('owner', password='pass')
+        self.make_owner(self.owner)
+        self.mgr = User.objects.create_user('mgr', password='pass')
+        self.make_manager(self.mgr, branches=[self.branch])
+        self.other_mgr = User.objects.create_user('othermgr', password='pass')
+        self.make_manager(self.other_mgr, branches=[self.other_branch])
+        self.url = reverse('dashboard:branch_promotion', args=[self.branch.slug])
+
+    def test_anonymous_redirected_to_login(self):
+        resp = self.client.get(self.url)
+        self.assertEqual(resp.status_code, 302)
+
+    def test_owner_sees_empty_state(self):
+        self.login_as(self.owner)
+        resp = self.client.get(self.url)
+        self.assertContains(resp, 'No promotion yet')
+
+    def test_branch_manager_can_view(self):
+        self.login_as(self.mgr)
+        resp = self.client.get(self.url)
+        self.assertEqual(resp.status_code, 200)
+
+    def test_other_branch_manager_forbidden(self):
+        self.login_as(self.other_mgr)
+        resp = self.client.get(self.url)
+        self.assertEqual(resp.status_code, 403)
+
+    def test_existing_ad_previewed(self):
+        BranchAd.objects.create(branch=self.branch, image_url='/media/ads/ad_1.png')
+        self.login_as(self.owner)
+        resp = self.client.get(self.url)
+        self.assertContains(resp, '/media/ads/ad_1.png')
+
+    def test_tab_link_present_on_qr_tab(self):
+        self.login_as(self.owner)
+        resp = self.client.get(reverse('dashboard:branch_qr', args=[self.branch.slug]))
+        self.assertContains(resp, self.url)

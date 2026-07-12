@@ -13,6 +13,7 @@ from django.db import models
 from menu.models import (
     Company, Branch, Category, SubCategory, MenuItem, BranchMenuItem,
     BranchCategory, BranchSubCategory, BranchItemPlacement, Membership, Table, Order,
+    BranchAd,
 )
 from menu.permissions import (
     require_membership, require_owner, ensure_can_manage_branch, forbidden,
@@ -630,6 +631,17 @@ def branch_orders(request, slug):
         'has_tables': branch.tables.exists(),
         'orders': _orders_for(branch.orders.all(), status),
         'show_branch': False, 'status_filter': status,
+    })
+
+
+@require_membership
+def branch_promotion(request, slug):
+    branch = get_object_or_404(Branch, slug=slug)
+    if not ensure_can_manage_branch(request, branch):
+        return forbidden(request)
+    return render(request, 'dashboard/branch/promotion.html', {
+        'active_tab': 'branches', 'branch_tab': 'promotion', 'branch': branch,
+        'ad': BranchAd.objects.filter(branch=branch).first(),
     })
 
 
