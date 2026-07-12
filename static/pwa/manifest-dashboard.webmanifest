@@ -1,11 +1,11 @@
 {
-  "name": "Gaamos Menu",
-  "short_name": "Gaamos",
-  "id": "/",
-  "start_url": "/",
+  "name": "Gaamos Dashboard",
+  "short_name": "Gaamos Dash",
+  "id": "/dashboard/",
+  "start_url": "/dashboard/",
   "display": "standalone",
   "background_color": "#eef0f4",
-  "theme_color": "#e23744",
+  "theme_color": "#15171d",
   "icons": [
     { "src": "/static/pwa/icon-192.png", "sizes": "192x192", "type": "image/png" },
     { "src": "/static/pwa/icon-512.png", "sizes": "512x512", "type": "image/png" }

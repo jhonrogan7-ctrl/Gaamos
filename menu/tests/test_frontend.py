@@ -365,3 +365,147 @@ class DashboardCsrfHelperTest(TenantTestCase):
         if 'getCookie(' in body:
             self.assertIn('function getCookie', body,
                           'categories page calls getCookie but never defines it')
+
+
+class MobileShellCssTest(SimpleTestCase):
+    """CSS for the <900px dashboard shell: bottom tab bar + More sheet.
+    Desktop (>=900px) keeps the sidebar; exactly one nav is visible at any width."""
+
+    def _css(self):
+        return (Path(settings.BASE_DIR) / 'static/css/app.css').read_text()
+
+    def test_mobile_shell_classes_present(self):
+        css = self._css()
+        for sel in ['.tabbar', '.more-sheet', '.ms-panel', '.ms-backdrop']:
+            self.assertIn(sel, css, f'missing mobile shell class {sel}')
+
+    def test_shell_breakpoint_and_safe_area(self):
+        css = self._css()
+        self.assertIn('899.98px', css, 'missing <900px shell breakpoint')
+        self.assertIn('env(safe-area-inset-bottom', css, 'missing iOS safe-area padding')
+
+    def test_sidebar_hide_override_after_base_rule(self):
+        # Cascade guard: the <900px .side{display:none} must appear AFTER the base
+        # .side rule (which sets display:flex) in the built CSS — same specificity
+        # means source order decides, and media-query nesting does not change
+        # cascade order. If the override drifts back above the base rule, the
+        # sidebar renders above the content on every mobile screen.
+        import re
+        css = self._css()
+        base = re.search(r'\.side\s*\{[^}]*flex', css)
+        override = re.search(r'\.side\s*\{\s*display:\s*none\s*\}', css)
+        self.assertIsNotNone(base, 'base .side (flex) rule missing from app.css')
+        self.assertIsNotNone(override, 'mobile .side{display:none} missing from app.css')
+        self.assertGreater(override.start(), base.start(),
+                           '.side{display:none} must come after the base .side rule '
+                           'or the sidebar never hides under 900px')
+
+    def test_top_compact_override_after_base_rule(self):
+        # Same cascade guard for the top bar: the <900px compaction
+        # (.top{gap:10px;padding:0 14px}) must follow the base .top rule
+        # (min-height:62px; padding:0 24px) or the top bar never compacts.
+        import re
+        css = self._css()
+        base = re.search(r'\.top\s*\{[^}]*62px', css)
+        override = re.search(r'\.top\s*\{[^}]*gap:\s*10px[^}]*\}', css)
+        self.assertIsNotNone(base, 'base .top (62px) rule missing from app.css')
+        self.assertIsNotNone(override, 'mobile .top compaction rule missing from app.css')
+        self.assertGreater(override.start(), base.start(),
+                           'mobile .top override must come after the base rule '
+                           'or the top bar never compacts under 900px')
+
+
+class MobileShellTest(TenantTestCase):
+    """Bottom tab bar + More sheet markup in the dashboard base template.
+    Rendered at every width (CSS hides it >=900px), driven by active_tab."""
+
+    def setUp(self):
+        super().setUp()
+        U = get_user_model()
+        self.owner = U.objects.create_user('boss', password='pass')
+        self.make_owner(self.owner)
+        self.login_as(self.owner)
+
+    def test_tabbar_present_with_four_tabs_and_more(self):
+        body = self.client.get('/dashboard/overview/').content.decode()
+        self.assertIn('class="tabbar"', body)
+        for href in ['/dashboard/overview/', '/dashboard/orders/',
+                     '/dashboard/branches/', '/dashboard/items/']:
+            self.assertIn(href, body)
+        self.assertIn('more-sheet', body)
+        # More sheet contents: the three secondary links + sign out
+        self.assertIn('/dashboard/categories/', body)
+        self.assertIn('/dashboard/qr/', body)
+        self.assertIn('/dashboard/settings/', body)
+
+    def test_active_states(self):
+        # Items screen -> Items tab on, More off
+        body = self.client.get('/dashboard/items/').content.decode()
+        self.assertRegex(body, r'class="tb on"[^>]*>\s*<svg[^>]*>.*?</svg>\s*<span>Items</span>')
+        # Categories screen -> More button on (categories|qr|settings roll up to More)
+        body = self.client.get('/dashboard/categories/').content.decode()
+        self.assertRegex(body, r'<button[^>]*class="tb on"')
+
+    def test_desktop_signout_tagged_for_hiding(self):
+        # The top-bar sign-out form carries top-signout so CSS can hide it <900px
+        # (the More sheet holds the mobile sign out).
+        import re
+        body = self.client.get('/dashboard/overview/').content.decode()
+        self.assertIn('top-signout', body)
+        # No inline style= on that form tag: an inline display would outrank
+        # the stylesheet's display:none and keep the button visible <900px.
+        m = re.search(r'<form[^>]*class="top-signout"[^>]*>', body)
+        self.assertIsNotNone(m, 'top-signout form tag not found')
+        self.assertNotIn('style=', m.group(0),
+                         'inline style outranks .top .top-signout{display:none}')
+        # And the built CSS actually hides it (allow minified output).
+        css = (Path(settings.BASE_DIR) / 'static/css/app.css').read_text()
+        self.assertRegex(css, r'\.top .top-signout\s*\{\s*display:\s*none',
+                         'app.css must hide .top-signout under 900px')
+
+
+class TableScrollTest(TenantTestCase):
+    """Wide data tables scroll horizontally inside .table-scroll under 900px
+    instead of stretching the page (no card-ification in this slice)."""
+
+    def setUp(self):
+        super().setUp()
+        U = get_user_model()
+        self.owner = U.objects.create_user('boss', password='pass')
+        self.make_owner(self.owner)
+        self.login_as(self.owner)
+
+    def test_css_table_scroll_present(self):
+        css = (Path(settings.BASE_DIR) / 'static/css/app.css').read_text()
+        self.assertIn('.table-scroll', css)
+
+    def test_set_grid_mobile_override_after_base_rule(self):
+        # Cascade guard: the <900px .set-grid collapse must appear AFTER the base
+        # 200px 1fr rule in the built CSS — same specificity means source order
+        # decides, and media-query nesting does not change cascade order. If the
+        # override drifts back above the base rule it silently never applies.
+        import re
+        css = (Path(settings.BASE_DIR) / 'static/css/app.css').read_text()
+        base = re.search(r'\.set-grid\s*\{[^}]*200px 1fr', css)
+        override = re.search(r'\.set-grid\s*\{\s*grid-template-columns:\s*1fr\s*\}', css)
+        self.assertIsNotNone(base, 'base .set-grid (200px 1fr) rule missing from app.css')
+        self.assertIsNotNone(override, 'mobile .set-grid { 1fr } override missing from app.css')
+        self.assertGreater(override.start(), base.start(),
+                           '.set-grid mobile override must come after the base rule '
+                           'or the settings grid never collapses under 900px')
+
+    def test_orders_queue_table_wrapped(self):
+        body = self.client.get('/dashboard/orders/').content.decode()
+        self.assertIn('table-scroll', body)
+
+    def test_branch_tables_list_wrapped(self):
+        # Deviation from brief: menu.models has no Restaurant model, and Branch
+        # has no restaurant FK (see menu/tests/test_tables.py for the real
+        # constructor shape). The branch-QR URL is namespaced 'branch/<slug>/qr/'
+        # (menu/dashboard/urls.py), not 'branches/<slug>/qr/'.
+        from menu.models import Branch, Table
+        branch = Branch.objects.create(company=self.company, name='Main', slug='main')
+        Table.objects.create(branch=branch, label='Patio 1')
+        r = self.client.get(f'/dashboard/branch/{branch.slug}/qr/')
+        self.assertEqual(r.status_code, 200)
+        self.assertIn('table-scroll', r.content.decode())

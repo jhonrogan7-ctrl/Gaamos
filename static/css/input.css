@@ -57,6 +57,46 @@ h1,h2,h3 { font-family: var(--hd); }
   @media (max-width: 680px) { .cards, .qgrid { grid-template-columns: 1fr; } }
 
   /* ══════════════════════════════════════════
+     MOBILE DASHBOARD SHELL (<900px)
+     Bottom tab bar + More sheet. ≥900px keeps the desktop
+     sidebar untouched; exactly one nav visible at any width.
+  ══════════════════════════════════════════ */
+  .tabbar { display: none; }
+
+  .more-sheet { position: fixed; inset: 0; z-index: 50; }
+  .more-sheet .ms-backdrop { position: absolute; inset: 0; background: rgba(15,17,22,.45); }
+  .more-sheet .ms-panel {
+    position: absolute; left: 0; right: 0; bottom: 0; background: #fff;
+    border-radius: 18px 18px 0 0;
+    padding: 8px 18px calc(16px + env(safe-area-inset-bottom));
+    animation: sheet-up .22s cubic-bezier(.2,.8,.2,1);
+  }
+  .more-sheet .ms-grab { width: 38px; height: 4px; border-radius: 999px; background: var(--line); margin: 6px auto 8px; }
+  .more-sheet .ms-link {
+    @apply flex items-center gap-2.5;
+    min-height: 48px; padding: 0 4px; font-size: 14px; font-weight: 700;
+    color: var(--ink); text-decoration: none; border-bottom: 1px solid var(--line);
+  }
+  .more-sheet .ms-link svg { width: 18px; height: 18px; color: var(--ink-3); }
+  .more-sheet .ms-link.on { color: var(--accent-deep); }
+  .more-sheet .ms-link.on svg { color: var(--accent-deep); }
+  .more-sheet .ms-user { @apply flex items-center gap-2.5; padding: 12px 4px; }
+  .more-sheet .ms-user .av {
+    width: 34px; height: 34px; border-radius: 10px; background: var(--accent-soft);
+    color: var(--accent-deep); font-weight: 800; font-size: 12px;
+    @apply flex items-center justify-center;
+  }
+  .more-sheet .ms-user .vn { font-size: 13px; font-weight: 700; }
+  .more-sheet .ms-user .vn small { display: block; font-size: 10.5px; color: var(--ink-3); font-weight: 600; }
+  .more-sheet .ms-signout { width: 100%; }
+  @media (min-width: 900px) { .more-sheet { display: none; } }
+
+  /* horizontal-scroll container for wide data tables (all widths; only kicks in
+     when the table's min-width exceeds the container) */
+  .table-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  .table-scroll > .tbl { min-width: 560px; }
+
+  /* ══════════════════════════════════════════
      OVERVIEW (KPIs · chart · top list · live feed)
   ══════════════════════════════════════════ */
   .stats { display: grid; grid-template-columns: repeat(4,1fr); gap: 14px; margin-bottom: 18px; }
@@ -246,6 +286,7 @@ h1,h2,h3 { font-family: var(--hd); }
      SETTINGS LAYOUT
   ══════════════════════════════════════════ */
   .set-grid { display: grid; grid-template-columns: 200px 1fr; gap: 22px; align-items: start; }
+  @media (max-width: 899.98px) { .set-grid { grid-template-columns: 1fr; } }
   .set-nav { @apply flex flex-col gap-0.5; position: sticky; top: 16px; }
   .set-nav a { font-size: 13px; font-weight: 700; color: var(--ink-2); padding: 9px 12px; border-radius: 10px; cursor: pointer; text-decoration: none; }
   .set-nav a.on { background: var(--accent-soft); color: var(--accent-deep); }
@@ -603,6 +644,37 @@ h1,h2,h3 { font-family: var(--hd); }
   .mk-badge-served { @apply text-[11px] font-semibold px-2 py-0.5 rounded-full; background: var(--green-soft); color: var(--green); }
   .js .mk-reveal { opacity: 0; transform: translateY(22px); transition: opacity .7s ease, transform .7s ease; }
   .js .mk-reveal.is-in { opacity: 1; transform: none; }
+
+  /* ══════════════════════════════════════════
+     MOBILE DASHBOARD SHELL — <900px overrides.
+     MUST stay at the END of @layer components: .side/.top overrides share
+     specificity with their base rules above, so source order decides
+     (media-query nesting does not change cascade order).
+  ══════════════════════════════════════════ */
+  @media (max-width: 899.98px) {
+    .app { grid-template-columns: 1fr; }
+    .side { display: none; }
+    .body { padding: 14px; padding-bottom: calc(76px + env(safe-area-inset-bottom)); }
+    .top { padding: 0 14px; gap: 10px; }
+    .top h2 { min-width: 0; }
+    .top h2, .top h2 small { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .top .top-signout { display: none; }
+
+    .tabbar {
+      position: fixed; left: 0; right: 0; bottom: 0; z-index: 40;
+      display: flex; align-items: stretch;
+      background: #fff; border-top: 1px solid var(--line);
+      padding-bottom: env(safe-area-inset-bottom);
+    }
+    .tabbar .tb {
+      flex: 1; min-height: 56px;
+      @apply flex flex-col items-center justify-center gap-1;
+      font-family: var(--bd); font-size: 11px; font-weight: 700; color: var(--ink-3);
+      text-decoration: none; background: none; border: none; cursor: pointer;
+    }
+    .tabbar .tb svg { width: 22px; height: 22px; }
+    .tabbar .tb.on { color: var(--accent-deep); }
+  }
 }
 
 html { scroll-behavior: smooth; }
