@@ -90,3 +90,32 @@ def test_script_fonts_requested(client):
     body = client.get("/en/").content.decode()
     assert "Noto+Sans+Devanagari" in body
     assert "Noto+Sans+Georgian" in body
+
+
+@pytest.mark.django_db
+def test_nepali_landing_translated(client):
+    body = client.get("/ne/").content.decode()
+    assert "बिक्री केन्द्र" in body            # hero h1
+    assert "निःशुल्क सुरु गर्नुहोस्" in body      # "Start free" CTA
+
+
+@pytest.mark.django_db
+def test_georgian_landing_translated(client):
+    body = client.get("/ka/").content.decode()
+    assert "გაყიდვის წერტილად" in body        # hero h1
+    assert "დაიწყეთ უფასოდ" in body           # "Start free" CTA
+
+
+@pytest.mark.django_db
+def test_contact_error_localized(client):
+    resp = client.post("/ne/contact", {"name": ""}, HTTP_HX_REQUEST="true")
+    assert "कृपया आफ्नो नाम" in resp.content.decode()
+    resp = client.post("/ka/contact", {"name": ""}, HTTP_HX_REQUEST="true")
+    assert "გთხოვთ" in resp.content.decode()
+
+
+@pytest.mark.django_db
+def test_english_landing_unchanged(client):
+    body = client.get("/en/").content.decode()
+    assert "Turn every table into a" in body
+    assert "point of sale" in body
