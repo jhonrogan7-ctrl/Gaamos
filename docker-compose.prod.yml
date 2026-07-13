@@ -9,7 +9,7 @@ services:
   web:
     # Production ASGI server: no --reload, multiple workers.
     # Runs CSS build + migrations + collectstatic at boot, then serves.
-    command: sh -c "bash bin/build-css.sh build && python manage.py migrate --noinput && python manage.py collectstatic --noinput && uvicorn config.asgi:application --host 0.0.0.0 --port 8000 --workers 3"
+    command: sh -c "bash bin/build-css.sh build && python manage.py migrate --noinput && python manage.py collectstatic --noinput && python manage.py compilemessages && uvicorn config.asgi:application --host 0.0.0.0 --port 8000 --workers 3"
     # Drop the dev bind-mount (.:/app) so the container runs the baked image.
     volumes: !override []
     # Bind the host port to loopback ONLY. The tunnel reaches the app as
