@@ -1,14 +1,17 @@
 from django.db import models
+from django.utils.translation import gettext_lazy as _
 
 
 class Lead(models.Model):
-    """A marketing "request a callback" submission from the landing page."""
+    """A marketing "request a callback" submission from the landing page.
+
+    Stored venue_type values stay canonical English; only labels are localized."""
 
     VENUE_TYPES = [
-        ("Café", "Café"),
-        ("Restaurant", "Restaurant"),
-        ("Bar", "Bar"),
-        ("Other", "Other"),
+        ("Café", _("Café")),
+        ("Restaurant", _("Restaurant")),
+        ("Bar", _("Bar")),
+        ("Other", _("Other")),
     ]
 
     name = models.CharField(max_length=120)

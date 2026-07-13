@@ -35,3 +35,6 @@ static/css/app.css
 # Stray media dropped into the repo root
 *.jpeg
 *.ogg
+
+# Compiled gettext catalogs (built by compilemessages)
+*.mo

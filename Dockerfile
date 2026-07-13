@@ -1,9 +1,12 @@
 FROM python:3.12-slim
 ENV PYTHONUNBUFFERED=1 PYTHONDONTWRITEBYTECODE=1
+RUN apt-get update && apt-get install -y --no-install-recommends gettext \
+    && rm -rf /var/lib/apt/lists/*
 WORKDIR /app
 COPY requirements-dev.txt requirements.txt ./
 RUN pip install --no-cache-dir -r requirements-dev.txt
 COPY . .
+RUN python manage.py compilemessages
 RUN bash bin/build-css.sh build
 RUN python manage.py collectstatic --noinput
 EXPOSE 8000

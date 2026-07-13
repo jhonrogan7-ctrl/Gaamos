@@ -1,0 +1,590 @@
+# Nepali translation of the Gaamos marketing landing.
+# Drafted by Claude (2026-07-13); pending native-speaker review.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: gaamos-landing\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-07-14 01:22+0545\n"
+"PO-Revision-Date: 2026-07-13 20:00+0545\n"
+"Last-Translator: Gaamos team <hello@gaamos.io>\n"
+"Language-Team: Nepali\n"
+"Language: ne\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: core/models.py:11
+msgid "Café"
+msgstr "क्याफे"
+
+#: core/models.py:12
+msgid "Restaurant"
+msgstr "रेस्टुरेन्ट"
+
+#: core/models.py:13
+msgid "Bar"
+msgstr "बार"
+
+#: core/models.py:14
+msgid "Other"
+msgstr "अन्य"
+
+#: core/views.py:30 templates/marketing/_hero.html:65
+msgid "Table 12"
+msgstr "टेबल 12"
+
+#: core/views.py:30 core/views.py:31 core/views.py:36 core/views.py:37
+msgid "New"
+msgstr "नयाँ"
+
+#: core/views.py:31 core/views.py:37
+msgid "Takeaway"
+msgstr "टेकअवे"
+
+#: core/views.py:32
+msgid "Table 4"
+msgstr "टेबल 4"
+
+#: core/views.py:32 core/views.py:33 core/views.py:38
+msgid "Served"
+msgstr "सर्भ भयो"
+
+#: core/views.py:33
+msgid "Table 9"
+msgstr "टेबल 9"
+
+#: core/views.py:36
+msgid "Table 6"
+msgstr "टेबल 6"
+
+#: core/views.py:38
+msgid "Table 2"
+msgstr "टेबल 2"
+
+#: core/views.py:52
+msgid "Build your menu"
+msgstr "आफ्नो मेनु बनाउनुहोस्"
+
+#: core/views.py:52
+msgid ""
+"Pick dishes from the template library, set prices, add photos. Organize into "
+"categories your guests will actually browse."
+msgstr ""
+"टेम्प्लेट लाइब्रेरीबाट परिकार छान्नुहोस्, मूल्य राख्नुहोस्, फोटो थप्नुहोस्। पाहुनाहरूले साँच्चै "
+"हेर्ने श्रेणीहरूमा मिलाएर राख्नुहोस्।"
+
+#: core/views.py:53
+msgid "Print your QRs"
+msgstr "आफ्ना QR छाप्नुहोस्"
+
+#: core/views.py:53
+msgid ""
+"Generate one code for the counter or a numbered code per table. Download the "
+"whole set as a print-ready PDF."
+msgstr ""
+"काउन्टरका लागि एउटा कोड वा हरेक टेबलका लागि नम्बर सहितको कोड बनाउनुहोस्। पूरै सेट "
+"छाप्न तयार PDF का रूपमा डाउनलोड गर्नुहोस्।"
+
+#: core/views.py:54
+msgid "Receive orders"
+msgstr "अर्डर प्राप्त गर्नुहोस्"
+
+#: core/views.py:54
+msgid ""
+"Guests scan, browse, and order from their own phone. Orders appear in your "
+"live queue the moment they're placed."
+msgstr ""
+"पाहुनाहरू आफ्नै फोनबाट स्क्यान गर्छन्, मेनु हेर्छन् र अर्डर गर्छन्। अर्डर गरेकै क्षण तपाईंको "
+"लाइभ लाइनमा देखा पर्छ।"
+
+#: core/views.py:62
+msgid "Starter"
+msgstr "स्टार्टर"
+
+#: core/views.py:62
+msgid "Free"
+msgstr "निःशुल्क"
+
+#: core/views.py:62
+msgid "For a single café getting started."
+msgstr "भर्खरै सुरु गर्दै गरेको एउटा क्याफेका लागि।"
+
+#: core/views.py:62 templates/marketing/_final_cta.html:6
+#: templates/marketing/_hero.html:14
+msgid "Start free"
+msgstr "निःशुल्क सुरु गर्नुहोस्"
+
+#: core/views.py:63
+msgid "1 branch"
+msgstr "1 शाखा"
+
+#: core/views.py:63
+msgid "Up to 30 menu items"
+msgstr "30 वटासम्म मेनु आइटम"
+
+#: core/views.py:63
+msgid "Branded QR menu"
+msgstr "ब्रान्डेड QR मेनु"
+
+#: core/views.py:63
+msgid "Venue QR code"
+msgstr "स्थलको QR कोड"
+
+#: core/views.py:64
+msgid "Pro"
+msgstr "प्रो"
+
+#: core/views.py:64 core/views.py:66
+msgid "/month"
+msgstr "/महिना"
+
+#: core/views.py:64
+msgid "For busy venues taking live orders."
+msgstr "लाइभ अर्डर लिने व्यस्त स्थलहरूका लागि।"
+
+#: core/views.py:64 templates/marketing/_nav.html:17
+msgid "Get started"
+msgstr "सुरु गर्नुहोस्"
+
+#: core/views.py:65
+msgid "1 branch, unlimited items"
+msgstr "1 शाखा, असीमित आइटम"
+
+#: core/views.py:65 templates/marketing/_hero.html:34
+msgid "Live order queue"
+msgstr "लाइभ अर्डर लाइन"
+
+#: core/views.py:65
+msgid "Table QRs + PDF export"
+msgstr "टेबल QR + PDF निर्यात"
+
+#: core/views.py:65
+msgid "Photos & item badges"
+msgstr "फोटो र आइटम ब्याज"
+
+#: core/views.py:66
+msgid "Business"
+msgstr "बिजनेस"
+
+#: core/views.py:66
+msgid "For groups running multiple locations."
+msgstr "धेरै स्थान चलाउने समूहहरूका लागि।"
+
+#: core/views.py:66 templates/marketing/_contact.html:5
+msgid "Talk to us"
+msgstr "हामीसँग कुरा गर्नुहोस्"
+
+#: core/views.py:67
+msgid "Unlimited branches"
+msgstr "असीमित शाखा"
+
+#: core/views.py:67
+msgid "Per-branch menus & QRs"
+msgstr "प्रति-शाखा मेनु र QR"
+
+#: core/views.py:67
+msgid "Clone menus across branches"
+msgstr "शाखाहरूबीच मेनु कपी गर्नुहोस्"
+
+#: core/views.py:67
+msgid "Priority support"
+msgstr "प्राथमिकता सहयोग"
+
+#: core/views.py:116
+msgid "Please fill in your name, venue name and phone number."
+msgstr "कृपया आफ्नो नाम, स्थलको नाम र फोन नम्बर भर्नुहोस्।"
+
+#: templates/home.html:3
+msgid "Gaamos — QR menus & live orders for cafés, restaurants and bars"
+msgstr "Gaamos — क्याफे, रेस्टुरेन्ट र बारका लागि QR मेनु र लाइभ अर्डर"
+
+#: templates/marketing/_contact.html:6
+msgid "Tell us about your venue"
+msgstr "आफ्नो स्थलबारे हामीलाई बताउनुहोस्"
+
+#: templates/marketing/_contact.html:7
+msgid ""
+"Leave a request and a Gaamos representative will reach out within one "
+"business day — we'll walk you through setup, pricing, and getting your first "
+"QR on the table."
+msgstr ""
+"अनुरोध छोड्नुहोस्, Gaamos प्रतिनिधिले एक कार्य दिनभित्र सम्पर्क गर्नेछन् — सेटअप, मूल्य र "
+"पहिलो QR टेबलमा राख्ने काममा हामी तपाईंलाई साथ दिनेछौं।"
+
+#: templates/marketing/_contact.html:9
+msgid "Fill in the request"
+msgstr "अनुरोध भर्नुहोस्"
+
+#: templates/marketing/_contact.html:10
+msgid "We call you back"
+msgstr "हामी तपाईंलाई फोन गर्छौं"
+
+#: templates/marketing/_contact.html:11
+msgid "Your menu goes live"
+msgstr "तपाईंको मेनु लाइभ हुन्छ"
+
+#: templates/marketing/_contact_form.html:7
+msgid "Your name"
+msgstr "तपाईंको नाम"
+
+#: templates/marketing/_contact_form.html:8
+msgid "Aashish Sharma"
+msgstr "आशिष शर्मा"
+
+#: templates/marketing/_contact_form.html:11
+msgid "Venue name"
+msgstr "स्थलको नाम"
+
+#: templates/marketing/_contact_form.html:12
+msgid "Chill Zone Café"
+msgstr "चिल जोन क्याफे"
+
+#: templates/marketing/_contact_form.html:17
+msgid "Phone"
+msgstr "फोन"
+
+#: templates/marketing/_contact_form.html:21
+msgid "Email"
+msgstr "इमेल"
+
+#: templates/marketing/_contact_form.html:26
+msgid "Venue type"
+msgstr "स्थलको प्रकार"
+
+#: templates/marketing/_contact_form.html:36
+msgid "What do you need?"
+msgstr "तपाईंलाई के चाहिन्छ?"
+
+#: templates/marketing/_contact_form.html:37
+msgid "e.g. 2 branches, ~60 menu items, table ordering…"
+msgstr "जस्तै: 2 शाखा, ~60 मेनु आइटम, टेबल अर्डरिङ…"
+
+#: templates/marketing/_contact_form.html:43
+msgid "Request a callback"
+msgstr "कलब्याक अनुरोध गर्नुहोस्"
+
+#: templates/marketing/_contact_form.html:44
+msgid "We'll only use your details to contact you about Gaamos."
+msgstr "तपाईंको विवरण Gaamos बारे सम्पर्क गर्न मात्र प्रयोग गर्नेछौं।"
+
+#: templates/marketing/_contact_success.html:4
+msgid "Request received!"
+msgstr "अनुरोध प्राप्त भयो!"
+
+#: templates/marketing/_contact_success.html:5
+msgid ""
+"Thanks — a Gaamos representative will contact you within one business day."
+msgstr "धन्यवाद — Gaamos प्रतिनिधिले एक कार्य दिनभित्र तपाईंलाई सम्पर्क गर्नेछन्।"
+
+#: templates/marketing/_contact_success.html:7
+msgid "Send another request"
+msgstr "अर्को अनुरोध पठाउनुहोस्"
+
+#: templates/marketing/_features.html:4 templates/marketing/_footer.html:12
+#: templates/marketing/_nav.html:6
+msgid "Features"
+msgstr "सुविधाहरू"
+
+#: templates/marketing/_features.html:5
+msgid "Everything a busy venue needs. Nothing it doesn't."
+msgstr "व्यस्त स्थललाई चाहिने सबै कुरा। नचाहिने केही पनि होइन।"
+
+#: templates/marketing/_features.html:11
+msgid "Menu Builder"
+msgstr "मेनु बिल्डर"
+
+#: templates/marketing/_features.html:12
+msgid "Build your menu in minutes, not weekends"
+msgstr "मेनु मिनेटमै बनाउनुहोस्, हप्तौं होइन"
+
+#: templates/marketing/_features.html:13
+msgid ""
+"Start from a global library of dishes and drinks — tick the ones you serve, "
+"drop them into categories, set your prices, add photos. Your menu is live "
+"before your coffee gets cold."
+msgstr ""
+"परिकार र पेय पदार्थको साझा लाइब्रेरीबाट सुरु गर्नुहोस् — आफूले बेच्ने छान्नुहोस्, "
+"श्रेणीहरूमा राख्नुहोस्, मूल्य तोक्नुहोस्, फोटो थप्नुहोस्। कफी सेलाउनुअघि नै तपाईंको मेनु "
+"लाइभ हुन्छ।"
+
+#: templates/marketing/_features.html:15
+msgid "Template library of ready-made items"
+msgstr "तयार आइटमहरूको टेम्प्लेट लाइब्रेरी"
+
+#: templates/marketing/_features.html:16
+msgid "Drag-and-drop categories and groups"
+msgstr "तानेर राख्न मिल्ने श्रेणी र समूह"
+
+#: templates/marketing/_features.html:17
+msgid "Clone a menu from another branch in one tap"
+msgstr "एक ट्यापमै अर्को शाखाको मेनु कपी गर्नुहोस्"
+
+#: templates/marketing/_features.html:22
+msgid "· 10 items"
+msgstr "· 10 आइटम"
+
+#: templates/marketing/_features.html:23
+msgid "live"
+msgstr "लाइभ"
+
+#: templates/marketing/_features.html:30
+msgid "+ Add from library"
+msgstr "+ लाइब्रेरीबाट थप्नुहोस्"
+
+#: templates/marketing/_features.html:40
+msgid "Lakeside · open now"
+msgstr "लेकसाइड · अहिले खुला"
+
+#: templates/marketing/_features.html:52
+msgid "Branded Menu"
+msgstr "ब्रान्डेड मेनु"
+
+#: templates/marketing/_features.html:53
+msgid "Your own address. Your own look."
+msgstr "आफ्नै ठेगाना। आफ्नै रूप।"
+
+#: templates/marketing/_features.html:54
+#, python-format
+msgid ""
+"Every venue gets its own subdomain — <span class=\"text-ink font-"
+"medium\">yourcafe.%(base_domain)s</span> — with your logo, your colors, your "
+"menu. Guests scan and browse instantly in the browser. No app store, no sign-"
+"up, no friction."
+msgstr ""
+"हरेक स्थलले आफ्नै सबडोमेन पाउँछ — <span class=\"text-ink font-medium\">yourcafe."
+"%(base_domain)s</span> — तपाईंकै लोगो, रङ र मेनुसहित। पाहुनाहरूले ब्राउजरमै तुरुन्तै "
+"स्क्यान गरेर हेर्छन्। न एप स्टोर, न साइन-अप, न झन्झट।"
+
+#: templates/marketing/_features.html:62
+msgid "Live Orders"
+msgstr "लाइभ अर्डर"
+
+#: templates/marketing/_features.html:63
+msgid "Orders land the second guests tap \"Place order\""
+msgstr "पाहुनाले \"अर्डर गर्नुहोस्\" थिचेकै सेकेन्डमा अर्डर आइपुग्छ"
+
+#: templates/marketing/_features.html:64
+msgid ""
+"No shouting across the room, no lost paper slips. Every order hits your live "
+"queue instantly — table or takeaway — and moves from <span class=\"mk-badge-"
+"new\">New</span> to <span class=\"mk-badge-served\">Served</span> with one "
+"tap."
+msgstr ""
+"कोठाभरि कराउनु पर्दैन, कागजका पुर्जा हराउँदैनन्। हरेक अर्डर — टेबल होस् वा टेकअवे — "
+"तुरुन्तै तपाईंको लाइभ लाइनमा आइपुग्छ र एक ट्यापमै <span class=\"mk-badge-new\">नयाँ</"
+"span>बाट <span class=\"mk-badge-served\">सर्भ भयो</span>मा सर्छ।"
+
+#: templates/marketing/_features.html:67
+msgid "Live queue"
+msgstr "लाइभ लाइन"
+
+#: templates/marketing/_features.html:67
+msgid "· updates in real time"
+msgstr "· वास्तविक समयमा अपडेट हुन्छ"
+
+#: templates/marketing/_features.html:81
+msgid "Table QRs · 1–12"
+msgstr "टेबल QR · 1–12"
+
+#: templates/marketing/_features.html:81
+msgid "↓ Download all (PDF)"
+msgstr "↓ सबै डाउनलोड गर्नुहोस् (PDF)"
+
+#: templates/marketing/_features.html:84
+#, python-format
+msgid "Table %(t)s"
+msgstr "टेबल %(t)s"
+
+#: templates/marketing/_features.html:89 templates/marketing/_hero.html:30
+msgid "QR Codes"
+msgstr "QR कोडहरू"
+
+#: templates/marketing/_features.html:90
+msgid "A QR for the door, or one for every table"
+msgstr "ढोकाका लागि एउटा QR, वा हरेक टेबलका लागि एउटा"
+
+#: templates/marketing/_features.html:91
+msgid ""
+"Generate a single venue code or a whole range of table codes in seconds. "
+"Download them all as one print-ready PDF, stick them on tables, and you're "
+"taking orders. Table QRs tell you exactly where each order came from."
+msgstr ""
+"सेकेन्डमै एउटा स्थल-कोड वा टेबल-कोडहरूको पूरै दायरा बनाउनुहोस्। सबैलाई एउटै छाप्न तयार "
+"PDF मा डाउनलोड गर्नुहोस्, टेबलमा टाँस्नुहोस्, अनि अर्डर लिन थाल्नुहोस्। टेबल QR ले हरेक "
+"अर्डर कुन टेबलबाट आयो भन्ने ठ्याक्कै बताउँछ।"
+
+#: templates/marketing/_final_cta.html:4
+msgid "Your guests are already holding the menu"
+msgstr "तपाईंका पाहुनाको हातमा मेनु पहिल्यै छ"
+
+#: templates/marketing/_final_cta.html:5
+msgid ""
+"It's their phone. Put your menu on it tonight — free to start, live in "
+"minutes."
+msgstr ""
+"त्यो उनीहरूकै फोन हो। आजै राति आफ्नो मेनु त्यसमा राख्नुहोस् — सुरु गर्न निःशुल्क, मिनेटमै "
+"लाइभ।"
+
+#: templates/marketing/_final_cta.html:7
+msgid "No credit card required"
+msgstr "क्रेडिट कार्ड चाहिँदैन"
+
+#: templates/marketing/_footer.html:6
+#, python-format
+msgid ""
+"QR menus and live orders for cafés, restaurants and bars. Your venue at "
+"<span class=\"text-white\">yourcafe.%(base_domain)s</span>."
+msgstr ""
+"क्याफे, रेस्टुरेन्ट र बारका लागि QR मेनु र लाइभ अर्डर। तपाईंको स्थल <span class=\"text-"
+"white\">yourcafe.%(base_domain)s</span> मा।"
+
+#: templates/marketing/_footer.html:10
+msgid "Product"
+msgstr "उत्पादन"
+
+#: templates/marketing/_footer.html:13 templates/marketing/_how.html:4
+#: templates/marketing/_nav.html:7
+msgid "How it works"
+msgstr "कसरी काम गर्छ"
+
+#: templates/marketing/_footer.html:14 templates/marketing/_nav.html:8
+#: templates/marketing/_pricing.html:4
+msgid "Pricing"
+msgstr "मूल्य"
+
+#: templates/marketing/_footer.html:18 templates/marketing/_hero.html:27
+msgid "Company"
+msgstr "कम्पनी"
+
+#: templates/marketing/_footer.html:20
+msgid "About"
+msgstr "हाम्रोबारे"
+
+#: templates/marketing/_footer.html:21 templates/marketing/_nav.html:9
+msgid "Contact"
+msgstr "सम्पर्क"
+
+#: templates/marketing/_footer.html:22
+msgid "Support"
+msgstr "सहयोग"
+
+#: templates/marketing/_footer.html:27
+msgid "© 2026 Gaamos. All rights reserved."
+msgstr "© 2026 Gaamos. सर्वाधिकार सुरक्षित।"
+
+#: templates/marketing/_hero.html:5
+msgid "QR menus · live orders · no app required"
+msgstr "QR मेनु · लाइभ अर्डर · एप चाहिँदैन"
+
+#: templates/marketing/_hero.html:8
+msgid ""
+"Turn every table into a <span class=\"mk-grad-text\">point of sale</span>"
+msgstr "हरेक टेबललाई <span class=\"mk-grad-text\">बिक्री केन्द्र</span> बनाउनुहोस्"
+
+#: templates/marketing/_hero.html:11
+msgid ""
+"Gaamos gives your café a branded QR menu and a live order queue. Guests "
+"scan, browse, and order — nothing to download, nothing to explain."
+msgstr ""
+"Gaamos ले तपाईंको क्याफेलाई ब्रान्डेड QR मेनु र लाइभ अर्डर लाइन दिन्छ। पाहुनाहरू स्क्यान "
+"गर्छन्, हेर्छन् र अर्डर गर्छन् — केही डाउनलोड गर्नु पर्दैन, केही सिकाउनु पर्दैन।"
+
+#: templates/marketing/_hero.html:15
+msgid "See how it works"
+msgstr "कसरी काम गर्छ हेर्नुहोस्"
+
+#: templates/marketing/_hero.html:17
+msgid "Free to start · Set up in under 15 minutes"
+msgstr "सुरु गर्न निःशुल्क · 15 मिनेटभित्रै सेटअप"
+
+#: templates/marketing/_hero.html:28
+msgid "Overview"
+msgstr "समग्र"
+
+#: templates/marketing/_hero.html:28
+msgid "Items"
+msgstr "आइटमहरू"
+
+#: templates/marketing/_hero.html:28
+msgid "Branches"
+msgstr "शाखाहरू"
+
+#: templates/marketing/_hero.html:29
+msgid "Operations"
+msgstr "सञ्चालन"
+
+#: templates/marketing/_hero.html:30
+msgid "Orders"
+msgstr "अर्डरहरू"
+
+#: templates/marketing/_hero.html:35
+msgid "all branches · updates in real time"
+msgstr "सबै शाखा · वास्तविक समयमा अपडेट"
+
+#: templates/marketing/_hero.html:54
+msgid "Toast · 4 dishes"
+msgstr "Toast · 4 परिकार"
+
+#: templates/marketing/_how.html:5
+msgid "Live by lunchtime"
+msgstr "खाजा समयअघि नै लाइभ"
+
+#: templates/marketing/_multibranch.html:5
+msgid "Multi-branch"
+msgstr "बहु-शाखा"
+
+#: templates/marketing/_multibranch.html:6
+msgid "Every location. One dashboard."
+msgstr "हरेक स्थान। एउटै ड्यासबोर्ड।"
+
+#: templates/marketing/_multibranch.html:7
+msgid ""
+"Run two branches or twenty. Each gets its own menu, its own QR codes, and "
+"its own orders — while you watch everything from a single screen. Clone a "
+"menu to a new branch and open the doors the same day."
+msgstr ""
+"दुई शाखा चलाउनुहोस् वा बीस। हरेकको आफ्नै मेनु, आफ्नै QR कोड र आफ्नै अर्डर हुन्छ — तपाईं "
+"भने सबै एउटै स्क्रिनबाट हेर्नुहुन्छ। नयाँ शाखामा मेनु कपी गर्नुहोस् र त्यही दिन ढोका "
+"खोल्नुहोस्।"
+
+#: templates/marketing/_multibranch.html:9
+msgid "dashboard"
+msgstr "ड्यासबोर्ड"
+
+#: templates/marketing/_multibranch.html:10
+msgid "branches"
+msgstr "शाखाहरू"
+
+#: templates/marketing/_multibranch.html:11
+msgid "extra logins"
+msgstr "थप लगइन"
+
+#: templates/marketing/_multibranch.html:19
+msgid "orders today"
+msgstr "आजका अर्डर"
+
+#: templates/marketing/_pricing.html:5
+msgid "Simple pricing that grows with you"
+msgstr "तपाईंसँगै बढ्ने सरल मूल्य"
+
+#: templates/marketing/_pricing.html:6
+msgid "Start free. Upgrade when the orders start rolling in."
+msgstr "निःशुल्क सुरु गर्नुहोस्। अर्डर आउन थालेपछि अपग्रेड गर्नुहोस्।"
+
+#: templates/marketing/_pricing.html:11
+msgid "Most popular"
+msgstr "सबैभन्दा लोकप्रिय"
+
+#: templates/marketing/_pricing.html:24
+msgid ""
+"All plans include the branded guest menu, QR generation, and live orders. "
+"Prices are placeholders."
+msgstr ""
+"सबै योजनामा ब्रान्डेड गेस्ट मेनु, QR निर्माण र लाइभ अर्डर समावेश छन्। मूल्यहरू नमुना मात्र "
+"हुन्।"
+
+#: templates/marketing/_social_proof.html:3
+msgid "Powering menus for cafés, restaurants and bars across the region"
+msgstr "क्षेत्रभरका क्याफे, रेस्टुरेन्ट र बारका मेनु चलाउँदै"

@@ -1,12 +1,20 @@
+{% load i18n %}{% get_current_language as cur %}
 <header class="sticky top-0 z-40 bg-panel/90 backdrop-blur border-b border-line">
-  <nav class="mk-wrap flex items-center justify-between h-16">
+  <nav class="mk-wrap flex items-center justify-between h-16 gap-3">
     <a href="#top" class="flex items-center">{% include "marketing/_logo.html" %}</a>
     <div class="hidden md:flex items-center gap-8 text-sm text-ink-2">
-      <a href="#features" class="hover:text-ink">Features</a>
-      <a href="#how" class="hover:text-ink">How it works</a>
-      <a href="#pricing" class="hover:text-ink">Pricing</a>
-      <a href="#contact" class="hover:text-ink">Contact</a>
+      <a href="#features" class="hover:text-ink">{% translate "Features" %}</a>
+      <a href="#how" class="hover:text-ink">{% translate "How it works" %}</a>
+      <a href="#pricing" class="hover:text-ink">{% translate "Pricing" %}</a>
+      <a href="#contact" class="hover:text-ink">{% translate "Contact" %}</a>
     </div>
-    <a href="#contact" class="mk-btn-primary !px-5 !py-2">Get started</a>
+    <div class="flex items-center gap-3">
+      <div class="flex items-center gap-1 text-xs font-bold">
+        <a href="/en/" class="px-2 py-1 rounded-full {% if cur == 'en' %}bg-accent-soft text-accent-deep{% else %}text-ink-3 hover:text-ink{% endif %}">EN</a>
+        <a href="/ne/" class="px-2 py-1 rounded-full {% if cur == 'ne' %}bg-accent-soft text-accent-deep{% else %}text-ink-3 hover:text-ink{% endif %}">ने</a>
+        <a href="/ka/" class="px-2 py-1 rounded-full {% if cur == 'ka' %}bg-accent-soft text-accent-deep{% else %}text-ink-3 hover:text-ink{% endif %}">ქა</a>
+      </div>
+      <a href="#contact" class="mk-btn-primary !px-5 !py-2">{% translate "Get started" %}</a>
+    </div>
   </nav>
 </header>
