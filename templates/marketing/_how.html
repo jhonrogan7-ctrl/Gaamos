@@ -1,7 +1,8 @@
+{% load i18n %}
 <section id="how" class="mk-wrap py-20">
   <div class="text-center mb-12">
-    <div class="mk-eyebrow">How it works</div>
-    <h2 class="font-hd text-3xl md:text-4xl font-extrabold text-ink mt-2">Live by lunchtime</h2>
+    <div class="mk-eyebrow">{% translate "How it works" %}</div>
+    <h2 class="font-hd text-3xl md:text-4xl font-extrabold text-ink mt-2">{% translate "Live by lunchtime" %}</h2>
   </div>
   <div class="grid md:grid-cols-3 gap-6">
     {% for s in steps %}

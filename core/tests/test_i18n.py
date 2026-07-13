@@ -61,3 +61,9 @@ def test_venue_type_chips_submit_canonical_values(client):
 def test_venue_type_stored_values_stay_canonical():
     from core.models import Lead
     assert [v for v, _ in Lead.VENUE_TYPES] == ["Café", "Restaurant", "Bar", "Other"]
+
+
+@pytest.mark.django_db
+def test_html_lang_matches_url_prefix(client):
+    assert 'lang="ne"' in client.get("/ne/").content.decode()
+    assert 'lang="en"' in client.get("/en/").content.decode()

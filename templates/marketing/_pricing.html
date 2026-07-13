@@ -1,13 +1,14 @@
+{% load i18n %}
 <section id="pricing" class="mk-wrap py-20">
   <div class="text-center max-w-2xl mx-auto mb-12">
-    <div class="mk-eyebrow">Pricing</div>
-    <h2 class="font-hd text-3xl md:text-4xl font-extrabold text-ink mt-2">Simple pricing that grows with you</h2>
-    <p class="text-ink-2 mt-3">Start free. Upgrade when the orders start rolling in.</p>
+    <div class="mk-eyebrow">{% translate "Pricing" %}</div>
+    <h2 class="font-hd text-3xl md:text-4xl font-extrabold text-ink mt-2">{% translate "Simple pricing that grows with you" %}</h2>
+    <p class="text-ink-2 mt-3">{% translate "Start free. Upgrade when the orders start rolling in." %}</p>
   </div>
   <div class="grid md:grid-cols-3 gap-6 items-start">
     {% for t in tiers %}
     <div class="rounded-2xl p-6 transition hover:-translate-y-1 {% if t.highlighted %}text-white shadow-frame mk-grad{% else %}mk-card{% endif %}">
-      {% if t.highlighted %}<div class="text-[11px] font-bold tracking-widest uppercase text-white/90 mb-3">Most popular</div>{% endif %}
+      {% if t.highlighted %}<div class="text-[11px] font-bold tracking-widest uppercase text-white/90 mb-3">{% translate "Most popular" %}</div>{% endif %}
       <div class="font-semibold {% if t.highlighted %}text-white{% else %}text-accent{% endif %}">{{ t.name }}</div>
       <div class="mt-2"><span class="font-hd text-4xl font-extrabold {% if t.highlighted %}text-white{% else %}text-ink{% endif %}">{{ t.price }}</span><span class="{% if t.highlighted %}text-white/80{% else %}text-ink-3{% endif %}">{{ t.per }}</span></div>
       <div class="text-sm mt-2 {% if t.highlighted %}text-white/80{% else %}text-ink-2{% endif %}">{{ t.blurb }}</div>
@@ -20,5 +21,5 @@
     </div>
     {% endfor %}
   </div>
-  <p class="text-center text-xs text-ink-3 mt-8">All plans include the branded guest menu, QR generation, and live orders. Prices are placeholders.</p>
+  <p class="text-center text-xs text-ink-3 mt-8">{% translate "All plans include the branded guest menu, QR generation, and live orders. Prices are placeholders." %}</p>
 </section>
