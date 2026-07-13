@@ -67,3 +67,26 @@ def test_venue_type_stored_values_stay_canonical():
 def test_html_lang_matches_url_prefix(client):
     assert 'lang="ne"' in client.get("/ne/").content.decode()
     assert 'lang="en"' in client.get("/en/").content.decode()
+
+
+@pytest.mark.django_db
+def test_nav_language_switcher_links(client):
+    body = client.get("/en/").content.decode()
+    for href in ('href="/en/"', 'href="/ne/"', 'href="/ka/"'):
+        assert href in body
+    assert "ने" in body and "ქა" in body
+
+
+@pytest.mark.django_db
+def test_hreflang_alternates_in_head(client, settings):
+    body = client.get("/en/").content.decode()
+    for lang in ("en", "ne", "ka"):
+        assert f'hreflang="{lang}" href="https://{settings.BASE_DOMAIN}/{lang}/"' in body
+    assert 'hreflang="x-default"' in body
+
+
+@pytest.mark.django_db
+def test_script_fonts_requested(client):
+    body = client.get("/en/").content.decode()
+    assert "Noto+Sans+Devanagari" in body
+    assert "Noto+Sans+Georgian" in body

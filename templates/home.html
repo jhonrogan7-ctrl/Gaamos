@@ -1,6 +1,12 @@
 {% extends "base.html" %}
 {% load i18n %}
 {% block title %}{% translate "Gaamos — QR menus & live orders for cafés, restaurants and bars" %}{% endblock %}
+{% block head %}
+  <link rel="alternate" hreflang="en" href="https://{{ base_domain }}/en/">
+  <link rel="alternate" hreflang="ne" href="https://{{ base_domain }}/ne/">
+  <link rel="alternate" hreflang="ka" href="https://{{ base_domain }}/ka/">
+  <link rel="alternate" hreflang="x-default" href="https://{{ base_domain }}/en/">
+{% endblock %}
 {% block content %}
 <script>document.documentElement.classList.add('js');</script>
 {% include "marketing/_nav.html" %}
