@@ -48,3 +48,16 @@ def test_tenant_host_untouched(client, settings):
     assert client.get("/", HTTP_HOST=host).status_code == 200          # guest menu
     assert client.get("/ne/", HTTP_HOST=host).status_code == 404       # no marketing on tenant
     assert client.get("/en/contact", HTTP_HOST=host).status_code == 404
+
+
+@pytest.mark.django_db
+def test_venue_type_chips_submit_canonical_values(client):
+    body = client.get("/en/").content.decode()
+    # chips render labels AND wire canonical values into Alpine
+    assert "vtype = 'Café'" in body
+    assert "vtype = 'Restaurant'" in body
+
+
+def test_venue_type_stored_values_stay_canonical():
+    from core.models import Lead
+    assert [v for v, _ in Lead.VENUE_TYPES] == ["Café", "Restaurant", "Bar", "Other"]

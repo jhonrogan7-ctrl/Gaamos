@@ -2,6 +2,7 @@ from django.conf import settings
 from django.http import Http404, HttpResponse, JsonResponse
 from django.shortcuts import redirect, render
 from django.urls import reverse
+from django.utils.translation import gettext_lazy as _
 
 from .models import Lead
 
@@ -26,15 +27,15 @@ def offline(request):
 VENUE_TYPES = [c[0] for c in Lead.VENUE_TYPES]
 
 HERO_ORDERS = [
-    {"id": "#7", "table": "Table 12", "items": "Cappuccino ×2, French Toast ×1", "total": "Rs 590", "status": "New"},
-    {"id": "#6", "table": "Takeaway", "items": "Cheese Toast ×1, Milk Tea ×2", "total": "Rs 300", "status": "New"},
-    {"id": "#5", "table": "Table 4", "items": "American Breakfast ×1, Black Coffee ×1", "total": "Rs 430", "status": "Served"},
-    {"id": "#4", "table": "Table 9", "items": "Hot Chocolate ×2, Plain Toast ×1", "total": "Rs 520", "status": "Served"},
+    {"id": "#7", "table": _("Table 12"), "items": "Cappuccino ×2, French Toast ×1", "total": "Rs 590", "status": "New", "status_label": _("New")},
+    {"id": "#6", "table": _("Takeaway"), "items": "Cheese Toast ×1, Milk Tea ×2", "total": "Rs 300", "status": "New", "status_label": _("New")},
+    {"id": "#5", "table": _("Table 4"), "items": "American Breakfast ×1, Black Coffee ×1", "total": "Rs 430", "status": "Served", "status_label": _("Served")},
+    {"id": "#4", "table": _("Table 9"), "items": "Hot Chocolate ×2, Plain Toast ×1", "total": "Rs 520", "status": "Served", "status_label": _("Served")},
 ]
 LIVE_ORDERS = [
-    {"id": "#3", "table": "Table 6", "items": "Plain Toast ×1, Cheese Toast ×1, Cheese Tomato Toast ×1", "status": "New"},
-    {"id": "#2", "table": "Takeaway", "items": "American Breakfast ×1, Special Breakfast ×1", "status": "New"},
-    {"id": "#1", "table": "Table 2", "items": "French Toast ×1, Plain Toast ×2", "status": "Served"},
+    {"id": "#3", "table": _("Table 6"), "items": "Plain Toast ×1, Cheese Toast ×1, Cheese Tomato Toast ×1", "status": "New", "status_label": _("New")},
+    {"id": "#2", "table": _("Takeaway"), "items": "American Breakfast ×1, Special Breakfast ×1", "status": "New", "status_label": _("New")},
+    {"id": "#1", "table": _("Table 2"), "items": "French Toast ×1, Plain Toast ×2", "status": "Served", "status_label": _("Served")},
 ]
 HERO_DISHES = [
     {"name": "Plain Toast", "price": "Rs 100"},
@@ -48,9 +49,9 @@ BUILDER_ITEMS = [
     {"name": "Hot Chocolate", "price": "Rs 210"},
 ]
 STEPS = [
-    {"n": "1", "title": "Build your menu", "body": "Pick dishes from the template library, set prices, add photos. Organize into categories your guests will actually browse."},
-    {"n": "2", "title": "Print your QRs", "body": "Generate one code for the counter or a numbered code per table. Download the whole set as a print-ready PDF."},
-    {"n": "3", "title": "Receive orders", "body": "Guests scan, browse, and order from their own phone. Orders appear in your live queue the moment they're placed."},
+    {"n": "1", "title": _("Build your menu"), "body": _("Pick dishes from the template library, set prices, add photos. Organize into categories your guests will actually browse.")},
+    {"n": "2", "title": _("Print your QRs"), "body": _("Generate one code for the counter or a numbered code per table. Download the whole set as a print-ready PDF.")},
+    {"n": "3", "title": _("Receive orders"), "body": _("Guests scan, browse, and order from their own phone. Orders appear in your live queue the moment they're placed.")},
 ]
 BRANCHES = [
     {"initials": "CZ", "name": "Chill Zone — Lakeside", "prefix": "chillzone", "orders": "42"},
@@ -58,12 +59,12 @@ BRANCHES = [
     {"initials": "TC", "name": "The Terrace Café", "prefix": "theterrace", "orders": "18"},
 ]
 TIERS = [
-    {"name": "Starter", "price": "Free", "per": "", "blurb": "For a single café getting started.", "cta": "Start free",
-     "highlighted": False, "features": ["1 branch", "Up to 30 menu items", "Branded QR menu", "Venue QR code"]},
-    {"name": "Pro", "price": "$29", "per": "/month", "blurb": "For busy venues taking live orders.", "cta": "Get started",
-     "highlighted": True, "features": ["1 branch, unlimited items", "Live order queue", "Table QRs + PDF export", "Photos & item badges"]},
-    {"name": "Business", "price": "$79", "per": "/month", "blurb": "For groups running multiple locations.", "cta": "Talk to us",
-     "highlighted": False, "features": ["Unlimited branches", "Per-branch menus & QRs", "Clone menus across branches", "Priority support"]},
+    {"name": _("Starter"), "price": _("Free"), "per": "", "blurb": _("For a single café getting started."), "cta": _("Start free"),
+     "highlighted": False, "features": [_("1 branch"), _("Up to 30 menu items"), _("Branded QR menu"), _("Venue QR code")]},
+    {"name": _("Pro"), "price": "$29", "per": _("/month"), "blurb": _("For busy venues taking live orders."), "cta": _("Get started"),
+     "highlighted": True, "features": [_("1 branch, unlimited items"), _("Live order queue"), _("Table QRs + PDF export"), _("Photos & item badges")]},
+    {"name": _("Business"), "price": "$79", "per": _("/month"), "blurb": _("For groups running multiple locations."), "cta": _("Talk to us"),
+     "highlighted": False, "features": [_("Unlimited branches"), _("Per-branch menus & QRs"), _("Clone menus across branches"), _("Priority support")]},
 ]
 TABLE_QRS = ["1", "2", "3", "4", "5", "6", "7", "8"]
 
@@ -78,7 +79,7 @@ def _landing_context(**extra):
         "branches": BRANCHES,
         "tiers": TIERS,
         "table_qrs": TABLE_QRS,
-        "venue_types": VENUE_TYPES,
+        "venue_types": Lead.VENUE_TYPES,
     }
     ctx.update(extra)
     return ctx
@@ -112,10 +113,10 @@ def contact(request):
         if values["venue_type"] not in VENUE_TYPES:
             values["venue_type"] = "Café"
         if not (values["name"] and values["venue_name"] and values["phone"]):
-            error = "Please fill in your name, venue name and phone number."
+            error = _("Please fill in your name, venue name and phone number.")
             if is_htmx:
                 return render(request, "marketing/_contact_form.html", {
-                    "error": error, "values": values, "venue_types": VENUE_TYPES,
+                    "error": error, "values": values, "venue_types": Lead.VENUE_TYPES,
                 })
             return render(request, "home.html", _landing_context(
                 contact_error=error, contact_values=values,
@@ -126,5 +127,5 @@ def contact(request):
         return render(request, "home.html", _landing_context(contact_sent=True))
     # GET
     if is_htmx:
-        return render(request, "marketing/_contact_form.html", {"venue_types": VENUE_TYPES})
+        return render(request, "marketing/_contact_form.html", {"venue_types": Lead.VENUE_TYPES})
     return redirect(reverse("home") + "#contact")
