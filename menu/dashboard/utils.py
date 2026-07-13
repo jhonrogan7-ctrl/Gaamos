@@ -4,7 +4,6 @@ from qrcode.constants import ERROR_CORRECT_M
 from PIL import Image, ImageDraw, ImageFont
 from django.conf import settings
 
-COMPANY_NAME = "Twenty Two Tech Company"
 
 
 def render_qr_png(url, caption):
@@ -60,10 +59,12 @@ def general_qr_url(base_url, branch):
 
 def generate_qr_for_branch(branch, base_url):
     url = general_qr_url(base_url, branch)
-    png = render_qr_png(url, COMPANY_NAME)
+    png = render_qr_png(url, branch.company.name)
     dest_dir = os.path.join(settings.MEDIA_ROOT, 'qr')
     os.makedirs(dest_dir, exist_ok=True)
-    filename = f"branch_{branch.slug}.png"
+    # Branch slugs are only unique per company — the filename must carry the
+    # company too, or same-slug branches in different tenants share one file.
+    filename = f"branch_{branch.company.slug}_{branch.slug}.png"
     path = os.path.join(dest_dir, filename)
     with open(path, 'wb') as f:
         f.write(png)
