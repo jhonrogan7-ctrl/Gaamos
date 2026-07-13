@@ -2,7 +2,7 @@ import json
 
 from django.db.models import F
 from django.http import JsonResponse
-from django.shortcuts import render
+from django.shortcuts import redirect, render
 from django.views.decorators.csrf import ensure_csrf_cookie
 from django.views.decorators.http import require_POST
 from .models import Branch, BranchAd, Category, BranchItemPlacement, BranchMenuItem, MenuItem, Table, Order, OrderItem, Company
@@ -172,10 +172,10 @@ def place_order(request):
 
 @ensure_csrf_cookie
 def root(request):
-    """Phase 1 root dispatcher: tenant host (company resolved) → guest menu;
-    reserved/apex host (no company) → core marketing/home. Full host-based
-    split lands in Phase 3."""
+    """Root dispatcher: tenant host (company resolved) → guest menu;
+    apex/reserved host → redirect to the language-prefixed marketing landing
+    (LocaleMiddleware has already negotiated Accept-Language, fallback en)."""
     if getattr(request, 'company', None) is not None:
         return menu(request)
-    from core.views import home as core_home
-    return core_home(request)
+    from django.utils import translation
+    return redirect(f"/{translation.get_language() or 'en'}/")

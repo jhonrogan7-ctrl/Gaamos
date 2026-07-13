@@ -1,12 +1,15 @@
 FROM python:3.12-slim
 ENV PYTHONUNBUFFERED=1 PYTHONDONTWRITEBYTECODE=1
+RUN apt-get update && apt-get install -y --no-install-recommends gettext \
+    && rm -rf /var/lib/apt/lists/*
 WORKDIR /app
 COPY requirements-dev.txt requirements.txt ./
 RUN pip install --no-cache-dir -r requirements-dev.txt
 # Non-root runtime user (defense-in-depth; independent of host rootless mapping)
 RUN useradd --create-home --uid 10001 app
 COPY . .
-RUN bash bin/build-css.sh build \
+RUN python manage.py compilemessages \
+    && bash bin/build-css.sh build \
     && python manage.py collectstatic --noinput \
     && mkdir -p /app/staticfiles /app/media \
     && chown -R app:app /app

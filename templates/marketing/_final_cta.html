@@ -1,8 +1,9 @@
+{% load i18n %}
 <section class="mk-wrap py-20">
   <div class="mk-card mk-grad text-white text-center rounded-2xl p-12 shadow-frame">
-    <h2 class="font-hd text-3xl md:text-4xl font-extrabold">Your guests are already holding the menu</h2>
-    <p class="text-white/85 mt-3 max-w-xl mx-auto">It's their phone. Put your menu on it tonight — free to start, live in minutes.</p>
-    <a href="#contact" class="inline-block mt-6 bg-white text-ink rounded-full px-8 py-3 font-semibold text-sm hover:-translate-y-0.5 transition">Start free</a>
-    <p class="text-xs text-white/70 mt-3">No credit card required</p>
+    <h2 class="font-hd text-3xl md:text-4xl font-extrabold">{% translate "Your guests are already holding the menu" %}</h2>
+    <p class="text-white/85 mt-3 max-w-xl mx-auto">{% translate "It's their phone. Put your menu on it tonight — free to start, live in minutes." %}</p>
+    <a href="#contact" class="inline-block mt-6 bg-white text-ink rounded-full px-8 py-3 font-semibold text-sm hover:-translate-y-0.5 transition">{% translate "Start free" %}</a>
+    <p class="text-xs text-white/70 mt-3">{% translate "No credit card required" %}</p>
   </div>
 </section>

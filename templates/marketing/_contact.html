@@ -1,13 +1,14 @@
+{% load i18n %}
 <section id="contact" class="mk-wrap py-20">
   <div class="grid md:grid-cols-2 gap-10 items-start">
     <div>
-      <div class="mk-eyebrow">Talk to us</div>
-      <h2 class="font-hd text-3xl md:text-4xl font-extrabold text-ink mt-2">Tell us about your venue</h2>
-      <p class="text-ink-2 mt-4">Leave a request and a Gaamos representative will reach out within one business day — we'll walk you through setup, pricing, and getting your first QR on the table.</p>
+      <div class="mk-eyebrow">{% translate "Talk to us" %}</div>
+      <h2 class="font-hd text-3xl md:text-4xl font-extrabold text-ink mt-2">{% translate "Tell us about your venue" %}</h2>
+      <p class="text-ink-2 mt-4">{% blocktranslate trimmed %}Leave a request and a Gaamos representative will reach out within one business day — we'll walk you through setup, pricing, and getting your first QR on the table.{% endblocktranslate %}</p>
       <div class="mt-6 space-y-3 text-sm text-ink-2">
-        <div class="flex items-center gap-3"><span class="w-6 h-6 rounded-full mk-grad text-white text-xs font-bold flex items-center justify-center">1</span>Fill in the request</div>
-        <div class="flex items-center gap-3"><span class="w-6 h-6 rounded-full mk-grad text-white text-xs font-bold flex items-center justify-center">2</span>We call you back</div>
-        <div class="flex items-center gap-3"><span class="w-6 h-6 rounded-full mk-grad text-white text-xs font-bold flex items-center justify-center">3</span>Your menu goes live</div>
+        <div class="flex items-center gap-3"><span class="w-6 h-6 rounded-full mk-grad text-white text-xs font-bold flex items-center justify-center">1</span>{% translate "Fill in the request" %}</div>
+        <div class="flex items-center gap-3"><span class="w-6 h-6 rounded-full mk-grad text-white text-xs font-bold flex items-center justify-center">2</span>{% translate "We call you back" %}</div>
+        <div class="flex items-center gap-3"><span class="w-6 h-6 rounded-full mk-grad text-white text-xs font-bold flex items-center justify-center">3</span>{% translate "Your menu goes live" %}</div>
       </div>
     </div>
     <div>

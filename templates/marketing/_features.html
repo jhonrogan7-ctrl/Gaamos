@@ -1,32 +1,33 @@
+{% load i18n %}
 <section id="features" class="mk-wrap py-20">
   <div class="text-center max-w-2xl mx-auto mb-14">
-    <div class="mk-eyebrow">Features</div>
-    <h2 class="font-hd text-3xl md:text-4xl font-extrabold text-ink mt-2">Everything a busy venue needs. Nothing it doesn't.</h2>
+    <div class="mk-eyebrow">{% translate "Features" %}</div>
+    <h2 class="font-hd text-3xl md:text-4xl font-extrabold text-ink mt-2">{% translate "Everything a busy venue needs. Nothing it doesn't." %}</h2>
   </div>
 
   <!-- Feature 1: menu builder -->
   <div class="grid md:grid-cols-2 gap-10 items-center mb-16 mk-reveal">
     <div>
-      <div class="mk-eyebrow">Menu Builder</div>
-      <h3 class="font-hd text-2xl font-bold text-ink mt-2">Build your menu in minutes, not weekends</h3>
-      <p class="text-ink-2 mt-3">Start from a global library of dishes and drinks — tick the ones you serve, drop them into categories, set your prices, add photos. Your menu is live before your coffee gets cold.</p>
+      <div class="mk-eyebrow">{% translate "Menu Builder" %}</div>
+      <h3 class="font-hd text-2xl font-bold text-ink mt-2">{% translate "Build your menu in minutes, not weekends" %}</h3>
+      <p class="text-ink-2 mt-3">{% blocktranslate trimmed %}Start from a global library of dishes and drinks — tick the ones you serve, drop them into categories, set your prices, add photos. Your menu is live before your coffee gets cold.{% endblocktranslate %}</p>
       <ul class="mt-4 space-y-2 text-sm text-ink-2">
-        <li><span class="text-accent font-bold mr-2">✓</span>Template library of ready-made items</li>
-        <li><span class="text-accent font-bold mr-2">✓</span>Drag-and-drop categories and groups</li>
-        <li><span class="text-accent font-bold mr-2">✓</span>Clone a menu from another branch in one tap</li>
+        <li><span class="text-accent font-bold mr-2">✓</span>{% translate "Template library of ready-made items" %}</li>
+        <li><span class="text-accent font-bold mr-2">✓</span>{% translate "Drag-and-drop categories and groups" %}</li>
+        <li><span class="text-accent font-bold mr-2">✓</span>{% translate "Clone a menu from another branch in one tap" %}</li>
       </ul>
     </div>
     <div class="mk-card p-4">
       <div class="flex items-center justify-between mb-3">
-        <span class="font-semibold text-ink">Hot Drinks <span class="text-ink-3 font-normal">· 10 items</span></span>
-        <span class="mk-badge-served">live</span>
+        <span class="font-semibold text-ink">Hot Drinks <span class="text-ink-3 font-normal">{% translate "· 10 items" %}</span></span>
+        <span class="mk-badge-served">{% translate "live" %}</span>
       </div>
       {% for b in builder_items %}
       <div class="flex items-center gap-3 py-2 border-b border-line text-sm">
         <span class="text-ink-3">⣿</span><span class="flex-1 text-ink">{{ b.name }}</span><span class="text-ink-2">{{ b.price }}</span>
       </div>
       {% endfor %}
-      <div class="pt-3 text-sm text-accent font-semibold">+ Add from library</div>
+      <div class="pt-3 text-sm text-accent font-semibold">{% translate "+ Add from library" %}</div>
     </div>
   </div>
 
@@ -36,7 +37,7 @@
       <div class="text-xs text-ink-3 mb-2">chillzone.{{ base_domain }}</div>
       <div class="flex items-center gap-2 mb-3">
         <span class="w-8 h-8 rounded-md mk-grad text-white text-xs font-bold flex items-center justify-center">CZ</span>
-        <span class="leading-tight"><span class="block text-sm font-semibold text-ink">Chill Zone</span><span class="block text-xs text-ink-3">Lakeside · open now</span></span>
+        <span class="leading-tight"><span class="block text-sm font-semibold text-ink">Chill Zone</span><span class="block text-xs text-ink-3">{% translate "Lakeside · open now" %}</span></span>
       </div>
       <div class="flex gap-2 mb-3 text-xs">
         <span class="px-3 py-1 rounded-full mk-grad text-white">Toast</span>
@@ -48,9 +49,9 @@
       </div>
     </div>
     <div class="order-1 md:order-2">
-      <div class="mk-eyebrow">Branded Menu</div>
-      <h3 class="font-hd text-2xl font-bold text-ink mt-2">Your own address. Your own look.</h3>
-      <p class="text-ink-2 mt-3">Every venue gets its own subdomain — <span class="text-ink font-medium">yourcafe.{{ base_domain }}</span> — with your logo, your colors, your menu. Guests scan and browse instantly in the browser. No app store, no sign-up, no friction.</p>
+      <div class="mk-eyebrow">{% translate "Branded Menu" %}</div>
+      <h3 class="font-hd text-2xl font-bold text-ink mt-2">{% translate "Your own address. Your own look." %}</h3>
+      <p class="text-ink-2 mt-3">{% blocktranslate trimmed %}Every venue gets its own subdomain — <span class="text-ink font-medium">yourcafe.{{ base_domain }}</span> — with your logo, your colors, your menu. Guests scan and browse instantly in the browser. No app store, no sign-up, no friction.{% endblocktranslate %}</p>
       <div class="inline-flex items-center gap-1 mt-4 text-sm bg-bg rounded-lg px-3 py-2"><span class="text-ink font-medium">chillzone</span><span class="text-ink-3">.{{ base_domain }}</span></div>
     </div>
   </div>
@@ -58,17 +59,17 @@
   <!-- Feature 3: live orders -->
   <div class="grid md:grid-cols-2 gap-10 items-center mb-16 mk-reveal">
     <div>
-      <div class="mk-eyebrow">Live Orders</div>
-      <h3 class="font-hd text-2xl font-bold text-ink mt-2">Orders land the second guests tap "Place order"</h3>
-      <p class="text-ink-2 mt-3">No shouting across the room, no lost paper slips. Every order hits your live queue instantly — table or takeaway — and moves from <span class="mk-badge-new">New</span> to <span class="mk-badge-served">Served</span> with one tap.</p>
+      <div class="mk-eyebrow">{% translate "Live Orders" %}</div>
+      <h3 class="font-hd text-2xl font-bold text-ink mt-2">{% blocktranslate trimmed %}Orders land the second guests tap "Place order"{% endblocktranslate %}</h3>
+      <p class="text-ink-2 mt-3">{% blocktranslate trimmed %}No shouting across the room, no lost paper slips. Every order hits your live queue instantly — table or takeaway — and moves from <span class="mk-badge-new">New</span> to <span class="mk-badge-served">Served</span> with one tap.{% endblocktranslate %}</p>
     </div>
     <div class="mk-card p-4">
-      <div class="flex items-center gap-2 mb-3 text-sm"><span class="w-2 h-2 rounded-full mk-grad"></span><span class="font-semibold text-ink">Live queue</span><span class="text-ink-3">· updates in real time</span></div>
+      <div class="flex items-center gap-2 mb-3 text-sm"><span class="w-2 h-2 rounded-full mk-grad"></span><span class="font-semibold text-ink">{% translate "Live queue" %}</span><span class="text-ink-3">{% translate "· updates in real time" %}</span></div>
       {% for o in live_orders %}
       <div class="flex items-center gap-3 py-2 border-b border-line text-sm">
         <span class="text-ink-3 w-8">{{ o.id }}</span><span class="w-20 text-ink-2">{{ o.table }}</span>
         <span class="flex-1 text-ink truncate">{{ o.items }}</span>
-        <span class="{% if o.status == 'New' %}mk-badge-new{% else %}mk-badge-served{% endif %}">{{ o.status }}</span>
+        <span class="{% if o.status == 'New' %}mk-badge-new{% else %}mk-badge-served{% endif %}">{{ o.status_label }}</span>
       </div>
       {% endfor %}
     </div>
@@ -77,17 +78,17 @@
   <!-- Feature 4: table QRs -->
   <div class="grid md:grid-cols-2 gap-10 items-center mk-reveal">
     <div class="order-2 md:order-1 mk-card p-4">
-      <div class="flex items-center justify-between mb-3 text-sm"><span class="font-semibold text-ink">Table QRs · 1–12</span><span class="text-accent font-semibold">↓ Download all (PDF)</span></div>
+      <div class="flex items-center justify-between mb-3 text-sm"><span class="font-semibold text-ink">{% translate "Table QRs · 1–12" %}</span><span class="text-accent font-semibold">{% translate "↓ Download all (PDF)" %}</span></div>
       <div class="grid grid-cols-4 gap-3">
         {% for t in table_qrs %}
-        <div class="text-center"><div class="aspect-square rounded-lg bg-ink"></div><div class="text-xs text-ink-3 mt-1">Table {{ t }}</div></div>
+        <div class="text-center"><div class="aspect-square rounded-lg bg-ink"></div><div class="text-xs text-ink-3 mt-1">{% blocktranslate %}Table {{ t }}{% endblocktranslate %}</div></div>
         {% endfor %}
       </div>
     </div>
     <div class="order-1 md:order-2">
-      <div class="mk-eyebrow">QR Codes</div>
-      <h3 class="font-hd text-2xl font-bold text-ink mt-2">A QR for the door, or one for every table</h3>
-      <p class="text-ink-2 mt-3">Generate a single venue code or a whole range of table codes in seconds. Download them all as one print-ready PDF, stick them on tables, and you're taking orders. Table QRs tell you exactly where each order came from.</p>
+      <div class="mk-eyebrow">{% translate "QR Codes" %}</div>
+      <h3 class="font-hd text-2xl font-bold text-ink mt-2">{% translate "A QR for the door, or one for every table" %}</h3>
+      <p class="text-ink-2 mt-3">{% blocktranslate trimmed %}Generate a single venue code or a whole range of table codes in seconds. Download them all as one print-ready PDF, stick them on tables, and you're taking orders. Table QRs tell you exactly where each order came from.{% endblocktranslate %}</p>
     </div>
   </div>
 </section>

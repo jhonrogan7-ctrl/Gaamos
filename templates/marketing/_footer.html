@@ -1,27 +1,28 @@
+{% load i18n %}
 <footer class="bg-side text-side-ink">
   <div class="mk-wrap py-14 grid md:grid-cols-2 gap-8">
     <div>
       <div class="text-white">{% include "marketing/_logo.html" %}</div>
-      <p class="text-sm mt-3 max-w-xs">QR menus and live orders for cafés, restaurants and bars. Your venue at <span class="text-white">yourcafe.{{ base_domain }}</span>.</p>
+      <p class="text-sm mt-3 max-w-xs">{% blocktranslate trimmed %}QR menus and live orders for cafés, restaurants and bars. Your venue at <span class="text-white">yourcafe.{{ base_domain }}</span>.{% endblocktranslate %}</p>
     </div>
     <div class="grid grid-cols-2 gap-8">
       <div>
-        <div class="text-xs uppercase tracking-widest text-side-ink/60 mb-3">Product</div>
+        <div class="text-xs uppercase tracking-widest text-side-ink/60 mb-3">{% translate "Product" %}</div>
         <div class="space-y-2 text-sm">
-          <a href="#features" class="block hover:text-white">Features</a>
-          <a href="#how" class="block hover:text-white">How it works</a>
-          <a href="#pricing" class="block hover:text-white">Pricing</a>
+          <a href="#features" class="block hover:text-white">{% translate "Features" %}</a>
+          <a href="#how" class="block hover:text-white">{% translate "How it works" %}</a>
+          <a href="#pricing" class="block hover:text-white">{% translate "Pricing" %}</a>
         </div>
       </div>
       <div>
-        <div class="text-xs uppercase tracking-widest text-side-ink/60 mb-3">Company</div>
+        <div class="text-xs uppercase tracking-widest text-side-ink/60 mb-3">{% translate "Company" %}</div>
         <div class="space-y-2 text-sm">
-          <a href="#top" class="block hover:text-white">About</a>
-          <a href="#contact" class="block hover:text-white">Contact</a>
-          <a href="#contact" class="block hover:text-white">Support</a>
+          <a href="#top" class="block hover:text-white">{% translate "About" %}</a>
+          <a href="#contact" class="block hover:text-white">{% translate "Contact" %}</a>
+          <a href="#contact" class="block hover:text-white">{% translate "Support" %}</a>
         </div>
       </div>
     </div>
   </div>
-  <div class="border-t border-white/10 py-5 text-center text-xs">© 2026 Gaamos. All rights reserved.</div>
+  <div class="border-t border-white/10 py-5 text-center text-xs">{% translate "© 2026 Gaamos. All rights reserved." %}</div>
 </footer>

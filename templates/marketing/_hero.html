@@ -1,19 +1,20 @@
+{% load i18n %}
 <section id="top" class="relative overflow-hidden">
   <div class="mk-wrap pt-16 pb-20 text-center">
     <span class="inline-flex items-center gap-2 text-xs font-semibold text-ink-2 bg-panel border border-line rounded-full px-4 py-1.5">
-      <span class="w-2 h-2 rounded-full mk-grad"></span>QR menus · live orders · no app required
+      <span class="w-2 h-2 rounded-full mk-grad"></span>{% translate "QR menus · live orders · no app required" %}
     </span>
     <h1 class="font-hd text-4xl md:text-6xl font-extrabold text-ink tracking-tight mt-6 max-w-3xl mx-auto">
-      Turn every table into a <span class="mk-grad-text">point of sale</span>
+      {% blocktranslate trimmed %}Turn every table into a <span class="mk-grad-text">point of sale</span>{% endblocktranslate %}
     </h1>
     <p class="text-ink-2 text-lg mt-5 max-w-xl mx-auto">
-      Gaamos gives your café a branded QR menu and a live order queue. Guests scan, browse, and order — nothing to download, nothing to explain.
+      {% blocktranslate trimmed %}Gaamos gives your café a branded QR menu and a live order queue. Guests scan, browse, and order — nothing to download, nothing to explain.{% endblocktranslate %}
     </p>
     <div class="flex flex-wrap items-center justify-center gap-3 mt-8">
-      <a href="#contact" class="mk-btn-primary">Start free</a>
-      <a href="#how" class="mk-btn-ghost">See how it works</a>
+      <a href="#contact" class="mk-btn-primary">{% translate "Start free" %}</a>
+      <a href="#how" class="mk-btn-ghost">{% translate "See how it works" %}</a>
     </div>
-    <p class="text-xs text-ink-3 mt-4">Free to start · Set up in under 15 minutes</p>
+    <p class="text-xs text-ink-3 mt-4">{% translate "Free to start · Set up in under 15 minutes" %}</p>
 
     <div class="relative mt-14 max-w-4xl mx-auto">
       <!-- Dashboard card -->
@@ -23,15 +24,15 @@
             <span class="w-7 h-7 rounded-lg mk-grad text-white font-bold flex items-center justify-center">C</span>
             <span class="text-white font-semibold">Chill Zone</span>
           </div>
-          <div class="text-[10px] uppercase tracking-widest text-side-ink/60 mt-4 mb-1">Company</div>
-          <div class="py-1">Overview</div><div class="py-1">Items</div><div class="py-1">Branches</div>
-          <div class="text-[10px] uppercase tracking-widest text-side-ink/60 mt-4 mb-1">Operations</div>
-          <div class="py-1">QR Codes</div><div class="py-1">Orders</div>
+          <div class="text-[10px] uppercase tracking-widest text-side-ink/60 mt-4 mb-1">{% translate "Company" %}</div>
+          <div class="py-1">{% translate "Overview" %}</div><div class="py-1">{% translate "Items" %}</div><div class="py-1">{% translate "Branches" %}</div>
+          <div class="text-[10px] uppercase tracking-widest text-side-ink/60 mt-4 mb-1">{% translate "Operations" %}</div>
+          <div class="py-1">{% translate "QR Codes" %}</div><div class="py-1">{% translate "Orders" %}</div>
         </aside>
         <div class="p-4">
           <div class="flex items-baseline gap-2 mb-3">
-            <span class="font-hd font-bold text-ink">Live order queue</span>
-            <span class="text-xs text-ink-3">all branches · updates in real time</span>
+            <span class="font-hd font-bold text-ink">{% translate "Live order queue" %}</span>
+            <span class="text-xs text-ink-3">{% translate "all branches · updates in real time" %}</span>
           </div>
           {% for o in hero_orders %}
           <div class="flex items-center gap-3 py-2 border-b border-line text-sm">
@@ -39,7 +40,7 @@
             <span class="w-20 text-ink-2">{{ o.table }}</span>
             <span class="flex-1 text-ink truncate">{{ o.items }}</span>
             <span class="text-ink font-medium">{{ o.total }}</span>
-            <span class="{% if o.status == 'New' %}mk-badge-new{% else %}mk-badge-served{% endif %}">{{ o.status }}</span>
+            <span class="{% if o.status == 'New' %}mk-badge-new{% else %}mk-badge-served{% endif %}">{{ o.status_label }}</span>
           </div>
           {% endfor %}
         </div>
@@ -50,7 +51,7 @@
           <span class="w-6 h-6 rounded-md mk-grad text-white text-xs font-bold flex items-center justify-center">CZ</span>
           <span class="text-sm font-semibold text-ink">Chill Zone</span>
         </div>
-        <div class="text-xs text-ink-3 mb-1">Toast · 4 dishes</div>
+        <div class="text-xs text-ink-3 mb-1">{% translate "Toast · 4 dishes" %}</div>
         {% for d in hero_dishes %}
         <div class="flex items-center justify-between text-sm py-1">
           <span class="text-ink">{{ d.name }}</span>
@@ -61,7 +62,7 @@
       <!-- Floating QR chip -->
       <div class="absolute -top-4 right-2 sm:right-6 mk-card px-3 py-2 flex items-center gap-2 shadow-frame">
         <span class="w-8 h-8 rounded bg-ink"></span>
-        <span class="leading-tight"><span class="block text-sm font-semibold text-ink">Table 12</span><span class="block text-xs text-ink-3">chillzone.{{ base_domain }}</span></span>
+        <span class="leading-tight"><span class="block text-sm font-semibold text-ink">{% translate "Table 12" %}</span><span class="block text-xs text-ink-3">chillzone.{{ base_domain }}</span></span>
       </div>
     </div>
   </div>

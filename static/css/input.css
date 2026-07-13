@@ -4,7 +4,7 @@
 
 /* ── Design tokens: dashboard neutral base + fixed Saffron (default) ── */
 :root {
-  --hd: 'Bricolage Grotesque', sans-serif; --bd: 'Plus Jakarta Sans', sans-serif;
+  --hd: 'Bricolage Grotesque', 'Noto Sans Devanagari', 'Noto Sans Georgian', sans-serif; --bd: 'Plus Jakarta Sans', 'Noto Sans Devanagari', 'Noto Sans Georgian', sans-serif;
   --bg: #eef0f4; --panel: #fff; --ink: #171a21; --ink-2: #5a616e; --ink-3: #98a0ad;
   --line: #e7e9ef; --line-2: #dde0e8; --side: #15171d; --side-2: #1f222b; --side-ink: #aeb4c2;
   --accent: #e23744; --accent-deep: #b3232f; --accent-soft: #ffe3df;

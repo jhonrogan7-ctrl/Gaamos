@@ -1,7 +1,8 @@
+{% load i18n %}
 <div id="contact-panel" class="mk-card p-8 text-center">
   <div class="w-14 h-14 rounded-full mx-auto flex items-center justify-center text-white text-2xl mk-grad">✓</div>
-  <h3 class="font-hd text-2xl font-bold text-ink mt-4">Request received!</h3>
-  <p class="text-ink-2 mt-2">Thanks — a Gaamos representative will contact you within one business day.</p>
+  <h3 class="font-hd text-2xl font-bold text-ink mt-4">{% translate "Request received!" %}</h3>
+  <p class="text-ink-2 mt-2">{% translate "Thanks — a Gaamos representative will contact you within one business day." %}</p>
   <a href="#contact" class="inline-block mt-5 text-accent font-semibold text-sm"
-     hx-get="/contact" hx-target="#contact-panel" hx-swap="outerHTML">Send another request</a>
+     hx-get="{% url 'contact' %}" hx-target="#contact-panel" hx-swap="outerHTML">{% translate "Send another request" %}</a>
 </div>
