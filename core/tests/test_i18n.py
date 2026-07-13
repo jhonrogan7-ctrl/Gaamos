@@ -1,4 +1,7 @@
+import pytest
 from django.conf import settings
+
+from menu.models import Company
 
 
 def test_languages_configured():
@@ -15,3 +18,33 @@ def test_locale_middleware_between_session_and_common():
         < mw.index("django.middleware.locale.LocaleMiddleware")
         < mw.index("django.middleware.common.CommonMiddleware")
     )
+
+
+@pytest.mark.django_db
+def test_prefixed_landing_renders_for_all_languages(client):
+    for lang in ("en", "ne", "ka"):
+        resp = client.get(f"/{lang}/")
+        assert resp.status_code == 200, lang
+        assert "Gaamos" in resp.content.decode()
+
+
+@pytest.mark.django_db
+def test_unsupported_language_prefix_404(client):
+    assert client.get("/fr/").status_code == 404
+
+
+@pytest.mark.django_db
+def test_apex_redirects_by_accept_language(client):
+    assert client.get("/", HTTP_ACCEPT_LANGUAGE="ne")["Location"] == "/ne/"
+    assert client.get("/", HTTP_ACCEPT_LANGUAGE="ka,en;q=0.5")["Location"] == "/ka/"
+    assert client.get("/", HTTP_ACCEPT_LANGUAGE="fr")["Location"] == "/en/"
+    assert client.get("/")["Location"] == "/en/"
+
+
+@pytest.mark.django_db
+def test_tenant_host_untouched(client, settings):
+    Company.objects.create(name="Test Co", slug="testco")
+    host = f"testco.{settings.BASE_DOMAIN}"
+    assert client.get("/", HTTP_HOST=host).status_code == 200          # guest menu
+    assert client.get("/ne/", HTTP_HOST=host).status_code == 404       # no marketing on tenant
+    assert client.get("/en/contact", HTTP_HOST=host).status_code == 404

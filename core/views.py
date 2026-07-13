@@ -1,6 +1,7 @@
 from django.conf import settings
-from django.http import HttpResponse, JsonResponse
+from django.http import Http404, HttpResponse, JsonResponse
 from django.shortcuts import redirect, render
+from django.urls import reverse
 
 from .models import Lead
 
@@ -83,13 +84,21 @@ def _landing_context(**extra):
     return ctx
 
 
+def _apex_only(request):
+    """Marketing views never render on tenant subdomains — <slug>.<base>/ne/ must 404."""
+    if getattr(request, "company", None) is not None:
+        raise Http404
+
+
 def home(request):
+    _apex_only(request)
     return render(request, "home.html", _landing_context())
 
 
 def contact(request):
     """Landing lead-capture. HTMX requests get form/success fragments;
     non-HTMX requests get the full landing page (progressive enhancement)."""
+    _apex_only(request)
     is_htmx = request.headers.get("HX-Request") == "true"
     if request.method == "POST":
         values = {
@@ -118,4 +127,4 @@ def contact(request):
     # GET
     if is_htmx:
         return render(request, "marketing/_contact_form.html", {"venue_types": VENUE_TYPES})
-    return redirect("/#contact")
+    return redirect(reverse("home") + "#contact")

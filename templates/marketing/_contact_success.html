@@ -3,5 +3,5 @@
   <h3 class="font-hd text-2xl font-bold text-ink mt-4">Request received!</h3>
   <p class="text-ink-2 mt-2">Thanks — a Gaamos representative will contact you within one business day.</p>
   <a href="#contact" class="inline-block mt-5 text-accent font-semibold text-sm"
-     hx-get="/contact" hx-target="#contact-panel" hx-swap="outerHTML">Send another request</a>
+     hx-get="{% url 'contact' %}" hx-target="#contact-panel" hx-swap="outerHTML">Send another request</a>
 </div>

@@ -3,7 +3,7 @@ import pytest
 
 @pytest.mark.django_db
 def test_base_links_manifest_and_registers_sw(client):
-    body = client.get("/").content.decode()
+    body = client.get("/en/").content.decode()
     assert 'rel="manifest"' in body
     assert "manifest.webmanifest" in body
     assert "serviceWorker" in body  # registration script present
@@ -20,7 +20,7 @@ def test_service_worker_served_at_root_with_scope_header(client):
 
 @pytest.mark.django_db
 def test_marketing_base_has_ios_meta(client):
-    body = client.get("/").content.decode()
+    body = client.get("/en/").content.decode()
     assert "apple-touch-icon" in body
     assert "apple-mobile-web-app-capable" in body
 
