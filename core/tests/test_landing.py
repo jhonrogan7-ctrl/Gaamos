@@ -36,10 +36,23 @@ def test_landing_how_and_multibranch(client):
 def test_landing_pricing_and_footer(client):
     body = client.get("/en/").content.decode()
     assert "Simple pricing that grows with you" in body
-    assert "Starter" in body and "Business" in body
-    assert "Most popular" in body            # Pro is highlighted
-    assert "Prices are placeholders" in body
+    assert "Business" in body and "VIP" in body
+    assert "Rs 3,000" in body and "Rs 7,000" in body
+    assert "Starter" not in body and "$29" not in body   # old placeholders gone
+    assert "Most popular" in body            # Business is highlighted
+    assert "Everything in Business" in body  # VIP card content
     assert "© 2026 Gaamos" in body
+
+
+@pytest.mark.django_db
+def test_landing_logo_and_hero_assets(client):
+    body = client.get("/en/").content.decode()
+    assert "images/gaamos-logo.png" in body           # real logo in nav + footer
+    assert "images/landing/menu-screen.jpg" in body   # phone screenshot hero
+    assert "images/landing/order-screen.jpg" in body
+    assert "images/landing/demo-qr.png" in body       # scannable demo QR
+    assert "Scan to try the live demo" in body
+    assert "Start free" not in body                   # no free tier anywhere
 
 
 @pytest.mark.django_db

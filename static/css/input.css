@@ -647,6 +647,8 @@ h1,h2,h3 { font-family: var(--hd); }
   .mk-badge-served { @apply text-[11px] font-semibold px-2 py-0.5 rounded-full; background: var(--green-soft); color: var(--green); }
   .js .mk-reveal { opacity: 0; transform: translateY(22px); transition: opacity .7s ease, transform .7s ease; }
   .js .mk-reveal.is-in { opacity: 1; transform: none; }
+  .mk-phone { border-radius: 2.2rem; border: 6px solid #14171f; overflow: hidden; background: #14171f; box-shadow: 0 24px 48px rgba(20,23,31,.25); }
+  .mk-phone img { display: block; width: 100%; height: auto; border-radius: 1.85rem; }
 
   /* ══════════════════════════════════════════
      MOBILE DASHBOARD SHELL — <900px overrides.

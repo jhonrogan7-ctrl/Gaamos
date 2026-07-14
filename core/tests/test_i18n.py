@@ -96,14 +96,14 @@ def test_script_fonts_requested(client):
 def test_nepali_landing_translated(client):
     body = client.get("/ne/").content.decode()
     assert "बिक्री केन्द्र" in body            # hero h1
-    assert "निःशुल्क सुरु गर्नुहोस्" in body      # "Start free" CTA
+    assert "मूल्य हेर्नुहोस्" in body           # "See pricing" CTA
 
 
 @pytest.mark.django_db
 def test_georgian_landing_translated(client):
     body = client.get("/ka/").content.decode()
     assert "გაყიდვის წერტილად" in body        # hero h1
-    assert "დაიწყეთ უფასოდ" in body           # "Start free" CTA
+    assert "ფასების ნახვა" in body            # "See pricing" CTA
 
 
 @pytest.mark.django_db

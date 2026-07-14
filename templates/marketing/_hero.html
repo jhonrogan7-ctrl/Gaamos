@@ -1,4 +1,4 @@
-{% load i18n %}
+{% load i18n static %}
 <section id="top" class="relative overflow-hidden">
   <div class="mk-wrap pt-16 pb-20 text-center">
     <span class="inline-flex items-center gap-2 text-xs font-semibold text-ink-2 bg-panel border border-line rounded-full px-4 py-1.5">
@@ -11,58 +11,23 @@
       {% blocktranslate trimmed %}Gaamos gives your café a branded QR menu and a live order queue. Guests scan, browse, and order — nothing to download, nothing to explain.{% endblocktranslate %}
     </p>
     <div class="flex flex-wrap items-center justify-center gap-3 mt-8">
-      <a href="#contact" class="mk-btn-primary">{% translate "Start free" %}</a>
-      <a href="#how" class="mk-btn-ghost">{% translate "See how it works" %}</a>
+      <a href="#contact" class="mk-btn-primary">{% translate "Get started" %}</a>
+      <a href="#pricing" class="mk-btn-ghost">{% translate "See pricing" %}</a>
     </div>
-    <p class="text-xs text-ink-3 mt-4">{% translate "Free to start · Set up in under 15 minutes" %}</p>
+    <p class="text-xs text-ink-3 mt-4">{% translate "Set up in under 15 minutes" %}</p>
 
-    <div class="relative mt-14 max-w-4xl mx-auto">
-      <!-- Dashboard card -->
-      <div class="mk-card overflow-hidden text-left grid grid-cols-[180px_1fr] shadow-frame">
-        <aside class="bg-side text-side-ink p-4 text-[13px] hidden sm:block">
-          <div class="flex items-center gap-2 mb-4">
-            <span class="w-7 h-7 rounded-lg mk-grad text-white font-bold flex items-center justify-center">C</span>
-            <span class="text-white font-semibold">Chill Zone</span>
-          </div>
-          <div class="text-[10px] uppercase tracking-widest text-side-ink/60 mt-4 mb-1">{% translate "Company" %}</div>
-          <div class="py-1">{% translate "Overview" %}</div><div class="py-1">{% translate "Items" %}</div><div class="py-1">{% translate "Branches" %}</div>
-          <div class="text-[10px] uppercase tracking-widest text-side-ink/60 mt-4 mb-1">{% translate "Operations" %}</div>
-          <div class="py-1">{% translate "QR Codes" %}</div><div class="py-1">{% translate "Orders" %}</div>
-        </aside>
-        <div class="p-4">
-          <div class="flex items-baseline gap-2 mb-3">
-            <span class="font-hd font-bold text-ink">{% translate "Live order queue" %}</span>
-            <span class="text-xs text-ink-3">{% translate "all branches · updates in real time" %}</span>
-          </div>
-          {% for o in hero_orders %}
-          <div class="flex items-center gap-3 py-2 border-b border-line text-sm">
-            <span class="text-ink-3 w-8">{{ o.id }}</span>
-            <span class="w-20 text-ink-2">{{ o.table }}</span>
-            <span class="flex-1 text-ink truncate">{{ o.items }}</span>
-            <span class="text-ink font-medium">{{ o.total }}</span>
-            <span class="{% if o.status == 'New' %}mk-badge-new{% else %}mk-badge-served{% endif %}">{{ o.status_label }}</span>
-          </div>
-          {% endfor %}
-        </div>
+    <!-- Real product: guest menu + order screens in phone frames, scannable demo QR -->
+    <div class="mt-14 flex flex-col sm:flex-row items-center justify-center gap-8 sm:gap-10">
+      <div class="hidden md:block w-48 lg:w-56 mk-phone -rotate-3 translate-y-4">
+        <img src="{% static 'images/landing/order-screen.jpg' %}" alt="{% translate 'Guest order screen' %}" width="739" height="1246" loading="lazy">
       </div>
-      <!-- Floating phone -->
-      <div class="absolute -bottom-8 -left-2 sm:left-4 w-52 mk-card p-3 shadow-frame hidden sm:block">
-        <div class="flex items-center gap-2 mb-2">
-          <span class="w-6 h-6 rounded-md mk-grad text-white text-xs font-bold flex items-center justify-center">CZ</span>
-          <span class="text-sm font-semibold text-ink">Chill Zone</span>
-        </div>
-        <div class="text-xs text-ink-3 mb-1">{% translate "Toast · 4 dishes" %}</div>
-        {% for d in hero_dishes %}
-        <div class="flex items-center justify-between text-sm py-1">
-          <span class="text-ink">{{ d.name }}</span>
-          <span class="text-ink-2">{{ d.price }} <span class="text-accent font-bold">+</span></span>
-        </div>
-        {% endfor %}
+      <div class="w-64 sm:w-64 lg:w-72 mk-phone relative z-10">
+        <img src="{% static 'images/landing/menu-screen.jpg' %}" alt="{% translate 'Guest QR menu' %}" width="739" height="1246">
       </div>
-      <!-- Floating QR chip -->
-      <div class="absolute -top-4 right-2 sm:right-6 mk-card px-3 py-2 flex items-center gap-2 shadow-frame">
-        <span class="w-8 h-8 rounded bg-ink"></span>
-        <span class="leading-tight"><span class="block text-sm font-semibold text-ink">{% translate "Table 12" %}</span><span class="block text-xs text-ink-3">chillzone.{{ base_domain }}</span></span>
+      <div class="mk-card p-5 text-center shadow-frame">
+        <img src="{% static 'images/landing/demo-qr.png' %}" alt="{% translate 'Demo menu QR code' %}" class="w-32 h-32 mx-auto" width="330" height="330">
+        <div class="text-sm font-semibold text-ink mt-3">{% translate "Scan to try the live demo" %}</div>
+        <div class="text-xs text-ink-3 mt-1">testco.zxyn.online</div>
       </div>
     </div>
   </div>

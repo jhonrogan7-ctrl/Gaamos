@@ -26,21 +26,10 @@ def offline(request):
 
 VENUE_TYPES = [c[0] for c in Lead.VENUE_TYPES]
 
-HERO_ORDERS = [
-    {"id": "#7", "table": _("Table 12"), "items": "Cappuccino ×2, French Toast ×1", "total": "Rs 590", "status": "New", "status_label": _("New")},
-    {"id": "#6", "table": _("Takeaway"), "items": "Cheese Toast ×1, Milk Tea ×2", "total": "Rs 300", "status": "New", "status_label": _("New")},
-    {"id": "#5", "table": _("Table 4"), "items": "American Breakfast ×1, Black Coffee ×1", "total": "Rs 430", "status": "Served", "status_label": _("Served")},
-    {"id": "#4", "table": _("Table 9"), "items": "Hot Chocolate ×2, Plain Toast ×1", "total": "Rs 520", "status": "Served", "status_label": _("Served")},
-]
 LIVE_ORDERS = [
     {"id": "#3", "table": _("Table 6"), "items": "Plain Toast ×1, Cheese Toast ×1, Cheese Tomato Toast ×1", "status": "New", "status_label": _("New")},
     {"id": "#2", "table": _("Takeaway"), "items": "American Breakfast ×1, Special Breakfast ×1", "status": "New", "status_label": _("New")},
     {"id": "#1", "table": _("Table 2"), "items": "French Toast ×1, Plain Toast ×2", "status": "Served", "status_label": _("Served")},
-]
-HERO_DISHES = [
-    {"name": "Plain Toast", "price": "Rs 100"},
-    {"name": "Cheese Toast", "price": "Rs 180"},
-    {"name": "French Toast", "price": "Rs 210"},
 ]
 BUILDER_ITEMS = [
     {"name": "Black Tea", "price": "Rs 40"},
@@ -59,21 +48,33 @@ BRANCHES = [
     {"initials": "TC", "name": "The Terrace Café", "prefix": "theterrace", "orders": "18"},
 ]
 TIERS = [
-    {"name": _("Starter"), "price": _("Free"), "per": "", "blurb": _("For a single café getting started."), "cta": _("Start free"),
-     "highlighted": False, "features": [_("1 branch"), _("Up to 30 menu items"), _("Branded QR menu"), _("Venue QR code")]},
-    {"name": _("Pro"), "price": "$29", "per": _("/month"), "blurb": _("For busy venues taking live orders."), "cta": _("Get started"),
-     "highlighted": True, "features": [_("1 branch, unlimited items"), _("Live order queue"), _("Table QRs + PDF export"), _("Photos & item badges")]},
-    {"name": _("Business"), "price": "$79", "per": _("/month"), "blurb": _("For groups running multiple locations."), "cta": _("Talk to us"),
-     "highlighted": False, "features": [_("Unlimited branches"), _("Per-branch menus & QRs"), _("Clone menus across branches"), _("Priority support")]},
+    {"name": _("Business"), "price": "Rs 3,000", "per": _("/month"),
+     "blurb": _("The whole product — everything your venue needs to run QR menus and live orders."),
+     "cta": _("Get started"), "highlighted": True, "features": [
+        _("Unlimited branches & menu items"),
+        _("Branded QR menu — 3 themes × 3 layouts"),
+        _("Guest ordering + live order queue"),
+        _("Table QRs + printable PDF export"),
+        _("Photos, badges & promo banner"),
+        _("Installable app (PWA) for guests & staff"),
+        _("3 team members"),
+    ]},
+    {"name": _("VIP"), "price": "Rs 7,000", "per": _("/month"),
+     "blurb": _("For venues that want full brand ownership and a bigger team."),
+     "cta": _("Talk to us"), "highlighted": False, "features": [
+        _("Everything in Business"),
+        _("Custom domain — menu.yourrestaurant.com"),
+        _("Your venue as its own branded app"),
+        _("Unlimited team + branch-scoped managers"),
+        _("Priority WhatsApp support"),
+    ]},
 ]
 TABLE_QRS = ["1", "2", "3", "4", "5", "6", "7", "8"]
 
 
 def _landing_context(**extra):
     ctx = {
-        "hero_orders": HERO_ORDERS,
         "live_orders": LIVE_ORDERS,
-        "hero_dishes": HERO_DISHES,
         "builder_items": BUILDER_ITEMS,
         "steps": STEPS,
         "branches": BRANCHES,

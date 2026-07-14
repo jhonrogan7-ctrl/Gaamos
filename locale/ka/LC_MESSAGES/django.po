@@ -5,7 +5,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gaamos-landing\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-07-14 01:22+0545\n"
+"POT-Creation-Date: 2026-07-15 00:28+0545\n"
 "PO-Revision-Date: 2026-07-13 20:00+0545\n"
 "Last-Translator: Gaamos team <hello@gaamos.io>\n"
 "Language-Team: Georgian\n"
@@ -31,43 +31,31 @@ msgstr "ბარი"
 msgid "Other"
 msgstr "სხვა"
 
-#: core/views.py:30 templates/marketing/_hero.html:65
-msgid "Table 12"
-msgstr "მაგიდა 12"
+#: core/views.py:30
+msgid "Table 6"
+msgstr "მაგიდა 6"
 
-#: core/views.py:30 core/views.py:31 core/views.py:36 core/views.py:37
+#: core/views.py:30 core/views.py:31
 msgid "New"
 msgstr "ახალი"
 
-#: core/views.py:31 core/views.py:37
+#: core/views.py:31
 msgid "Takeaway"
 msgstr "წასაღები"
 
 #: core/views.py:32
-msgid "Table 4"
-msgstr "მაგიდა 4"
-
-#: core/views.py:32 core/views.py:33 core/views.py:38
-msgid "Served"
-msgstr "მიწოდებულია"
-
-#: core/views.py:33
-msgid "Table 9"
-msgstr "მაგიდა 9"
-
-#: core/views.py:36
-msgid "Table 6"
-msgstr "მაგიდა 6"
-
-#: core/views.py:38
 msgid "Table 2"
 msgstr "მაგიდა 2"
 
-#: core/views.py:52
+#: core/views.py:32
+msgid "Served"
+msgstr "მიწოდებულია"
+
+#: core/views.py:41
 msgid "Build your menu"
 msgstr "შექმენით თქვენი მენიუ"
 
-#: core/views.py:52
+#: core/views.py:41
 msgid ""
 "Pick dishes from the template library, set prices, add photos. Organize into "
 "categories your guests will actually browse."
@@ -75,130 +63,134 @@ msgstr ""
 "აირჩიეთ კერძები შაბლონების ბიბლიოთეკიდან, დააყენეთ ფასები, დაამატეთ ფოტოები. "
 "დაალაგეთ კატეგორიებად, რომლებსაც სტუმრები ნამდვილად დაათვალიერებენ."
 
-#: core/views.py:53
+#: core/views.py:42
 msgid "Print your QRs"
 msgstr "დაბეჭდეთ თქვენი QR-კოდები"
 
-#: core/views.py:53
+#: core/views.py:42
 msgid ""
 "Generate one code for the counter or a numbered code per table. Download the "
 "whole set as a print-ready PDF."
 msgstr ""
-"შექმენით ერთი კოდი დახლისთვის ან დანომრილი კოდი თითო მაგიდისთვის. ჩამოტვირთეთ "
-"მთელი ნაკრები დასაბეჭდად მზა PDF-ად."
+"შექმენით ერთი კოდი დახლისთვის ან დანომრილი კოდი თითო მაგიდისთვის. "
+"ჩამოტვირთეთ მთელი ნაკრები დასაბეჭდად მზა PDF-ად."
 
-#: core/views.py:54
+#: core/views.py:43
 msgid "Receive orders"
 msgstr "მიიღეთ შეკვეთები"
 
-#: core/views.py:54
+#: core/views.py:43
 msgid ""
 "Guests scan, browse, and order from their own phone. Orders appear in your "
 "live queue the moment they're placed."
 msgstr ""
-"სტუმრები საკუთარი ტელეფონიდან ასკანერებენ, ათვალიერებენ და უკვეთავენ. შეკვეთა "
-"თქვენს ლაივ რიგში გაკეთებისთანავე ჩნდება."
+"სტუმრები საკუთარი ტელეფონიდან ასკანერებენ, ათვალიერებენ და უკვეთავენ. "
+"შეკვეთა თქვენს ლაივ რიგში გაკეთებისთანავე ჩნდება."
 
-#: core/views.py:62
-msgid "Starter"
-msgstr "Starter"
-
-#: core/views.py:62
-msgid "Free"
-msgstr "უფასო"
-
-#: core/views.py:62
-msgid "For a single café getting started."
-msgstr "ერთი კაფესთვის, რომელიც ახლა იწყებს."
-
-#: core/views.py:62 templates/marketing/_final_cta.html:6
-#: templates/marketing/_hero.html:14
-msgid "Start free"
-msgstr "დაიწყეთ უფასოდ"
-
-#: core/views.py:63
-msgid "1 branch"
-msgstr "1 ფილიალი"
-
-#: core/views.py:63
-msgid "Up to 30 menu items"
-msgstr "30-მდე პოზიცია მენიუში"
-
-#: core/views.py:63
-msgid "Branded QR menu"
-msgstr "ბრენდირებული QR-მენიუ"
-
-#: core/views.py:63
-msgid "Venue QR code"
-msgstr "დაწესებულების QR-კოდი"
-
-#: core/views.py:64
-msgid "Pro"
-msgstr "Pro"
-
-#: core/views.py:64 core/views.py:66
-msgid "/month"
-msgstr "/თვე"
-
-#: core/views.py:64
-msgid "For busy venues taking live orders."
-msgstr "დატვირთული ადგილებისთვის, რომლებიც ლაივ შეკვეთებს იღებენ."
-
-#: core/views.py:64 templates/marketing/_nav.html:17
-msgid "Get started"
-msgstr "დაწყება"
-
-#: core/views.py:65
-msgid "1 branch, unlimited items"
-msgstr "1 ფილიალი, შეუზღუდავი პოზიციები"
-
-#: core/views.py:65 templates/marketing/_hero.html:34
-msgid "Live order queue"
-msgstr "შეკვეთების ლაივ რიგი"
-
-#: core/views.py:65
-msgid "Table QRs + PDF export"
-msgstr "მაგიდის QR-ები + PDF ექსპორტი"
-
-#: core/views.py:65
-msgid "Photos & item badges"
-msgstr "ფოტოები და პოზიციის ნიშნები"
-
-#: core/views.py:66
+#: core/views.py:51
 msgid "Business"
 msgstr "Business"
 
-#: core/views.py:66
-msgid "For groups running multiple locations."
-msgstr "ჯგუფებისთვის, რომლებიც რამდენიმე ლოკაციას მართავენ."
+#: core/views.py:51 core/views.py:62
+msgid "/month"
+msgstr "/თვე"
 
-#: core/views.py:66 templates/marketing/_contact.html:5
+#: core/views.py:52
+msgid ""
+"The whole product — everything your venue needs to run QR menus and live "
+"orders."
+msgstr "სრული პროდუქტი — ყველაფერი, რაც თქვენს ობიექტს სჭირდება QR მენიუსა და ლაივ შეკვეთებისთვის."
+
+
+#: core/views.py:53 templates/marketing/_final_cta.html:6
+#: templates/marketing/_hero.html:14 templates/marketing/_nav.html:17
+msgid "Get started"
+msgstr "დაწყება"
+
+
+#: core/views.py:54
+msgid "Unlimited branches & menu items"
+msgstr "ულიმიტო ფილიალები და მენიუს პოზიციები"
+
+
+#: core/views.py:55
+msgid "Branded QR menu — 3 themes × 3 layouts"
+msgstr "ბრენდირებული QR მენიუ — 3 თემა × 3 განლაგება"
+
+
+#: core/views.py:56
+msgid "Guest ordering + live order queue"
+msgstr "სტუმრის შეკვეთა + ლაივ შეკვეთების რიგი"
+
+
+#: core/views.py:57
+msgid "Table QRs + printable PDF export"
+msgstr "მაგიდის QR-ები + დასაბეჭდი PDF ექსპორტი"
+
+
+#: core/views.py:58
+msgid "Photos, badges & promo banner"
+msgstr "ფოტოები, ბეჯები და პრომო ბანერი"
+
+
+#: core/views.py:59
+msgid "Installable app (PWA) for guests & staff"
+msgstr "დაინსტალირებადი აპი (PWA) სტუმრებისა და პერსონალისთვის"
+
+
+#: core/views.py:60
+msgid "3 team members"
+msgstr "3 გუნდის წევრი"
+
+
+#: core/views.py:62
+msgid "VIP"
+msgstr "VIP"
+
+
+#: core/views.py:63
+msgid "For venues that want full brand ownership and a bigger team."
+msgstr "ობიექტებისთვის, რომლებსაც სურთ სრული ბრენდის ფლობა და დიდი გუნდი."
+
+
+#: core/views.py:64 templates/marketing/_contact.html:5
 msgid "Talk to us"
 msgstr "დაგვიკავშირდით"
 
-#: core/views.py:67
-msgid "Unlimited branches"
-msgstr "შეუზღუდავი ფილიალები"
+#: core/views.py:65
+msgid "Everything in Business"
+msgstr "ყველაფერი Business-იდან"
+
+
+#: core/views.py:66
+msgid "Custom domain — menu.yourrestaurant.com"
+msgstr "საკუთარი დომენი — menu.yourrestaurant.com"
+
 
 #: core/views.py:67
-msgid "Per-branch menus & QRs"
-msgstr "მენიუ და QR თითო ფილიალზე"
+msgid "Your venue as its own branded app"
+msgstr "თქვენი ობიექტი საკუთარ ბრენდირებულ აპად"
 
-#: core/views.py:67
-msgid "Clone menus across branches"
-msgstr "მენიუს კოპირება ფილიალებს შორის"
 
-#: core/views.py:67
-msgid "Priority support"
-msgstr "პრიორიტეტული მხარდაჭერა"
+#: core/views.py:68
+msgid "Unlimited team + branch-scoped managers"
+msgstr "ულიმიტო გუნდი + ფილიალის მენეჯერები"
 
-#: core/views.py:116
+
+#: core/views.py:69
+msgid "Priority WhatsApp support"
+msgstr "პრიორიტეტული WhatsApp მხარდაჭერა"
+
+
+#: core/views.py:117
 msgid "Please fill in your name, venue name and phone number."
-msgstr "გთხოვთ, შეავსოთ თქვენი სახელი, დაწესებულების სახელი და ტელეფონის ნომერი."
+msgstr ""
+"გთხოვთ, შეავსოთ თქვენი სახელი, დაწესებულების სახელი და ტელეფონის ნომერი."
 
 #: templates/home.html:3
 msgid "Gaamos — QR menus & live orders for cafés, restaurants and bars"
-msgstr "Gaamos — QR-მენიუ და ლაივ შეკვეთები კაფეების, რესტორნებისა და ბარებისთვის"
+msgstr ""
+"Gaamos — QR-მენიუ და ლაივ შეკვეთები კაფეების, რესტორნებისა და ბარებისთვის"
 
 #: templates/marketing/_contact.html:6
 msgid "Tell us about your venue"
@@ -268,7 +260,9 @@ msgstr "მოითხოვეთ დარეკვა"
 
 #: templates/marketing/_contact_form.html:44
 msgid "We'll only use your details to contact you about Gaamos."
-msgstr "თქვენს მონაცემებს მხოლოდ Gaamos-თან დაკავშირებით დასაკავშირებლად გამოვიყენებთ."
+msgstr ""
+"თქვენს მონაცემებს მხოლოდ Gaamos-თან დაკავშირებით დასაკავშირებლად "
+"გამოვიყენებთ."
 
 #: templates/marketing/_contact_success.html:4
 msgid "Request received!"
@@ -376,8 +370,8 @@ msgid ""
 "new\">New</span> to <span class=\"mk-badge-served\">Served</span> with one "
 "tap."
 msgstr ""
-"აღარც დარბაზში გადაძახება, აღარც დაკარგული ქაღალდის ფურცლები. ყველა შეკვეთა — "
-"მაგიდიდან თუ წასაღები — მყისვე ხვდება თქვენს ლაივ რიგში და ერთი შეხებით "
+"აღარც დარბაზში გადაძახება, აღარც დაკარგული ქაღალდის ფურცლები. ყველა შეკვეთა "
+"— მაგიდიდან თუ წასაღები — მყისვე ხვდება თქვენს ლაივ რიგში და ერთი შეხებით "
 "გადადის სტატუსიდან <span class=\"mk-badge-new\">ახალი</span> სტატუსში <span "
 "class=\"mk-badge-served\">მიწოდებულია</span>."
 
@@ -402,7 +396,7 @@ msgstr "↓ ყველას ჩამოტვირთვა (PDF)"
 msgid "Table %(t)s"
 msgstr "მაგიდა %(t)s"
 
-#: templates/marketing/_features.html:89 templates/marketing/_hero.html:30
+#: templates/marketing/_features.html:89
 msgid "QR Codes"
 msgstr "QR-კოდები"
 
@@ -425,16 +419,14 @@ msgid "Your guests are already holding the menu"
 msgstr "თქვენს სტუმრებს მენიუ უკვე ხელში უჭირავთ"
 
 #: templates/marketing/_final_cta.html:5
-msgid ""
-"It's their phone. Put your menu on it tonight — free to start, live in "
-"minutes."
-msgstr ""
-"ეს მათი ტელეფონია. დადეთ თქვენი მენიუ მასზე დღესვე — დაწყება უფასოა, ლაივში "
-"წუთებში გადის."
+msgid "It's their phone. Put your menu on it tonight — live in minutes."
+msgstr "ეს მათი ტელეფონია. განათავსეთ თქვენი მენიუ მასზე დღესვე — ლაივში წუთებში."
+
 
 #: templates/marketing/_final_cta.html:7
-msgid "No credit card required"
-msgstr "საკრედიტო ბარათი არ არის საჭირო"
+msgid "Plans from Rs 3,000 a month — cancel anytime"
+msgstr "გეგმები თვეში 3,000 რუპიიდან — გააუქმეთ ნებისმიერ დროს"
+
 
 #: templates/marketing/_footer.html:6
 #, python-format
@@ -443,8 +435,8 @@ msgid ""
 "<span class=\"text-white\">yourcafe.%(base_domain)s</span>."
 msgstr ""
 "QR-მენიუ და ლაივ შეკვეთები კაფეების, რესტორნებისა და ბარებისთვის. თქვენი "
-"დაწესებულება მისამართზე <span class=\"text-white\">yourcafe."
-"%(base_domain)s</span>."
+"დაწესებულება მისამართზე <span class=\"text-white\">yourcafe.%(base_domain)s</"
+"span>."
 
 #: templates/marketing/_footer.html:10
 msgid "Product"
@@ -460,7 +452,7 @@ msgstr "როგორ მუშაობს"
 msgid "Pricing"
 msgstr "ფასები"
 
-#: templates/marketing/_footer.html:18 templates/marketing/_hero.html:27
+#: templates/marketing/_footer.html:18
 msgid "Company"
 msgstr "კომპანია"
 
@@ -487,7 +479,8 @@ msgstr "QR-მენიუ · ლაივ შეკვეთები · აპ
 #: templates/marketing/_hero.html:8
 msgid ""
 "Turn every table into a <span class=\"mk-grad-text\">point of sale</span>"
-msgstr "აქციეთ ყოველი მაგიდა <span class=\"mk-grad-text\">გაყიდვის წერტილად</span>"
+msgstr ""
+"აქციეთ ყოველი მაგიდა <span class=\"mk-grad-text\">გაყიდვის წერტილად</span>"
 
 #: templates/marketing/_hero.html:11
 msgid ""
@@ -499,40 +492,34 @@ msgstr ""
 "არაფრის ახსნა."
 
 #: templates/marketing/_hero.html:15
-msgid "See how it works"
-msgstr "ნახეთ, როგორ მუშაობს"
+msgid "See pricing"
+msgstr "ფასების ნახვა"
+
 
 #: templates/marketing/_hero.html:17
-msgid "Free to start · Set up in under 15 minutes"
-msgstr "დაწყება უფასოა · მოწყობა 15 წუთზე ნაკლებში"
+msgid "Set up in under 15 minutes"
+msgstr "დაყენება 15 წუთში"
+
+
+#: templates/marketing/_hero.html:22
+msgid "Guest order screen"
+msgstr "სტუმრის შეკვეთის ეკრანი"
+
+
+#: templates/marketing/_hero.html:25
+msgid "Guest QR menu"
+msgstr "სტუმრის QR მენიუ"
+
 
 #: templates/marketing/_hero.html:28
-msgid "Overview"
-msgstr "მიმოხილვა"
+msgid "Demo menu QR code"
+msgstr "დემო მენიუს QR კოდი"
 
-#: templates/marketing/_hero.html:28
-msgid "Items"
-msgstr "პოზიციები"
-
-#: templates/marketing/_hero.html:28
-msgid "Branches"
-msgstr "ფილიალები"
 
 #: templates/marketing/_hero.html:29
-msgid "Operations"
-msgstr "ოპერაციები"
+msgid "Scan to try the live demo"
+msgstr "დაასკანერეთ ლაივ დემოს სანახავად"
 
-#: templates/marketing/_hero.html:30
-msgid "Orders"
-msgstr "შეკვეთები"
-
-#: templates/marketing/_hero.html:35
-msgid "all branches · updates in real time"
-msgstr "ყველა ფილიალი · ახლდება რეალურ დროში"
-
-#: templates/marketing/_hero.html:54
-msgid "Toast · 4 dishes"
-msgstr "Toast · 4 კერძი"
 
 #: templates/marketing/_how.html:5
 msgid "Live by lunchtime"
@@ -577,8 +564,9 @@ msgid "Simple pricing that grows with you"
 msgstr "მარტივი ფასები, რომლებიც თქვენთან ერთად იზრდება"
 
 #: templates/marketing/_pricing.html:6
-msgid "Start free. Upgrade when the orders start rolling in."
-msgstr "დაიწყეთ უფასოდ. განაახლეთ, როცა შეკვეთები წამოვა."
+msgid "Simple monthly pricing in NPR. Cancel anytime."
+msgstr "მარტივი ყოველთვიური ფასები NPR-ში. გააუქმეთ ნებისმიერ დროს."
+
 
 #: templates/marketing/_pricing.html:11
 msgid "Most popular"
@@ -586,12 +574,88 @@ msgstr "ყველაზე პოპულარული"
 
 #: templates/marketing/_pricing.html:24
 msgid ""
-"All plans include the branded guest menu, QR generation, and live orders. "
-"Prices are placeholders."
-msgstr ""
-"ყველა გეგმა მოიცავს ბრენდირებულ სტუმრის მენიუს, QR-კოდების გენერაციასა და "
-"ლაივ შეკვეთებს. ფასები დროებითია."
+"Both plans include the branded guest menu, QR generation, and live orders."
+msgstr "ორივე გეგმა მოიცავს ბრენდირებულ მენიუს, QR გენერაციას და ლაივ შეკვეთებს."
+
 
 #: templates/marketing/_social_proof.html:3
 msgid "Powering menus for cafés, restaurants and bars across the region"
 msgstr "ვამუშავებთ მენიუებს კაფეებში, რესტორნებსა და ბარებში მთელ რეგიონში"
+
+#~ msgid "Table 12"
+#~ msgstr "მაგიდა 12"
+
+#~ msgid "Table 4"
+#~ msgstr "მაგიდა 4"
+
+#~ msgid "Table 9"
+#~ msgstr "მაგიდა 9"
+
+#~ msgid "Starter"
+#~ msgstr "Starter"
+
+#~ msgid "Free"
+#~ msgstr "უფასო"
+
+#~ msgid "For a single café getting started."
+#~ msgstr "ერთი კაფესთვის, რომელიც ახლა იწყებს."
+
+#~ msgid "Start free"
+#~ msgstr "დაიწყეთ უფასოდ"
+
+#~ msgid "1 branch"
+#~ msgstr "1 ფილიალი"
+
+#~ msgid "Up to 30 menu items"
+#~ msgstr "30-მდე პოზიცია მენიუში"
+
+#~ msgid "Pro"
+#~ msgstr "Pro"
+
+#~ msgid "For busy venues taking live orders."
+#~ msgstr "დატვირთული ადგილებისთვის, რომლებიც ლაივ შეკვეთებს იღებენ."
+
+#~ msgid "1 branch, unlimited items"
+#~ msgstr "1 ფილიალი, შეუზღუდავი პოზიციები"
+
+#~ msgid "Photos & item badges"
+#~ msgstr "ფოტოები და პოზიციის ნიშნები"
+
+#~ msgid "For groups running multiple locations."
+#~ msgstr "ჯგუფებისთვის, რომლებიც რამდენიმე ლოკაციას მართავენ."
+
+#~ msgid "Per-branch menus & QRs"
+#~ msgstr "მენიუ და QR თითო ფილიალზე"
+
+#~ msgid "Clone menus across branches"
+#~ msgstr "მენიუს კოპირება ფილიალებს შორის"
+
+#~ msgid "No credit card required"
+#~ msgstr "საკრედიტო ბარათი არ არის საჭირო"
+
+#~ msgid "See how it works"
+#~ msgstr "ნახეთ, როგორ მუშაობს"
+
+#~ msgid "Overview"
+#~ msgstr "მიმოხილვა"
+
+#~ msgid "Items"
+#~ msgstr "პოზიციები"
+
+#~ msgid "Branches"
+#~ msgstr "ფილიალები"
+
+#~ msgid "Operations"
+#~ msgstr "ოპერაციები"
+
+#~ msgid "Orders"
+#~ msgstr "შეკვეთები"
+
+#~ msgid "all branches · updates in real time"
+#~ msgstr "ყველა ფილიალი · ახლდება რეალურ დროში"
+
+#~ msgid "Toast · 4 dishes"
+#~ msgstr "Toast · 4 კერძი"
+
+#~ msgid "Start free. Upgrade when the orders start rolling in."
+#~ msgstr "დაიწყეთ უფასოდ. განაახლეთ, როცა შეკვეთები წამოვა."

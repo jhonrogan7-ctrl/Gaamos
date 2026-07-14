@@ -3,9 +3,9 @@
   <div class="text-center max-w-2xl mx-auto mb-12">
     <div class="mk-eyebrow">{% translate "Pricing" %}</div>
     <h2 class="font-hd text-3xl md:text-4xl font-extrabold text-ink mt-2">{% translate "Simple pricing that grows with you" %}</h2>
-    <p class="text-ink-2 mt-3">{% translate "Start free. Upgrade when the orders start rolling in." %}</p>
+    <p class="text-ink-2 mt-3">{% translate "Simple monthly pricing in NPR. Cancel anytime." %}</p>
   </div>
-  <div class="grid md:grid-cols-3 gap-6 items-start">
+  <div class="grid md:grid-cols-2 gap-6 items-start max-w-3xl mx-auto">
     {% for t in tiers %}
     <div class="rounded-2xl p-6 transition hover:-translate-y-1 {% if t.highlighted %}text-white shadow-frame mk-grad{% else %}mk-card{% endif %}">
       {% if t.highlighted %}<div class="text-[11px] font-bold tracking-widest uppercase text-white/90 mb-3">{% translate "Most popular" %}</div>{% endif %}
@@ -21,5 +21,5 @@
     </div>
     {% endfor %}
   </div>
-  <p class="text-center text-xs text-ink-3 mt-8">{% translate "All plans include the branded guest menu, QR generation, and live orders. Prices are placeholders." %}</p>
+  <p class="text-center text-xs text-ink-3 mt-8">{% translate "Both plans include the branded guest menu, QR generation, and live orders." %}</p>
 </section>

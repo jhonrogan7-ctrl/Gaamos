@@ -5,7 +5,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gaamos-landing\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-07-14 01:22+0545\n"
+"POT-Creation-Date: 2026-07-15 00:28+0545\n"
 "PO-Revision-Date: 2026-07-13 20:00+0545\n"
 "Last-Translator: Gaamos team <hello@gaamos.io>\n"
 "Language-Team: Nepali\n"
@@ -31,55 +31,43 @@ msgstr "बार"
 msgid "Other"
 msgstr "अन्य"
 
-#: core/views.py:30 templates/marketing/_hero.html:65
-msgid "Table 12"
-msgstr "टेबल 12"
+#: core/views.py:30
+msgid "Table 6"
+msgstr "टेबल 6"
 
-#: core/views.py:30 core/views.py:31 core/views.py:36 core/views.py:37
+#: core/views.py:30 core/views.py:31
 msgid "New"
 msgstr "नयाँ"
 
-#: core/views.py:31 core/views.py:37
+#: core/views.py:31
 msgid "Takeaway"
 msgstr "टेकअवे"
 
 #: core/views.py:32
-msgid "Table 4"
-msgstr "टेबल 4"
-
-#: core/views.py:32 core/views.py:33 core/views.py:38
-msgid "Served"
-msgstr "सर्भ भयो"
-
-#: core/views.py:33
-msgid "Table 9"
-msgstr "टेबल 9"
-
-#: core/views.py:36
-msgid "Table 6"
-msgstr "टेबल 6"
-
-#: core/views.py:38
 msgid "Table 2"
 msgstr "टेबल 2"
 
-#: core/views.py:52
+#: core/views.py:32
+msgid "Served"
+msgstr "सर्भ भयो"
+
+#: core/views.py:41
 msgid "Build your menu"
 msgstr "आफ्नो मेनु बनाउनुहोस्"
 
-#: core/views.py:52
+#: core/views.py:41
 msgid ""
 "Pick dishes from the template library, set prices, add photos. Organize into "
 "categories your guests will actually browse."
 msgstr ""
-"टेम्प्लेट लाइब्रेरीबाट परिकार छान्नुहोस्, मूल्य राख्नुहोस्, फोटो थप्नुहोस्। पाहुनाहरूले साँच्चै "
-"हेर्ने श्रेणीहरूमा मिलाएर राख्नुहोस्।"
+"टेम्प्लेट लाइब्रेरीबाट परिकार छान्नुहोस्, मूल्य राख्नुहोस्, फोटो थप्नुहोस्। पाहुनाहरूले साँच्चै हेर्ने "
+"श्रेणीहरूमा मिलाएर राख्नुहोस्।"
 
-#: core/views.py:53
+#: core/views.py:42
 msgid "Print your QRs"
 msgstr "आफ्ना QR छाप्नुहोस्"
 
-#: core/views.py:53
+#: core/views.py:42
 msgid ""
 "Generate one code for the counter or a numbered code per table. Download the "
 "whole set as a print-ready PDF."
@@ -87,112 +75,113 @@ msgstr ""
 "काउन्टरका लागि एउटा कोड वा हरेक टेबलका लागि नम्बर सहितको कोड बनाउनुहोस्। पूरै सेट "
 "छाप्न तयार PDF का रूपमा डाउनलोड गर्नुहोस्।"
 
-#: core/views.py:54
+#: core/views.py:43
 msgid "Receive orders"
 msgstr "अर्डर प्राप्त गर्नुहोस्"
 
-#: core/views.py:54
+#: core/views.py:43
 msgid ""
 "Guests scan, browse, and order from their own phone. Orders appear in your "
 "live queue the moment they're placed."
 msgstr ""
-"पाहुनाहरू आफ्नै फोनबाट स्क्यान गर्छन्, मेनु हेर्छन् र अर्डर गर्छन्। अर्डर गरेकै क्षण तपाईंको "
-"लाइभ लाइनमा देखा पर्छ।"
+"पाहुनाहरू आफ्नै फोनबाट स्क्यान गर्छन्, मेनु हेर्छन् र अर्डर गर्छन्। अर्डर गरेकै क्षण तपाईंको लाइभ "
+"लाइनमा देखा पर्छ।"
 
-#: core/views.py:62
-msgid "Starter"
-msgstr "स्टार्टर"
-
-#: core/views.py:62
-msgid "Free"
-msgstr "निःशुल्क"
-
-#: core/views.py:62
-msgid "For a single café getting started."
-msgstr "भर्खरै सुरु गर्दै गरेको एउटा क्याफेका लागि।"
-
-#: core/views.py:62 templates/marketing/_final_cta.html:6
-#: templates/marketing/_hero.html:14
-msgid "Start free"
-msgstr "निःशुल्क सुरु गर्नुहोस्"
-
-#: core/views.py:63
-msgid "1 branch"
-msgstr "1 शाखा"
-
-#: core/views.py:63
-msgid "Up to 30 menu items"
-msgstr "30 वटासम्म मेनु आइटम"
-
-#: core/views.py:63
-msgid "Branded QR menu"
-msgstr "ब्रान्डेड QR मेनु"
-
-#: core/views.py:63
-msgid "Venue QR code"
-msgstr "स्थलको QR कोड"
-
-#: core/views.py:64
-msgid "Pro"
-msgstr "प्रो"
-
-#: core/views.py:64 core/views.py:66
-msgid "/month"
-msgstr "/महिना"
-
-#: core/views.py:64
-msgid "For busy venues taking live orders."
-msgstr "लाइभ अर्डर लिने व्यस्त स्थलहरूका लागि।"
-
-#: core/views.py:64 templates/marketing/_nav.html:17
-msgid "Get started"
-msgstr "सुरु गर्नुहोस्"
-
-#: core/views.py:65
-msgid "1 branch, unlimited items"
-msgstr "1 शाखा, असीमित आइटम"
-
-#: core/views.py:65 templates/marketing/_hero.html:34
-msgid "Live order queue"
-msgstr "लाइभ अर्डर लाइन"
-
-#: core/views.py:65
-msgid "Table QRs + PDF export"
-msgstr "टेबल QR + PDF निर्यात"
-
-#: core/views.py:65
-msgid "Photos & item badges"
-msgstr "फोटो र आइटम ब्याज"
-
-#: core/views.py:66
+#: core/views.py:51
 msgid "Business"
 msgstr "बिजनेस"
 
-#: core/views.py:66
-msgid "For groups running multiple locations."
-msgstr "धेरै स्थान चलाउने समूहहरूका लागि।"
+#: core/views.py:51 core/views.py:62
+msgid "/month"
+msgstr "/महिना"
 
-#: core/views.py:66 templates/marketing/_contact.html:5
+#: core/views.py:52
+msgid ""
+"The whole product — everything your venue needs to run QR menus and live "
+"orders."
+msgstr "पूरै उत्पादन — QR मेनु र लाइभ अर्डर चलाउन तपाईंको स्थललाई चाहिने सबै कुरा।"
+
+
+#: core/views.py:53 templates/marketing/_final_cta.html:6
+#: templates/marketing/_hero.html:14 templates/marketing/_nav.html:17
+msgid "Get started"
+msgstr "सुरु गर्नुहोस्"
+
+#: core/views.py:54
+msgid "Unlimited branches & menu items"
+msgstr "असीमित शाखा र मेनु आइटम"
+
+
+#: core/views.py:55
+msgid "Branded QR menu — 3 themes × 3 layouts"
+msgstr "ब्रान्डेड QR मेनु — ३ थिम × ३ लेआउट"
+
+
+#: core/views.py:56
+msgid "Guest ordering + live order queue"
+msgstr "पाहुना अर्डर + लाइभ अर्डर लाइन"
+
+
+#: core/views.py:57
+msgid "Table QRs + printable PDF export"
+msgstr "टेबल QR + प्रिन्ट-योग्य PDF निर्यात"
+
+
+#: core/views.py:58
+msgid "Photos, badges & promo banner"
+msgstr "फोटो, ब्याज र प्रोमो ब्यानर"
+
+
+#: core/views.py:59
+msgid "Installable app (PWA) for guests & staff"
+msgstr "पाहुना र कर्मचारीका लागि इन्स्टल गर्न मिल्ने एप (PWA)"
+
+
+#: core/views.py:60
+msgid "3 team members"
+msgstr "३ टोली सदस्य"
+
+
+#: core/views.py:62
+msgid "VIP"
+msgstr "VIP"
+
+
+#: core/views.py:63
+msgid "For venues that want full brand ownership and a bigger team."
+msgstr "पूर्ण ब्रान्ड स्वामित्व र ठूलो टोली चाहने स्थलहरूका लागि।"
+
+
+#: core/views.py:64 templates/marketing/_contact.html:5
 msgid "Talk to us"
 msgstr "हामीसँग कुरा गर्नुहोस्"
 
-#: core/views.py:67
-msgid "Unlimited branches"
-msgstr "असीमित शाखा"
+#: core/views.py:65
+msgid "Everything in Business"
+msgstr "Business का सबै सुविधा"
+
+
+#: core/views.py:66
+msgid "Custom domain — menu.yourrestaurant.com"
+msgstr "कस्टम डोमेन — menu.yourrestaurant.com"
+
 
 #: core/views.py:67
-msgid "Per-branch menus & QRs"
-msgstr "प्रति-शाखा मेनु र QR"
+msgid "Your venue as its own branded app"
+msgstr "तपाईंको स्थल आफ्नै ब्रान्डेड एपका रूपमा"
 
-#: core/views.py:67
-msgid "Clone menus across branches"
-msgstr "शाखाहरूबीच मेनु कपी गर्नुहोस्"
 
-#: core/views.py:67
-msgid "Priority support"
-msgstr "प्राथमिकता सहयोग"
+#: core/views.py:68
+msgid "Unlimited team + branch-scoped managers"
+msgstr "असीमित टोली + शाखा-स्तरका म्यानेजर"
 
-#: core/views.py:116
+
+#: core/views.py:69
+msgid "Priority WhatsApp support"
+msgstr "प्राथमिकता WhatsApp सहयोग"
+
+
+#: core/views.py:117
 msgid "Please fill in your name, venue name and phone number."
 msgstr "कृपया आफ्नो नाम, स्थलको नाम र फोन नम्बर भर्नुहोस्।"
 
@@ -305,9 +294,8 @@ msgid ""
 "drop them into categories, set your prices, add photos. Your menu is live "
 "before your coffee gets cold."
 msgstr ""
-"परिकार र पेय पदार्थको साझा लाइब्रेरीबाट सुरु गर्नुहोस् — आफूले बेच्ने छान्नुहोस्, "
-"श्रेणीहरूमा राख्नुहोस्, मूल्य तोक्नुहोस्, फोटो थप्नुहोस्। कफी सेलाउनुअघि नै तपाईंको मेनु "
-"लाइभ हुन्छ।"
+"परिकार र पेय पदार्थको साझा लाइब्रेरीबाट सुरु गर्नुहोस् — आफूले बेच्ने छान्नुहोस्, श्रेणीहरूमा "
+"राख्नुहोस्, मूल्य तोक्नुहोस्, फोटो थप्नुहोस्। कफी सेलाउनुअघि नै तपाईंको मेनु लाइभ हुन्छ।"
 
 #: templates/marketing/_features.html:15
 msgid "Template library of ready-made items"
@@ -372,8 +360,8 @@ msgid ""
 "new\">New</span> to <span class=\"mk-badge-served\">Served</span> with one "
 "tap."
 msgstr ""
-"कोठाभरि कराउनु पर्दैन, कागजका पुर्जा हराउँदैनन्। हरेक अर्डर — टेबल होस् वा टेकअवे — "
-"तुरुन्तै तपाईंको लाइभ लाइनमा आइपुग्छ र एक ट्यापमै <span class=\"mk-badge-new\">नयाँ</"
+"कोठाभरि कराउनु पर्दैन, कागजका पुर्जा हराउँदैनन्। हरेक अर्डर — टेबल होस् वा टेकअवे — तुरुन्तै "
+"तपाईंको लाइभ लाइनमा आइपुग्छ र एक ट्यापमै <span class=\"mk-badge-new\">नयाँ</"
 "span>बाट <span class=\"mk-badge-served\">सर्भ भयो</span>मा सर्छ।"
 
 #: templates/marketing/_features.html:67
@@ -397,7 +385,7 @@ msgstr "↓ सबै डाउनलोड गर्नुहोस् (PDF)"
 msgid "Table %(t)s"
 msgstr "टेबल %(t)s"
 
-#: templates/marketing/_features.html:89 templates/marketing/_hero.html:30
+#: templates/marketing/_features.html:89
 msgid "QR Codes"
 msgstr "QR कोडहरू"
 
@@ -411,25 +399,23 @@ msgid ""
 "Download them all as one print-ready PDF, stick them on tables, and you're "
 "taking orders. Table QRs tell you exactly where each order came from."
 msgstr ""
-"सेकेन्डमै एउटा स्थल-कोड वा टेबल-कोडहरूको पूरै दायरा बनाउनुहोस्। सबैलाई एउटै छाप्न तयार "
-"PDF मा डाउनलोड गर्नुहोस्, टेबलमा टाँस्नुहोस्, अनि अर्डर लिन थाल्नुहोस्। टेबल QR ले हरेक "
-"अर्डर कुन टेबलबाट आयो भन्ने ठ्याक्कै बताउँछ।"
+"सेकेन्डमै एउटा स्थल-कोड वा टेबल-कोडहरूको पूरै दायरा बनाउनुहोस्। सबैलाई एउटै छाप्न तयार PDF "
+"मा डाउनलोड गर्नुहोस्, टेबलमा टाँस्नुहोस्, अनि अर्डर लिन थाल्नुहोस्। टेबल QR ले हरेक अर्डर कुन "
+"टेबलबाट आयो भन्ने ठ्याक्कै बताउँछ।"
 
 #: templates/marketing/_final_cta.html:4
 msgid "Your guests are already holding the menu"
 msgstr "तपाईंका पाहुनाको हातमा मेनु पहिल्यै छ"
 
 #: templates/marketing/_final_cta.html:5
-msgid ""
-"It's their phone. Put your menu on it tonight — free to start, live in "
-"minutes."
-msgstr ""
-"त्यो उनीहरूकै फोन हो। आजै राति आफ्नो मेनु त्यसमा राख्नुहोस् — सुरु गर्न निःशुल्क, मिनेटमै "
-"लाइभ।"
+msgid "It's their phone. Put your menu on it tonight — live in minutes."
+msgstr "त्यो उनीहरूकै फोन हो। आजै राति आफ्नो मेनु त्यसमा राख्नुहोस् — मिनेटमै लाइभ।"
+
 
 #: templates/marketing/_final_cta.html:7
-msgid "No credit card required"
-msgstr "क्रेडिट कार्ड चाहिँदैन"
+msgid "Plans from Rs 3,000 a month — cancel anytime"
+msgstr "योजना महिनाको रु ३,००० देखि — जहिले पनि रद्द गर्न सकिन्छ"
+
 
 #: templates/marketing/_footer.html:6
 #, python-format
@@ -454,7 +440,7 @@ msgstr "कसरी काम गर्छ"
 msgid "Pricing"
 msgstr "मूल्य"
 
-#: templates/marketing/_footer.html:18 templates/marketing/_hero.html:27
+#: templates/marketing/_footer.html:18
 msgid "Company"
 msgstr "कम्पनी"
 
@@ -492,40 +478,34 @@ msgstr ""
 "गर्छन्, हेर्छन् र अर्डर गर्छन् — केही डाउनलोड गर्नु पर्दैन, केही सिकाउनु पर्दैन।"
 
 #: templates/marketing/_hero.html:15
-msgid "See how it works"
-msgstr "कसरी काम गर्छ हेर्नुहोस्"
+msgid "See pricing"
+msgstr "मूल्य हेर्नुहोस्"
+
 
 #: templates/marketing/_hero.html:17
-msgid "Free to start · Set up in under 15 minutes"
-msgstr "सुरु गर्न निःशुल्क · 15 मिनेटभित्रै सेटअप"
+msgid "Set up in under 15 minutes"
+msgstr "१५ मिनेटभित्रै सेटअप"
+
+
+#: templates/marketing/_hero.html:22
+msgid "Guest order screen"
+msgstr "पाहुनाको अर्डर स्क्रिन"
+
+
+#: templates/marketing/_hero.html:25
+msgid "Guest QR menu"
+msgstr "पाहुनाको QR मेनु"
+
 
 #: templates/marketing/_hero.html:28
-msgid "Overview"
-msgstr "समग्र"
+msgid "Demo menu QR code"
+msgstr "डेमो मेनुको QR कोड"
 
-#: templates/marketing/_hero.html:28
-msgid "Items"
-msgstr "आइटमहरू"
-
-#: templates/marketing/_hero.html:28
-msgid "Branches"
-msgstr "शाखाहरू"
 
 #: templates/marketing/_hero.html:29
-msgid "Operations"
-msgstr "सञ्चालन"
+msgid "Scan to try the live demo"
+msgstr "लाइभ डेमो हेर्न स्क्यान गर्नुहोस्"
 
-#: templates/marketing/_hero.html:30
-msgid "Orders"
-msgstr "अर्डरहरू"
-
-#: templates/marketing/_hero.html:35
-msgid "all branches · updates in real time"
-msgstr "सबै शाखा · वास्तविक समयमा अपडेट"
-
-#: templates/marketing/_hero.html:54
-msgid "Toast · 4 dishes"
-msgstr "Toast · 4 परिकार"
 
 #: templates/marketing/_how.html:5
 msgid "Live by lunchtime"
@@ -545,9 +525,8 @@ msgid ""
 "its own orders — while you watch everything from a single screen. Clone a "
 "menu to a new branch and open the doors the same day."
 msgstr ""
-"दुई शाखा चलाउनुहोस् वा बीस। हरेकको आफ्नै मेनु, आफ्नै QR कोड र आफ्नै अर्डर हुन्छ — तपाईं "
-"भने सबै एउटै स्क्रिनबाट हेर्नुहुन्छ। नयाँ शाखामा मेनु कपी गर्नुहोस् र त्यही दिन ढोका "
-"खोल्नुहोस्।"
+"दुई शाखा चलाउनुहोस् वा बीस। हरेकको आफ्नै मेनु, आफ्नै QR कोड र आफ्नै अर्डर हुन्छ — तपाईं भने "
+"सबै एउटै स्क्रिनबाट हेर्नुहुन्छ। नयाँ शाखामा मेनु कपी गर्नुहोस् र त्यही दिन ढोका खोल्नुहोस्।"
 
 #: templates/marketing/_multibranch.html:9
 msgid "dashboard"
@@ -570,8 +549,9 @@ msgid "Simple pricing that grows with you"
 msgstr "तपाईंसँगै बढ्ने सरल मूल्य"
 
 #: templates/marketing/_pricing.html:6
-msgid "Start free. Upgrade when the orders start rolling in."
-msgstr "निःशुल्क सुरु गर्नुहोस्। अर्डर आउन थालेपछि अपग्रेड गर्नुहोस्।"
+msgid "Simple monthly pricing in NPR. Cancel anytime."
+msgstr "नेपाली रुपैयाँमा सरल मासिक मूल्य। जहिले पनि रद्द गर्न सकिन्छ।"
+
 
 #: templates/marketing/_pricing.html:11
 msgid "Most popular"
@@ -579,12 +559,88 @@ msgstr "सबैभन्दा लोकप्रिय"
 
 #: templates/marketing/_pricing.html:24
 msgid ""
-"All plans include the branded guest menu, QR generation, and live orders. "
-"Prices are placeholders."
-msgstr ""
-"सबै योजनामा ब्रान्डेड गेस्ट मेनु, QR निर्माण र लाइभ अर्डर समावेश छन्। मूल्यहरू नमुना मात्र "
-"हुन्।"
+"Both plans include the branded guest menu, QR generation, and live orders."
+msgstr "दुवै योजनामा ब्रान्डेड गेस्ट मेनु, QR निर्माण र लाइभ अर्डर समावेश छन्।"
+
 
 #: templates/marketing/_social_proof.html:3
 msgid "Powering menus for cafés, restaurants and bars across the region"
 msgstr "क्षेत्रभरका क्याफे, रेस्टुरेन्ट र बारका मेनु चलाउँदै"
+
+#~ msgid "Table 12"
+#~ msgstr "टेबल 12"
+
+#~ msgid "Table 4"
+#~ msgstr "टेबल 4"
+
+#~ msgid "Table 9"
+#~ msgstr "टेबल 9"
+
+#~ msgid "Starter"
+#~ msgstr "स्टार्टर"
+
+#~ msgid "Free"
+#~ msgstr "निःशुल्क"
+
+#~ msgid "For a single café getting started."
+#~ msgstr "भर्खरै सुरु गर्दै गरेको एउटा क्याफेका लागि।"
+
+#~ msgid "Start free"
+#~ msgstr "निःशुल्क सुरु गर्नुहोस्"
+
+#~ msgid "1 branch"
+#~ msgstr "1 शाखा"
+
+#~ msgid "Up to 30 menu items"
+#~ msgstr "30 वटासम्म मेनु आइटम"
+
+#~ msgid "Pro"
+#~ msgstr "प्रो"
+
+#~ msgid "For busy venues taking live orders."
+#~ msgstr "लाइभ अर्डर लिने व्यस्त स्थलहरूका लागि।"
+
+#~ msgid "1 branch, unlimited items"
+#~ msgstr "1 शाखा, असीमित आइटम"
+
+#~ msgid "Photos & item badges"
+#~ msgstr "फोटो र आइटम ब्याज"
+
+#~ msgid "For groups running multiple locations."
+#~ msgstr "धेरै स्थान चलाउने समूहहरूका लागि।"
+
+#~ msgid "Per-branch menus & QRs"
+#~ msgstr "प्रति-शाखा मेनु र QR"
+
+#~ msgid "Clone menus across branches"
+#~ msgstr "शाखाहरूबीच मेनु कपी गर्नुहोस्"
+
+#~ msgid "No credit card required"
+#~ msgstr "क्रेडिट कार्ड चाहिँदैन"
+
+#~ msgid "See how it works"
+#~ msgstr "कसरी काम गर्छ हेर्नुहोस्"
+
+#~ msgid "Overview"
+#~ msgstr "समग्र"
+
+#~ msgid "Items"
+#~ msgstr "आइटमहरू"
+
+#~ msgid "Branches"
+#~ msgstr "शाखाहरू"
+
+#~ msgid "Operations"
+#~ msgstr "सञ्चालन"
+
+#~ msgid "Orders"
+#~ msgstr "अर्डरहरू"
+
+#~ msgid "all branches · updates in real time"
+#~ msgstr "सबै शाखा · वास्तविक समयमा अपडेट"
+
+#~ msgid "Toast · 4 dishes"
+#~ msgstr "Toast · 4 परिकार"
+
+#~ msgid "Start free. Upgrade when the orders start rolling in."
+#~ msgstr "निःशुल्क सुरु गर्नुहोस्। अर्डर आउन थालेपछि अपग्रेड गर्नुहोस्।"
