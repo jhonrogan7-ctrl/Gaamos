@@ -60,7 +60,7 @@ def test_venue_type_chips_submit_canonical_values(client):
 
 def test_venue_type_stored_values_stay_canonical():
     from core.models import Lead
-    assert [v for v, _ in Lead.VENUE_TYPES] == ["Café", "Restaurant", "Bar", "Other"]
+    assert [v for v, _ in Lead.VENUE_TYPES] == ["Café", "Restaurant", "Bar", "Hotel", "Other"]
 
 
 @pytest.mark.django_db

@@ -11,6 +11,7 @@ class Lead(models.Model):
         ("Café", _("Café")),
         ("Restaurant", _("Restaurant")),
         ("Bar", _("Bar")),
+        ("Hotel", _("Hotel")),
         ("Other", _("Other")),
     ]
 

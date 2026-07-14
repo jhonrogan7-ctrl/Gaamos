@@ -5,7 +5,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gaamos-landing\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-07-15 00:48+0545\n"
+"POT-Creation-Date: 2026-07-15 03:47+0545\n"
 "PO-Revision-Date: 2026-07-13 20:00+0545\n"
 "Last-Translator: Gaamos team <hello@gaamos.io>\n"
 "Language-Team: Nepali\n"
@@ -28,6 +28,10 @@ msgid "Bar"
 msgstr "बार"
 
 #: core/models.py:14
+msgid "Hotel"
+msgstr "होटल"
+
+#: core/models.py:15
 msgid "Other"
 msgstr "अन्य"
 
@@ -324,8 +328,10 @@ msgid ""
 "medium\">your.gaamos.io</span> — with your logo, your colors, your menu. "
 "Guests scan and browse instantly in the browser. No app store, no sign-up, "
 "no friction."
-msgstr "हरेक स्थलले आफ्नै सबडोमेन पाउँछ — <span class=\"text-ink font-medium\">your.gaamos.io</span> — तपाईंकै लोगो, रङ र मेनुसहित। पाहुनाहरूले ब्राउजरमै तुरुन्तै स्क्यान गरेर हेर्छन्। न एप स्टोर, न साइन-अप, न झन्झट।"
-
+msgstr ""
+"हरेक स्थलले आफ्नै सबडोमेन पाउँछ — <span class=\"text-ink font-"
+"medium\">your.gaamos.io</span> — तपाईंकै लोगो, रङ र मेनुसहित। पाहुनाहरूले ब्राउजरमै "
+"तुरुन्तै स्क्यान गरेर हेर्छन्। न एप स्टोर, न साइन-अप, न झन्झट।"
 
 #: templates/marketing/_features.html:62
 msgid "Live Orders"
@@ -401,8 +407,9 @@ msgstr "योजना महिनाको रु ३,००० देखि 
 msgid ""
 "QR menus and live orders for cafés, restaurants and bars. Your venue at "
 "<span class=\"text-white\">your.gaamos.io</span>."
-msgstr "क्याफे, रेस्टुरेन्ट र बारका लागि QR मेनु र लाइभ अर्डर। तपाईंको स्थल <span class=\"text-white\">your.gaamos.io</span> मा।"
-
+msgstr ""
+"क्याफे, रेस्टुरेन्ट र बारका लागि QR मेनु र लाइभ अर्डर। तपाईंको स्थल <span class=\"text-"
+"white\">your.gaamos.io</span> मा।"
 
 #: templates/marketing/_footer.html:10
 msgid "Product"
@@ -464,18 +471,14 @@ msgid "Set up in under 15 minutes"
 msgstr "१५ मिनेटभित्रै सेटअप"
 
 #: templates/marketing/_hero.html:22
-msgid "Guest order screen"
-msgstr "पाहुनाको अर्डर स्क्रिन"
-
-#: templates/marketing/_hero.html:25
 msgid "Guest QR menu"
 msgstr "पाहुनाको QR मेनु"
 
-#: templates/marketing/_hero.html:28
+#: templates/marketing/_hero.html:25
 msgid "Demo menu QR code"
 msgstr "डेमो मेनुको QR कोड"
 
-#: templates/marketing/_hero.html:29
+#: templates/marketing/_hero.html:26
 msgid "Scan to try the live demo"
 msgstr "लाइभ डेमो हेर्न स्क्यान गर्नुहोस्"
 
@@ -536,81 +539,3 @@ msgstr "दुवै योजनामा ब्रान्डेड गेस
 #: templates/marketing/_social_proof.html:3
 msgid "Powering menus for cafés, restaurants and bars across the region"
 msgstr "क्षेत्रभरका क्याफे, रेस्टुरेन्ट र बारका मेनु चलाउँदै"
-
-#~ msgid "Table 12"
-#~ msgstr "टेबल 12"
-
-#~ msgid "Table 4"
-#~ msgstr "टेबल 4"
-
-#~ msgid "Table 9"
-#~ msgstr "टेबल 9"
-
-#~ msgid "Starter"
-#~ msgstr "स्टार्टर"
-
-#~ msgid "Free"
-#~ msgstr "निःशुल्क"
-
-#~ msgid "For a single café getting started."
-#~ msgstr "भर्खरै सुरु गर्दै गरेको एउटा क्याफेका लागि।"
-
-#~ msgid "Start free"
-#~ msgstr "निःशुल्क सुरु गर्नुहोस्"
-
-#~ msgid "1 branch"
-#~ msgstr "1 शाखा"
-
-#~ msgid "Up to 30 menu items"
-#~ msgstr "30 वटासम्म मेनु आइटम"
-
-#~ msgid "Pro"
-#~ msgstr "प्रो"
-
-#~ msgid "For busy venues taking live orders."
-#~ msgstr "लाइभ अर्डर लिने व्यस्त स्थलहरूका लागि।"
-
-#~ msgid "1 branch, unlimited items"
-#~ msgstr "1 शाखा, असीमित आइटम"
-
-#~ msgid "Photos & item badges"
-#~ msgstr "फोटो र आइटम ब्याज"
-
-#~ msgid "For groups running multiple locations."
-#~ msgstr "धेरै स्थान चलाउने समूहहरूका लागि।"
-
-#~ msgid "Per-branch menus & QRs"
-#~ msgstr "प्रति-शाखा मेनु र QR"
-
-#~ msgid "Clone menus across branches"
-#~ msgstr "शाखाहरूबीच मेनु कपी गर्नुहोस्"
-
-#~ msgid "No credit card required"
-#~ msgstr "क्रेडिट कार्ड चाहिँदैन"
-
-#~ msgid "See how it works"
-#~ msgstr "कसरी काम गर्छ हेर्नुहोस्"
-
-#~ msgid "Overview"
-#~ msgstr "समग्र"
-
-#~ msgid "Items"
-#~ msgstr "आइटमहरू"
-
-#~ msgid "Branches"
-#~ msgstr "शाखाहरू"
-
-#~ msgid "Operations"
-#~ msgstr "सञ्चालन"
-
-#~ msgid "Orders"
-#~ msgstr "अर्डरहरू"
-
-#~ msgid "all branches · updates in real time"
-#~ msgstr "सबै शाखा · वास्तविक समयमा अपडेट"
-
-#~ msgid "Toast · 4 dishes"
-#~ msgstr "Toast · 4 परिकार"
-
-#~ msgid "Start free. Upgrade when the orders start rolling in."
-#~ msgstr "निःशुल्क सुरु गर्नुहोस्। अर्डर आउन थालेपछि अपग्रेड गर्नुहोस्।"

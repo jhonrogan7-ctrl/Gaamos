@@ -20,7 +20,7 @@ def test_lead_creation_and_str():
 @pytest.mark.django_db
 def test_lead_venue_type_choices():
     labels = [c[0] for c in Lead.VENUE_TYPES]
-    assert labels == ["Café", "Restaurant", "Bar", "Other"]
+    assert labels == ["Café", "Restaurant", "Bar", "Hotel", "Other"]
 
 
 @pytest.mark.django_db

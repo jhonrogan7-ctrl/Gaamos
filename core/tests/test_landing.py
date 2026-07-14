@@ -48,10 +48,10 @@ def test_landing_pricing_and_footer(client):
 def test_landing_logo_and_hero_assets(client):
     body = client.get("/en/").content.decode()
     assert "images/gaamos-logo.png" in body           # real logo in nav + footer
-    assert "images/landing/menu-screen.jpg" in body   # phone screenshot hero
-    assert "images/landing/order-screen.jpg" in body
+    assert "images/landing/menu-screen.jpg" in body   # menu screenshot hero
     assert "images/landing/demo-qr.png" in body       # scannable demo QR
     assert "Scan to try the live demo" in body
+    assert "images/landing/order-screen.jpg" not in body  # order screen dropped from hero
     assert "Start free" not in body                   # no free tier anywhere
 
 
