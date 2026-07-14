@@ -650,6 +650,29 @@ h1,h2,h3 { font-family: var(--hd); }
   .mk-phone { border-radius: 2.2rem; border: 6px solid #14171f; overflow: hidden; background: #14171f; box-shadow: 0 24px 48px rgba(20,23,31,.25); }
   .mk-phone img { display: block; width: 100%; height: auto; border-radius: 1.85rem; }
 
+  /* ── platform ops panel ── */
+  .ops-stats { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 18px; }
+  .ops-stat { background: #fff; border: 1px solid var(--line); border-radius: 12px; padding: 10px 16px; }
+  .ops-stat b { font-family: var(--hd); font-size: 20px; display: block; }
+  .ops-stat span { font-size: 11px; color: var(--ink-3); text-transform: uppercase; letter-spacing: .06em; }
+  .ops-chip { font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 999px; display: inline-block; }
+  .ops-chip.new { background: var(--accent-soft); color: var(--accent-deep); }
+  .ops-chip.contacted { background: #fef3c7; color: #92400e; }
+  .ops-chip.converted { background: var(--green-soft); color: var(--green); }
+  .ops-chip.rejected { background: #f1f5f9; color: #64748b; }
+  .ops-chip.vip { background: #ede9fe; color: #5b21b6; }
+  .ops-chip.business { background: #e0f2fe; color: #075985; }
+  .ops-filters { display: flex; gap: 8px; margin-bottom: 14px; flex-wrap: wrap; }
+  .ops-password-note { background: var(--green-soft); border: 1px solid var(--green); border-radius: 12px; padding: 12px 16px; margin-bottom: 16px; }
+  .ops-password-note code { font-size: 15px; font-weight: 700; }
+  .ops-form fieldset { background: #fff; border: 1px solid var(--line); border-radius: 12px; padding: 16px 18px; margin-bottom: 14px; max-width: 560px; }
+  .ops-form legend { font-family: var(--hd); font-weight: 700; padding: 0 6px; }
+  .ops-form label { display: block; font-size: 12px; font-weight: 600; color: var(--ink-2); margin-top: 10px; }
+  .ops-form input, .ops-form select { width: 100%; margin-top: 3px; border: 1px solid var(--line-2); border-radius: 9px; padding: 8px 10px; font-size: 14px; }
+  .ops-form .errorlist { color: #b91c1c; font-size: 12px; margin: 3px 0 0; list-style: none; padding: 0; }
+  .ops-error { background: #fee2e2; border: 1px solid #fca5a5; border-radius: 10px; padding: 10px 14px; margin-bottom: 12px; }
+  .muted { color: var(--ink-3); font-size: 12.5px; }
+
   /* ══════════════════════════════════════════
      MOBILE DASHBOARD SHELL — <900px overrides.
      MUST stay at the END of @layer components: .side/.top overrides share

@@ -1,0 +1,56 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}Platform{% endblock %} — Gaamos Ops</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{% static 'css/app.css' %}?v={{ asset_v|default:'ops1' }}">
+</head>
+<body>
+<div class="app">
+  <aside class="side">
+    <a href="{% url 'ops:leads' %}" class="brand">
+      <div class="logo">G</div>
+      <div class="nm">Gaamos<small>Platform admin</small></div>
+    </a>
+    <div class="grp">Platform</div>
+    <a href="{% url 'ops:leads' %}" class="nav {% if active == 'leads' %}on{% endif %}">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16v16H4z" opacity=".3"/><path d="M4 7l8 6 8-6"/></svg>
+      Leads
+    </a>
+    <a href="{% url 'ops:tenants' %}" class="nav {% if active == 'tenants' %}on{% endif %}">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21V8l9-5 9 5v13"/><path d="M9 21v-6h6v6"/></svg>
+      Tenants
+    </a>
+    <a href="{% url 'ops:tenant_new' %}" class="nav {% if active == 'new' %}on{% endif %}">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 8v8M8 12h8"/></svg>
+      New tenant
+    </a>
+    <div class="grp">Account</div>
+    <form method="post" action="{% url 'ops:logout' %}">{% csrf_token %}
+      <button type="submit" class="nav" style="width:100%;text-align:left;background:none;border:0;cursor:pointer">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/></svg>
+        Sign out
+      </button>
+    </form>
+  </aside>
+  <main class="main">
+    <div class="top"><h2>{% block top %}Platform{% endblock %}</h2><div class="spacer"></div></div>
+    <div class="body">
+      {% if stats %}
+      <div class="ops-stats">
+        <div class="ops-stat"><b>{{ stats.new_leads }}</b><span>new leads</span></div>
+        <div class="ops-stat"><b>{{ stats.total_leads }}</b><span>total leads</span></div>
+        <div class="ops-stat"><b>{{ stats.active_tenants }}</b><span>active tenants</span></div>
+        <div class="ops-stat"><b>{{ stats.suspended_tenants }}</b><span>suspended</span></div>
+      </div>
+      {% endif %}
+      {% block content %}{% endblock %}
+    </div>
+  </main>
+</div>
+</body>
+</html>
