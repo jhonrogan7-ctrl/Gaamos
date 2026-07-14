@@ -1,3 +1,40 @@
 {% extends "ops/base.html" %}
 {% block top %}Leads{% endblock %}
-{% block content %}<p class="muted">Leads list lands in the next task.</p>{% endblock %}
+{% block content %}
+<div class="ops-filters">
+  <a href="{% url 'ops:leads' %}" class="btn btn-sm {% if not status_filter %}primary{% else %}ghost{% endif %}">All</a>
+  {% for value, label in statuses %}
+  <a href="{% url 'ops:leads' %}?status={{ value }}" class="btn btn-sm {% if status_filter == value %}primary{% else %}ghost{% endif %}">{{ label }}</a>
+  {% endfor %}
+</div>
+<div class="table-scroll">
+<table class="tbl">
+  <thead><tr><th>Venue</th><th>Contact</th><th>Type</th><th>Message</th><th>Submitted</th><th>Status</th><th></th></tr></thead>
+  <tbody>
+  {% for l in leads %}
+  <tr>
+    <td><b>{{ l.venue_name }}</b></td>
+    <td>{{ l.name }}<br><small>{{ l.phone }}{% if l.email %} · {{ l.email }}{% endif %}</small></td>
+    <td>{{ l.venue_type }}</td>
+    <td title="{{ l.message }}">{{ l.message|truncatechars:60 }}</td>
+    <td>{{ l.created_at|date:"Y-m-d H:i" }}</td>
+    <td><span class="ops-chip {{ l.status }}">{{ l.get_status_display }}</span>
+        {% if l.company %}<br><small>→ {{ l.company.name }}</small>{% endif %}</td>
+    <td style="white-space:nowrap">
+      {% if l.status != 'converted' %}
+      <form method="post" action="{% url 'ops:lead_status' l.id %}" style="display:inline">
+        {% csrf_token %}<input type="hidden" name="next" value="{{ request.get_full_path }}">
+        {% if l.status == 'new' %}<button class="btn btn-sm ghost" name="status" value="contacted">Mark contacted</button>{% endif %}
+        {% if l.status != 'rejected' %}<button class="btn btn-sm ghost" name="status" value="rejected">Reject</button>{% endif %}
+      </form>
+      <a class="btn btn-sm primary" href="{% url 'ops:tenant_new' %}?lead={{ l.id }}">Create tenant</a>
+      {% endif %}
+    </td>
+  </tr>
+  {% empty %}
+  <tr><td colspan="7">No leads{% if status_filter %} with this status{% endif %}.</td></tr>
+  {% endfor %}
+  </tbody>
+</table>
+</div>
+{% endblock %}

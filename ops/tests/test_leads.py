@@ -1,0 +1,45 @@
+from django.conf import settings
+from django.contrib.auth.models import User
+from django.test import TestCase
+
+from core.models import Lead
+
+APEX = settings.BASE_DOMAIN
+
+
+class OpsLeadsTests(TestCase):
+    def setUp(self):
+        self.apex = {'HTTP_HOST': APEX}
+        boss = User.objects.create_superuser('boss', 'b@x.io', 'pw')
+        self.client.force_login(boss)
+        self.lead = Lead.objects.create(
+            name='Sita', venue_name='Momo Ghar', phone='9800000000',
+            email='sita@x.np', venue_type='Café', message='Interested')
+
+    def test_list_shows_lead_with_status_chip(self):
+        resp = self.client.get('/platform/leads', **self.apex)
+        self.assertContains(resp, 'Momo Ghar')
+        self.assertContains(resp, 'ops-chip new')
+
+    def test_status_filter(self):
+        Lead.objects.create(name='B', venue_name='Rejected One',
+                            phone='1', status='rejected')
+        resp = self.client.get('/platform/leads?status=new', **self.apex)
+        self.assertContains(resp, 'Momo Ghar')
+        self.assertNotContains(resp, 'Rejected One')
+
+    def test_set_status(self):
+        resp = self.client.post(f'/platform/leads/{self.lead.id}/status',
+                                {'status': 'contacted'}, **self.apex)
+        self.assertEqual(resp.status_code, 302)
+        self.lead.refresh_from_db()
+        self.assertEqual(self.lead.status, 'contacted')
+
+    def test_invalid_status_rejected(self):
+        resp = self.client.post(f'/platform/leads/{self.lead.id}/status',
+                                {'status': 'purchased'}, **self.apex)
+        self.assertEqual(resp.status_code, 400)
+
+    def test_create_tenant_link_prefills(self):
+        resp = self.client.get('/platform/leads', **self.apex)
+        self.assertContains(resp, f'/platform/tenants/new?lead={self.lead.id}')

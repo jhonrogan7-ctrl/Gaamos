@@ -1,6 +1,7 @@
 from django.contrib.auth import authenticate, login, logout
-from django.http import Http404
-from django.shortcuts import redirect, render
+from django.http import Http404, HttpResponseBadRequest
+from django.shortcuts import get_object_or_404, redirect, render
+from django.urls import reverse
 from django.views.decorators.http import require_POST
 
 from core.models import Lead
@@ -42,5 +43,26 @@ def logout_view(request):
 
 @platform_admin_required
 def leads(request):
-    return render(request, 'ops/leads.html',
-                  {'stats': _stats(), 'active': 'leads'})
+    status = request.GET.get('status', '')
+    qs = Lead.objects.select_related('company').order_by('-created_at')
+    valid = {k for k, _ in Lead.STATUS_CHOICES}
+    if status in valid:
+        qs = qs.filter(status=status)
+    return render(request, 'ops/leads.html', {
+        'stats': _stats(), 'active': 'leads',
+        'leads': qs, 'status_filter': status,
+        'statuses': Lead.STATUS_CHOICES,
+    })
+
+
+@require_POST
+@platform_admin_required
+def lead_status(request, lead_id):
+    lead = get_object_or_404(Lead, pk=lead_id)
+    new_status = request.POST.get('status', '')
+    if new_status not in {k for k, _ in Lead.STATUS_CHOICES}:
+        return HttpResponseBadRequest('bad status')
+    lead.status = new_status
+    lead.save(update_fields=['status'])
+    back = request.POST.get('next', '') or reverse('ops:leads')
+    return redirect(back)
