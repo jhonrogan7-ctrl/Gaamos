@@ -5,7 +5,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gaamos-landing\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-07-15 00:28+0545\n"
+"POT-Creation-Date: 2026-07-15 00:48+0545\n"
 "PO-Revision-Date: 2026-07-13 20:00+0545\n"
 "Last-Translator: Gaamos team <hello@gaamos.io>\n"
 "Language-Team: Nepali\n"
@@ -101,7 +101,6 @@ msgid ""
 "orders."
 msgstr "पूरै उत्पादन — QR मेनु र लाइभ अर्डर चलाउन तपाईंको स्थललाई चाहिने सबै कुरा।"
 
-
 #: core/views.py:53 templates/marketing/_final_cta.html:6
 #: templates/marketing/_hero.html:14 templates/marketing/_nav.html:17
 msgid "Get started"
@@ -111,46 +110,37 @@ msgstr "सुरु गर्नुहोस्"
 msgid "Unlimited branches & menu items"
 msgstr "असीमित शाखा र मेनु आइटम"
 
-
 #: core/views.py:55
 msgid "Branded QR menu — 3 themes × 3 layouts"
 msgstr "ब्रान्डेड QR मेनु — ३ थिम × ३ लेआउट"
-
 
 #: core/views.py:56
 msgid "Guest ordering + live order queue"
 msgstr "पाहुना अर्डर + लाइभ अर्डर लाइन"
 
-
 #: core/views.py:57
 msgid "Table QRs + printable PDF export"
 msgstr "टेबल QR + प्रिन्ट-योग्य PDF निर्यात"
-
 
 #: core/views.py:58
 msgid "Photos, badges & promo banner"
 msgstr "फोटो, ब्याज र प्रोमो ब्यानर"
 
-
 #: core/views.py:59
 msgid "Installable app (PWA) for guests & staff"
 msgstr "पाहुना र कर्मचारीका लागि इन्स्टल गर्न मिल्ने एप (PWA)"
-
 
 #: core/views.py:60
 msgid "3 team members"
 msgstr "३ टोली सदस्य"
 
-
 #: core/views.py:62
 msgid "VIP"
 msgstr "VIP"
 
-
 #: core/views.py:63
 msgid "For venues that want full brand ownership and a bigger team."
 msgstr "पूर्ण ब्रान्ड स्वामित्व र ठूलो टोली चाहने स्थलहरूका लागि।"
-
 
 #: core/views.py:64 templates/marketing/_contact.html:5
 msgid "Talk to us"
@@ -160,26 +150,21 @@ msgstr "हामीसँग कुरा गर्नुहोस्"
 msgid "Everything in Business"
 msgstr "Business का सबै सुविधा"
 
-
 #: core/views.py:66
 msgid "Custom domain — menu.yourrestaurant.com"
 msgstr "कस्टम डोमेन — menu.yourrestaurant.com"
-
 
 #: core/views.py:67
 msgid "Your venue as its own branded app"
 msgstr "तपाईंको स्थल आफ्नै ब्रान्डेड एपका रूपमा"
 
-
 #: core/views.py:68
 msgid "Unlimited team + branch-scoped managers"
 msgstr "असीमित टोली + शाखा-स्तरका म्यानेजर"
 
-
 #: core/views.py:69
 msgid "Priority WhatsApp support"
 msgstr "प्राथमिकता WhatsApp सहयोग"
-
 
 #: core/views.py:117
 msgid "Please fill in your name, venue name and phone number."
@@ -334,16 +319,13 @@ msgid "Your own address. Your own look."
 msgstr "आफ्नै ठेगाना। आफ्नै रूप।"
 
 #: templates/marketing/_features.html:54
-#, python-format
 msgid ""
 "Every venue gets its own subdomain — <span class=\"text-ink font-"
-"medium\">yourcafe.%(base_domain)s</span> — with your logo, your colors, your "
-"menu. Guests scan and browse instantly in the browser. No app store, no sign-"
-"up, no friction."
-msgstr ""
-"हरेक स्थलले आफ्नै सबडोमेन पाउँछ — <span class=\"text-ink font-medium\">yourcafe."
-"%(base_domain)s</span> — तपाईंकै लोगो, रङ र मेनुसहित। पाहुनाहरूले ब्राउजरमै तुरुन्तै "
-"स्क्यान गरेर हेर्छन्। न एप स्टोर, न साइन-अप, न झन्झट।"
+"medium\">your.gaamos.io</span> — with your logo, your colors, your menu. "
+"Guests scan and browse instantly in the browser. No app store, no sign-up, "
+"no friction."
+msgstr "हरेक स्थलले आफ्नै सबडोमेन पाउँछ — <span class=\"text-ink font-medium\">your.gaamos.io</span> — तपाईंकै लोगो, रङ र मेनुसहित। पाहुनाहरूले ब्राउजरमै तुरुन्तै स्क्यान गरेर हेर्छन्। न एप स्टोर, न साइन-अप, न झन्झट।"
+
 
 #: templates/marketing/_features.html:62
 msgid "Live Orders"
@@ -411,20 +393,16 @@ msgstr "तपाईंका पाहुनाको हातमा मेन
 msgid "It's their phone. Put your menu on it tonight — live in minutes."
 msgstr "त्यो उनीहरूकै फोन हो। आजै राति आफ्नो मेनु त्यसमा राख्नुहोस् — मिनेटमै लाइभ।"
 
-
 #: templates/marketing/_final_cta.html:7
 msgid "Plans from Rs 3,000 a month — cancel anytime"
 msgstr "योजना महिनाको रु ३,००० देखि — जहिले पनि रद्द गर्न सकिन्छ"
 
-
 #: templates/marketing/_footer.html:6
-#, python-format
 msgid ""
 "QR menus and live orders for cafés, restaurants and bars. Your venue at "
-"<span class=\"text-white\">yourcafe.%(base_domain)s</span>."
-msgstr ""
-"क्याफे, रेस्टुरेन्ट र बारका लागि QR मेनु र लाइभ अर्डर। तपाईंको स्थल <span class=\"text-"
-"white\">yourcafe.%(base_domain)s</span> मा।"
+"<span class=\"text-white\">your.gaamos.io</span>."
+msgstr "क्याफे, रेस्टुरेन्ट र बारका लागि QR मेनु र लाइभ अर्डर। तपाईंको स्थल <span class=\"text-white\">your.gaamos.io</span> मा।"
+
 
 #: templates/marketing/_footer.html:10
 msgid "Product"
@@ -481,31 +459,25 @@ msgstr ""
 msgid "See pricing"
 msgstr "मूल्य हेर्नुहोस्"
 
-
 #: templates/marketing/_hero.html:17
 msgid "Set up in under 15 minutes"
 msgstr "१५ मिनेटभित्रै सेटअप"
-
 
 #: templates/marketing/_hero.html:22
 msgid "Guest order screen"
 msgstr "पाहुनाको अर्डर स्क्रिन"
 
-
 #: templates/marketing/_hero.html:25
 msgid "Guest QR menu"
 msgstr "पाहुनाको QR मेनु"
-
 
 #: templates/marketing/_hero.html:28
 msgid "Demo menu QR code"
 msgstr "डेमो मेनुको QR कोड"
 
-
 #: templates/marketing/_hero.html:29
 msgid "Scan to try the live demo"
 msgstr "लाइभ डेमो हेर्न स्क्यान गर्नुहोस्"
-
 
 #: templates/marketing/_how.html:5
 msgid "Live by lunchtime"
@@ -552,7 +524,6 @@ msgstr "तपाईंसँगै बढ्ने सरल मूल्य"
 msgid "Simple monthly pricing in NPR. Cancel anytime."
 msgstr "नेपाली रुपैयाँमा सरल मासिक मूल्य। जहिले पनि रद्द गर्न सकिन्छ।"
 
-
 #: templates/marketing/_pricing.html:11
 msgid "Most popular"
 msgstr "सबैभन्दा लोकप्रिय"
@@ -561,7 +532,6 @@ msgstr "सबैभन्दा लोकप्रिय"
 msgid ""
 "Both plans include the branded guest menu, QR generation, and live orders."
 msgstr "दुवै योजनामा ब्रान्डेड गेस्ट मेनु, QR निर्माण र लाइभ अर्डर समावेश छन्।"
-
 
 #: templates/marketing/_social_proof.html:3
 msgid "Powering menus for cafés, restaurants and bars across the region"

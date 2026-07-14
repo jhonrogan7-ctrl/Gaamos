@@ -5,7 +5,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gaamos-landing\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-07-15 00:28+0545\n"
+"POT-Creation-Date: 2026-07-15 00:48+0545\n"
 "PO-Revision-Date: 2026-07-13 20:00+0545\n"
 "Last-Translator: Gaamos team <hello@gaamos.io>\n"
 "Language-Team: Georgian\n"
@@ -99,59 +99,50 @@ msgstr "/თვე"
 msgid ""
 "The whole product — everything your venue needs to run QR menus and live "
 "orders."
-msgstr "სრული პროდუქტი — ყველაფერი, რაც თქვენს ობიექტს სჭირდება QR მენიუსა და ლაივ შეკვეთებისთვის."
-
+msgstr ""
+"სრული პროდუქტი — ყველაფერი, რაც თქვენს ობიექტს სჭირდება QR მენიუსა და ლაივ "
+"შეკვეთებისთვის."
 
 #: core/views.py:53 templates/marketing/_final_cta.html:6
 #: templates/marketing/_hero.html:14 templates/marketing/_nav.html:17
 msgid "Get started"
 msgstr "დაწყება"
 
-
 #: core/views.py:54
 msgid "Unlimited branches & menu items"
 msgstr "ულიმიტო ფილიალები და მენიუს პოზიციები"
-
 
 #: core/views.py:55
 msgid "Branded QR menu — 3 themes × 3 layouts"
 msgstr "ბრენდირებული QR მენიუ — 3 თემა × 3 განლაგება"
 
-
 #: core/views.py:56
 msgid "Guest ordering + live order queue"
 msgstr "სტუმრის შეკვეთა + ლაივ შეკვეთების რიგი"
-
 
 #: core/views.py:57
 msgid "Table QRs + printable PDF export"
 msgstr "მაგიდის QR-ები + დასაბეჭდი PDF ექსპორტი"
 
-
 #: core/views.py:58
 msgid "Photos, badges & promo banner"
 msgstr "ფოტოები, ბეჯები და პრომო ბანერი"
-
 
 #: core/views.py:59
 msgid "Installable app (PWA) for guests & staff"
 msgstr "დაინსტალირებადი აპი (PWA) სტუმრებისა და პერსონალისთვის"
 
-
 #: core/views.py:60
 msgid "3 team members"
 msgstr "3 გუნდის წევრი"
-
 
 #: core/views.py:62
 msgid "VIP"
 msgstr "VIP"
 
-
 #: core/views.py:63
 msgid "For venues that want full brand ownership and a bigger team."
 msgstr "ობიექტებისთვის, რომლებსაც სურთ სრული ბრენდის ფლობა და დიდი გუნდი."
-
 
 #: core/views.py:64 templates/marketing/_contact.html:5
 msgid "Talk to us"
@@ -161,26 +152,21 @@ msgstr "დაგვიკავშირდით"
 msgid "Everything in Business"
 msgstr "ყველაფერი Business-იდან"
 
-
 #: core/views.py:66
 msgid "Custom domain — menu.yourrestaurant.com"
 msgstr "საკუთარი დომენი — menu.yourrestaurant.com"
-
 
 #: core/views.py:67
 msgid "Your venue as its own branded app"
 msgstr "თქვენი ობიექტი საკუთარ ბრენდირებულ აპად"
 
-
 #: core/views.py:68
 msgid "Unlimited team + branch-scoped managers"
 msgstr "ულიმიტო გუნდი + ფილიალის მენეჯერები"
 
-
 #: core/views.py:69
 msgid "Priority WhatsApp support"
 msgstr "პრიორიტეტული WhatsApp მხარდაჭერა"
-
 
 #: core/views.py:117
 msgid "Please fill in your name, venue name and phone number."
@@ -343,17 +329,13 @@ msgid "Your own address. Your own look."
 msgstr "საკუთარი მისამართი. საკუთარი იერსახე."
 
 #: templates/marketing/_features.html:54
-#, python-format
 msgid ""
 "Every venue gets its own subdomain — <span class=\"text-ink font-"
-"medium\">yourcafe.%(base_domain)s</span> — with your logo, your colors, your "
-"menu. Guests scan and browse instantly in the browser. No app store, no sign-"
-"up, no friction."
-msgstr ""
-"ყველა დაწესებულება იღებს საკუთარ სუბდომენს — <span class=\"text-ink font-"
-"medium\">yourcafe.%(base_domain)s</span> — თქვენი ლოგოთი, ფერებითა და "
-"მენიუთი. სტუმრები ასკანერებენ და მაშინვე ათვალიერებენ ბრაუზერში. არც App "
-"Store, არც რეგისტრაცია, არც ბარიერი."
+"medium\">your.gaamos.io</span> — with your logo, your colors, your menu. "
+"Guests scan and browse instantly in the browser. No app store, no sign-up, "
+"no friction."
+msgstr "ყველა დაწესებულება იღებს საკუთარ სუბდომენს — <span class=\"text-ink font-medium\">your.gaamos.io</span> — თქვენი ლოგოთი, ფერებითა და მენიუთი. სტუმრები ასკანერებენ და მაშინვე ათვალიერებენ ბრაუზერში. არც App Store, არც რეგისტრაცია, არც ბარიერი."
+
 
 #: templates/marketing/_features.html:62
 msgid "Live Orders"
@@ -420,23 +402,19 @@ msgstr "თქვენს სტუმრებს მენიუ უკვე
 
 #: templates/marketing/_final_cta.html:5
 msgid "It's their phone. Put your menu on it tonight — live in minutes."
-msgstr "ეს მათი ტელეფონია. განათავსეთ თქვენი მენიუ მასზე დღესვე — ლაივში წუთებში."
-
+msgstr ""
+"ეს მათი ტელეფონია. განათავსეთ თქვენი მენიუ მასზე დღესვე — ლაივში წუთებში."
 
 #: templates/marketing/_final_cta.html:7
 msgid "Plans from Rs 3,000 a month — cancel anytime"
 msgstr "გეგმები თვეში 3,000 რუპიიდან — გააუქმეთ ნებისმიერ დროს"
 
-
 #: templates/marketing/_footer.html:6
-#, python-format
 msgid ""
 "QR menus and live orders for cafés, restaurants and bars. Your venue at "
-"<span class=\"text-white\">yourcafe.%(base_domain)s</span>."
-msgstr ""
-"QR-მენიუ და ლაივ შეკვეთები კაფეების, რესტორნებისა და ბარებისთვის. თქვენი "
-"დაწესებულება მისამართზე <span class=\"text-white\">yourcafe.%(base_domain)s</"
-"span>."
+"<span class=\"text-white\">your.gaamos.io</span>."
+msgstr "QR-მენიუ და ლაივ შეკვეთები კაფეების, რესტორნებისა და ბარებისთვის. თქვენი დაწესებულება მისამართზე <span class=\"text-white\">your.gaamos.io</span>."
+
 
 #: templates/marketing/_footer.html:10
 msgid "Product"
@@ -495,31 +473,25 @@ msgstr ""
 msgid "See pricing"
 msgstr "ფასების ნახვა"
 
-
 #: templates/marketing/_hero.html:17
 msgid "Set up in under 15 minutes"
 msgstr "დაყენება 15 წუთში"
-
 
 #: templates/marketing/_hero.html:22
 msgid "Guest order screen"
 msgstr "სტუმრის შეკვეთის ეკრანი"
 
-
 #: templates/marketing/_hero.html:25
 msgid "Guest QR menu"
 msgstr "სტუმრის QR მენიუ"
-
 
 #: templates/marketing/_hero.html:28
 msgid "Demo menu QR code"
 msgstr "დემო მენიუს QR კოდი"
 
-
 #: templates/marketing/_hero.html:29
 msgid "Scan to try the live demo"
 msgstr "დაასკანერეთ ლაივ დემოს სანახავად"
-
 
 #: templates/marketing/_how.html:5
 msgid "Live by lunchtime"
@@ -567,7 +539,6 @@ msgstr "მარტივი ფასები, რომლებიც თ�
 msgid "Simple monthly pricing in NPR. Cancel anytime."
 msgstr "მარტივი ყოველთვიური ფასები NPR-ში. გააუქმეთ ნებისმიერ დროს."
 
-
 #: templates/marketing/_pricing.html:11
 msgid "Most popular"
 msgstr "ყველაზე პოპულარული"
@@ -575,8 +546,8 @@ msgstr "ყველაზე პოპულარული"
 #: templates/marketing/_pricing.html:24
 msgid ""
 "Both plans include the branded guest menu, QR generation, and live orders."
-msgstr "ორივე გეგმა მოიცავს ბრენდირებულ მენიუს, QR გენერაციას და ლაივ შეკვეთებს."
-
+msgstr ""
+"ორივე გეგმა მოიცავს ბრენდირებულ მენიუს, QR გენერაციას და ლაივ შეკვეთებს."
 
 #: templates/marketing/_social_proof.html:3
 msgid "Powering menus for cafés, restaurants and bars across the region"
