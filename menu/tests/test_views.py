@@ -263,3 +263,19 @@ class MenuLayoutTest(TenantTestCase):
 
     def test_invalid_param_falls_back_to_company(self):
         self.assertEqual(self._payload('/?layout=bogus')['layout'], 'baseline')
+
+
+class GuestThemeTest(TenantTestCase):
+    def test_menu_uses_company_theme(self):
+        self.company.menu_theme = 'berry'
+        self.company.save()
+        resp = self.client.get('/')
+        self.assertContains(resp, 'data-theme="berry"')
+
+    def test_theme_query_param_previews(self):
+        resp = self.client.get('/?theme=juice')
+        self.assertContains(resp, 'data-theme="juice"')
+
+    def test_invalid_theme_falls_back_to_company(self):
+        resp = self.client.get('/?theme=neon')
+        self.assertContains(resp, 'data-theme="saffron"')

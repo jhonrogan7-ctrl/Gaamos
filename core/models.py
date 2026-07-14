@@ -20,6 +20,14 @@ class Lead(models.Model):
     email = models.EmailField(blank=True)
     venue_type = models.CharField(max_length=20, choices=VENUE_TYPES, default="Café")
     message = models.TextField(blank=True)
+    STATUS_CHOICES = [
+        ("new", "New"), ("contacted", "Contacted"),
+        ("converted", "Converted"), ("rejected", "Rejected"),
+    ]
+    status = models.CharField(max_length=20, default="new",
+                              choices=STATUS_CHOICES, db_index=True)
+    company = models.ForeignKey("menu.Company", null=True, blank=True,
+                                on_delete=models.SET_NULL, related_name="leads")
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:

@@ -21,3 +21,10 @@ def test_lead_creation_and_str():
 def test_lead_venue_type_choices():
     labels = [c[0] for c in Lead.VENUE_TYPES]
     assert labels == ["Café", "Restaurant", "Bar", "Other"]
+
+
+@pytest.mark.django_db
+def test_lead_defaults_new_status_no_company():
+    lead = Lead.objects.create(name="A", venue_name="V", phone="98")
+    assert lead.status == "new"
+    assert lead.company is None
