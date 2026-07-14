@@ -12,6 +12,6 @@ urlpatterns = [
     path('tenants', views.tenants, name='tenants'),
     path('tenants/<int:company_id>/toggle', views.tenant_toggle, name='tenant_toggle'),
     path('tenants/<int:company_id>/reset-password', views.tenant_reset_password, name='tenant_reset_password'),
-    # placeholder — replaced by the create-tenant task
-    path('tenants/new', views.leads, name='tenant_new'),
+    path('tenants/new', views.tenant_new, name='tenant_new'),
+    path('tenants/<int:company_id>/created', views.tenant_created, name='tenant_created'),
 ]

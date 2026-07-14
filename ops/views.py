@@ -9,8 +9,10 @@ from django.urls import reverse
 from django.views.decorators.http import require_POST
 
 from core.models import Lead
+from menu.dashboard.utils import generate_qr_for_branch
 from menu.models import Company, Membership
 
+from .forms import TenantCreateForm
 from .permissions import platform_admin_required
 
 
@@ -117,3 +119,43 @@ def tenant_reset_password(request, company_id):
         'password': new_password,
     }
     return redirect('ops:tenants')
+
+
+@platform_admin_required
+def tenant_new(request):
+    lead = None
+    lead_id = request.GET.get('lead', '')
+    if lead_id.isdigit():
+        lead = Lead.objects.filter(pk=lead_id).first()
+    if request.method == 'POST':
+        form = TenantCreateForm(request.POST)
+        if form.is_valid():
+            company, branch, user, password = form.save(lead=lead)
+            base_url = f"{request.scheme}://{company.slug}.{settings.BASE_DOMAIN}"
+            generate_qr_for_branch(branch, base_url)
+            request.session['ops_created_note'] = {
+                'company_id': company.id, 'username': user.username,
+                'password': password,
+            }
+            return redirect('ops:tenant_created', company_id=company.id)
+    else:
+        initial = {}
+        if lead is not None:
+            initial = {'name': lead.venue_name, 'phone': lead.phone,
+                       'email': lead.email}
+        form = TenantCreateForm(initial=initial)
+    return render(request, 'ops/tenant_form.html', {
+        'stats': _stats(), 'active': 'new', 'form': form, 'lead': lead,
+    })
+
+
+@platform_admin_required
+def tenant_created(request, company_id):
+    company = get_object_or_404(Company, pk=company_id)
+    note = request.session.pop('ops_created_note', None)
+    if note and note.get('company_id') != company.id:
+        note = None
+    return render(request, 'ops/tenant_created.html', {
+        'stats': _stats(), 'active': 'tenants', 'company': company,
+        'base_domain': settings.BASE_DOMAIN, 'note': note,
+    })

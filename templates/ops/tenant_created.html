@@ -1,0 +1,16 @@
+{% extends "ops/base.html" %}
+{% block top %}Tenant created{% endblock %}
+{% block content %}
+<div class="ops-password-note" {% if note %}data-onetime-password="{{ note.password }}"{% endif %}>
+  <h3>{{ company.name }} is live 🎉</h3>
+  <p>Menu: <a href="https://{{ company.slug }}.{{ base_domain }}/" target="_blank" rel="noopener">{{ company.slug }}.{{ base_domain }}</a></p>
+  <p>Dashboard: <a href="https://{{ company.slug }}.{{ base_domain }}/dashboard/" target="_blank" rel="noopener">{{ company.slug }}.{{ base_domain }}/dashboard/</a></p>
+  {% if note %}
+  <p>Owner login: <b>{{ note.username }}</b> / <code>{{ note.password }}</code><br>
+  <small>Copy the password now — it will not be shown again.</small></p>
+  {% else %}
+  <p class="muted">Credentials were shown when the tenant was created.</p>
+  {% endif %}
+</div>
+<a class="btn ghost" href="{% url 'ops:tenants' %}">Back to tenants</a>
+{% endblock %}
