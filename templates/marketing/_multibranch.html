@@ -15,7 +15,7 @@
       {% for br in branches %}
       <div class="flex items-center gap-3 bg-side-2 rounded-xl2 p-4 border border-white/5 hover:border-accent/50 transition">
         <span class="w-9 h-9 rounded-lg mk-grad text-white text-sm font-bold flex items-center justify-center">{{ br.initials }}</span>
-        <span class="flex-1 leading-tight"><span class="block text-sm font-semibold">{{ br.name }}</span><span class="block text-xs text-side-ink">{{ br.prefix }}.{{ base_domain }}</span></span>
+        <span class="flex-1 leading-tight"><span class="block text-sm font-semibold">{{ br.name }}</span><span class="block text-xs text-side-ink">{{ br.prefix }}.gaamos.io</span></span>
         <span class="text-right leading-tight"><span class="block font-bold">{{ br.orders }}</span><span class="block text-xs text-side-ink">{% translate "orders today" %}</span></span>
       </div>
       {% endfor %}

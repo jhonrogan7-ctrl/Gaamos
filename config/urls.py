@@ -12,6 +12,7 @@ urlpatterns = [
     path("sw.js", core_views.service_worker, name="service_worker"),
     path("offline/", core_views.offline, name="offline"),
     path("dashboard/", include("menu.dashboard.urls")),
+    path("platform/", include("ops.urls")),
 ]
 
 # Marketing landing — language-prefixed (/en/ /ne/ /ka/). Tenant hosts 404 these

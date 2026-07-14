@@ -32,6 +32,18 @@ class Company(models.Model):
     menu_layout = models.CharField(
         max_length=20, default='baseline', choices=MENU_LAYOUT_CHOICES)
 
+    MENU_THEME_CHOICES = [
+        ('saffron', 'Saffron Festival'),
+        ('berry', 'Electric Berry'),
+        ('juice', 'Tropical Juice'),
+    ]
+    menu_theme = models.CharField(
+        max_length=20, default='saffron', choices=MENU_THEME_CHOICES)
+
+    PACKAGE_CHOICES = [('business', 'Business'), ('vip', 'VIP')]
+    package = models.CharField(
+        max_length=20, default='business', choices=PACKAGE_CHOICES)
+
     objects = models.Manager()   # plain — Company is the tenant root, not scoped
 
     def __str__(self):

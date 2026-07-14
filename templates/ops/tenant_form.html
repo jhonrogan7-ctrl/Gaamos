@@ -1,0 +1,39 @@
+{% extends "ops/base.html" %}
+{% block top %}New tenant{% endblock %}
+{% block content %}
+{% if lead %}<p class="muted">Pre-filled from lead: <b>{{ lead.venue_name }}</b> ({{ lead.name }}, {{ lead.phone }})</p>{% endif %}
+{% if form.non_field_errors %}<div class="ops-error">{{ form.non_field_errors }}</div>{% endif %}
+<form method="post" class="ops-form">
+  {% csrf_token %}
+  <fieldset><legend>Venue</legend>
+    {{ form.name.label_tag }} {{ form.name }} {{ form.name.errors }}
+    {{ form.slug.label_tag }} {{ form.slug }} {{ form.slug.errors }}
+    <small class="muted">Menu will live at <b>&lt;subdomain&gt;.{{ request.get_host }}</b></small>
+    {{ form.tagline.label_tag }} {{ form.tagline }}
+    {{ form.phone.label_tag }} {{ form.phone }}
+    {{ form.email.label_tag }} {{ form.email }} {{ form.email.errors }}
+    {{ form.instagram.label_tag }} {{ form.instagram }}
+    {{ form.facebook.label_tag }} {{ form.facebook }}
+    {{ form.tiktok.label_tag }} {{ form.tiktok }}
+  </fieldset>
+  <fieldset><legend>Look</legend>
+    {{ form.menu_theme.label_tag }} {{ form.menu_theme }}
+    {{ form.menu_layout.label_tag }} {{ form.menu_layout }}
+  </fieldset>
+  <fieldset><legend>Package</legend>
+    {{ form.package.label_tag }} {{ form.package }}
+    {{ form.status.label_tag }} {{ form.status }}
+  </fieldset>
+  <fieldset><legend>Owner login</legend>
+    {{ form.owner_username.label_tag }} {{ form.owner_username }} {{ form.owner_username.errors }}
+    {{ form.owner_email.label_tag }} {{ form.owner_email }} {{ form.owner_email.errors }}
+    {{ form.owner_password.label_tag }} {{ form.owner_password }}
+    <small class="muted">{{ form.owner_password.help_text }}</small>
+  </fieldset>
+  <fieldset><legend>First branch</legend>
+    {{ form.branch_name.label_tag }} {{ form.branch_name }} {{ form.branch_name.errors }}
+    {{ form.branch_address.label_tag }} {{ form.branch_address }}
+  </fieldset>
+  <button type="submit" class="btn primary">Create tenant</button>
+</form>
+{% endblock %}

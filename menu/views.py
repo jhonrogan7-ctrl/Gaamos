@@ -90,6 +90,11 @@ def menu(request):
     layout = requested if requested in valid_layouts else (
         restaurant.menu_layout if restaurant else 'baseline')
 
+    valid_themes = {k for k, _ in Company.MENU_THEME_CHOICES}
+    requested_theme = request.GET.get('theme', '')
+    theme = requested_theme if requested_theme in valid_themes else (
+        restaurant.menu_theme if restaurant else 'saffron')
+
     payload = {
         'restaurant': {
             'name': restaurant.name if restaurant else '',
@@ -110,7 +115,8 @@ def menu(request):
         'dishes': dishes,
         'layout': layout,
     }
-    return render(request, 'menu/index.html', {'payload': payload, 'ad': ad})
+    return render(request, 'menu/index.html',
+                  {'payload': payload, 'ad': ad, 'theme': theme})
 
 
 @require_POST

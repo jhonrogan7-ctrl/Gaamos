@@ -1,0 +1,40 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Sign in — Gaamos Ops</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{% static 'css/app.css' %}?v=ops1">
+</head>
+<body style="background:var(--bg);min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;">
+  <div class="panel" style="width:100%;max-width:380px;padding:28px 26px;">
+    <div style="display:flex;align-items:center;gap:11px;margin-bottom:20px;">
+      <div style="width:42px;height:42px;border-radius:12px;background:var(--accent-grad);color:#fff;font-family:var(--hd);font-weight:800;font-size:19px;display:flex;align-items:center;justify-content:center;">G</div>
+      <div>
+        <div style="font-family:var(--hd);font-weight:800;font-size:18px;line-height:1.05;">Gaamos</div>
+        <div style="font-size:11.5px;color:var(--ink-3);font-weight:600;">Platform admin</div>
+      </div>
+    </div>
+
+    {% if error %}
+      <div style="background:var(--accent-soft);color:var(--accent-deep);font-size:12.5px;font-weight:700;border-radius:10px;padding:10px 12px;margin-bottom:14px;">{{ error }}</div>
+    {% endif %}
+
+    <form method="post" action="">
+      {% csrf_token %}
+      <div class="fld">
+        <label>Username</label>
+        <input class="inp" type="text" name="username" autocomplete="username" autofocus required>
+      </div>
+      <div class="fld">
+        <label>Password</label>
+        <input class="inp" type="password" name="password" autocomplete="current-password" required>
+      </div>
+      <button type="submit" class="btn btn-primary" style="width:100%;justify-content:center;margin-top:6px;">Sign in</button>
+    </form>
+  </div>
+</body>
+</html>
