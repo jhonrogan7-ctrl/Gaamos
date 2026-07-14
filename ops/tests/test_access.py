@@ -54,3 +54,13 @@ class PlatformAccessTests(TestCase):
         self.assertEqual(resp.status_code, 302)
         resp = self.client.get('/platform/leads', **self.apex)
         self.assertEqual(resp.status_code, 302)
+
+    def test_platform_index_redirects(self):
+        # anonymous → login; superuser → leads (APPEND_SLASH covers /platform)
+        resp = self.client.get('/platform/', **self.apex)
+        self.assertEqual(resp.status_code, 302)
+        self.assertIn('/platform/login', resp['Location'])
+        self.client.force_login(self.superuser)
+        resp = self.client.get('/platform/', **self.apex)
+        self.assertEqual(resp.status_code, 302)
+        self.assertIn('/platform/leads', resp['Location'])

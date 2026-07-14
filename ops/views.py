@@ -29,6 +29,12 @@ def _stats():
     }
 
 
+@platform_admin_required
+def index(request):
+    """/platform/ → leads (the decorator bounces anonymous visitors to login)."""
+    return redirect('ops:leads')
+
+
 def login_view(request):
     if getattr(request, 'company', None) is not None:
         raise Http404
