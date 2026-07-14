@@ -9,7 +9,9 @@ urlpatterns = [
     path('logout', views.logout_view, name='logout'),
     path('leads', views.leads, name='leads'),
     path('leads/<int:lead_id>/status', views.lead_status, name='lead_status'),
-    # placeholders — replaced by real views in the next tasks
-    path('tenants', views.leads, name='tenants'),
+    path('tenants', views.tenants, name='tenants'),
+    path('tenants/<int:company_id>/toggle', views.tenant_toggle, name='tenant_toggle'),
+    path('tenants/<int:company_id>/reset-password', views.tenant_reset_password, name='tenant_reset_password'),
+    # placeholder — replaced by the create-tenant task
     path('tenants/new', views.leads, name='tenant_new'),
 ]

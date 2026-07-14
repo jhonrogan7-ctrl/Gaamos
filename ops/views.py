@@ -1,13 +1,21 @@
+import secrets
+
+from django.conf import settings
 from django.contrib.auth import authenticate, login, logout
+from django.db.models import Count
 from django.http import Http404, HttpResponseBadRequest
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.views.decorators.http import require_POST
 
 from core.models import Lead
-from menu.models import Company
+from menu.models import Company, Membership
 
 from .permissions import platform_admin_required
+
+
+def generate_password():
+    return secrets.token_urlsafe(9)   # ~12 chars, URL-safe
 
 
 def _stats():
@@ -66,3 +74,46 @@ def lead_status(request, lead_id):
     lead.save(update_fields=['status'])
     back = request.POST.get('next', '') or reverse('ops:leads')
     return redirect(back)
+
+
+@platform_admin_required
+def tenants(request):
+    # Branch's default manager is tenant-scoped and fail-closed; from the apex
+    # host there is no tenant context, so count via annotation, never c.branches.
+    companies = (Company.objects.order_by('-created_at')
+                 .annotate(branch_count=Count('branches')))
+    password_note = request.session.pop('ops_password_note', None)
+    return render(request, 'ops/tenants.html', {
+        'stats': _stats(), 'active': 'tenants',
+        'companies': companies, 'base_domain': settings.BASE_DOMAIN,
+        'password_note': password_note,
+    })
+
+
+@require_POST
+@platform_admin_required
+def tenant_toggle(request, company_id):
+    company = get_object_or_404(Company, pk=company_id)
+    company.status = 'active' if company.status == 'suspended' else 'suspended'
+    company.save(update_fields=['status'])
+    return redirect('ops:tenants')
+
+
+@require_POST
+@platform_admin_required
+def tenant_reset_password(request, company_id):
+    company = get_object_or_404(Company, pk=company_id)
+    owner_membership = (company.memberships
+                        .filter(role=Membership.ROLE_OWNER)
+                        .select_related('user').first())
+    if owner_membership is None:
+        return HttpResponseBadRequest('company has no owner')
+    new_password = generate_password()
+    owner_membership.user.set_password(new_password)
+    owner_membership.user.save(update_fields=['password'])
+    request.session['ops_password_note'] = {
+        'company': company.name,
+        'username': owner_membership.user.username,
+        'password': new_password,
+    }
+    return redirect('ops:tenants')
