@@ -3,6 +3,7 @@ from django.contrib.auth.models import User
 from django.test import TestCase
 
 from core.models import Lead
+from menu.models import Company
 
 APEX = settings.BASE_DOMAIN
 
@@ -43,3 +44,33 @@ class OpsLeadsTests(TestCase):
     def test_create_tenant_link_prefills(self):
         resp = self.client.get('/platform/leads', **self.apex)
         self.assertContains(resp, f'/platform/tenants/new?lead={self.lead.id}')
+
+    def test_new_pipeline_statuses_accepted(self):
+        for status in ('follow_up', 'demo_scheduled'):
+            resp = self.client.post(f'/platform/leads/{self.lead.id}/status',
+                                    {'status': status}, **self.apex)
+            self.assertEqual(resp.status_code, 302)
+            self.lead.refresh_from_db()
+            self.assertEqual(self.lead.status, status)
+
+    def test_unknown_status_still_400s(self):
+        resp = self.client.post(f'/platform/leads/{self.lead.id}/status',
+                                {'status': 'archived'}, **self.apex)
+        self.assertEqual(resp.status_code, 400)
+
+    def test_converted_can_move_to_any_status_and_keeps_company(self):
+        company = Company.objects.create(name='Momo Ghar Pvt', slug='momoghar')
+        self.lead.status = 'converted'
+        self.lead.company = company
+        self.lead.save(update_fields=['status', 'company'])
+        resp = self.client.post(f'/platform/leads/{self.lead.id}/status',
+                                {'status': 'follow_up'}, **self.apex)
+        self.assertEqual(resp.status_code, 302)
+        self.lead.refresh_from_db()
+        self.assertEqual(self.lead.status, 'follow_up')
+        self.assertEqual(self.lead.company_id, company.id)  # FK never touched
+
+    def test_status_choices_pipeline_order(self):
+        self.assertEqual([k for k, _ in Lead.STATUS_CHOICES],
+                         ['new', 'contacted', 'follow_up', 'demo_scheduled',
+                          'converted', 'rejected'])
