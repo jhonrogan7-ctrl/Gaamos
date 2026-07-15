@@ -664,6 +664,8 @@ h1,h2,h3 { font-family: var(--hd); }
   .ops-chip.business { background: #e0f2fe; color: #075985; }
   .ops-chip.follow_up { background: #dbeafe; color: #1e40af; }
   .ops-chip.demo_scheduled { background: #ede9fe; color: #5b21b6; }
+  /* .ops-status must never be rendered inside .ops-form: the pre-existing
+     .ops-form select rule (0,1,1) outranks this (0,1,0) regardless of order. */
   .ops-status { border: 1px solid var(--line-2); border-radius: 9px; padding: 6px 8px; font-size: 12.5px; background: #fff; color: var(--ink); }
   .ops-cards { display: none; }
   .ops-card { background: #fff; border: 1px solid var(--line); border-radius: 12px; padding: 14px; }
