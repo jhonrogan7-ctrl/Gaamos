@@ -37,4 +37,33 @@
   </tbody>
 </table>
 </div>
+
+<!-- Mobile card layout -->
+<div class="ops-cards">
+  {% for l in leads %}
+  <div class="ops-card">
+    <h3>{{ l.venue_name }}</h3>
+    <div class="meta">
+      {{ l.name }}<br>{{ l.phone }}{% if l.email %} · {{ l.email }}{% endif %}
+    </div>
+    <div class="meta">{{ l.venue_type }} · {{ l.created_at|date:"Y-m-d H:i" }}</div>
+    <div class="ops-status">
+      <span class="ops-chip {{ l.status }}">{{ l.get_status_display }}</span>
+      {% if l.company %}<small>→ {{ l.company.name }}</small>{% endif %}
+    </div>
+    <div class="actions">
+      {% if l.status != 'converted' %}
+      <form method="post" action="{% url 'ops:lead_status' l.id %}" style="display:inline">
+        {% csrf_token %}<input type="hidden" name="next" value="{{ request.get_full_path }}">
+        {% if l.status == 'new' %}<button class="btn btn-sm ghost" name="status" value="contacted">Mark contacted</button>{% endif %}
+        {% if l.status != 'rejected' %}<button class="btn btn-sm ghost" name="status" value="rejected">Reject</button>{% endif %}
+      </form>
+      <a class="btn btn-sm primary" href="{% url 'ops:tenant_new' %}?lead={{ l.id }}">Create tenant</a>
+      {% endif %}
+    </div>
+  </div>
+  {% empty %}
+  <div style="padding:16px;text-align:center;color:var(--ink-3)">No leads{% if status_filter %} with this status{% endif %}.</div>
+  {% endfor %}
+</div>
 {% endblock %}
