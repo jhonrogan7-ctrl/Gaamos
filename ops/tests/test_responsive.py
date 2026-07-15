@@ -2,7 +2,8 @@ import re
 from pathlib import Path
 
 from django.conf import settings
-from django.test import SimpleTestCase
+from django.contrib.auth.models import User
+from django.test import SimpleTestCase, TestCase
 
 
 class OpsResponsiveCssTest(SimpleTestCase):
@@ -62,3 +63,32 @@ class OpsResponsiveCssTest(SimpleTestCase):
         self.assertIsNotNone(override, 'mobile .ops-form fieldset full-width missing')
         self.assertGreater(override.start(), base.start(),
                            'full-width override must come after the 560px base rule')
+
+
+APEX = settings.BASE_DOMAIN
+
+
+class OpsMobileShellTests(TestCase):
+    def setUp(self):
+        self.apex = {'HTTP_HOST': APEX}
+        boss = User.objects.create_superuser('boss', 'b@x.io', 'pw')
+        self.client.force_login(boss)
+
+    def test_tabbar_present_with_three_links_and_signout(self):
+        body = self.client.get('/platform/leads', **self.apex).content.decode()
+        self.assertIn('class="tabbar"', body)
+        tabbar = body.split('class="tabbar"', 1)[1]
+        self.assertIn('/platform/leads', tabbar)
+        self.assertIn('/platform/tenants', tabbar)
+        self.assertIn('/platform/tenants/new', tabbar)
+        self.assertIn('/platform/logout', tabbar)   # sign-out POST form in the bar
+
+    def test_tabbar_active_state_follows_page(self):
+        body = self.client.get('/platform/tenants', **self.apex).content.decode()
+        tabbar = body.split('class="tabbar"', 1)[1]
+        self.assertIn('tb on', tabbar)
+
+    def test_login_page_has_no_tabbar(self):
+        self.client.logout()
+        body = self.client.get('/platform/login', **self.apex).content.decode()
+        self.assertNotIn('class="tabbar"', body)
