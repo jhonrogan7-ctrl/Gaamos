@@ -7,7 +7,7 @@ module.exports = {
   ],
   // Temporary until the ops templates render .ops-cards (leads/tenants card
   // lists): unused single-class @layer components rules get tree-shaken.
-  safelist: ['ops-cards'],
+  safelist: ['ops-cards', 'ops-card', 'ops-status'],
   theme: {
     extend: {
       colors: {

@@ -20,9 +20,15 @@ class OpsResponsiveCssTest(SimpleTestCase):
             self.assertIn(sel, css, f'missing chip style {sel}')
 
     def test_ops_card_classes_present(self):
+        # Each class must open its OWN rule ([}{] anchor), not merely appear
+        # inside another selector — .ops-card .actions .ops-status{…} contains
+        # the substring '.ops-status{', which once masked the base rule being
+        # tree-shaken as unused (safelist gap).
         css = self._css()
-        for sel in ['.ops-cards', '.ops-card', '.ops-status']:
-            self.assertIn(sel, css, f'missing ops mobile class {sel}')
+        for cls in ['ops-cards', 'ops-card', 'ops-status']:
+            self.assertIsNotNone(
+                re.search(r'[}{]\.' + cls + r'\{', css),
+                f'missing standalone base rule for .{cls}')
 
     def test_ops_cards_show_override_after_hide_base(self):
         # Base hides the card list (desktop); the <900px override shows it.
