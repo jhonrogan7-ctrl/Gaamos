@@ -62,3 +62,12 @@ class OpsTenantsTests(TestCase):
         resp = self.client.post(
             f'/platform/tenants/{bare.id}/reset-password', **self.apex)
         self.assertEqual(resp.status_code, 400)
+
+    def test_tenants_page_renders_table_and_cards_variants(self):
+        resp = self.client.get('/platform/tenants', **self.apex)
+        body = resp.content.decode()
+        self.assertIn('ops-table', body)
+        self.assertIn('ops-cards', body)
+        # card carries the same actions the table row has
+        cards = body.split('class="ops-cards"', 1)[1]
+        self.assertIn('Reset owner password', cards)

@@ -7,7 +7,7 @@
   <code>{{ password_note.password }}</code> — copy it now; it will not be shown again.
 </div>
 {% endif %}
-<div class="table-scroll">
+<div class="table-scroll ops-table">
 <table class="tbl">
   <thead><tr><th>Company</th><th>Subdomain</th><th>Package</th><th>Status</th><th>Branches</th><th>Created</th><th></th></tr></thead>
   <tbody>
@@ -33,5 +33,24 @@
   {% endfor %}
   </tbody>
 </table>
+</div>
+<div class="ops-cards">
+  {% for c in companies %}
+  <div class="ops-card">
+    <h3>{{ c.name }} <span class="ops-chip {{ c.package }}">{{ c.get_package_display }}</span></h3>
+    <div class="meta"><a href="https://{{ c.slug }}.{{ base_domain }}/" target="_blank" rel="noopener">{{ c.slug }}.{{ base_domain }}</a></div>
+    <div class="meta">{{ c.get_status_display }} · {{ c.branch_count }} branch{{ c.branch_count|pluralize:"es" }} · created {{ c.created_at|date:"Y-m-d" }}</div>
+    <div class="actions">
+      <form method="post" action="{% url 'ops:tenant_toggle' c.id %}">{% csrf_token %}
+        <button class="btn btn-sm ghost">{% if c.status == 'active' %}Suspend{% else %}Activate{% endif %}</button>
+      </form>
+      <form method="post" action="{% url 'ops:tenant_reset_password' c.id %}">{% csrf_token %}
+        <button class="btn btn-sm ghost">Reset owner password</button>
+      </form>
+    </div>
+  </div>
+  {% empty %}
+  <div class="ops-card">No tenants yet — convert a lead or create one.</div>
+  {% endfor %}
 </div>
 {% endblock %}
