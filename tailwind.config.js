@@ -5,6 +5,9 @@ module.exports = {
     './static/js/**/*.js',
     './design/wireframes/**/*.html',
   ],
+  safelist: [
+    '.ops-cards',
+  ],
   theme: {
     extend: {
       colors: {
