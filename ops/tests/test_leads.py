@@ -74,3 +74,27 @@ class OpsLeadsTests(TestCase):
         self.assertEqual([k for k, _ in Lead.STATUS_CHOICES],
                          ['new', 'contacted', 'follow_up', 'demo_scheduled',
                           'converted', 'rejected'])
+
+    def test_leads_page_renders_status_select_with_all_choices(self):
+        body = self.client.get('/platform/leads', **self.apex).content.decode()
+        self.assertIn('class="ops-status"', body)
+        for value, label in Lead.STATUS_CHOICES:
+            self.assertIn(f'value="{value}"', body)
+        self.assertNotIn('Mark contacted', body)   # one-way buttons are gone
+
+    def test_converted_lead_gets_select_but_no_create_tenant(self):
+        company = Company.objects.create(name='Momo Ghar Pvt', slug='momoghar2')
+        self.lead.status = 'converted'
+        self.lead.company = company
+        self.lead.save(update_fields=['status', 'company'])
+        body = self.client.get('/platform/leads', **self.apex).content.decode()
+        self.assertIn('class="ops-status"', body)
+        self.assertNotIn(f'/platform/tenants/new?lead={self.lead.id}', body)
+        self.assertIn('Momo Ghar Pvt', body)   # → Company annotation still shown
+
+    def test_leads_page_renders_table_and_cards_variants(self):
+        body = self.client.get('/platform/leads', **self.apex).content.decode()
+        self.assertIn('ops-table', body)
+        self.assertIn('ops-cards', body)
+        # both variants carry the lead
+        self.assertEqual(body.count('Momo Ghar'), 2)
