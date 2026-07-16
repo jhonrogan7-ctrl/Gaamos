@@ -92,8 +92,12 @@ def menu(request):
 
     valid_themes = {k for k, _ in Company.MENU_THEME_CHOICES}
     requested_theme = request.GET.get('theme', '')
-    theme = requested_theme if requested_theme in valid_themes else (
-        restaurant.menu_theme if restaurant else 'saffron')
+    if requested_theme in valid_themes:
+        theme = requested_theme
+    elif branch is not None and branch.menu_theme:
+        theme = branch.menu_theme
+    else:
+        theme = restaurant.menu_theme if restaurant else 'saffron'
 
     payload = {
         'restaurant': {

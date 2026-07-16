@@ -8,6 +8,9 @@ urlpatterns = [
     path('overview/', views.overview, name='overview'),
     path('orders/', views.orders, name='orders'),
     path('branches/', views.branches, name='branches'),
+    path('branches/add/', views.branch_save, name='branch_add'),
+    path('branches/<int:pk>/edit/', views.branch_save, name='branch_edit'),
+    path('branches/<int:pk>/delete/', views.branch_delete, name='branch_delete'),
     path('login/', views.login_view, name='login'),
     path('logout/', views.logout_view, name='logout'),
 
@@ -31,9 +34,7 @@ urlpatterns = [
 
     path('settings/', views.settings_index, name='settings'),
     path('settings/restaurant/', views.settings_restaurant, name='settings_restaurant'),
-    path('settings/branches/add/', views.branch_save, name='branch_add'),
-    path('settings/branches/<int:pk>/', views.branch_save, name='branch_edit'),
-    path('settings/branches/<int:pk>/delete/', views.branch_delete, name='branch_delete'),
+    path('settings/theme/', views.settings_theme, name='settings_theme'),
     path('settings/members/add/', views.member_save, name='member_add'),
     path('settings/members/<int:pk>/', views.member_save, name='member_edit'),
     path('settings/members/<int:pk>/delete/', views.member_delete, name='member_delete'),

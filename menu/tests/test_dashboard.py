@@ -210,10 +210,97 @@ class SettingsTest(TenantTestCase):
         self.assertRedirects(response, '/dashboard/settings/', fetch_redirect_response=False)
 
     def test_add_branch(self):
-        response = self.client.post('/dashboard/settings/branches/add/', {
+        response = self.client.post('/dashboard/branches/add/', {
             'name': 'City Branch', 'address': 'Newroad', 'tag': 'NEW',
         })
         self.assertEqual(Branch.objects.filter(name='City Branch').count(), 1)
+        self.assertRedirects(response, '/dashboard/branches/',
+                             fetch_redirect_response=False)
+
+    def test_theme_endpoint_saves_company_default(self):
+        response = self.client.post('/dashboard/settings/theme/', {'menu_theme': 'juice'})
+        self.company.refresh_from_db()
+        self.assertEqual(self.company.menu_theme, 'juice')
+        self.assertRedirects(response, '/dashboard/settings/', fetch_redirect_response=False)
+
+    def test_theme_endpoint_rejects_invalid(self):
+        self.client.post('/dashboard/settings/theme/', {'menu_theme': 'neon'})
+        self.company.refresh_from_db()
+        self.assertEqual(self.company.menu_theme, 'saffron')
+
+    def test_settings_no_longer_hosts_branch_management(self):
+        body = self.client.get('/dashboard/settings/').content.decode()
+        self.assertNotIn('branchManager()', body)
+        self.assertNotIn('href="#branches"', body)
+        r = self.client.post('/dashboard/settings/branches/add/', {'name': 'X'})
+        self.assertEqual(r.status_code, 404)
+
+    def test_member_sheet_uses_access_levels_and_checkboxes(self):
+        Branch.objects.create(company=self.company, name='Main', slug='main', address='X')
+        body = self.client.get('/dashboard/settings/').content.decode()
+        self.assertIn('Full dashboard', body)
+        self.assertIn('Branch-level', body)
+        self.assertIn('fld-checks', body)
+        self.assertNotIn('name="branches" multiple', body)
+
+
+class BranchManageTest(TenantTestCase):
+    """Branch Add/Edit lives on the Branches screen (owner-only), incl. theme override."""
+
+    def setUp(self):
+        super().setUp()
+        self.owner = User.objects.create_user(username='own1', password='pass')
+        self.make_owner(self.owner)
+        self.branch = Branch.objects.create(
+            company=self.company, name='Main', slug='main', address='Lakeside')
+
+    def test_add_saves_theme_override(self):
+        self.client.login(username='own1', password='pass')
+        self.client.post('/dashboard/branches/add/', {
+            'name': 'Patan', 'address': 'Mangal Bazaar', 'tag': '', 'menu_theme': 'berry'})
+        self.assertEqual(Branch.objects.get(name='Patan').menu_theme, 'berry')
+
+    def test_edit_can_reset_to_company_default(self):
+        self.branch.menu_theme = 'juice'
+        self.branch.save()
+        self.client.login(username='own1', password='pass')
+        self.client.post(f'/dashboard/branches/{self.branch.pk}/edit/', {
+            'name': 'Main', 'address': 'Lakeside', 'tag': '', 'menu_theme': ''})
+        self.branch.refresh_from_db()
+        self.assertEqual(self.branch.menu_theme, '')
+
+    def test_invalid_theme_ignored(self):
+        self.client.login(username='own1', password='pass')
+        self.client.post('/dashboard/branches/add/', {
+            'name': 'Bhaktapur', 'address': 'Durbar', 'tag': '', 'menu_theme': 'neon'})
+        self.assertEqual(Branch.objects.get(name='Bhaktapur').menu_theme, '')
+
+    def test_manager_cannot_add_or_edit(self):
+        mgr = User.objects.create_user(username='mgr1', password='pass')
+        self.make_manager(mgr, branches=[self.branch])
+        self.client.login(username='mgr1', password='pass')
+        r1 = self.client.post('/dashboard/branches/add/', {'name': 'Rogue', 'address': ''})
+        r2 = self.client.post(f'/dashboard/branches/{self.branch.pk}/edit/',
+                              {'name': 'Hacked', 'address': ''})
+        self.assertEqual(r1.status_code, 403)
+        self.assertEqual(r2.status_code, 403)
+        self.assertFalse(Branch.objects.filter(name='Rogue').exists())
+        self.branch.refresh_from_db()
+        self.assertEqual(self.branch.name, 'Main')
+
+    def test_branches_page_has_sheet_for_owner_only(self):
+        self.client.login(username='own1', password='pass')
+        body = self.client.get('/dashboard/branches/').content.decode()
+        self.assertIn('sheet-backdrop', body)
+        self.assertIn('branchManager()', body)
+        self.assertIn('Company default', body)      # theme picker inherit option
+        self.assertIn('@click="openAdd()"', body)   # add card opens the sheet…
+        self.assertNotIn('href="/dashboard/settings/" class="bcard add"', body)  # …old settings-link card is gone
+        mgr = User.objects.create_user(username='mgr2', password='pass')
+        self.make_manager(mgr, branches=[self.branch])
+        self.client.login(username='mgr2', password='pass')
+        body = self.client.get('/dashboard/branches/').content.decode()
+        self.assertNotIn('branchManager()', body)
 
 
 class BranchItemsTest(TenantTestCase):

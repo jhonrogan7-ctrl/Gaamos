@@ -118,7 +118,10 @@ class SettingsSkinTest(DashboardShellTest):
         self.assertEqual(r.status_code, 200)
         self.assertContains(r, 'class="set-grid"')
         self.assertContains(r, 'Guest menu theme')
-        self.assertContains(r, 'data-theme-stub')   # picker marked non-functional
+        body = r.content.decode()
+        self.assertNotIn('data-theme-stub', body)             # picker is live now
+        self.assertIn('/dashboard/settings/theme/', body)     # posts the default theme
+        self.assertIn('Default guest menu theme', body)
         self.assertContains(r, self.company.name)
 
 
@@ -415,6 +418,45 @@ class MobileShellCssTest(SimpleTestCase):
                            'or the top bar never compacts under 900px')
 
 
+class SheetDesktopDialogTest(SimpleTestCase):
+    """The .sheet editor is a bottom sheet on mobile but must render as a
+    centred dialog >=900px — bottom-anchored on a large monitor it reads as
+    fallen off the bottom edge of the screen (settings 'Add branch' bug)."""
+
+    def _css(self):
+        return (Path(settings.BASE_DIR) / 'static/css/app.css').read_text()
+
+    def test_desktop_backdrop_centers_after_mobile_base(self):
+        # Cascade guard: same specificity, so the >=900px centring override
+        # must appear AFTER the base flex-end (bottom sheet) rule.
+        import re
+        css = self._css()
+        base = re.search(r'[}{]\.sheet-backdrop\{[^}]*flex-end', css)
+        override = re.search(r'[}{]\.sheet-backdrop\{[^}]*align-items:center', css)
+        self.assertIsNotNone(base, 'base .sheet-backdrop (flex-end) rule missing')
+        self.assertIsNotNone(override, 'desktop .sheet-backdrop centring rule missing')
+        self.assertGreater(override.start(), base.start(),
+                           'desktop centring must come after the mobile base rule '
+                           'or sheets stay bottom-anchored on desktop')
+
+    def test_desktop_sheet_fully_rounded_after_mobile_base(self):
+        import re
+        css = self._css()
+        base = re.search(r'[}{]\.sheet\{[^}]*border-radius:18px 18px 0 0', css)
+        override = re.search(r'[}{]\.sheet\{[^}]*border-radius:18px[;}]', css)
+        self.assertIsNotNone(base, 'base .sheet (top-rounded) rule missing')
+        self.assertIsNotNone(override, 'desktop .sheet full-radius rule missing')
+        self.assertGreater(override.start(), base.start(),
+                           'desktop .sheet override must follow the mobile base rule')
+
+    def test_desktop_hides_grab_handle(self):
+        import re
+        css = self._css()
+        self.assertIsNotNone(
+            re.search(r'[}{]\.sheet-handle\{display:none\}', css),
+            'grab handle must be hidden on the desktop dialog')
+
+
 class MobileShellTest(TenantTestCase):
     """Bottom tab bar + More sheet markup in the dashboard base template.
     Rendered at every width (CSS hides it >=900px), driven by active_tab."""
@@ -570,3 +612,13 @@ class BuilderAddSelectedGuardTest(TenantTestCase):
         # success path clears selection and only closes the sheet on mobile
         self.assertIn("window.matchMedia('(min-width: 900px)')", body)
         self.assertNotIn('if (res.ok) { this.closeAdd(); await this.refresh(); }', body)
+
+
+class MemberSheetCssTest(SimpleTestCase):
+    def test_access_ui_classes_survive_build(self):
+        import re
+        css = (Path(settings.BASE_DIR) / 'static/css/app.css').read_text()
+        for cls in ('acc-radio', 'fld-checks'):
+            self.assertIsNotNone(
+                re.search(r'[}{]\.' + cls + r'[ .{]', css),
+                f'.{cls} missing from built app.css (purged or not built)')

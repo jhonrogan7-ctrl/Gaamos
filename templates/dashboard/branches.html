@@ -4,6 +4,7 @@
 {% block subtitle %}{{ request.company.name }} · all locations{% endblock %}
 
 {% block content %}
+<div {% if can_manage %}x-data="branchManager()"{% endif %}>
 <div class="cards">
   {% for b in branches %}
   <div class="bcard">
@@ -13,6 +14,11 @@
         <div class="bn">{{ b.name }}</div>
         {% if b.address %}<div class="ba">{{ b.address }}</div>{% endif %}
       </div>
+      {% if can_manage %}
+      <div class="sp" style="flex:1"></div>
+      <button class="btn ghost"
+              @click="openEdit({{ b.pk }}, '{{ b.name|escapejs }}', '{{ b.address|escapejs }}', '{{ b.tag }}', '{{ b.menu_theme }}')">Edit</button>
+      {% endif %}
     </div>
     <div class="bstats">
       <div class="bstat"><div class="n">—</div><div class="l">SCANS/DAY</div></div>
@@ -28,13 +34,77 @@
   <p style="color:var(--muted);padding:16px 0">No branches yet.</p>
   {% endfor %}
 
-  {% if request.user.is_superuser or request.membership.is_owner %}
-  <a href="{% url 'dashboard:settings' %}" class="bcard add">
+  {% if can_manage %}
+  <button type="button" class="bcard add" @click="openAdd()">
     <div class="pl">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M12 5v14M5 12h14"/></svg>
     </div>
     Add a branch
-  </a>
+  </button>
   {% endif %}
 </div>
+
+{% if can_manage %}
+<div class="sheet-backdrop" x-show="show" x-cloak @click.self="show=false">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <h3 style="font-size:15px;font-weight:700;margin-bottom:14px;" x-text="title"></h3>
+    <form method="post" :action="formAction">
+      {% csrf_token %}
+      <div class="fld"><label>Name</label>
+        <input class="inp" name="name" x-model="bName" required></div>
+      <div class="fld"><label>Address</label>
+        <input class="inp" name="address" x-model="bAddr"></div>
+      <div class="fld"><label>Tag</label>
+        <select class="inp" name="tag" x-model="bTag">
+          <option value="">Standard</option>
+          <option value="FLAGSHIP">Flagship</option>
+          <option value="NEW">New</option>
+        </select></div>
+      <div class="fld"><label>Guest menu theme</label>
+        <input type="hidden" name="menu_theme" :value="bTheme">
+        <div class="themes">
+          <button type="button" class="theme" :class="bTheme==='' && 'on'" @click="bTheme=''">
+            <div class="swatch"><span style="background:var(--line-2)"></span></div>
+            <div class="tn">Company default</div>
+            <div class="td">Inherit the venue theme</div>
+          </button>
+          <button type="button" class="theme" :class="bTheme==='saffron' && 'on'" @click="bTheme='saffron'">
+            <div class="swatch"><span style="background:#ff9f1c"></span><span style="background:#e23744"></span><span style="background:#fff6e9"></span></div>
+            <div class="tn">Saffron Festival</div>
+            <div class="td">Warm · festive · earthy</div>
+          </button>
+          <button type="button" class="theme" :class="bTheme==='berry' && 'on'" @click="bTheme='berry'">
+            <div class="swatch"><span style="background:#ec4899"></span><span style="background:#7c3aed"></span><span style="background:#f6f4ff"></span></div>
+            <div class="tn">Electric Berry</div>
+            <div class="td">Bold · modern · vibrant</div>
+          </button>
+          <button type="button" class="theme" :class="bTheme==='juice' && 'on'" @click="bTheme='juice'">
+            <div class="swatch"><span style="background:#06b6d4"></span><span style="background:#ff3d71"></span><span style="background:#ffffff"></span></div>
+            <div class="tn">Tropical Juice</div>
+            <div class="td">Fresh · cool · breezy</div>
+          </button>
+        </div></div>
+      <div style="margin-top:16px">
+        <button type="submit" class="btn">Save</button>
+      </div>
+    </form>
+  </div>
+</div>
+{% endif %}
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+{% if can_manage %}
+<script>
+function branchManager() {
+  return {
+    show: false, title: '', formAction: '', bName: '', bAddr: '', bTag: '', bTheme: '',
+    openAdd() { this.title='Add Branch'; this.formAction='{% url "dashboard:branch_add" %}'; this.bName=''; this.bAddr=''; this.bTag=''; this.bTheme=''; this.show=true; },
+    openEdit(pk,name,addr,tag,theme) { this.title='Edit Branch'; this.formAction=`/dashboard/branches/${pk}/edit/`; this.bName=name; this.bAddr=addr; this.bTag=tag; this.bTheme=theme||''; this.show=true; },
+  };
+}
+</script>
+{% endif %}
 {% endblock %}
