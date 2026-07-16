@@ -115,3 +115,62 @@ class LogoCssBuiltTest(TenantTestCase):
         for cls in ('logo-row', 'logo-preview', 'logo-actions'):
             self.assertRegex(css, r'[}{]\.' + cls + r'\{',
                              f'.{cls} rule missing from built app.css')
+
+
+import json
+
+from menu.models import Branch
+
+
+class GuestLogoPayloadTest(TenantTestCase):
+    def _payload(self):
+        resp = self.client.get('/')
+        m = re.search(
+            r'<script id="menu-data" type="application/json">(.*?)</script>',
+            resp.content.decode(), re.DOTALL)
+        return json.loads(m.group(1))
+
+    def test_payload_has_logo_url(self):
+        Branch.objects.create(company=self.company, name='Lakeside', slug='lakeside')
+        self.company.logo_url = '/media/logos/logo_1.png?v=42'
+        self.company.save(update_fields=['logo_url'])
+        payload = self._payload()
+        self.assertEqual(payload['restaurant']['logo_url'], '/media/logos/logo_1.png?v=42')
+
+    def test_payload_logo_url_blank_by_default(self):
+        Branch.objects.create(company=self.company, name='Lakeside', slug='lakeside')
+        self.assertEqual(self._payload()['restaurant']['logo_url'], '')
+
+
+class BrandbarTemplateTest(TenantTestCase):
+    def _brandbar(self):
+        return (Path(settings.BASE_DIR) / 'templates/menu/_brandbar.html').read_text()
+
+    def test_title_is_branch_venue_name(self):
+        html = self._brandbar()
+        self.assertIn('x-text="venueName()"', html)
+        self.assertNotIn('x-text="restaurant.name"', html)
+
+    def test_small_line_is_address_only(self):
+        html = self._brandbar()
+        self.assertIn('x-text="branch.address"', html)
+        self.assertNotIn("branch.name + ", html)
+
+    def test_logo_with_monogram_fallback(self):
+        html = self._brandbar()
+        self.assertIn('restaurant.logo_url', html)
+        self.assertIn('g-logo', html)
+        self.assertIn('monogram()', html)
+
+    def test_about_sheet_logo_fallback(self):
+        html = (Path(settings.BASE_DIR) / 'templates/menu/index.html').read_text()
+        self.assertIn('g-mono--lg g-mono--img', html)
+
+    def test_monogram_derives_from_venue_name(self):
+        js = (Path(settings.BASE_DIR) / 'static/js/app.js').read_text()
+        self.assertIn('venueName()', js)
+
+    def test_guest_logo_css_built(self):
+        css = (Path(settings.BASE_DIR) / 'static/css/app.css').read_text()
+        self.assertRegex(css, r'[}{]\.g-logo\{')
+        self.assertRegex(css, r'[}{]\.g-mono--img\{')

@@ -1,10 +1,15 @@
-{# Shared guest brand bar — tenant monogram + venue name + order/about buttons (F2). #}
+{# Shared guest brand bar — tenant logo/monogram + branch venue name + order/about buttons (F2). #}
 <div class="brandbar">
   <div class="brand">
-    <div class="g-mono" x-text="monogram()"></div>
+    <template x-if="restaurant.logo_url">
+      <div class="g-mono g-mono--img"><img class="g-logo" :src="restaurant.logo_url" :alt="venueName() + ' logo'"></div>
+    </template>
+    <template x-if="!restaurant.logo_url">
+      <div class="g-mono" x-text="monogram()"></div>
+    </template>
     <div class="name">
-      <span x-text="restaurant.name"></span>
-      <small x-text="branch.name + (branch.address ? ' · ' + branch.address : '')"></small>
+      <span x-text="venueName()"></span>
+      <small x-text="branch.address"></small>
     </div>
   </div>
   <div style="display:flex;gap:6px;">

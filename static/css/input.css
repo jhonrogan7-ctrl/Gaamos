@@ -1591,6 +1591,8 @@ html { scroll-behavior: smooth; }
   font-weight: 800; font-size: 16px; display: flex; align-items: center;
   justify-content: center; box-shadow: 0 8px 18px -6px var(--brand); }
 .g-mono--lg { width: 70px; height: 70px; border-radius: 22px; font-size: 28px; }
+.g-mono--img { background: var(--card, #fff); padding: 4px; box-shadow: 0 8px 18px -6px rgba(28,26,23,.28); }
+.g-logo { width: 100%; height: 100%; object-fit: contain; border-radius: inherit; display: block; }
 
 /* ── Order-placed confirmation screen (F11/F12), from menu-v2 wireframe ── */
 .ok-wrap { flex: 1; display: flex; flex-direction: column; padding: 0 16px; overflow: hidden; }
