@@ -10,7 +10,6 @@
     <a href="#web-address">Web address</a>
     <a href="#languages">Languages</a>
     <a href="#members">Members</a>
-    <a href="#branches">Branches</a>
     <a href="#plan-billing">Plan &amp; billing</a>
   </nav>
 
@@ -40,28 +39,31 @@
       </div>
     </div>
 
-    <!-- ── Guest menu theme (visual stub — Phase 4) ── -->
+    <!-- ── Guest menu theme (company default) ── -->
     <div class="panel fcard" id="guest-theme">
-      <div class="ph"><h3>Guest menu theme</h3><div class="sp"></div><span class="mini">Applies to the guest-facing menu only</span></div>
+      <div class="ph"><h3>Default guest menu theme</h3><div class="sp"></div><span class="mini">Branches without their own theme use this</span></div>
       <div class="pb">
-        <div class="themes" data-theme-stub>
-          <div class="theme on" data-theme="saffron">
-            <div class="swatch"><span style="background:#ff9f1c"></span><span style="background:#e23744"></span><span style="background:#fff6e9"></span></div>
-            <div class="tn">Saffron Festival<span class="ck"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="4"><path d="M20 6 9 17l-5-5"/></svg></span></div>
-            <div class="td">Warm · festive · earthy</div>
+        <form method="post" action="{% url 'dashboard:settings_theme' %}">
+          {% csrf_token %}
+          <div class="themes">
+            <button type="submit" name="menu_theme" value="saffron" class="theme {% if restaurant.menu_theme == 'saffron' %}on{% endif %}">
+              <div class="swatch"><span style="background:#ff9f1c"></span><span style="background:#e23744"></span><span style="background:#fff6e9"></span></div>
+              <div class="tn">Saffron Festival<span class="ck"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="4"><path d="M20 6 9 17l-5-5"/></svg></span></div>
+              <div class="td">Warm · festive · earthy</div>
+            </button>
+            <button type="submit" name="menu_theme" value="berry" class="theme {% if restaurant.menu_theme == 'berry' %}on{% endif %}">
+              <div class="swatch"><span style="background:#ec4899"></span><span style="background:#7c3aed"></span><span style="background:#f6f4ff"></span></div>
+              <div class="tn">Electric Berry<span class="ck"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="4"><path d="M20 6 9 17l-5-5"/></svg></span></div>
+              <div class="td">Bold · modern · vibrant</div>
+            </button>
+            <button type="submit" name="menu_theme" value="juice" class="theme {% if restaurant.menu_theme == 'juice' %}on{% endif %}">
+              <div class="swatch"><span style="background:#06b6d4"></span><span style="background:#ff3d71"></span><span style="background:#ffffff"></span></div>
+              <div class="tn">Tropical Juice<span class="ck"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="4"><path d="M20 6 9 17l-5-5"/></svg></span></div>
+              <div class="td">Fresh · cool · breezy</div>
+            </button>
           </div>
-          <div class="theme" data-theme="berry">
-            <div class="swatch"><span style="background:#ec4899"></span><span style="background:#7c3aed"></span><span style="background:#f6f4ff"></span></div>
-            <div class="tn">Electric Berry<span class="ck"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="4"><path d="M20 6 9 17l-5-5"/></svg></span></div>
-            <div class="td">Bold · modern · vibrant</div>
-          </div>
-          <div class="theme" data-theme="juice">
-            <div class="swatch"><span style="background:#06b6d4"></span><span style="background:#ff3d71"></span><span style="background:#ffffff"></span></div>
-            <div class="tn">Tropical Juice<span class="ck"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="4"><path d="M20 6 9 17l-5-5"/></svg></span></div>
-            <div class="td">Fresh · cool · breezy</div>
-          </div>
-        </div>
-        <div class="fld help" style="margin-top:12px">Theme selection ships with branding (Phase 4). The Gaamos dashboard always stays on the fixed Saffron house brand — only your guests see the theme above.</div>
+        </form>
+        <div class="fld help" style="margin-top:12px">Per-branch overrides live on the Branches screen. The Gaamos dashboard itself always stays on the fixed Saffron house brand.</div>
       </div>
     </div>
 
@@ -149,55 +151,6 @@
       </div>
     </div>
 
-    <!-- ── Branches ── -->
-    <div class="panel fcard" id="branches" x-data="branchManager()">
-      <div class="ph">
-        <h3>Branches</h3><div class="sp"></div>
-        <button class="btn ghost" @click="openAdd()">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
-          Add branch
-        </button>
-      </div>
-      <div class="pb" style="padding-top:0">
-        {% for branch in branches %}
-          <div class="trow">
-            <div>
-              <div class="tt">{{ branch.name }}</div>
-              <div class="tsub">{{ branch.address }}</div>
-            </div>
-            <div class="sp"></div>
-            <button class="btn ghost"
-                    @click="openEdit({{ branch.pk }}, '{{ branch.name|escapejs }}', '{{ branch.address|escapejs }}', '{{ branch.tag }}')">
-              Edit
-            </button>
-          </div>
-        {% endfor %}
-      </div>
-
-      <div class="sheet-backdrop" x-show="show" x-cloak @click.self="show=false">
-        <div class="sheet">
-          <div class="sheet-handle"></div>
-          <h3 style="font-size:15px;font-weight:700;margin-bottom:14px;" x-text="title"></h3>
-          <form method="post" :action="formAction">
-            {% csrf_token %}
-            <div class="fld"><label>Name</label>
-              <input class="inp" name="name" x-model="bName" required></div>
-            <div class="fld"><label>Address</label>
-              <input class="inp" name="address" x-model="bAddr"></div>
-            <div class="fld"><label>Tag</label>
-              <select class="inp" name="tag" x-model="bTag">
-                <option value="">Standard</option>
-                <option value="FLAGSHIP">Flagship</option>
-                <option value="NEW">New</option>
-              </select></div>
-            <div style="margin-top:16px">
-              <button type="submit" class="btn">Save</button>
-            </div>
-          </form>
-        </div>
-      </div>
-    </div>
-
     <!-- ── Plan & billing (static — Phase 5) ── -->
     <div class="panel fcard" id="plan-billing">
       <div class="ph"><h3>Plan &amp; billing</h3></div>
@@ -220,13 +173,6 @@
 
 {% block extra_scripts %}
 <script>
-function branchManager() {
-  return {
-    show: false, title: '', formAction: '', bName: '', bAddr: '', bTag: '',
-    openAdd() { this.title='Add Branch'; this.formAction='/dashboard/settings/branches/add/'; this.bName=''; this.bAddr=''; this.bTag=''; this.show=true; },
-    openEdit(pk,name,addr,tag) { this.title='Edit Branch'; this.formAction=`/dashboard/settings/branches/${pk}/`; this.bName=name; this.bAddr=addr; this.bTag=tag; this.show=true; },
-  };
-}
 function memberManager() {
   return {
     show:false, title:'', formAction:'', pkEditing:null, aUser:'', aEmail:'', aRole:'manager', aBranches:[],

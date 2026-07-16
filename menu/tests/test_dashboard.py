@@ -217,6 +217,24 @@ class SettingsTest(TenantTestCase):
         self.assertRedirects(response, '/dashboard/branches/',
                              fetch_redirect_response=False)
 
+    def test_theme_endpoint_saves_company_default(self):
+        response = self.client.post('/dashboard/settings/theme/', {'menu_theme': 'juice'})
+        self.company.refresh_from_db()
+        self.assertEqual(self.company.menu_theme, 'juice')
+        self.assertRedirects(response, '/dashboard/settings/', fetch_redirect_response=False)
+
+    def test_theme_endpoint_rejects_invalid(self):
+        self.client.post('/dashboard/settings/theme/', {'menu_theme': 'neon'})
+        self.company.refresh_from_db()
+        self.assertEqual(self.company.menu_theme, 'saffron')
+
+    def test_settings_no_longer_hosts_branch_management(self):
+        body = self.client.get('/dashboard/settings/').content.decode()
+        self.assertNotIn('branchManager()', body)
+        self.assertNotIn('href="#branches"', body)
+        r = self.client.post('/dashboard/settings/branches/add/', {'name': 'X'})
+        self.assertEqual(r.status_code, 404)
+
 
 class BranchManageTest(TenantTestCase):
     """Branch Add/Edit lives on the Branches screen (owner-only), incl. theme override."""

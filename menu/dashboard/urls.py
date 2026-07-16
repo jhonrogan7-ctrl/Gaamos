@@ -34,6 +34,7 @@ urlpatterns = [
 
     path('settings/', views.settings_index, name='settings'),
     path('settings/restaurant/', views.settings_restaurant, name='settings_restaurant'),
+    path('settings/theme/', views.settings_theme, name='settings_theme'),
     path('settings/members/add/', views.member_save, name='member_add'),
     path('settings/members/<int:pk>/', views.member_save, name='member_edit'),
     path('settings/members/<int:pk>/delete/', views.member_delete, name='member_delete'),

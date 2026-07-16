@@ -463,6 +463,16 @@ def settings_restaurant(request):
 
 @require_owner
 @require_POST
+def settings_theme(request):
+    theme = request.POST.get('menu_theme', '')
+    if theme in {k for k, _ in Company.MENU_THEME_CHOICES}:
+        request.company.menu_theme = theme
+        request.company.save(update_fields=['menu_theme'])
+    return redirect('dashboard:settings')
+
+
+@require_owner
+@require_POST
 def branch_save(request, pk=None):
     from django.utils.text import slugify
     branch = get_object_or_404(Branch, pk=pk) if pk else None

@@ -118,7 +118,10 @@ class SettingsSkinTest(DashboardShellTest):
         self.assertEqual(r.status_code, 200)
         self.assertContains(r, 'class="set-grid"')
         self.assertContains(r, 'Guest menu theme')
-        self.assertContains(r, 'data-theme-stub')   # picker marked non-functional
+        body = r.content.decode()
+        self.assertNotIn('data-theme-stub', body)             # picker is live now
+        self.assertIn('/dashboard/settings/theme/', body)     # posts the default theme
+        self.assertIn('Default guest menu theme', body)
         self.assertContains(r, self.company.name)
 
 
