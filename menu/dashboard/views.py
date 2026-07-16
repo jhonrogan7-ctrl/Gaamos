@@ -1,6 +1,7 @@
 import asyncio
 import json
 import os
+import time
 
 from asgiref.sync import sync_to_async
 from django.shortcuts import render, redirect, get_object_or_404
@@ -68,6 +69,29 @@ def save_ad_image(ad, upload):
     ad.image_url = f"{django_settings.MEDIA_URL}ads/{filename}"
     ad.save(update_fields=['image_url', 'updated_at'])
     return ad.image_url
+
+
+LOGO_UPLOAD_ERROR = 'Logo must be JPG, PNG or WEBP and under 5 MB.'
+
+
+def save_logo_image(company, upload):
+    """Persist an uploaded company logo. Returns the stored public URL (with a
+    cache-busting ?v= so replacing a same-extension logo refreshes browsers),
+    or None if the upload was rejected (bad extension / too large). Same
+    validation as item/ad images; shown uncropped in small tiles, no focal point."""
+    ext = os.path.splitext(upload.name)[1].lower()
+    if ext not in ALLOWED_IMAGE_EXTS or upload.size > MAX_IMAGE_BYTES:
+        return None
+    dest_dir = os.path.join(django_settings.MEDIA_ROOT, 'logos')
+    os.makedirs(dest_dir, exist_ok=True)
+    filename = f"logo_{company.pk}{ext}"
+    path = os.path.join(dest_dir, filename)
+    with open(path, 'wb') as f:
+        for chunk in upload.chunks():
+            f.write(chunk)
+    company.logo_url = f"{django_settings.MEDIA_URL}logos/{filename}?v={int(time.time())}"
+    company.save(update_fields=['logo_url'])
+    return company.logo_url
 
 
 def login_view(request):
