@@ -155,7 +155,7 @@ class OrderStreamTest(TenantTestCase):
         from menu.dashboard.views import orders_payload
         o = Order.objects.create(branch=self.branch, total=0)
         # after_id at o.pk → nothing new
-        events, _ = orders_payload(self.company.id, self.branch.id, o.pk)
+        events, _ = orders_payload(self.company.id, [self.branch.id], o.pk)
         self.assertEqual(events, [])
 
     def test_stream_content_type(self):
