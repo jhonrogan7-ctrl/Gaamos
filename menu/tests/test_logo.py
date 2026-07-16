@@ -174,3 +174,27 @@ class BrandbarTemplateTest(TenantTestCase):
         css = (Path(settings.BASE_DIR) / 'static/css/app.css').read_text()
         self.assertRegex(css, r'[}{]\.g-logo\{')
         self.assertRegex(css, r'[}{]\.g-mono--img\{')
+
+
+class SidebarLogoTest(TenantTestCase):
+    def setUp(self):
+        super().setUp()
+        User = get_user_model()
+        self.owner = User.objects.create_user('own2', password='pass')
+        self.make_owner(self.owner)
+        self.login_as(self.owner)
+
+    def test_letter_mark_without_logo(self):
+        resp = self.client.get('/dashboard/')
+        self.assertContains(resp, '<div class="logo">T</div>', html=True)
+
+    def test_logo_image_when_set(self):
+        self.company.logo_url = '/media/logos/logo_1.png?v=7'
+        self.company.save(update_fields=['logo_url'])
+        resp = self.client.get('/dashboard/')
+        self.assertContains(resp, 'logo--img')
+        self.assertContains(resp, '/media/logos/logo_1.png?v=7')
+
+    def test_sidebar_logo_css_built(self):
+        css = (Path(settings.BASE_DIR) / 'static/css/app.css').read_text()
+        self.assertRegex(css, r'[}{]\.side .brand \.logo--img\{'.replace(' ', r'\s*'))

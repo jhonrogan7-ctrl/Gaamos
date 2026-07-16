@@ -191,6 +191,8 @@ h1,h2,h3 { font-family: var(--hd); }
     font-family: var(--hd); font-weight: 800; font-size: 18px;
     @apply flex items-center justify-center;
   }
+  .side .brand .logo--img { background: #fff; padding: 3px; }
+  .side .brand .logo--img img { width: 100%; height: 100%; object-fit: contain; border-radius: inherit; display: block; }
   .side .brand .nm { font-family: var(--hd); font-weight: 800; font-size: 15px; color: #fff; line-height: 1.05; }
   .side .brand .nm small { display: block; font-family: var(--bd); font-size: 10.5px; font-weight: 600; color: #6b7180; margin-top: 2px; }
   .side .grp { font-size: 9.5px; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; color: #565c6a; padding: 14px 10px 6px; }

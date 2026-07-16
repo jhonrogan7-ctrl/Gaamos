@@ -22,7 +22,11 @@
     <!-- sidebar -->
     <aside class="side">
       <a href="{% url 'dashboard:home' %}" class="brand">
-        <div class="logo">{{ request.company.name|slice:":1"|upper }}</div>
+        {% if request.company.logo_url %}
+          <div class="logo logo--img"><img src="{{ request.company.logo_url }}" alt="{{ request.company.name }} logo"></div>
+        {% else %}
+          <div class="logo">{{ request.company.name|slice:":1"|upper }}</div>
+        {% endif %}
         <div class="nm">Gaamos<small>{{ request.company.name }}</small></div>
       </a>
 
