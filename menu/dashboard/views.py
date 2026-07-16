@@ -116,7 +116,11 @@ def branches(request):
         qs = Branch.objects.filter(pk__in=m.branches.values_list('pk', flat=True))
     else:
         qs = Branch.objects.none()
-    return render(request, 'dashboard/branches.html', {'active_tab': 'branches', 'branches': qs})
+    return render(request, 'dashboard/branches.html', {
+        'active_tab': 'branches', 'branches': qs,
+        'can_manage': request.user.is_superuser or (m and m.is_owner),
+        'theme_choices': Company.MENU_THEME_CHOICES,
+    })
 
 
 @require_membership
@@ -465,12 +469,16 @@ def branch_save(request, pk=None):
     name = request.POST.get('name', '').strip()
     address = request.POST.get('address', '').strip()
     tag = request.POST.get('tag', '').strip()
+    theme = request.POST.get('menu_theme', '').strip()
+    if theme not in {k for k, _ in Company.MENU_THEME_CHOICES}:
+        theme = ''                                    # '' = inherit company default
     if not name:
-        return redirect('dashboard:settings')
+        return redirect('dashboard:branches')
     if branch:
         branch.name = name
         branch.address = address
         branch.tag = tag
+        branch.menu_theme = theme
         branch.save()
     else:
         base = slugify(name)
@@ -479,8 +487,9 @@ def branch_save(request, pk=None):
         while Branch.objects.filter(slug=slug).exists():
             slug = f"{base}-{counter}"
             counter += 1
-        Branch.objects.create(company=request.company, name=name, slug=slug, address=address, tag=tag)
-    return redirect('dashboard:settings')
+        Branch.objects.create(company=request.company, name=name, slug=slug,
+                              address=address, tag=tag, menu_theme=theme)
+    return redirect('dashboard:branches')
 
 
 @require_owner
