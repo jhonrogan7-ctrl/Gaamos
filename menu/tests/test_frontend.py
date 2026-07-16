@@ -612,3 +612,13 @@ class BuilderAddSelectedGuardTest(TenantTestCase):
         # success path clears selection and only closes the sheet on mobile
         self.assertIn("window.matchMedia('(min-width: 900px)')", body)
         self.assertNotIn('if (res.ok) { this.closeAdd(); await this.refresh(); }', body)
+
+
+class MemberSheetCssTest(SimpleTestCase):
+    def test_access_ui_classes_survive_build(self):
+        import re
+        css = (Path(settings.BASE_DIR) / 'static/css/app.css').read_text()
+        for cls in ('acc-radio', 'fld-checks'):
+            self.assertIsNotNone(
+                re.search(r'[}{]\.' + cls + r'[ .{]', css),
+                f'.{cls} missing from built app.css (purged or not built)')

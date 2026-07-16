@@ -287,6 +287,17 @@ h1,h2,h3 { font-family: var(--hd); }
   ══════════════════════════════════════════ */
   .set-grid { display: grid; grid-template-columns: 200px 1fr; gap: 22px; align-items: start; }
   @media (max-width: 899.98px) { .set-grid { grid-template-columns: 1fr; } }
+
+  /* member sheet: access-level radio + branch checkboxes */
+  .acc-radio { display: grid; gap: 8px; }
+  .acc-radio .acc-opt { @apply flex items-start gap-2.5; border: 1.5px solid var(--line-2); border-radius: 12px; padding: 10px 12px; cursor: pointer; }
+  .acc-radio .acc-opt:has(input:checked) { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
+  .acc-radio .acc-opt input { margin-top: 3px; accent-color: var(--accent); }
+  .acc-radio .acc-opt b { font-size: 13px; display: block; }
+  .acc-radio .acc-opt small { font-size: 11px; color: var(--ink-3); }
+  .fld-checks { display: grid; gap: 6px; }
+  .fld-checks .chk { @apply flex items-center gap-2; font-size: 13px; font-weight: 600; cursor: pointer; }
+  .fld-checks .chk input { accent-color: var(--accent); }
   .set-nav { @apply flex flex-col gap-0.5; position: sticky; top: 16px; }
   .set-nav a { font-size: 13px; font-weight: 700; color: var(--ink-2); padding: 9px 12px; border-radius: 10px; cursor: pointer; text-decoration: none; }
   .set-nav a.on { background: var(--accent-soft); color: var(--accent-deep); }

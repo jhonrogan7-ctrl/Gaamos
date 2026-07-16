@@ -235,6 +235,14 @@ class SettingsTest(TenantTestCase):
         r = self.client.post('/dashboard/settings/branches/add/', {'name': 'X'})
         self.assertEqual(r.status_code, 404)
 
+    def test_member_sheet_uses_access_levels_and_checkboxes(self):
+        Branch.objects.create(company=self.company, name='Main', slug='main', address='X')
+        body = self.client.get('/dashboard/settings/').content.decode()
+        self.assertIn('Full dashboard', body)
+        self.assertIn('Branch-level', body)
+        self.assertIn('fld-checks', body)
+        self.assertNotIn('name="branches" multiple', body)
+
 
 class BranchManageTest(TenantTestCase):
     """Branch Add/Edit lives on the Branches screen (owner-only), incl. theme override."""

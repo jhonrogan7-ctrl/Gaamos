@@ -134,15 +134,19 @@
               <input class="inp" name="email" x-model="aEmail"></div>
             <div class="fld"><label>Password (set/reset)</label>
               <input class="inp" name="password" type="password"></div>
-            <div class="fld"><label>Role</label>
-              <select class="inp" name="role" x-model="aRole">
-                <option value="manager">Manager</option>
-                <option value="owner">Owner</option>
-              </select></div>
+            <div class="fld"><label>Access level</label>
+              <div class="acc-radio">
+                <label class="acc-opt"><input type="radio" name="role" value="owner" x-model="aRole">
+                  <span><b>Full dashboard</b><small>Owner — every branch, settings &amp; billing</small></span></label>
+                <label class="acc-opt"><input type="radio" name="role" value="manager" x-model="aRole">
+                  <span><b>Branch-level</b><small>Manager — only the branches ticked below</small></span></label>
+              </div></div>
             <div class="fld" x-show="aRole==='manager'"><label>Branches</label>
-              <select class="inp" name="branches" multiple x-model="aBranches">
-                {% for b in branches %}<option value="{{ b.pk }}">{{ b.name }}</option>{% endfor %}
-              </select></div>
+              <div class="fld-checks">
+                {% for b in branches %}
+                <label class="chk"><input type="checkbox" name="branches" value="{{ b.pk }}" x-model="aBranches"> {{ b.name }}</label>
+                {% endfor %}
+              </div></div>
             <div style="margin-top:16px">
               <button type="submit" class="btn">Save member</button>
             </div>
