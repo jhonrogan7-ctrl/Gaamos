@@ -6,6 +6,7 @@
 <div class="set-grid">
   <nav class="set-nav">
     <a href="#venue-profile" class="on">Venue profile</a>
+    <a href="#logo">Logo</a>
     <a href="#guest-theme">Guest menu theme</a>
     <a href="#web-address">Web address</a>
     <a href="#languages">Languages</a>
@@ -36,6 +37,37 @@
             <button type="submit" class="btn">Save restaurant info</button>
           </div>
         </form>
+      </div>
+    </div>
+
+    <!-- ── Logo ── -->
+    <div class="panel fcard" id="logo">
+      <div class="ph"><h3>Logo</h3><div class="sp"></div><span class="mini">Shown on the guest menu &amp; dashboard</span></div>
+      <div class="pb">
+        <div class="logo-row">
+          {% if restaurant.logo_url %}
+            <img class="logo-preview" src="{{ restaurant.logo_url }}" alt="{{ restaurant.name }} logo">
+          {% else %}
+            <div class="logo-preview logo-preview--empty">{{ restaurant.name|slice:":1"|upper }}</div>
+          {% endif %}
+          <div class="logo-actions">
+            <form method="post" action="{% url 'dashboard:settings_logo' %}" enctype="multipart/form-data">
+              {% csrf_token %}
+              <label class="btn ghost">
+                {% if restaurant.logo_url %}Replace logo{% else %}Upload logo{% endif %}
+                <input type="file" name="logo" accept=".jpg,.jpeg,.png,.webp" style="display:none" onchange="this.form.submit()">
+              </label>
+            </form>
+            {% if restaurant.logo_url %}
+            <form method="post" action="{% url 'dashboard:settings_logo_delete' %}">
+              {% csrf_token %}
+              <button type="submit" class="btn ghost" style="color:var(--danger,#e23744)">Remove</button>
+            </form>
+            {% endif %}
+          </div>
+        </div>
+        {% if logo_error %}<div class="fld help" style="color:var(--danger,#e23744);margin-top:10px">{{ logo_error }}</div>{% endif %}
+        <div class="fld help" style="margin-top:12px">JPG, PNG or WEBP · under 5 MB · square images look best. Remove to fall back to the letter mark.</div>
       </div>
     </div>
 

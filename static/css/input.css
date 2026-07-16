@@ -303,6 +303,15 @@ h1,h2,h3 { font-family: var(--hd); }
   .set-nav a.on { background: var(--accent-soft); color: var(--accent-deep); }
   .set-nav a:hover { background: #fff; }
 
+  /* logo card */
+  .logo-row { display: flex; align-items: center; gap: 14px; }
+  .logo-preview { width: 64px; height: 64px; border-radius: 16px; object-fit: contain;
+    background: var(--card, #fff); border: 1.5px solid var(--line-2, #e5e2dc); flex-shrink: 0; }
+  .logo-preview--empty { display: flex; align-items: center; justify-content: center;
+    background: var(--accent-grad); color: #fff; font-family: var(--hd);
+    font-weight: 800; font-size: 24px; border: 0; }
+  .logo-actions { display: flex; gap: 8px; align-items: center; }
+
   /* form fields */
   .fld { margin-bottom: 15px; }
   .fld:last-child { margin-bottom: 0; }
