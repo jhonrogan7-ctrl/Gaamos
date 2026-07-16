@@ -105,6 +105,7 @@ def menu(request):
             'tagline': restaurant.tagline if restaurant else '',
             'phone': restaurant.phone if restaurant else '',
             'email': restaurant.email if restaurant else '',
+            'logo_url': restaurant.logo_url if restaurant else '',
         },
         'branches': branches,
         'branch': {

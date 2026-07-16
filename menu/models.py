@@ -44,6 +44,8 @@ class Company(models.Model):
     package = models.CharField(
         max_length=20, default='business', choices=PACKAGE_CHOICES)
 
+    logo_url = models.CharField(max_length=200, blank=True)
+
     objects = models.Manager()   # plain — Company is the tenant root, not scoped
 
     def __str__(self):

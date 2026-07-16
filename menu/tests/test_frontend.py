@@ -294,7 +294,7 @@ class GuestAppJsTest(SimpleTestCase):
 
     def test_base_template_busts_js_cache(self):
         html = (Path(settings.BASE_DIR) / 'templates/menu/_base.html').read_text()
-        self.assertIn("app.js' %}?v=15", html.replace('"', "'"))
+        self.assertIn("app.js' %}?v=16", html.replace('"', "'"))
 
 
 class GuestSharedScreensTest(TenantTestCase):

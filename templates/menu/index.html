@@ -254,7 +254,12 @@
         <button class="close" @click="contactOpen=false"><span x-html="icon('x')"></span></button>
 
         <div class="hero">
-          <div class="g-mono g-mono--lg" x-text="monogram()"></div>
+          <template x-if="restaurant.logo_url">
+            <div class="g-mono g-mono--lg g-mono--img"><img class="g-logo" :src="restaurant.logo_url" :alt="restaurant.name + ' logo'"></div>
+          </template>
+          <template x-if="!restaurant.logo_url">
+            <div class="g-mono g-mono--lg" x-text="monogram()"></div>
+          </template>
 
           <h2 x-text="restaurant.name"></h2>
           <div class="sub" x-text="restaurant.tagline"></div>
