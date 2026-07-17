@@ -6,6 +6,7 @@ from django.db.models import Count
 from django.http import Http404, HttpResponseBadRequest
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
+from django.utils.http import url_has_allowed_host_and_scheme
 from django.views.decorators.http import require_POST
 
 from core.models import Lead
@@ -80,7 +81,10 @@ def lead_status(request, lead_id):
         return HttpResponseBadRequest('bad status')
     lead.status = new_status
     lead.save(update_fields=['status'])
-    back = request.POST.get('next', '') or reverse('ops:leads')
+    back = request.POST.get('next', '')
+    # Same-site relative paths only (the form sends request.get_full_path).
+    if not url_has_allowed_host_and_scheme(back, allowed_hosts=None):
+        back = reverse('ops:leads')
     return redirect(back)
 
 

@@ -23,6 +23,7 @@
       </div>
       <form method="post" action="{% url 'dashboard:qr_generate' branch.pk %}" style="width:100%;margin-top:4px;">
         {% csrf_token %}
+        <input type="hidden" name="next" value="branch">
         <button type="submit" class="btn ghost" style="width:100%;justify-content:center;">Regenerate</button>
       </form>
     {% else %}
@@ -31,6 +32,7 @@
       <div class="qu">/?branch={{ branch.slug }}</div>
       <form method="post" action="{% url 'dashboard:qr_generate' branch.pk %}" style="width:100%;margin-top:8px;">
         {% csrf_token %}
+        <input type="hidden" name="next" value="branch">
         <button type="submit" class="btn primary" style="width:100%;justify-content:center;">Generate QR</button>
       </form>
     {% endif %}

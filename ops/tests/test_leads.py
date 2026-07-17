@@ -53,6 +53,23 @@ class OpsLeadsTests(TestCase):
             self.lead.refresh_from_db()
             self.assertEqual(self.lead.status, status)
 
+    def test_status_next_keeps_filter_querystring(self):
+        resp = self.client.post(
+            f'/platform/leads/{self.lead.id}/status',
+            {'status': 'contacted', 'next': '/platform/leads?status=new'},
+            **self.apex)
+        self.assertEqual(resp.status_code, 302)
+        self.assertEqual(resp['Location'], '/platform/leads?status=new')
+
+    def test_status_next_external_url_falls_back_to_leads(self):
+        for evil in ('https://evil.example/', '//evil.example/x',
+                     'http://evil.example/platform/leads'):
+            resp = self.client.post(
+                f'/platform/leads/{self.lead.id}/status',
+                {'status': 'contacted', 'next': evil}, **self.apex)
+            self.assertEqual(resp.status_code, 302)
+            self.assertEqual(resp['Location'], '/platform/leads')
+
     def test_unknown_status_still_400s(self):
         resp = self.client.post(f'/platform/leads/{self.lead.id}/status',
                                 {'status': 'archived'}, **self.apex)
