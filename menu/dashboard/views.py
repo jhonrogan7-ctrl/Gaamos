@@ -418,6 +418,8 @@ def qr_generate(request, branch_id):
     if not ensure_can_manage_branch(request, branch):
         return forbidden(request)
     generate_qr_for_branch(branch, request_base_url(request))
+    if request.POST.get('next') == 'branch':
+        return redirect('dashboard:branch_qr', slug=branch.slug)
     return redirect('dashboard:qr')
 
 

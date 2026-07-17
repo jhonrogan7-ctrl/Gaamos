@@ -188,6 +188,21 @@ class QRCodesTest(TenantTestCase):
         self.assertTrue(self.branch.qr_image != '')
         self.assertTrue(self.branch.qr_image.startswith('qr/'))
 
+    def test_generate_qr_from_branch_tab_returns_to_branch_tab(self):
+        response = self.client.post(
+            f'/dashboard/qr/{self.branch.pk}/generate/', {'next': 'branch'})
+        self.assertRedirects(
+            response, f'/dashboard/branch/{self.branch.slug}/qr/',
+            fetch_redirect_response=False)
+        self.branch.refresh_from_db()
+        self.assertTrue(self.branch.qr_image.startswith('qr/'))
+
+    def test_generate_qr_unknown_next_falls_back_to_company_page(self):
+        response = self.client.post(
+            f'/dashboard/qr/{self.branch.pk}/generate/',
+            {'next': 'https://evil.example/'})
+        self.assertRedirects(response, '/dashboard/qr/', fetch_redirect_response=False)
+
 
 class SettingsTest(TenantTestCase):
     def setUp(self):
