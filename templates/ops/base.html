@@ -8,6 +8,11 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="{% static 'css/app.css' %}?v={{ asset_v|default:'ops1' }}">
+  <link rel="manifest" href="{% static 'pwa/manifest-ops.webmanifest' %}">
+  <meta name="theme-color" content="#15171d">
+  <link rel="apple-touch-icon" href="{% static 'pwa/icon-192.png' %}">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 </head>
 <body>
 <div class="app">
@@ -52,5 +57,31 @@
     </div>
   </main>
 </div>
+<!-- mobile shell (<900px): bottom tab bar. Hidden ≥900px by CSS -->
+<nav class="tabbar" aria-label="Platform">
+  <a href="{% url 'ops:leads' %}" class="tb {% if active == 'leads' %}on{% endif %}">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16v16H4z" opacity=".3"/><path d="M4 7l8 6 8-6"/></svg>
+    <span>Leads</span>
+  </a>
+  <a href="{% url 'ops:tenants' %}" class="tb {% if active == 'tenants' %}on{% endif %}">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21V8l9-5 9 5v13"/><path d="M9 21v-6h6v6"/></svg>
+    <span>Tenants</span>
+  </a>
+  <a href="{% url 'ops:tenant_new' %}" class="tb {% if active == 'new' %}on{% endif %}">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 8v8M8 12h8"/></svg>
+    <span>New</span>
+  </a>
+  <form method="post" action="{% url 'ops:logout' %}" style="display:contents">{% csrf_token %}
+    <button type="submit" class="tb">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/></svg>
+      <span>Sign out</span>
+    </button>
+  </form>
+</nav>
+<script>
+  if ("serviceWorker" in navigator) {
+    navigator.serviceWorker.register("/sw.js", { scope: "/" });
+  }
+</script>
 </body>
 </html>

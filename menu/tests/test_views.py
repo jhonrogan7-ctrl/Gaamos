@@ -279,3 +279,27 @@ class GuestThemeTest(TenantTestCase):
     def test_invalid_theme_falls_back_to_company(self):
         resp = self.client.get('/?theme=neon')
         self.assertContains(resp, 'data-theme="saffron"')
+
+    def test_branch_theme_overrides_company_default(self):
+        from menu.models import Branch
+        self.company.menu_theme = 'berry'
+        self.company.save()
+        Branch.objects.create(company=self.company, name='Main', slug='main',
+                              address='X', menu_theme='juice')
+        resp = self.client.get('/')
+        self.assertContains(resp, 'data-theme="juice"')
+
+    def test_branch_without_theme_inherits_company_default(self):
+        from menu.models import Branch
+        self.company.menu_theme = 'berry'
+        self.company.save()
+        Branch.objects.create(company=self.company, name='Main', slug='main', address='X')
+        resp = self.client.get('/')
+        self.assertContains(resp, 'data-theme="berry"')
+
+    def test_preview_param_beats_branch_theme(self):
+        from menu.models import Branch
+        Branch.objects.create(company=self.company, name='Main', slug='main',
+                              address='X', menu_theme='juice')
+        resp = self.client.get('/?theme=saffron')
+        self.assertContains(resp, 'data-theme="saffron"')

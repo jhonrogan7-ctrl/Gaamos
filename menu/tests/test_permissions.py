@@ -313,3 +313,51 @@ class CreateOwnerCommandTest(TenantTestCase):
         from django.core.management.base import CommandError
         with self.assertRaises(CommandError):
             call_command('create_owner', 'nope', 'boss', '--password', 'pw')
+
+
+class ManagerScopingAuditTest(TenantTestCase):
+    """A branch-level manager must never see another branch's data on any screen."""
+
+    def setUp(self):
+        super().setUp()
+        from menu.models import Order, Table
+        self.mine = Branch.objects.create(company=self.company, name='Mine', slug='mine', address='A')
+        self.other = Branch.objects.create(company=self.company, name='OtherPlace', slug='other', address='B')
+        self.mgr = User.objects.create_user(username='scopedmgr', password='pass')
+        self.make_manager(self.mgr, branches=[self.mine])
+        self.client.login(username='scopedmgr', password='pass')
+        t1 = Table.objects.create(company=self.company, branch=self.mine, code='T1', label='T1')
+        t2 = Table.objects.create(company=self.company, branch=self.other, code='T2', label='T2')
+        Order.objects.create(company=self.company, branch=self.mine, table=t1, number=1)
+        Order.objects.create(company=self.company, branch=self.other, table=t2, number=2)
+
+    def test_orders_page_hides_other_branch(self):
+        body = self.client.get('/dashboard/orders/').content.decode()
+        self.assertIn('Mine', body)
+        self.assertNotIn('OtherPlace', body)
+
+    def test_orders_queue_hides_other_branch(self):
+        body = self.client.get('/dashboard/orders/queue/').content.decode()
+        self.assertNotIn('OtherPlace', body)
+
+    def test_orders_stream_only_my_branches(self):
+        # The stream's DB reads run on another connection (sync_to_async), so the
+        # test's uncommitted rows are invisible there — assert the view hands the
+        # generator only this manager's branch ids instead of consuming the body.
+        # (orders_payload's branch_ids filtering is covered in test_orders.py.)
+        from unittest.mock import patch
+        with patch('menu.dashboard.views._order_event_stream') as stream:
+            stream.return_value = iter([b''])
+            self.client.get('/dashboard/orders/stream/?once=1')
+        company_id, branch_ids, _once = stream.call_args[0]
+        self.assertEqual(company_id, self.company.id)
+        self.assertEqual(branch_ids, [self.mine.pk])
+
+    def test_qr_page_hides_other_branch(self):
+        body = self.client.get('/dashboard/qr/').content.decode()
+        self.assertNotIn('OtherPlace', body)
+
+    def test_home_and_branches_still_scoped(self):
+        for url in ('/dashboard/', '/dashboard/branches/'):
+            body = self.client.get(url).content.decode()
+            self.assertNotIn('OtherPlace', body)

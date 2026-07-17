@@ -26,6 +26,18 @@ def ensure_can_manage_branch(request, branch):
     return can_manage_branch(get_membership(request), branch)
 
 
+def visible_branches(request):
+    """Branches this user may see: owners/superusers all (tenant-scoped),
+    managers only their assigned branches, everyone else none."""
+    from .models import Branch
+    m = get_membership(request)
+    if getattr(request.user, 'is_superuser', False) or (m and m.is_owner):
+        return Branch.objects.all()
+    if m:
+        return Branch.objects.filter(pk__in=m.branches.values_list('pk', flat=True))
+    return Branch.objects.none()
+
+
 def require_membership(view):
     @wraps(view)
     def wrapped(request, *args, **kwargs):

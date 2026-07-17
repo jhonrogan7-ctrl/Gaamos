@@ -31,10 +31,14 @@ def test_manifests_have_distinct_ids():
     pwa = settings.BASE_DIR / "static" / "pwa"
     guest = json.loads((pwa / "manifest.webmanifest").read_text())
     dash = json.loads((pwa / "manifest-dashboard.webmanifest").read_text())
+    ops = json.loads((pwa / "manifest-ops.webmanifest").read_text())
     assert guest["id"] == "/" and guest["start_url"] == "/"
     assert dash["id"] == "/dashboard/" and dash["start_url"] == "/dashboard/"
+    assert ops["id"] == "/platform/" and ops["start_url"] == "/platform/"
+    assert len({guest["id"], dash["id"], ops["id"]}) == 3
     assert guest["name"] == "Gaamos Menu" and dash["name"] == "Gaamos Dashboard"
-    assert {i["src"] for i in guest["icons"]} == {i["src"] for i in dash["icons"]}
+    assert ops["name"] == "Gaamos Ops"
+    assert {i["src"] for i in guest["icons"]} == {i["src"] for i in dash["icons"]} == {i["src"] for i in ops["icons"]}
 
 
 @pytest.mark.django_db

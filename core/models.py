@@ -23,6 +23,7 @@ class Lead(models.Model):
     message = models.TextField(blank=True)
     STATUS_CHOICES = [
         ("new", "New"), ("contacted", "Contacted"),
+        ("follow_up", "Follow-up"), ("demo_scheduled", "Demo scheduled"),
         ("converted", "Converted"), ("rejected", "Rejected"),
     ]
     status = models.CharField(max_length=20, default="new",

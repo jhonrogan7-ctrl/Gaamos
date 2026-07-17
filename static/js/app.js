@@ -178,8 +178,10 @@ document.addEventListener('alpine:init', () => {
     dietClass(tag) { return 'diet ' + (DIET_MAP[tag]?.cls || ''); },
     dietLabel(tag) { return DIET_MAP[tag]?.label || tag; },
 
+    venueName() { return (this.branch && this.branch.name) || this.restaurant.name || ''; },
+
     monogram() {
-      const words = (this.restaurant.name || '').trim().split(/\s+/).filter(Boolean);
+      const words = this.venueName().trim().split(/\s+/).filter(Boolean);
       return words.slice(0, 2).map(w => w[0]).join('').toUpperCase() || '·';
     },
 

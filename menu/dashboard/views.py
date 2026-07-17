@@ -1,6 +1,7 @@
 import asyncio
 import json
 import os
+import time
 
 from asgiref.sync import sync_to_async
 from django.shortcuts import render, redirect, get_object_or_404
@@ -17,6 +18,7 @@ from menu.models import (
 )
 from menu.permissions import (
     require_membership, require_owner, ensure_can_manage_branch, forbidden,
+    visible_branches,
 )
 from menu.imaging import compute_focal_point
 
@@ -69,6 +71,29 @@ def save_ad_image(ad, upload):
     return ad.image_url
 
 
+LOGO_UPLOAD_ERROR = 'Logo must be JPG, PNG or WEBP and under 5 MB.'
+
+
+def save_logo_image(company, upload):
+    """Persist an uploaded company logo. Returns the stored public URL (with a
+    cache-busting ?v= so replacing a same-extension logo refreshes browsers),
+    or None if the upload was rejected (bad extension / too large). Same
+    validation as item/ad images; shown uncropped in small tiles, no focal point."""
+    ext = os.path.splitext(upload.name)[1].lower()
+    if ext not in ALLOWED_IMAGE_EXTS or upload.size > MAX_IMAGE_BYTES:
+        return None
+    dest_dir = os.path.join(django_settings.MEDIA_ROOT, 'logos')
+    os.makedirs(dest_dir, exist_ok=True)
+    filename = f"logo_{company.pk}{ext}"
+    path = os.path.join(dest_dir, filename)
+    with open(path, 'wb') as f:
+        for chunk in upload.chunks():
+            f.write(chunk)
+    company.logo_url = f"{django_settings.MEDIA_URL}logos/{filename}?v={int(time.time())}"
+    company.save(update_fields=['logo_url'])
+    return company.logo_url
+
+
 def login_view(request):
     error = ''
     if request.method == 'POST':
@@ -102,7 +127,7 @@ def orders(request):
     status = request.GET.get('status', 'all')
     return render(request, 'dashboard/orders.html', {
         'active_tab': 'orders',
-        'orders': _orders_for(Order.objects.all(), status),
+        'orders': _orders_for(Order.objects.filter(branch__in=visible_branches(request)), status),
         'show_branch': True, 'status_filter': status,
     })
 
@@ -110,26 +135,19 @@ def orders(request):
 @require_membership
 def branches(request):
     m = request.membership
-    if request.user.is_superuser or (m and m.is_owner):
-        qs = Branch.objects.all()
-    elif m:
-        qs = Branch.objects.filter(pk__in=m.branches.values_list('pk', flat=True))
-    else:
-        qs = Branch.objects.none()
-    return render(request, 'dashboard/branches.html', {'active_tab': 'branches', 'branches': qs})
+    qs = visible_branches(request)
+    return render(request, 'dashboard/branches.html', {
+        'active_tab': 'branches', 'branches': qs,
+        'can_manage': request.user.is_superuser or (m and m.is_owner),
+        'theme_choices': Company.MENU_THEME_CHOICES,
+    })
 
 
 @require_membership
 def home(request):
     restaurant = request.company
     total_count = MenuItem.objects.count()
-    m = request.membership
-    if request.user.is_superuser or (m and m.is_owner):
-        branches = Branch.objects.all()
-    elif m:
-        branches = Branch.objects.filter(pk__in=m.branches.values_list('pk', flat=True))
-    else:
-        branches = Branch.objects.none()
+    branches = visible_branches(request)
     branches_data = []
     for branch in branches:
         active_count = (BranchItemPlacement.objects
@@ -385,8 +403,7 @@ def subcategory_delete(request, pk):
 @require_membership
 def qr_index(request):
     from django.db.models import Count
-    # TenantManager scopes this to request.company automatically
-    branches = Branch.objects.annotate(table_count=Count('tables'))
+    branches = visible_branches(request).annotate(table_count=Count('tables'))
     return render(request, 'dashboard/qr/index.html', {
         'active_tab': 'qr',
         'branches': branches,
@@ -429,17 +446,21 @@ def qr_download(request, branch_id):
         return response
 
 
+def _render_settings(request, **extra):
+    ctx = {
+        'active_tab': 'settings',
+        'restaurant': request.company,
+        'branches': Branch.objects.all(),
+        'members': (Membership.objects.filter(company=request.company)
+                    .select_related('user').prefetch_related('branches')),
+    }
+    ctx.update(extra)
+    return render(request, 'dashboard/settings/index.html', ctx)
+
+
 @require_owner
 def settings_index(request):
-    restaurant = request.company
-    branches = Branch.objects.all()
-    members = Membership.objects.filter(company=request.company).select_related('user').prefetch_related('branches')
-    return render(request, 'dashboard/settings/index.html', {
-        'active_tab': 'settings',
-        'restaurant': restaurant,
-        'branches': branches,
-        'members': members,
-    })
+    return _render_settings(request)
 
 
 @require_owner
@@ -459,18 +480,49 @@ def settings_restaurant(request):
 
 @require_owner
 @require_POST
+def settings_theme(request):
+    theme = request.POST.get('menu_theme', '')
+    if theme in {k for k, _ in Company.MENU_THEME_CHOICES}:
+        request.company.menu_theme = theme
+        request.company.save(update_fields=['menu_theme'])
+    return redirect('dashboard:settings')
+
+
+@require_owner
+@require_POST
+def settings_logo(request):
+    upload = request.FILES.get('logo')
+    if upload is None or save_logo_image(request.company, upload) is None:
+        return _render_settings(request, logo_error=LOGO_UPLOAD_ERROR)
+    return redirect('dashboard:settings')
+
+
+@require_owner
+@require_POST
+def settings_logo_delete(request):
+    request.company.logo_url = ''
+    request.company.save(update_fields=['logo_url'])
+    return redirect('dashboard:settings')
+
+
+@require_owner
+@require_POST
 def branch_save(request, pk=None):
     from django.utils.text import slugify
     branch = get_object_or_404(Branch, pk=pk) if pk else None
     name = request.POST.get('name', '').strip()
     address = request.POST.get('address', '').strip()
     tag = request.POST.get('tag', '').strip()
+    theme = request.POST.get('menu_theme', '').strip()
+    if theme not in {k for k, _ in Company.MENU_THEME_CHOICES}:
+        theme = ''                                    # '' = inherit company default
     if not name:
-        return redirect('dashboard:settings')
+        return redirect('dashboard:branches')
     if branch:
         branch.name = name
         branch.address = address
         branch.tag = tag
+        branch.menu_theme = theme
         branch.save()
     else:
         base = slugify(name)
@@ -479,8 +531,9 @@ def branch_save(request, pk=None):
         while Branch.objects.filter(slug=slug).exists():
             slug = f"{base}-{counter}"
             counter += 1
-        Branch.objects.create(company=request.company, name=name, slug=slug, address=address, tag=tag)
-    return redirect('dashboard:settings')
+        Branch.objects.create(company=request.company, name=name, slug=slug,
+                              address=address, tag=tag, menu_theme=theme)
+    return redirect('dashboard:branches')
 
 
 @require_owner
@@ -724,7 +777,7 @@ def _orders_for(qs, status):
 def orders_queue(request):
     status = request.GET.get('status', 'all')
     return render(request, 'dashboard/_orders_queue.html', {
-        'orders': _orders_for(Order.objects.all(), status),
+        'orders': _orders_for(Order.objects.filter(branch__in=visible_branches(request)), status),
         'show_branch': True, 'status_filter': status,
     })
 
@@ -741,11 +794,11 @@ def branch_orders_queue(request, slug):
     })
 
 
-def orders_payload(company_id, branch_id, after_id):
+def orders_payload(company_id, branch_ids, after_id):
     """Sync, async-safe: explicit company filter (no contextvar reliance)."""
     qs = Order.all_objects.filter(company_id=company_id, pk__gt=after_id)
-    if branch_id is not None:
-        qs = qs.filter(branch_id=branch_id)
+    if branch_ids is not None:
+        qs = qs.filter(branch_id__in=branch_ids)
     qs = qs.order_by('pk')
     events, max_id = [], after_id
     for o in qs:
@@ -754,10 +807,10 @@ def orders_payload(company_id, branch_id, after_id):
     return events, max_id
 
 
-async def _order_event_stream(company_id, branch_id, once):
+async def _order_event_stream(company_id, branch_ids, once):
     after_id = 0
     while True:
-        events, after_id = await sync_to_async(orders_payload)(company_id, branch_id, after_id)
+        events, after_id = await sync_to_async(orders_payload)(company_id, branch_ids, after_id)
         for e in events:
             yield e.encode()
         if once:
@@ -768,8 +821,13 @@ async def _order_event_stream(company_id, branch_id, once):
 @require_membership
 def orders_stream(request):
     once = request.GET.get('once') == '1'
+    m = request.membership
+    if request.user.is_superuser or (m and m.is_owner):
+        branch_ids = None
+    else:
+        branch_ids = list(visible_branches(request).values_list('pk', flat=True))
     return StreamingHttpResponse(
-        _order_event_stream(request.company.id, None, once),
+        _order_event_stream(request.company.id, branch_ids, once),
         content_type='text/event-stream')
 
 
@@ -780,7 +838,7 @@ def branch_orders_stream(request, slug):
         return forbidden(request)
     once = request.GET.get('once') == '1'
     return StreamingHttpResponse(
-        _order_event_stream(request.company.id, branch.id, once),
+        _order_event_stream(request.company.id, [branch.id], once),
         content_type='text/event-stream')
 
 

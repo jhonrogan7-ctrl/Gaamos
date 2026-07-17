@@ -44,6 +44,8 @@ class Company(models.Model):
     package = models.CharField(
         max_length=20, default='business', choices=PACKAGE_CHOICES)
 
+    logo_url = models.CharField(max_length=200, blank=True)
+
     objects = models.Manager()   # plain — Company is the tenant root, not scoped
 
     def __str__(self):
@@ -58,6 +60,9 @@ class Branch(TenantScopedModel):
     slug = models.SlugField(blank=True)
     address = models.CharField(max_length=200)
     tag = models.CharField(max_length=20, blank=True, choices=TAG_CHOICES)
+    menu_theme = models.CharField(              # '' = inherit company default
+        max_length=20, blank=True, default='',
+        choices=Company.MENU_THEME_CHOICES)
     qr_image = models.CharField(max_length=200, blank=True)
 
     class Meta(TenantScopedModel.Meta):

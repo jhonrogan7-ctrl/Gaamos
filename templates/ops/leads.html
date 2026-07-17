@@ -7,7 +7,8 @@
   <a href="{% url 'ops:leads' %}?status={{ value }}" class="btn btn-sm {% if status_filter == value %}primary{% else %}ghost{% endif %}">{{ label }}</a>
   {% endfor %}
 </div>
-<div class="table-scroll">
+
+<div class="table-scroll ops-table">
 <table class="tbl">
   <thead><tr><th>Venue</th><th>Contact</th><th>Type</th><th>Message</th><th>Submitted</th><th>Status</th><th></th></tr></thead>
   <tbody>
@@ -21,12 +22,8 @@
     <td><span class="ops-chip {{ l.status }}">{{ l.get_status_display }}</span>
         {% if l.company %}<br><small>→ {{ l.company.name }}</small>{% endif %}</td>
     <td style="white-space:nowrap">
+      {% include "ops/_lead_status_form.html" with lead=l %}
       {% if l.status != 'converted' %}
-      <form method="post" action="{% url 'ops:lead_status' l.id %}" style="display:inline">
-        {% csrf_token %}<input type="hidden" name="next" value="{{ request.get_full_path }}">
-        {% if l.status == 'new' %}<button class="btn btn-sm ghost" name="status" value="contacted">Mark contacted</button>{% endif %}
-        {% if l.status != 'rejected' %}<button class="btn btn-sm ghost" name="status" value="rejected">Reject</button>{% endif %}
-      </form>
       <a class="btn btn-sm primary" href="{% url 'ops:tenant_new' %}?lead={{ l.id }}">Create tenant</a>
       {% endif %}
     </td>
@@ -36,5 +33,26 @@
   {% endfor %}
   </tbody>
 </table>
+</div>
+
+<div class="ops-cards">
+  {% for l in leads %}
+  <div class="ops-card">
+    <h3>{{ l.venue_name }}</h3>
+    <div class="meta">{{ l.venue_type }} · {{ l.created_at|date:"Y-m-d H:i" }}</div>
+    <div class="meta">{{ l.name }} — {{ l.phone }}{% if l.email %} · {{ l.email }}{% endif %}</div>
+    {% if l.message %}<div class="meta">{{ l.message|truncatechars:120 }}</div>{% endif %}
+    <div class="meta"><span class="ops-chip {{ l.status }}">{{ l.get_status_display }}</span>
+      {% if l.company %} → {{ l.company.name }}{% endif %}</div>
+    <div class="actions">
+      {% include "ops/_lead_status_form.html" with lead=l %}
+      {% if l.status != 'converted' %}
+      <a class="btn btn-sm primary" href="{% url 'ops:tenant_new' %}?lead={{ l.id }}">Create tenant</a>
+      {% endif %}
+    </div>
+  </div>
+  {% empty %}
+  <div class="ops-card">No leads{% if status_filter %} with this status{% endif %}.</div>
+  {% endfor %}
 </div>
 {% endblock %}
