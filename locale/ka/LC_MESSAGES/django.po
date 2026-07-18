@@ -213,7 +213,7 @@ msgid "Your name"
 msgstr "თქვენი სახელი"
 
 #: templates/marketing/_contact_form.html:8
-msgid "Aashish Sharma"
+msgid "Suman Thapa"
 msgstr "გიორგი ბერიძე"
 
 #: templates/marketing/_contact_form.html:11
@@ -221,8 +221,8 @@ msgid "Venue name"
 msgstr "დაწესებულების სახელი"
 
 #: templates/marketing/_contact_form.html:12
-msgid "Chill Zone Café"
-msgstr "კაფე Chill Zone"
+msgid "Momo Ghar Café"
+msgstr "კაფე Momo Ghar"
 
 #: templates/marketing/_contact_form.html:17
 msgid "Phone"

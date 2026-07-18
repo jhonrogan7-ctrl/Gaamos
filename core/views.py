@@ -43,8 +43,8 @@ STEPS = [
     {"n": "3", "title": _("Receive orders"), "body": _("Guests scan, browse, and order from their own phone. Orders appear in your live queue the moment they're placed.")},
 ]
 BRANCHES = [
-    {"initials": "CZ", "name": "Chill Zone — Lakeside", "prefix": "chillzone", "orders": "42"},
-    {"initials": "CZ", "name": "Chill Zone — City Center", "prefix": "chillzone-city", "orders": "31"},
+    {"initials": "MG", "name": "Momo Ghar — Lakeside", "prefix": "momoghar", "orders": "42"},
+    {"initials": "MG", "name": "Momo Ghar — City Center", "prefix": "momoghar-city", "orders": "31"},
     {"initials": "TC", "name": "The Terrace Café", "prefix": "theterrace", "orders": "18"},
 ]
 TIERS = [

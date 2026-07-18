@@ -1,16 +1,16 @@
 {
   "company": {
-    "name": "Sherpa House Kitchen & Bar",
+    "name": "Danfe House Kitchen & Bar",
     "tagline": "Himalayan comfort food in the heart of Thamel",
     "phone": "+977 1 4412345",
-    "email": "hello@sherpahouse.com.np",
-    "instagram": "sherpahousektm",
-    "facebook": "sherpahousektm",
+    "email": "hello@danfehouse.com.np",
+    "instagram": "danfehousektm",
+    "facebook": "danfehousektm",
     "tiktok": ""
   },
   "branches": [
-    {"slug": "thamel", "name": "Thamel", "address": "Mandala Street, Thamel · Kathmandu", "tag": "FLAGSHIP"},
-    {"slug": "patan", "name": "Patan", "address": "Durbar Square North Gate · Lalitpur", "tag": "NEW"}
+    {"slug": "thamel", "name": "Danfe House Thamel", "address": "Mandala Street, Thamel · Kathmandu", "tag": "FLAGSHIP"},
+    {"slug": "patan", "name": "Danfe House Patan", "address": "Durbar Square North Gate · Lalitpur", "tag": "NEW"}
   ],
   "categories": [
     {"slug": "momo", "name": "Momo & Dumplings", "icon_key": "bowl", "hours_note": "", "display_order": 0,

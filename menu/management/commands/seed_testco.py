@@ -15,7 +15,7 @@ FIXTURE = Path(settings.BASE_DIR) / 'menu' / 'fixtures' / 'testco.json'
 
 
 class Command(BaseCommand):
-    help = ('Wipe and reseed the `testco` test tenant as "Sherpa House Kitchen & Bar" '
+    help = ('Wipe and reseed the `testco` test tenant as "Danfe House Kitchen & Bar" '
             '(realistic Nepali menu for guest-UI design work).')
 
     @transaction.atomic

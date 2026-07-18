@@ -208,16 +208,16 @@ msgid "Your name"
 msgstr "तपाईंको नाम"
 
 #: templates/marketing/_contact_form.html:8
-msgid "Aashish Sharma"
-msgstr "आशिष शर्मा"
+msgid "Suman Thapa"
+msgstr "सुमन थापा"
 
 #: templates/marketing/_contact_form.html:11
 msgid "Venue name"
 msgstr "स्थलको नाम"
 
 #: templates/marketing/_contact_form.html:12
-msgid "Chill Zone Café"
-msgstr "चिल जोन क्याफे"
+msgid "Momo Ghar Café"
+msgstr "मःमः घर क्याफे"
 
 #: templates/marketing/_contact_form.html:17
 msgid "Phone"

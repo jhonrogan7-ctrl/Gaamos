@@ -6,15 +6,15 @@ from core.models import Lead
 @pytest.mark.django_db
 def test_lead_creation_and_str():
     lead = Lead.objects.create(
-        name="Aashish Sharma",
-        venue_name="Chill Zone Café",
+        name="Suman Thapa",
+        venue_name="Momo Ghar Café",
         phone="+977 9812345678",
         venue_type="Café",
     )
     assert lead.email == ""
     assert lead.message == ""
     assert lead.created_at is not None
-    assert str(lead) == "Chill Zone Café — Aashish Sharma"
+    assert str(lead) == "Momo Ghar Café — Suman Thapa"
 
 
 @pytest.mark.django_db
