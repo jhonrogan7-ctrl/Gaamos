@@ -1,3 +1,4 @@
+import logging
 import secrets
 
 from django.conf import settings
@@ -11,10 +12,13 @@ from django.views.decorators.http import require_POST
 
 from core.models import Lead
 from menu.dashboard.utils import generate_qr_for_branch
+from menu.impersonation import make_token
 from menu.models import Company, Membership
 
 from .forms import TenantCreateForm
 from .permissions import platform_admin_required
+
+logger = logging.getLogger(__name__)
 
 
 def generate_password():
@@ -129,6 +133,20 @@ def tenant_reset_password(request, company_id):
         'password': new_password,
     }
     return redirect('ops:tenants')
+
+
+@require_POST
+@platform_admin_required
+def tenant_impersonate(request, company_id):
+    company = get_object_or_404(Company, pk=company_id, status='active')
+    token = make_token(request.user, company)
+    host = request.get_host()
+    port = f":{host.split(':', 1)[1]}" if ':' in host else ''
+    logger.info('impersonation issued: admin=%s(%s) company=%s',
+                request.user.pk, request.user.username, company.slug)
+    return redirect(
+        f'{request.scheme}://{company.slug}.{settings.BASE_DOMAIN}{port}'
+        f'/dashboard/impersonate/?token={token}')
 
 
 @platform_admin_required
