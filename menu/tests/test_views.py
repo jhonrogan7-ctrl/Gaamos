@@ -266,6 +266,15 @@ class MenuLayoutTest(TenantTestCase):
 
 
 class GuestThemeTest(TenantTestCase):
+    def test_guest_html_carries_inline_theme_tokens(self):
+        # Company still holds a legacy slug until the Task-3 migration; the
+        # tag itself must already fall back to eco's tokens.
+        resp = self.client.get('/')
+        body = resp.content.decode()
+        self.assertIn('--brand:#2D6A4F', body)
+        self.assertIn('--paper:#EFEAD8', body)
+        self.assertIn('--grad:linear-gradient(135deg,#A3B18A,#2D6A4F)', body)
+
     def test_menu_uses_company_theme(self):
         self.company.menu_theme = 'berry'
         self.company.save()

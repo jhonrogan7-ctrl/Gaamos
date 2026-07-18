@@ -263,9 +263,27 @@ class GuestKitCssTest(SimpleTestCase):
                     '.k-qty', '.k-pill', '.g-mono', '.vb-tab', '.vc-ti']:
             self.assertIn(sel, css, f'missing guest kit class {sel}')
 
-    def test_price_token_defined_per_theme(self):
+    def test_theme_colors_no_longer_live_in_css(self):
+        # Themes are data-driven: tokens are emitted inline on the guest <html>
+        # from menu/themes.py; built CSS must carry no per-theme color blocks.
         src = (Path(settings.BASE_DIR) / 'static/css/input.css').read_text()
-        self.assertEqual(src.count('--price:'), 3, 'expect one --price per theme')
+        self.assertNotIn('[data-theme="berry"]', src)
+        self.assertNotIn('[data-theme="juice"]', src)
+        self.assertNotIn('--price:', src)
+        self.assertNotIn('--brand: var(--accent)', src)
+
+    def test_guest_gradient_uses_grad_token(self):
+        # Guest kit must key off --grad (inline token), never the dashboard's
+        # :root --accent-grad; marketing/.mk-* keeps --accent-grad untouched.
+        src = (Path(settings.BASE_DIR) / 'static/css/input.css').read_text()
+        guest = src[src.index('GUEST MENU (ported from donor menu.css'):]
+        self.assertNotIn('var(--accent-grad', guest)
+        self.assertIn('var(--grad, var(--brand))', guest)
+
+    def test_marketing_base_has_no_phantom_company_theme(self):
+        html = (Path(settings.BASE_DIR) / 'templates/base.html').read_text()
+        self.assertNotIn('company.theme', html)
+        self.assertIn('theme_style', html)
 
     def test_sticky_cta_layered_above_detail(self):
         # F3: the detail CTA must carry an explicit stacking context.
