@@ -14,6 +14,12 @@ class SeedJuiceryTest(TestCase):
         reset_current_company(token)
         super().tearDown()
 
+    def test_juicery_seeds_citrus_theme(self):
+        # Spec: nearest new palette to the old Tropical Juice vibe.
+        call_command('seed_juicery')
+        company = Company.objects.get(slug='juicery')
+        self.assertEqual(company.menu_theme, 'citrus')
+
     def test_seed_creates_juicery_with_stamped_rows(self):
         call_command('seed_juicery')
         company = Company.objects.get(slug='juicery')
