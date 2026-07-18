@@ -1,12 +1,13 @@
 import asyncio
 import json
+import logging
 import os
 import time
 
 from asgiref.sync import sync_to_async
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import authenticate, login, logout
-from django.http import JsonResponse, StreamingHttpResponse
+from django.http import Http404, JsonResponse, StreamingHttpResponse
 from django.views.decorators.http import require_POST
 from django.conf import settings as django_settings
 
@@ -21,6 +22,9 @@ from menu.permissions import (
     visible_branches,
 )
 from menu.imaging import compute_focal_point
+from menu.impersonation import resolve_token
+
+logger = logging.getLogger(__name__)
 
 ALLOWED_IMAGE_EXTS = ('.jpg', '.jpeg', '.png', '.webp')
 MAX_IMAGE_BYTES = 5 * 1024 * 1024
@@ -115,6 +119,19 @@ def login_view(request):
 def logout_view(request):
     logout(request)
     return redirect('dashboard:login')
+
+
+def impersonate(request):
+    """Platform-admin handoff landing. Unauthenticated by design — the signed
+    single-use token (menu.impersonation) IS the credential. Fail-closed 404
+    on any problem; no CSRF concern (GET, state change is session creation)."""
+    user = resolve_token(request.GET.get('token', ''), request.company)
+    if user is None:
+        raise Http404
+    login(request, user)   # rotates the session key (no fixation)
+    logger.info('impersonation: admin=%s(%s) company=%s',
+                user.pk, user.username, request.company.slug)
+    return redirect('dashboard:home')
 
 
 @require_membership

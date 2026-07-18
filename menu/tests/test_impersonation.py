@@ -55,3 +55,52 @@ class TokenHelperTests(TenantTestCase):
         self.admin.save(update_fields=['is_active'])
         token = make_token(self.admin, self.company)
         self.assertIsNone(resolve_token(token, self.company))
+
+
+class ImpersonateConsumeTests(TenantTestCase):
+    def setUp(self):
+        super().setUp()
+        self.admin = User.objects.create_superuser('boss', 'b@x.io', 'pw')
+
+    def consume(self, token):
+        return self.client.get('/dashboard/impersonate/', {'token': token})
+
+    def test_valid_token_logs_in_and_redirects_home(self):
+        resp = self.consume(make_token(self.admin, self.company))
+        self.assertEqual(resp.status_code, 302)
+        self.assertEqual(resp['Location'], '/dashboard/')
+        self.assertEqual(int(self.client.session['_auth_user_id']),
+                         self.admin.pk)
+
+    def test_missing_or_garbage_token_404(self):
+        self.assertEqual(
+            self.client.get('/dashboard/impersonate/').status_code, 404)
+        self.assertEqual(self.consume('garbage').status_code, 404)
+
+    def test_replay_404(self):
+        token = make_token(self.admin, self.company)
+        self.assertEqual(self.consume(token).status_code, 302)
+        self.client.post('/dashboard/logout/')
+        self.assertEqual(self.consume(token).status_code, 404)
+
+    def test_wrong_company_token_404(self):
+        other = Company.objects.create(name='Other Co', slug='otherco')
+        token = make_token(self.admin, other)
+        self.assertEqual(self.consume(token).status_code, 404)
+        self.assertNotIn('_auth_user_id', self.client.session)
+
+    def test_expired_token_404(self):
+        token = make_token(self.admin, self.company)
+        with mock.patch('menu.impersonation.MAX_AGE', -1):
+            self.assertEqual(self.consume(token).status_code, 404)
+
+    def test_non_superuser_target_404(self):
+        plain = User.objects.create_user('plain', 'p@x.io', 'pw')
+        token = make_token(plain, self.company)
+        self.assertEqual(self.consume(token).status_code, 404)
+
+    def test_session_key_rotated_on_login(self):
+        self.client.get('/dashboard/login/')          # establish a session
+        before = self.client.session.session_key
+        self.consume(make_token(self.admin, self.company))
+        self.assertNotEqual(self.client.session.session_key, before)

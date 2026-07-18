@@ -13,6 +13,7 @@ urlpatterns = [
     path('branches/<int:pk>/delete/', views.branch_delete, name='branch_delete'),
     path('login/', views.login_view, name='login'),
     path('logout/', views.logout_view, name='logout'),
+    path('impersonate/', views.impersonate, name='impersonate'),
 
     path('items/', views.items_list, name='items_list'),
     path('items/add/', views.item_edit, name='item_add'),
