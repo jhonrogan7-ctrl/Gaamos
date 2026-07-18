@@ -1,5 +1,6 @@
 from unittest import mock
 
+from django.conf import settings
 from django.contrib.auth.models import User
 
 from menu.impersonation import make_token, resolve_token
@@ -104,3 +105,49 @@ class ImpersonateConsumeTests(TenantTestCase):
         before = self.client.session.session_key
         self.consume(make_token(self.admin, self.company))
         self.assertNotEqual(self.client.session.session_key, before)
+
+
+class BannerAndExitTests(TenantTestCase):
+    def setUp(self):
+        super().setUp()
+        self.admin = User.objects.create_superuser('boss', 'b@x.io', 'pw')
+
+    def test_superuser_sees_banner_and_exit_on_dashboard(self):
+        self.client.force_login(self.admin)
+        resp = self.client.get('/dashboard/')
+        self.assertContains(resp, 'imp-bar')
+        self.assertContains(resp, 'Platform admin')
+        self.assertContains(resp, 'Test Co')            # company name in text
+        self.assertContains(resp, '/dashboard/impersonate/exit/')
+
+    def test_owner_and_manager_do_not_see_banner(self):
+        owner = User.objects.create_user('owner', 'o@x.io', 'pass')
+        self.make_owner(owner)
+        self.client.force_login(owner)
+        self.assertNotContains(self.client.get('/dashboard/'), 'imp-bar')
+
+        mgr = User.objects.create_user('mgr', 'm@x.io', 'pass')
+        self.make_manager(mgr)
+        self.client.force_login(mgr)
+        self.assertNotContains(self.client.get('/dashboard/'), 'imp-bar')
+
+    def test_exit_logs_out_and_redirects_to_apex_ops(self):
+        self.client.force_login(self.admin)
+        resp = self.client.post('/dashboard/impersonate/exit/')
+        self.assertEqual(resp.status_code, 302)
+        self.assertEqual(resp['Location'],
+                         f'http://{settings.BASE_DOMAIN}/platform/tenants')
+        self.assertNotIn('_auth_user_id', self.client.session)
+
+    def test_exit_get_405_and_anonymous_404(self):
+        self.client.force_login(self.admin)
+        self.assertEqual(
+            self.client.get('/dashboard/impersonate/exit/').status_code, 405)
+        self.client.post('/dashboard/logout/')
+        self.assertEqual(
+            self.client.post('/dashboard/impersonate/exit/').status_code, 404)
+
+    def test_imp_bar_rule_survives_the_tailwind_build(self):
+        from pathlib import Path
+        css = (Path(settings.BASE_DIR) / 'static/css/app.css').read_text()
+        self.assertRegex(css, r'[}{]\.imp-bar\{')

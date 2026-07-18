@@ -17,6 +17,14 @@
 </head>
 <body>
   {% block body %}
+  {% if request.user.is_superuser %}
+  <div class="imp-bar">
+    <span>Platform admin — viewing {{ request.company.name }}</span>
+    <form method="post" action="{% url 'dashboard:impersonate_exit' %}">{% csrf_token %}
+      <button type="submit">Exit</button>
+    </form>
+  </div>
+  {% endif %}
   <div class="app">
 
     <!-- sidebar -->

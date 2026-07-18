@@ -134,6 +134,20 @@ def impersonate(request):
     return redirect('dashboard:home')
 
 
+@require_POST
+def impersonate_exit(request):
+    """Banner Exit — drop the tenant-host session, return to the apex ops
+    panel. Requires an authenticated user; superuser not required (logout is
+    harmless and the ops panel re-gates on arrival)."""
+    if not request.user.is_authenticated:
+        raise Http404
+    logout(request)
+    host = request.get_host()
+    port = f":{host.split(':', 1)[1]}" if ':' in host else ''
+    return redirect(f'{request.scheme}://{django_settings.BASE_DOMAIN}{port}'
+                    f'/platform/tenants')
+
+
 @require_membership
 def overview(request):
     return render(request, 'dashboard/overview.html', {'active_tab': 'overview'})
