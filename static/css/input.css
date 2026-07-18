@@ -713,6 +713,11 @@ h1,h2,h3 { font-family: var(--hd); }
   .ops-error { background: #fee2e2; border: 1px solid #fca5a5; border-radius: 10px; padding: 10px 14px; margin-bottom: 12px; }
   .muted { color: var(--ink-3); font-size: 12.5px; }
 
+  /* platform-admin impersonation banner (dashboard/base.html) */
+  .imp-bar { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 7px 16px; background: var(--accent-soft); color: var(--accent-deep); font-size: 13px; font-weight: 600; border-bottom: 1px solid var(--line); }
+  .imp-bar form { margin: 0; }
+  .imp-bar button { font: inherit; font-size: 12px; padding: 3px 12px; border: 1px solid var(--accent-deep); border-radius: 8px; background: transparent; color: var(--accent-deep); cursor: pointer; }
+
   /* ══════════════════════════════════════════
      MOBILE DASHBOARD SHELL — <900px overrides.
      MUST stay at the END of @layer components: .side/.top overrides share
