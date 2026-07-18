@@ -6,6 +6,7 @@ from django.shortcuts import redirect, render
 from django.views.decorators.csrf import ensure_csrf_cookie
 from django.views.decorators.http import require_POST
 from .models import Branch, BranchAd, Category, BranchItemPlacement, BranchMenuItem, MenuItem, Table, Order, OrderItem, Company
+from .themes import DEFAULT_THEME, THEMES
 
 
 @ensure_csrf_cookie
@@ -90,14 +91,15 @@ def menu(request):
     layout = requested if requested in valid_layouts else (
         restaurant.menu_layout if restaurant else 'baseline')
 
-    valid_themes = {k for k, _ in Company.MENU_THEME_CHOICES}
     requested_theme = request.GET.get('theme', '')
-    if requested_theme in valid_themes:
+    if requested_theme in THEMES:
         theme = requested_theme
-    elif branch is not None and branch.menu_theme:
+    elif branch is not None and branch.menu_theme in THEMES:
         theme = branch.menu_theme
+    elif restaurant is not None and restaurant.menu_theme in THEMES:
+        theme = restaurant.menu_theme
     else:
-        theme = restaurant.menu_theme if restaurant else 'saffron'
+        theme = DEFAULT_THEME
 
     payload = {
         'restaurant': {

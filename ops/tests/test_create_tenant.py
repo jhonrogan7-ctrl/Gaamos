@@ -11,7 +11,7 @@ FORM = {
     'name': 'Momo Ghar', 'slug': 'momoghar', 'tagline': 'Best momo in Thamel',
     'phone': '9800000000', 'email': 'hi@momoghar.np',
     'instagram': '', 'facebook': '', 'tiktok': '',
-    'menu_theme': 'berry', 'menu_layout': 'tabs',
+    'menu_theme': 'cozy', 'menu_layout': 'tabs',
     'package': 'vip', 'status': 'active',
     'owner_username': 'momo-owner', 'owner_email': 'o@momoghar.np',
     'owner_password': '',   # blank → auto-generate
@@ -33,7 +33,7 @@ class OpsCreateTenantTests(TestCase):
         self.assertEqual(resp.status_code, 200)
         co = Company.objects.get(slug='momoghar')
         self.assertEqual(co.package, 'vip')
-        self.assertEqual(co.menu_theme, 'berry')
+        self.assertEqual(co.menu_theme, 'cozy')
         self.assertEqual(co.menu_layout, 'tabs')
         branch = Branch.all_objects.get(company=co)
         self.assertEqual(branch.name, 'Thamel')

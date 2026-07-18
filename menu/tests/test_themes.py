@@ -1,8 +1,11 @@
-"""Registry tests for the 6 guest-menu theme palettes (pure Python, no DB)."""
+"""Registry tests for the 6 guest-menu theme palettes + migration reset."""
 import re
 
+from django.apps import apps as live_apps
 from django.test import SimpleTestCase
 
+from menu.models import Branch, Company
+from menu.tests.base import TenantTestCase
 from menu.themes import (
     DEFAULT_THEME, GROUP_LABELS, THEME_CHOICES, THEMES, TOKEN_KEYS,
     get_theme, resolve_slug,
@@ -103,3 +106,18 @@ class ThemeContrastFloorsTest(SimpleTestCase):
             ratio = contrast(t.tokens['--price'], t.tokens['--paper'])
             self.assertGreaterEqual(
                 ratio, 3.0, f'{slug}: --price on --paper = {ratio:.2f}')
+
+
+class ThemeResetMigrationTest(TenantTestCase):
+    def test_reset_moves_every_company_and_branch_to_new_defaults(self):
+        import importlib
+        mig = importlib.import_module('menu.migrations.0012_guest_theme_palettes')
+        Company.objects.filter(pk=self.company.pk).update(menu_theme='saffron')
+        Branch.objects.create(company=self.company, name='Main', slug='main',
+                              address='X')
+        Branch.all_objects.filter(company=self.company).update(menu_theme='juice')
+        mig.reset_themes(live_apps, None)
+        self.company.refresh_from_db()
+        self.assertEqual(self.company.menu_theme, 'eco')
+        self.assertEqual(
+            Branch.all_objects.get(company=self.company).menu_theme, '')

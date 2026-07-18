@@ -233,15 +233,15 @@ class SettingsTest(TenantTestCase):
                              fetch_redirect_response=False)
 
     def test_theme_endpoint_saves_company_default(self):
-        response = self.client.post('/dashboard/settings/theme/', {'menu_theme': 'juice'})
+        response = self.client.post('/dashboard/settings/theme/', {'menu_theme': 'herbal'})
         self.company.refresh_from_db()
-        self.assertEqual(self.company.menu_theme, 'juice')
+        self.assertEqual(self.company.menu_theme, 'herbal')
         self.assertRedirects(response, '/dashboard/settings/', fetch_redirect_response=False)
 
     def test_theme_endpoint_rejects_invalid(self):
         self.client.post('/dashboard/settings/theme/', {'menu_theme': 'neon'})
         self.company.refresh_from_db()
-        self.assertEqual(self.company.menu_theme, 'saffron')
+        self.assertEqual(self.company.menu_theme, 'eco')
 
     def test_settings_no_longer_hosts_branch_management(self):
         body = self.client.get('/dashboard/settings/').content.decode()
@@ -272,11 +272,11 @@ class BranchManageTest(TenantTestCase):
     def test_add_saves_theme_override(self):
         self.client.login(username='own1', password='pass')
         self.client.post('/dashboard/branches/add/', {
-            'name': 'Patan', 'address': 'Mangal Bazaar', 'tag': '', 'menu_theme': 'berry'})
-        self.assertEqual(Branch.objects.get(name='Patan').menu_theme, 'berry')
+            'name': 'Patan', 'address': 'Mangal Bazaar', 'tag': '', 'menu_theme': 'cozy'})
+        self.assertEqual(Branch.objects.get(name='Patan').menu_theme, 'cozy')
 
     def test_edit_can_reset_to_company_default(self):
-        self.branch.menu_theme = 'juice'
+        self.branch.menu_theme = 'herbal'
         self.branch.save()
         self.client.login(username='own1', password='pass')
         self.client.post(f'/dashboard/branches/{self.branch.pk}/edit/', {

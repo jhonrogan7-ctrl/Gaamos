@@ -267,8 +267,8 @@ class MenuLayoutTest(TenantTestCase):
 
 class GuestThemeTest(TenantTestCase):
     def test_guest_html_carries_inline_theme_tokens(self):
-        # Company still holds a legacy slug until the Task-3 migration; the
-        # tag itself must already fall back to eco's tokens.
+        # The company default is eco; the resolved theme's full token set is
+        # emitted inline on the guest <html>.
         resp = self.client.get('/')
         body = resp.content.decode()
         self.assertIn('--brand:#2D6A4F', body)
@@ -276,39 +276,45 @@ class GuestThemeTest(TenantTestCase):
         self.assertIn('--grad:linear-gradient(135deg,#A3B18A,#2D6A4F)', body)
 
     def test_menu_uses_company_theme(self):
-        self.company.menu_theme = 'berry'
+        self.company.menu_theme = 'cozy'
         self.company.save()
         resp = self.client.get('/')
-        self.assertContains(resp, 'data-theme="berry"')
+        self.assertContains(resp, 'data-theme="cozy"')
+        self.assertContains(resp, '--brand:#8A6423')
 
     def test_theme_query_param_previews(self):
-        resp = self.client.get('/?theme=juice')
-        self.assertContains(resp, 'data-theme="juice"')
+        resp = self.client.get('/?theme=fastfood')
+        self.assertContains(resp, 'data-theme="fastfood"')
+        self.assertContains(resp, '--brand:#E53E3E')
 
     def test_invalid_theme_falls_back_to_company(self):
         resp = self.client.get('/?theme=neon')
-        self.assertContains(resp, 'data-theme="saffron"')
+        self.assertContains(resp, 'data-theme="eco"')
+
+    def test_legacy_stored_slug_falls_back_to_default(self):
+        # Rows can hold pre-migration slugs; resolution must degrade to eco.
+        Company.objects.filter(pk=self.company.pk).update(menu_theme='saffron')
+        resp = self.client.get('/')
+        self.assertContains(resp, 'data-theme="eco"')
+        self.assertContains(resp, '--brand:#2D6A4F')
 
     def test_branch_theme_overrides_company_default(self):
-        from menu.models import Branch
-        self.company.menu_theme = 'berry'
+        self.company.menu_theme = 'cozy'
         self.company.save()
         Branch.objects.create(company=self.company, name='Main', slug='main',
-                              address='X', menu_theme='juice')
+                              address='X', menu_theme='herbal')
         resp = self.client.get('/')
-        self.assertContains(resp, 'data-theme="juice"')
+        self.assertContains(resp, 'data-theme="herbal"')
 
     def test_branch_without_theme_inherits_company_default(self):
-        from menu.models import Branch
-        self.company.menu_theme = 'berry'
+        self.company.menu_theme = 'cozy'
         self.company.save()
         Branch.objects.create(company=self.company, name='Main', slug='main', address='X')
         resp = self.client.get('/')
-        self.assertContains(resp, 'data-theme="berry"')
+        self.assertContains(resp, 'data-theme="cozy"')
 
     def test_preview_param_beats_branch_theme(self):
-        from menu.models import Branch
         Branch.objects.create(company=self.company, name='Main', slug='main',
-                              address='X', menu_theme='juice')
-        resp = self.client.get('/?theme=saffron')
-        self.assertContains(resp, 'data-theme="saffron"')
+                              address='X', menu_theme='herbal')
+        resp = self.client.get('/?theme=eco')
+        self.assertContains(resp, 'data-theme="eco"')
