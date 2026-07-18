@@ -53,10 +53,10 @@ class SeedTestcoTest(TestCase):
     def _company(self):
         return Company.objects.get(slug='testco')
 
-    def test_seed_creates_danfe_house(self):
+    def test_seed_creates_your_cafe(self):
         call_command('seed_testco')
         company = self._company()
-        self.assertEqual(company.name, 'Danfe House Kitchen & Bar')
+        self.assertEqual(company.name, 'Your Café')
         self.assertEqual(Branch.all_objects.filter(company=company).count(), 2)
         self.assertEqual(Category.all_objects.filter(company=company).count(), 8)
         self.assertEqual(SubCategory.all_objects.filter(company=company).count(), 17)

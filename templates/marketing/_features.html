@@ -1,4 +1,4 @@
-{% load i18n %}
+{% load i18n static %}
 <section id="features" class="mk-wrap py-20">
   <div class="text-center max-w-2xl mx-auto mb-14">
     <div class="mk-eyebrow">{% translate "Features" %}</div>
@@ -81,7 +81,7 @@
       <div class="flex items-center justify-between mb-3 text-sm"><span class="font-semibold text-ink">{% translate "Table QRs · 1–12" %}</span><span class="text-accent font-semibold">{% translate "↓ Download all (PDF)" %}</span></div>
       <div class="grid grid-cols-4 gap-3">
         {% for t in table_qrs %}
-        <div class="text-center"><div class="aspect-square rounded-lg bg-ink"></div><div class="text-xs text-ink-3 mt-1">{% blocktranslate %}Table {{ t }}{% endblocktranslate %}</div></div>
+        <div class="text-center">{% with "images/landing/table-qrs/qr-"|add:t|add:".png" as qr_path %}<img src="{% static qr_path %}" alt="{% blocktranslate %}Table {{ t }} QR code{% endblocktranslate %}" class="aspect-square w-full rounded-lg border border-line bg-white p-1" width="174" height="174">{% endwith %}<div class="text-xs text-ink-3 mt-1">{% blocktranslate %}Table {{ t }}{% endblocktranslate %}</div></div>
         {% endfor %}
       </div>
     </div>
