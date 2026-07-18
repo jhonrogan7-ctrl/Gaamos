@@ -56,3 +56,28 @@ class OpsImpersonateIssueTests(TestCase):
         self.co.status = 'suspended'
         self.co.save(update_fields=['status'])
         self.assertEqual(self.issue(self.co.id).status_code, 404)
+
+
+class OpsTenantsLoginButtonTests(TestCase):
+    def setUp(self):
+        self.apex = {'HTTP_HOST': APEX}
+        self.client.force_login(
+            User.objects.create_superuser('boss', 'b@x.io', 'pw'))
+        self.co = Company.objects.create(name='Momo Ghar', slug='momoghar')
+
+    def test_login_button_in_both_table_and_cards(self):
+        body = self.client.get('/platform/tenants',
+                               **self.apex).content.decode()
+        action = f'/platform/tenants/{self.co.id}/impersonate'
+        self.assertEqual(body.count(action), 2)   # table row + card
+        table, cards = body.split('class="ops-cards"', 1)
+        self.assertIn(action, table)
+        self.assertIn(action, cards)
+        self.assertIn('Log in', body)
+
+    def test_no_login_button_for_suspended_tenant(self):
+        self.co.status = 'suspended'
+        self.co.save(update_fields=['status'])
+        body = self.client.get('/platform/tenants',
+                               **self.apex).content.decode()
+        self.assertNotIn(f'/platform/tenants/{self.co.id}/impersonate', body)

@@ -20,6 +20,11 @@
     <td>{{ c.branch_count }}</td>
     <td>{{ c.created_at|date:"Y-m-d" }}</td>
     <td style="white-space:nowrap">
+      {% if c.status == 'active' %}
+      <form method="post" action="{% url 'ops:tenant_impersonate' c.id %}" style="display:inline">{% csrf_token %}
+        <button class="btn btn-sm">Log in</button>
+      </form>
+      {% endif %}
       <form method="post" action="{% url 'ops:tenant_toggle' c.id %}" style="display:inline">{% csrf_token %}
         <button class="btn btn-sm ghost">{% if c.status == 'active' %}Suspend{% else %}Activate{% endif %}</button>
       </form>
@@ -41,6 +46,11 @@
     <div class="meta"><a href="https://{{ c.slug }}.{{ base_domain }}/" target="_blank" rel="noopener">{{ c.slug }}.{{ base_domain }}</a></div>
     <div class="meta">{{ c.get_status_display }} · {{ c.branch_count }} branch{{ c.branch_count|pluralize:"es" }} · created {{ c.created_at|date:"Y-m-d" }}</div>
     <div class="actions">
+      {% if c.status == 'active' %}
+      <form method="post" action="{% url 'ops:tenant_impersonate' c.id %}">{% csrf_token %}
+        <button class="btn btn-sm">Log in</button>
+      </form>
+      {% endif %}
       <form method="post" action="{% url 'ops:tenant_toggle' c.id %}">{% csrf_token %}
         <button class="btn btn-sm ghost">{% if c.status == 'active' %}Suspend{% else %}Activate{% endif %}</button>
       </form>
