@@ -1,4 +1,5 @@
 {% extends "dashboard/base.html" %}
+{% load theme_tags %}
 {% block title %}Settings{% endblock %}
 {% block page_title %}Settings{% endblock %}
 
@@ -77,23 +78,7 @@
       <div class="pb">
         <form method="post" action="{% url 'dashboard:settings_theme' %}">
           {% csrf_token %}
-          <div class="themes">
-            <button type="submit" name="menu_theme" value="saffron" class="theme {% if restaurant.menu_theme == 'saffron' %}on{% endif %}">
-              <div class="swatch"><span style="background:#ff9f1c"></span><span style="background:#e23744"></span><span style="background:#fff6e9"></span></div>
-              <div class="tn">Saffron Festival<span class="ck"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="4"><path d="M20 6 9 17l-5-5"/></svg></span></div>
-              <div class="td">Warm · festive · earthy</div>
-            </button>
-            <button type="submit" name="menu_theme" value="berry" class="theme {% if restaurant.menu_theme == 'berry' %}on{% endif %}">
-              <div class="swatch"><span style="background:#ec4899"></span><span style="background:#7c3aed"></span><span style="background:#f6f4ff"></span></div>
-              <div class="tn">Electric Berry<span class="ck"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="4"><path d="M20 6 9 17l-5-5"/></svg></span></div>
-              <div class="td">Bold · modern · vibrant</div>
-            </button>
-            <button type="submit" name="menu_theme" value="juice" class="theme {% if restaurant.menu_theme == 'juice' %}on{% endif %}">
-              <div class="swatch"><span style="background:#06b6d4"></span><span style="background:#ff3d71"></span><span style="background:#ffffff"></span></div>
-              <div class="tn">Tropical Juice<span class="ck"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="4"><path d="M20 6 9 17l-5-5"/></svg></span></div>
-              <div class="td">Fresh · cool · breezy</div>
-            </button>
-          </div>
+          {% theme_picker current=restaurant.menu_theme %}
         </form>
         <div class="fld help" style="margin-top:12px">Per-branch overrides live on the Branches screen. The Gaamos dashboard itself always stays on the fixed Saffron house brand.</div>
       </div>

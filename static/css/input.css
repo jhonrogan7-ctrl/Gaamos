@@ -307,6 +307,7 @@ h1,h2,h3 { font-family: var(--hd); }
 
   /* theme picker */
   .themes { display: grid; grid-template-columns: repeat(3,1fr); gap: 12px; }
+  .tgrp { grid-column: 1 / -1; font-size: 10.5px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; color: var(--ink-3); margin-top: 4px; }
   .theme { border: 2px solid var(--line-2); border-radius: 14px; padding: 12px; cursor: pointer; text-align: left; background: #fff; }
   .theme.on { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
   .theme .swatch { height: 46px; border-radius: 9px; margin-bottom: 10px; @apply flex; }

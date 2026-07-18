@@ -243,6 +243,16 @@ class SettingsTest(TenantTestCase):
         self.company.refresh_from_db()
         self.assertEqual(self.company.menu_theme, 'eco')
 
+    def test_settings_picker_renders_all_six_from_registry(self):
+        body = self.client.get('/dashboard/settings/').content.decode()
+        for label in ('Classic Fast Food', 'Citrus Charge', 'Energetic Contrast',
+                      'Ecological Clean', 'Gourmet Cozy', 'Natural Herbal'):
+            self.assertIn(label, body)
+        self.assertEqual(body.count('name="menu_theme"'), 6)
+        self.assertIn('Appetite Stimulators', body)
+        self.assertIn('Trust &amp; Comfort', body)
+        self.assertNotIn('Saffron Festival', body)
+
     def test_settings_no_longer_hosts_branch_management(self):
         body = self.client.get('/dashboard/settings/').content.decode()
         self.assertNotIn('branchManager()', body)
@@ -268,6 +278,13 @@ class BranchManageTest(TenantTestCase):
         self.make_owner(self.owner)
         self.branch = Branch.objects.create(
             company=self.company, name='Main', slug='main', address='Lakeside')
+
+    def test_branches_picker_offers_inherit_plus_six(self):
+        self.client.login(username='own1', password='pass')
+        body = self.client.get('/dashboard/branches/').content.decode()
+        self.assertEqual(body.count("@click=\"bTheme='"), 7)  # inherit + 6
+        self.assertIn('Company default', body)
+        self.assertIn('Appetite Stimulators', body)
 
     def test_add_saves_theme_override(self):
         self.client.login(username='own1', password='pass')

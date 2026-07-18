@@ -1,4 +1,5 @@
 {% extends 'dashboard/base.html' %}
+{% load theme_tags %}
 
 {% block page_title %}Branches{% endblock %}
 {% block subtitle %}{{ request.company.name }} · all locations{% endblock %}
@@ -63,28 +64,7 @@
         </select></div>
       <div class="fld"><label>Guest menu theme</label>
         <input type="hidden" name="menu_theme" :value="bTheme">
-        <div class="themes">
-          <button type="button" class="theme" :class="bTheme==='' && 'on'" @click="bTheme=''">
-            <div class="swatch"><span style="background:var(--line-2)"></span></div>
-            <div class="tn">Company default</div>
-            <div class="td">Inherit the venue theme</div>
-          </button>
-          <button type="button" class="theme" :class="bTheme==='saffron' && 'on'" @click="bTheme='saffron'">
-            <div class="swatch"><span style="background:#ff9f1c"></span><span style="background:#e23744"></span><span style="background:#fff6e9"></span></div>
-            <div class="tn">Saffron Festival</div>
-            <div class="td">Warm · festive · earthy</div>
-          </button>
-          <button type="button" class="theme" :class="bTheme==='berry' && 'on'" @click="bTheme='berry'">
-            <div class="swatch"><span style="background:#ec4899"></span><span style="background:#7c3aed"></span><span style="background:#f6f4ff"></span></div>
-            <div class="tn">Electric Berry</div>
-            <div class="td">Bold · modern · vibrant</div>
-          </button>
-          <button type="button" class="theme" :class="bTheme==='juice' && 'on'" @click="bTheme='juice'">
-            <div class="swatch"><span style="background:#06b6d4"></span><span style="background:#ff3d71"></span><span style="background:#ffffff"></span></div>
-            <div class="tn">Tropical Juice</div>
-            <div class="td">Fresh · cool · breezy</div>
-          </button>
-        </div></div>
+        {% theme_picker include_inherit=True alpine=True %}</div>
       <div style="margin-top:16px">
         <button type="submit" class="btn">Save</button>
       </div>
