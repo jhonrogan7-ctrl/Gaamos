@@ -12,33 +12,13 @@
   --accent-grad: linear-gradient(135deg,#ff9f1c,#e23744); --accent-ink: #fff;
   --green: #1f9d57; --green-soft: #e3f6ec; --amber: #c98a00; --amber-soft: #fdf0d4;
 }
-/* ── Guest themes (swap accents only; structure shared) ── */
-[data-theme="berry"] {
-  --accent: #7c3aed; --accent-deep: #5b21b6; --accent-soft: #ece2ff; --accent-ink: #fff;
-  --accent-grad: linear-gradient(140deg,#ec4899,#7c3aed);
-}
-[data-theme="juice"] {
-  --accent: #06b6d4; --accent-deep: #0e7490; --accent-soft: #d6f5fb; --accent-ink: #003540;
-  --accent-grad: linear-gradient(140deg,#ffb02e,#ff3d71);
-}
-/* ── Guest-only tokens (pages carry data-theme; dashboard does not).
-   The ported guest stylesheet keys off --brand*; alias it to the active theme
-   accent and supply the warm neutral surface, scoped so the cool dashboard
-   neutrals are never touched. ── */
+/* ── Guest structural defaults (colors arrive inline from menu/themes.py via
+   {% theme_style %}; pages carry data-theme + an inline token style, the
+   dashboard carries neither and stays on the :root house tokens). ── */
 [data-theme] {
-  --brand: var(--accent); --brand-deep: var(--accent-deep);
-  --brand-soft: var(--accent-soft); --brand-ink: var(--accent-ink);
-  --cream: #faf7f0; --paper: #f4efe3; --card: #fff;
-  --ink: #1c1a17; --ink-2: #5a574e; --ink-3: #9b968a;
-  --line: #ece6d8; --line-2: #dad2bf;
   --shadow-card: 0 1px 0 rgba(28,26,23,0.04), 0 8px 24px -12px rgba(28,26,23,0.12);
   --shadow-pop: 0 4px 12px -2px rgba(28,26,23,0.10), 0 20px 60px -20px rgba(28,26,23,0.25);
-  --price: #e23744;
 }
-/* Price colour per theme — must follow the generic [data-theme] block above
-   (same specificity; source order decides), unlike the --accent overrides. */
-[data-theme="berry"] { --price: #db2777; }
-[data-theme="juice"] { --price: #ff3d71; }
 body { font-family: var(--bd); }
 h1,h2,h3 { font-family: var(--hd); }
 
@@ -327,6 +307,7 @@ h1,h2,h3 { font-family: var(--hd); }
 
   /* theme picker */
   .themes { display: grid; grid-template-columns: repeat(3,1fr); gap: 12px; }
+  .tgrp { grid-column: 1 / -1; font-size: 10.5px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; color: var(--ink-3); margin-top: 4px; }
   .theme { border: 2px solid var(--line-2); border-radius: 14px; padding: 12px; cursor: pointer; text-align: left; background: #fff; }
   .theme.on { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
   .theme .swatch { height: 46px; border-radius: 9px; margin-bottom: 10px; @apply flex; }
@@ -762,8 +743,8 @@ html { scroll-behavior: smooth; }
 
 /* ══════════════════════════════════════════════════════════════════════
    GUEST MENU (ported from donor menu.css — qr_manu UX kept 1:1).
-   Colour layer keyed off --brand* which the [data-theme] block aliases to
-   the active theme accent (Saffron / Berry / Juice). ── */
+   Colour layer keyed off the --brand and --grad tokens emitted inline on
+   the guest <html> from menu/themes.py via the theme_style tag. ── */
 @keyframes shimmer { 0% { background-position: -400px 0; } 100% { background-position: 400px 0; } }
 [data-theme] body { margin: 0; padding: 0; background: var(--paper); color: var(--ink); font-family: 'Plus Jakarta Sans', system-ui, sans-serif; -webkit-font-smoothing: antialiased; min-height: 100vh; }
 
@@ -1578,15 +1559,15 @@ html { scroll-behavior: smooth; }
 .k-tag.spicy { color: #c0392b; background: #ffe0d6; }
 .k-tag.raw { color: #9d174d; background: #ffdcec; }
 .k-tag.pop { color: var(--brand-deep); background: var(--brand-soft); }
-.k-add { width: 44px; height: 44px; border-radius: 16px; border: none; background: var(--accent-grad, var(--brand)); color: #fff; font-size: 20px; font-weight: 700; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 6px 14px -4px var(--brand); flex-shrink: 0; }
+.k-add { width: 44px; height: 44px; border-radius: 16px; border: none; background: var(--grad, var(--brand)); color: #fff; font-size: 20px; font-weight: 700; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 6px 14px -4px var(--brand); flex-shrink: 0; }
 
-.k-btn { width: 100%; height: 52px; border-radius: 999px; border: none; background: var(--accent-grad, var(--brand)); color: #fff; font-family: var(--bd); font-size: 15px; font-weight: 700; display: flex; align-items: center; justify-content: center; gap: 10px; padding: 0 22px; cursor: pointer; box-shadow: 0 16px 34px -14px rgba(28,26,23,.5); white-space: nowrap; }
+.k-btn { width: 100%; height: 52px; border-radius: 999px; border: none; background: var(--grad, var(--brand)); color: #fff; font-family: var(--bd); font-size: 15px; font-weight: 700; display: flex; align-items: center; justify-content: center; gap: 10px; padding: 0 22px; cursor: pointer; box-shadow: 0 16px 34px -14px rgba(28,26,23,.5); white-space: nowrap; }
 .k-btn .pr { font-family: var(--hd); font-weight: 800; font-size: 17px; }
 .k-btn--ghost { background: transparent; color: var(--ink); border: 1.5px solid var(--line-2); box-shadow: none; }
 
 .k-qty { display: flex; align-items: center; gap: 8px; }
 .k-qty button { width: 44px; height: 44px; border-radius: 50%; border: 1px solid var(--line-2); background: var(--card); color: var(--ink); font-size: 19px; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-.k-qty button.p { background: var(--accent-grad, var(--brand)); color: #fff; border-color: transparent; box-shadow: 0 6px 14px -4px var(--brand); }
+.k-qty button.p { background: var(--grad, var(--brand)); color: #fff; border-color: transparent; box-shadow: 0 6px 14px -4px var(--brand); }
 .k-qty .n { font-family: var(--hd); font-weight: 800; font-size: 17px; min-width: 20px; text-align: center; color: var(--ink); }
 
 .k-pill { height: 40px; padding: 0 15px; border-radius: 999px; border: 1.5px solid var(--line-2); background: var(--card); color: var(--ink-2); font-size: 13px; font-weight: 700; display: inline-flex; align-items: center; gap: 6px; cursor: pointer; flex-shrink: 0; white-space: nowrap; }
@@ -1594,7 +1575,7 @@ html { scroll-behavior: smooth; }
 .k-pill .c { font-size: 10px; font-weight: 800; opacity: .65; }
 
 .g-mono { width: 44px; height: 44px; border-radius: 14px; flex-shrink: 0;
-  background: var(--accent-grad); color: #fff; font-family: var(--hd);
+  background: var(--grad, var(--brand)); color: #fff; font-family: var(--hd);
   font-weight: 800; font-size: 16px; display: flex; align-items: center;
   justify-content: center; box-shadow: 0 8px 18px -6px var(--brand); }
 .g-mono--lg { width: 70px; height: 70px; border-radius: 22px; font-size: 28px; }
@@ -1604,7 +1585,7 @@ html { scroll-behavior: smooth; }
 /* ── Order-placed confirmation screen (F11/F12), from menu-v2 wireframe ── */
 .ok-wrap { flex: 1; display: flex; flex-direction: column; padding: 0 16px; overflow: hidden; }
 .ok-head { text-align: center; padding: 26px 0 14px; }
-.ok-badge { width: 68px; height: 68px; border-radius: 22px; margin: 0 auto 14px; background: var(--accent-grad, var(--brand)); color: #fff; display: flex; align-items: center; justify-content: center; box-shadow: 0 16px 34px -14px rgba(28,26,23,.5); }
+.ok-badge { width: 68px; height: 68px; border-radius: 22px; margin: 0 auto 14px; background: var(--grad, var(--brand)); color: #fff; display: flex; align-items: center; justify-content: center; box-shadow: 0 16px 34px -14px rgba(28,26,23,.5); }
 .ok-badge svg { width: 34px; height: 34px; }
 .ok-head h1 { font-family: var(--hd); font-size: 22px; font-weight: 800; letter-spacing: -.02em; color: var(--ink); }
 .ok-head .num { font-family: var(--hd); font-size: 17px; font-weight: 800; color: var(--brand-deep); margin-top: 6px; }
@@ -1637,7 +1618,7 @@ html { scroll-behavior: smooth; }
 .vb-tab { display: inline-flex; align-items: center; gap: 7px; height: 44px; padding: 0 14px; border-radius: 999px; border: 1.5px solid var(--line-2); background: var(--card); color: var(--ink-2); font-size: 13px; font-weight: 700; flex-shrink: 0; white-space: nowrap; cursor: pointer; }
 .vb-tab svg { width: 16px; height: 16px; }
 .vb-tab .c { font-size: 10px; font-weight: 800; opacity: .6; }
-.vb-tab.on { background: var(--accent-grad, var(--brand)); color: #fff; border-color: transparent; box-shadow: 0 8px 16px -5px var(--brand); }
+.vb-tab.on { background: var(--grad, var(--brand)); color: #fff; border-color: transparent; box-shadow: 0 8px 16px -5px var(--brand); }
 .vb-tab.on .c { opacity: .85; }
 .vb-subrow { display: flex; gap: 6px; padding: 0 12px 10px; overflow-x: auto; scrollbar-width: none; }
 .vb-subrow::-webkit-scrollbar { display: none; }
@@ -1658,7 +1639,7 @@ html { scroll-behavior: smooth; }
 .vc-ti { position: relative; width: 44px; height: 44px; border-radius: 14px; background: #fff; color: var(--brand-deep); border: 1px solid var(--line); display: flex; align-items: center; justify-content: center; }
 .vc-ti svg { width: 20px; height: 20px; }
 .vc-ti .b { position: absolute; top: -4px; right: -4px; min-width: 16px; height: 16px; border-radius: 8px; background: var(--brand); color: #fff; font-size: 8.5px; font-weight: 800; display: flex; align-items: center; justify-content: center; padding: 0 4px; border: 1.5px solid var(--cream); }
-.vc-item.on .vc-ti { background: var(--accent-grad, var(--brand)); color: #fff; border-color: transparent; box-shadow: 0 8px 16px -5px var(--brand); }
+.vc-item.on .vc-ti { background: var(--grad, var(--brand)); color: #fff; border-color: transparent; box-shadow: 0 8px 16px -5px var(--brand); }
 .vc-lb { font-size: 8.5px; font-weight: 800; color: var(--ink); display: none; text-align: center; line-height: 1.1; max-width: 52px; }
 .vc-item.on .vc-lb { display: block; }
 .vc-main { flex: 1; display: flex; flex-direction: column; min-width: 0; background: var(--cream); }

@@ -23,6 +23,7 @@ from menu.permissions import (
 )
 from menu.imaging import compute_focal_point
 from menu.impersonation import resolve_token
+from menu.themes import THEMES
 
 logger = logging.getLogger(__name__)
 
@@ -515,7 +516,7 @@ def settings_restaurant(request):
 @require_POST
 def settings_theme(request):
     theme = request.POST.get('menu_theme', '')
-    if theme in {k for k, _ in Company.MENU_THEME_CHOICES}:
+    if theme in THEMES:
         request.company.menu_theme = theme
         request.company.save(update_fields=['menu_theme'])
     return redirect('dashboard:settings')
@@ -547,7 +548,7 @@ def branch_save(request, pk=None):
     address = request.POST.get('address', '').strip()
     tag = request.POST.get('tag', '').strip()
     theme = request.POST.get('menu_theme', '').strip()
-    if theme not in {k for k, _ in Company.MENU_THEME_CHOICES}:
+    if theme not in THEMES:
         theme = ''                                    # '' = inherit company default
     if not name:
         return redirect('dashboard:branches')

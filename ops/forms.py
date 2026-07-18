@@ -7,6 +7,7 @@ from django.db import transaction
 
 from menu.models import Branch, Company, Membership
 from menu.slugs import validate_subdomain_slug
+from menu.themes import DEFAULT_THEME
 
 
 class TenantCreateForm(forms.Form):
@@ -21,7 +22,7 @@ class TenantCreateForm(forms.Form):
     tiktok = forms.CharField(max_length=120, required=False)
     # look
     menu_theme = forms.ChoiceField(choices=Company.MENU_THEME_CHOICES,
-                                   initial='saffron', label='Menu theme')
+                                   initial=DEFAULT_THEME, label='Menu theme')
     menu_layout = forms.ChoiceField(choices=Company.MENU_LAYOUT_CHOICES,
                                     initial='baseline', label='Menu layout')
     # commercial

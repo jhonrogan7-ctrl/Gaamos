@@ -1,0 +1,25 @@
+<div class="themes">
+  {% if include_inherit %}
+  <button type="button" class="theme" :class="bTheme==='' && 'on'" @click="bTheme=''">
+    <div class="swatch"><span style="background:var(--line-2)"></span></div>
+    <div class="tn">Company default</div>
+    <div class="td">Inherit the venue theme</div>
+  </button>
+  {% endif %}
+  {% for t in themes %}
+  {% ifchanged t.group %}<div class="tgrp">{{ t.group_label }}</div>{% endifchanged %}
+  {% if alpine %}
+  <button type="button" class="theme" :class="bTheme==='{{ t.slug }}' && 'on'" @click="bTheme='{{ t.slug }}'">
+    <div class="swatch">{% for c in t.swatch %}<span style="background:{{ c }}"></span>{% endfor %}</div>
+    <div class="tn">{{ t.label }}</div>
+    <div class="td">{{ t.tagline }}</div>
+  </button>
+  {% else %}
+  <button type="submit" name="menu_theme" value="{{ t.slug }}" class="theme {% if current == t.slug %}on{% endif %}">
+    <div class="swatch">{% for c in t.swatch %}<span style="background:{{ c }}"></span>{% endfor %}</div>
+    <div class="tn">{{ t.label }}<span class="ck"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="4"><path d="M20 6 9 17l-5-5"/></svg></span></div>
+    <div class="td">{{ t.tagline }}</div>
+  </button>
+  {% endif %}
+  {% endfor %}
+</div>
