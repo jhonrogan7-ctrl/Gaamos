@@ -38,7 +38,11 @@ class Command(BaseCommand):
             f = r['fields']
             canon.setdefault(f['menu_item'], (f['category'], f.get('sub_category')))
 
-        # keep only items whose thumbnail file is present; copy those files
+        # keep only items whose thumbnail file is present; copy those files.
+        # `order` is the donor-dump position (verified monotonic for this data,
+        # so relative order within each subcategory is preserved) — not the
+        # donor's branchitemplacement.display_order. A future regeneration
+        # against reordered donor data should switch to display_order.
         STATIC_THUMBS.mkdir(parents=True, exist_ok=True)
         kept_items, used_sub_keys, used_cat_slugs = [], set(), set()
         for order, r in enumerate(by_model['menuitem']):
