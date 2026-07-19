@@ -1,0 +1,3540 @@
+{
+  "company": {
+    "name": "The Juicery Cafe",
+    "tagline": "Taste True Wellness",
+    "phone": "+977-9823781787",
+    "email": "info@thejuicerycafe.com.np",
+    "instagram": "https://instagram.com/juicerycafe",
+    "facebook": "https://facebook.com/juicerycafe",
+    "tiktok": "https://www.tiktok.com/@juicerycafe"
+  },
+  "categories": [
+    {
+      "slug": "brunch",
+      "name": "Brunch",
+      "icon_key": "brunch",
+      "hours_note": "Served till 4 pm",
+      "display_order": 1,
+      "subcategories": [
+        {
+          "name": "All Day Breakfast",
+          "icon_key": "subAll",
+          "display_order": 0
+        },
+        {
+          "name": "Poke Bowls",
+          "icon_key": "subAll",
+          "display_order": 12
+        }
+      ]
+    },
+    {
+      "slug": "smoothie-bowl",
+      "name": "Smoothie Bowl",
+      "icon_key": "bowl",
+      "hours_note": "",
+      "display_order": 2,
+      "subcategories": []
+    },
+    {
+      "slug": "special-menu",
+      "name": "Special Menu",
+      "icon_key": "special",
+      "hours_note": "",
+      "display_order": 3,
+      "subcategories": []
+    },
+    {
+      "slug": "drinks",
+      "name": "Drinks",
+      "icon_key": "juice",
+      "hours_note": "",
+      "display_order": 4,
+      "subcategories": [
+        {
+          "name": "Coffee",
+          "icon_key": "subAll",
+          "display_order": 1
+        },
+        {
+          "name": "Tea",
+          "icon_key": "subAll",
+          "display_order": 2
+        },
+        {
+          "name": "Kombucha",
+          "icon_key": "subAll",
+          "display_order": 3
+        },
+        {
+          "name": "Smoothie",
+          "icon_key": "subAll",
+          "display_order": 4
+        },
+        {
+          "name": "Juice",
+          "icon_key": "subAll",
+          "display_order": 5
+        },
+        {
+          "name": "The Bucket list",
+          "icon_key": "subAll",
+          "display_order": 6
+        },
+        {
+          "name": "Frappe",
+          "icon_key": "subAll",
+          "display_order": 7
+        },
+        {
+          "name": "Bubble Tea",
+          "icon_key": "subAll",
+          "display_order": 8
+        },
+        {
+          "name": "Mocktails",
+          "icon_key": "subAll",
+          "display_order": 9
+        },
+        {
+          "name": "Soft Drinks",
+          "icon_key": "subAll",
+          "display_order": 10
+        },
+        {
+          "name": "Shot",
+          "icon_key": "subAll",
+          "display_order": 11
+        }
+      ]
+    },
+    {
+      "slug": "dinner",
+      "name": "Dinner",
+      "icon_key": "dinner",
+      "hours_note": "Served from 5 pm",
+      "display_order": 5,
+      "subcategories": [
+        {
+          "name": "Entree",
+          "icon_key": "subAll",
+          "display_order": 1
+        },
+        {
+          "name": "Pasta",
+          "icon_key": "subAll",
+          "display_order": 2
+        },
+        {
+          "name": "Salads",
+          "icon_key": "subAll",
+          "display_order": 3
+        },
+        {
+          "name": "Burger",
+          "icon_key": "subAll",
+          "display_order": 4
+        },
+        {
+          "name": "Sandwich",
+          "icon_key": "subAll",
+          "display_order": 5
+        },
+        {
+          "name": "Wraps",
+          "icon_key": "subAll",
+          "display_order": 7
+        },
+        {
+          "name": "Pizza",
+          "icon_key": "subAll",
+          "display_order": 8
+        },
+        {
+          "name": "Soups",
+          "icon_key": "subAll",
+          "display_order": 9
+        },
+        {
+          "name": "Mains",
+          "icon_key": "subAll",
+          "display_order": 10
+        },
+        {
+          "name": "Noodle",
+          "icon_key": "subAll",
+          "display_order": 11
+        }
+      ]
+    },
+    {
+      "slug": "bar",
+      "name": "Bar",
+      "icon_key": "bar",
+      "hours_note": "",
+      "display_order": 6,
+      "subcategories": [
+        {
+          "name": "Signnature Cocktails",
+          "icon_key": "subAll",
+          "display_order": 0
+        },
+        {
+          "name": "Cocktails",
+          "icon_key": "subAll",
+          "display_order": 1
+        },
+        {
+          "name": "Winter Warmer",
+          "icon_key": "subAll",
+          "display_order": 2
+        },
+        {
+          "name": "Bottled Beer",
+          "icon_key": "subAll",
+          "display_order": 3
+        },
+        {
+          "name": "Crafted tap Beer",
+          "icon_key": "subAll",
+          "display_order": 4
+        },
+        {
+          "name": "Local Spirits",
+          "icon_key": "subAll",
+          "display_order": 5
+        },
+        {
+          "name": "Imported Spirits",
+          "icon_key": "subAll",
+          "display_order": 6
+        },
+        {
+          "name": "House Wine",
+          "icon_key": "subAll",
+          "display_order": 7
+        },
+        {
+          "name": "White Wine",
+          "icon_key": "subAll",
+          "display_order": 8
+        },
+        {
+          "name": "Red Wine",
+          "icon_key": "subAll",
+          "display_order": 9
+        },
+        {
+          "name": "Sparkle",
+          "icon_key": "subAll",
+          "display_order": 10
+        }
+      ]
+    },
+    {
+      "slug": "hookah",
+      "name": "Hookah",
+      "icon_key": "hookah",
+      "hours_note": "",
+      "display_order": 7,
+      "subcategories": []
+    },
+    {
+      "slug": "deserts",
+      "name": "Deserts",
+      "icon_key": "dessert",
+      "hours_note": "",
+      "display_order": 8,
+      "subcategories": []
+    }
+  ],
+  "items": [
+    {
+      "slug": "avo-smash",
+      "name": "Avo Smash",
+      "description": "Avo, sun-dried tomatoes, beets hummus, chia seeds, your style of egg, dressed leaves",
+      "price": 590,
+      "tags": [
+        "VEG"
+      ],
+      "image": "/static/seed/showcase/thumbs/item_0001_avo-smash.webp",
+      "popular": false,
+      "featured": false,
+      "cat": "brunch",
+      "sub": "All Day Breakfast",
+      "order": 0
+    },
+    {
+      "slug": "basil-crab-omelette",
+      "name": "Basil Crab Omelette",
+      "description": "Fresh basil, omelette, crab strips, tomato, olive, spinach",
+      "price": 690,
+      "tags": [
+        "NON-VEG"
+      ],
+      "image": "/static/seed/showcase/thumbs/item_0002_basil-crab-omelette.webp",
+      "popular": false,
+      "featured": false,
+      "cat": "brunch",
+      "sub": "All Day Breakfast",
+      "order": 1
+    },
+    {
+      "slug": "bombay-breakie",
+      "name": "Bombay Breakie",
+      "description": "Scrambled egg w/chillie, peas, corridor, spices, goat cheese, fried shallots, mango chutney, mint yogurt, sourdough",
+      "price": 730,
+      "tags": [
+        "VEG"
+      ],
+      "image": "/static/seed/showcase/thumbs/item_0003_bombay-breakie.webp",
+      "popular": false,
+      "featured": false,
+      "cat": "brunch",
+      "sub": "All Day Breakfast",
+      "order": 2
+    },
+    {
+      "slug": "coconut-chai-puddingvg",
+      "name": "Coconut Chai Pudding[VG]",
+      "description": "Chia seeds, coconut milk, mango puree, granola, fresh fruits",
+      "price": 490,
+      "tags": [
+        "VEG"
+      ],
+      "image": "/static/seed/showcase/thumbs/item_0004_coconut-chai-puddingvg.webp",
+      "popular": false,
+      "featured": false,
+      "cat": "brunch",
+      "sub": "All Day Breakfast",
+      "order": 3
+    },
+    {
+      "slug": "egg-benny-with-bbqed-mushroom",
+      "name": "Egg Benny with BBQED Mushroom",
+      "description": "Poached egg, wilted spinach, Hash browns, hollandsaise sauce w/mixed mushroom",
+      "price": 700,
+      "tags": [
+        "VEG"
+      ],
+      "image": "/static/seed/showcase/thumbs/item_0005_egg-benny-with-bbqed-mushroom.webp",
+      "popular": false,
+      "featured": false,
+      "cat": "brunch",
+      "sub": "All Day Breakfast",
+      "order": 4
+    },
+    {
+      "slug": "egg-benny-with-halal-buff",
+      "name": "Egg Benny with Halal Buff",
+      "description": "Poached egg, wilted spinach, Hash browns, hollandsaise sauce w/slow cooked halal buff",
+      "price": 750,
+      "tags": [
+        "NON-VEG",
+        "HALAL"
+      ],
+      "image": "/static/seed/showcase/thumbs/item_0006_egg-benny-with-halal-buff.webp",
+      "popular": false,
+      "featured": false,
+      "cat": "brunch",
+      "sub": "All Day Breakfast",
+      "order": 5
+    },
+    {
+      "slug": "egg-benny-with-halal-lamb",
+      "name": "Egg Benny with Halal Lamb",
+      "description": "Poached egg, wilted spinach, Hash browns, hollandaise sauce w/slow cooked halal lamb",
+      "price": 990,
+      "tags": [
+        "NON-VEG",
+        "HALAL"
+      ],
+      "image": "/static/seed/showcase/thumbs/item_0007_egg-benny-with-halal-lamb.webp",
+      "popular": false,
+      "featured": false,
+      "cat": "brunch",
+      "sub": "All Day Breakfast",
+      "order": 6
+    },
+    {
+      "slug": "egg-benny-with-smoked-salmon",
+      "name": "Egg Benny with Smoked Salmon",
+      "description": "Poached egg, wilted spinach \nHash browns, hollandsaise sauce w/smoked salmon",
+      "price": 1050,
+      "tags": [
+        "NON-VEG"
+      ],
+      "image": "/static/seed/showcase/thumbs/item_0008_egg-benny-with-smoked-salmon.webp",
+      "popular": false,
+      "featured": false,
+      "cat": "brunch",
+      "sub": "All Day Breakfast",
+      "order": 7
+    },
+    {
+      "slug": "eggs-your-way",
+      "name": "Eggs Your Way",
+      "description": "Organic sourdough, butter and spreads, eggs your style",
+      "price": 400,
+      "tags": [
+        "VEG"
+      ],
+      "image": "/static/seed/showcase/thumbs/item_0009_eggs-your-way.webp",
+      "popular": false,
+      "featured": false,
+      "cat": "brunch",
+      "sub": "All Day Breakfast",
+      "order": 8
+    },
+    {
+      "slug": "french-toast",
+      "name": "French Toast",
+      "description": "W/Caramelized banana, slated caramel, fruits, strawberry coulis, candid almonds",
+      "price": 530,
+      "tags": [
+        "VEG"
+      ],
+      "image": "/static/seed/showcase/thumbs/item_0010_french-toast.webp",
+      "popular": false,
+      "featured": false,
+      "cat": "brunch",
+      "sub": "All Day Breakfast",
+      "order": 9
+    },
+    {
+      "slug": "goat-cheese-frittata",
+      "name": "Goat Cheese Frittata",
+      "description": "Tomato, halal chicken sausage, bell pepper, sautéed potato, goat cheese",
+      "price": 750,
+      "tags": [
+        "NON-VEG",
+        "HALAL"
+      ],
+      "image": "/static/seed/showcase/thumbs/item_0011_goat-cheese-frittata.webp",
+      "popular": false,
+      "featured": false,
+      "cat": "brunch",
+      "sub": "All Day Breakfast",
+      "order": 10
+    },
+    {
+      "slug": "gramma-shakshuka",
+      "name": "Gramma Shakshuka",
+      "description": "Eggs poached in a thick slow cooked tomato strew, topped with feta, olives, cilantro and parsley w/sourdough",
+      "price": 550,
+      "tags": [
+        "VEG"
+      ],
+      "image": "/static/seed/showcase/thumbs/item_0012_gramma-shakshuka.webp",
+      "popular": false,
+      "featured": false,
+      "cat": "brunch",
+      "sub": "All Day Breakfast",
+      "order": 11
+    },
+    {
+      "slug": "juicerys-big-brekkie",
+      "name": "Juicery's Big Brekkie",
+      "description": "Sourdough, braised halal chicken, baked beans, sausage with herbs, wilted spinach, avocado, sun dried tomato, egg ur style",
+      "price": 890,
+      "tags": [
+        "NON-VEG",
+        "HALAL"
+      ],
+      "image": "/static/seed/showcase/thumbs/item_0013_juicerys-big-brekkie.webp",
+      "popular": false,
+      "featured": false,
+      "cat": "brunch",
+      "sub": "All Day Breakfast",
+      "order": 12
+    },
+    {
+      "slug": "lemon-ricotta-hotcake",
+      "name": "Lemon Ricotta Hotcake",
+      "description": "w/lemon curd, raw honey, caramelized apple",
+      "price": 530,
+      "tags": [
+        "VEG"
+      ],
+      "image": "/static/seed/showcase/thumbs/item_0014_lemon-ricotta-hotcake.webp",
+      "popular": false,
+      "featured": false,
+      "cat": "brunch",
+      "sub": "All Day Breakfast",
+      "order": 13
+    },
+    {
+      "slug": "maple-granola",
+      "name": "Maple Granola",
+      "description": "Poached pear, homemade maple granola, yogurt, fresh fruits",
+      "price": 550,
+      "tags": [
+        "VEG"
+      ],
+      "image": "/static/seed/showcase/thumbs/item_0015_maple-granola.webp",
+      "popular": false,
+      "featured": false,
+      "cat": "brunch",
+      "sub": "All Day Breakfast",
+      "order": 14
+    },
+    {
+      "slug": "mediterranean-humus-plate",
+      "name": "Mediterranean Humus Plate",
+      "description": "Humus, cucumber, marinated olives, tomatoes, feta, flat bread",
+      "price": 720,
+      "tags": [
+        "VEG"
+      ],
+      "image": "/static/seed/showcase/thumbs/item_0016_mediterranean-humus-plate.webp",
+      "popular": false,
+      "featured": false,
+      "cat": "brunch",
+      "sub": "All Day Breakfast",
+      "order": 15
+    },
+    {
+      "slug": "millet-pancakevg",
+      "name": "Millet Pancake[VG]",
+      "description": "Organic millet, salted caramel, fruits, caramelized banana, almonds",
+      "price": 530,
+      "tags": [
+        "VEG"
+      ],
+      "image": "/static/seed/showcase/thumbs/item_0017_millet-pancakevg.webp",
+      "popular": false,
+      "featured": false,
+      "cat": "brunch",
+      "sub": "All Day Breakfast",
+      "order": 16
+    },
+    {
+      "slug": "pesto-bruschetta",
+      "name": "Pesto Bruschetta",
+      "description": "Pesto, roasted tomato, bufflo mozzarella, fresh basil",
+      "price": 620,
+      "tags": [
+        "VEG"
+      ],
+      "image": "/static/seed/showcase/thumbs/item_0018_pesto-bruschetta.webp",
+      "popular": false,
+      "featured": false,
+      "cat": "brunch",
+      "sub": "All Day Breakfast",
+      "order": 17
+    },
+    {
+      "slug": "tomato-and-cheese-croissant",
+      "name": "Tomato and Cheese Croissant",
+      "description": "Cheese, tomato, capers, parsley",
+      "price": 470,
+      "tags": [
+        "VEG"
+      ],
+      "image": "/static/seed/showcase/thumbs/item_0019_tomato-and-cheese-croissant.webp",
+      "popular": false,
+      "featured": false,
+      "cat": "brunch",
+      "sub": "All Day Breakfast",
+      "order": 18
+    },
+    {
+      "slug": "vegan-breakfast-board",
+      "name": "Vegan Breakfast Board",
+      "description": "Small bowl of fruits, avo, baked beans, sourdough, sundried tomato, shots of your choice, energy ball",
+      "price": 790,
+      "tags": [
+        "VEG"
+      ],
+      "image": "/static/seed/showcase/thumbs/item_0020_vegan-breakfast-board.webp",
+      "popular": false,
+      "featured": false,
+      "cat": "brunch",
+      "sub": "All Day Breakfast",
+      "order": 19
+    },
+    {
+      "slug": "vegan-vanilla-porridgevg",
+      "name": "Vegan Vanilla Porridge[vg]",
+      "description": "Oat porridge w/caramelized pear, berry coulis, nut granola, fresh fruits",
+      "price": 490,
+      "tags": [
+        "VEG"
+      ],
+      "image": "/static/seed/showcase/thumbs/item_0021_vegan-vanilla-porridgevg.webp",
+      "popular": false,
+      "featured": false,
+      "cat": "brunch",
+      "sub": "All Day Breakfast",
+      "order": 20
+    },
+    {
+      "slug": "wild-mushrooms",
+      "name": "Wild Mushrooms",
+      "description": "Sautéed mixed mushrooms, spinach, yak cheese, herbs, poached egg, sourdough bread",
+      "price": 550,
+      "tags": [
+        "VEG"
+      ],
+      "image": "/static/seed/showcase/thumbs/item_0022_wild-mushrooms.webp",
+      "popular": false,
+      "featured": false,
+      "cat": "brunch",
+      "sub": "All Day Breakfast",
+      "order": 21
+    },
+    {
+      "slug": "chicken-mushroom-carbonara",
+      "name": "Chicken & Mushroom Carbonara",
+      "description": "Halal chicken, mushroom, parmesan cheese",
+      "price": 790,
+      "tags": [
+        "NON-VEG",
+        "HALAL"
+      ],
+      "image": "/static/seed/showcase/thumbs/item_0023_chicken-mushroom-carbonara.webp",
+      "popular": false,
+      "featured": false,
+      "cat": "dinner",
+      "sub": "Pasta",
+      "order": 22
+    },
+    {
+      "slug": "pesto-mint-pea-spaghetti",
+      "name": "Pesto & Mint Pea Spaghetti",
+      "description": "Young peas, pesto, mint, lime, spaghetti, Parmesan cheese",
+      "price": 690,
+      "tags": [
+        "NON-VEG"
+      ],
+      "image": "/static/seed/showcase/thumbs/item_0024_pesto-mint-pea-spaghetti.webp",
+      "popular": false,
+      "featured": false,
+      "cat": "dinner",
+      "sub": "Pasta",
+      "order": 23
+    },
+    {
+      "slug": "seafood-spaghetti",
+      "name": "Seafood Spaghetti",
+      "description": "Seafood,confit garlic, tomato ragu, sundried tomato, rocket",
+      "price": 850,
+      "tags": [
+        "NON-VEG"
+      ],
+      "image": "/static/seed/showcase/thumbs/item_0025_seafood-spaghetti.webp",
+      "popular": false,
+      "featured": false,
+      "cat": "dinner",
+      "sub": "Pasta",
+      "order": 24
+    },
+    {
+      "slug": "spaghetti-aglio-olio",
+      "name": "Spaghetti Aglio Olio",
+      "description": "Olive oil, chilli flakes, garlic, parsley, parmesan cheese",
+      "price": 550,
+      "tags": [
+        "NON-VEG"
+      ],
+      "image": "/static/seed/showcase/thumbs/item_0026_spaghetti-aglio-olio.webp",
+      "popular": false,
+      "featured": false,
+      "cat": "dinner",
+      "sub": "Pasta",
+      "order": 25
+    },
+    {
+      "slug": "spaghetti-bolognese",
+      "name": "Spaghetti Bolognese",
+      "description": "Homemade halal meatballs, tomato rugu, parsley, Parmesan cheese",
+      "price": 720,
+      "tags": [
+        "NON-VEG",
+        "HALAL"
+      ],
+      "image": "/static/seed/showcase/thumbs/item_0027_spaghetti-bolognese.webp",
+      "popular": false,
+      "featured": false,
+      "cat": "dinner",
+      "sub": "Pasta",
+      "order": 26
+    },
+    {
+      "slug": "avocado-salad",
+      "name": "Avocado Salad",
+      "description": "Avocado cupp, mixed greens, quinoa, yak cheese, sun dried tomato, poached egg (serve with sourdough toast)",
+      "price": 690,
+      "tags": [
+        "VEG"
+      ],
+      "image": "/static/seed/showcase/thumbs/item_0028_avocado-salad.webp",
+      "popular": false,
+      "featured": false,
+      "cat": "dinner",
+      "sub": "Salads",
+      "order": 27
+    },
+    {
+      "slug": "caesar-salad-halal-chicken",
+      "name": "Caesar Salad Halal Chicken",
+      "description": "Crouton, lettuce, poached egg, Dijon parmesan dressing, halal chicken ( served with sourdough toast )",
+      "price": 650,
+      "tags": [
+        "NON-VEG",
+        "HALAL"
+      ],
+      "image": "/static/seed/showcase/thumbs/item_0029_caesar-salad-halal-chicken.webp",
+      "popular": false,
+      "featured": false,
+      "cat": "dinner",
+      "sub": "Salads",
+      "order": 28
+    },
+    {
+      "slug": "caesar-salad-veg",
+      "name": "Caesar Salad [veg]",
+      "description": "Crouton, lettuce, poached egg, Dijon parmesan dressing (served with sourdough toast)",
+      "price": 550,
+      "tags": [
+        "VEG"
+      ],
+      "image": "/static/seed/showcase/thumbs/item_0030_caesar-salad-veg.webp",
+      "popular": false,
+      "featured": false,
+      "cat": "dinner",
+      "sub": "Salads",
+      "order": 29
+    },
+    {
+      "slug": "poached-pear-goat-cheese-salad",
+      "name": "Poached Pear & Goat Cheese Salad",
+      "description": "Poached pear, mixed greens, quinoa, goat cheese, walnut (served with sourdough toast)",
+      "price": 750,
+      "tags": [
+        "VEG"
+      ],
+      "image": "/static/seed/showcase/thumbs/item_0031_poached-pear-goat-cheese-salad.webp",
+      "popular": false,
+      "featured": false,
+      "cat": "dinner",
+      "sub": "Salads",
+      "order": 30
+    },
+    {
+      "slug": "potato-salad",
+      "name": "Potato Salad",
+      "description": "New potato, capers, herbs, Dijon mayo with side pear and pomegranate salad (served with sourdough toast)",
+      "price": 550,
+      "tags": [
+        "VEG"
+      ],
+      "image": "/static/seed/showcase/thumbs/item_0032_potato-salad.webp",
+      "popular": false,
+      "featured": false,
+      "cat": "dinner",
+      "sub": "Salads",
+      "order": 31
+    },
+    {
+      "slug": "roasted-beets-salad",
+      "name": "Roasted Beets Salad",
+      "description": "Beets, walnuts, feta, rocket, cress, oregano (served with sourdough toast)",
+      "price": 590,
+      "tags": [
+        "VEG"
+      ],
+      "image": "/static/seed/showcase/thumbs/item_0033_roasted-beets-salad.webp",
+      "popular": false,
+      "featured": false,
+      "cat": "dinner",
+      "sub": "Salads",
+      "order": 32
+    },
+    {
+      "slug": "roasted-veg-salad",
+      "name": "Roasted Veg Salad",
+      "description": "Root vegs, cofit garlic, grilled panner cheese, sun-dried tomato, basil (served with sourdough toast)",
+      "price": 590,
+      "tags": [
+        "VEG"
+      ],
+      "image": "/static/seed/showcase/thumbs/item_0034_roasted-veg-salad.webp",
+      "popular": false,
+      "featured": false,
+      "cat": "dinner",
+      "sub": "Salads",
+      "order": 33
+    },
+    {
+      "slug": "thai-buff-salad",
+      "name": "Thai Buff Salad",
+      "description": "Marinated halal beef, cucumber, onion, tomato, basil, min, chilli, Thai dressing ( served with sourdough toast )",
+      "price": 650,
+      "tags": [
+        "NON-VEG",
+        "HALAL"
+      ],
+      "image": "/static/seed/showcase/thumbs/item_0035_thai-buff-salad.webp",
+      "popular": false,
+      "featured": false,
+      "cat": "dinner",
+      "sub": "Salads",
+      "order": 34
+    },
+    {
+      "slug": "the-greek-village-salad",
+      "name": "The Greek Village Salad",
+      "description": "Cucumber, tomatoes, sun dried tomatoes, red onion, olives, lettuces, feta, house dressing (served with sourdough toast)",
+      "price": 550,
+      "tags": [
+        "VEG"
+      ],
+      "image": "/static/seed/showcase/thumbs/item_0036_the-greek-village-salad.webp",
+      "popular": false,
+      "featured": false,
+      "cat": "dinner",
+      "sub": "Salads",
+      "order": 35
+    },
+    {
+      "slug": "tofu-vermicelli-saladvg",
+      "name": "Tofu Vermicelli Salad[VG]",
+      "description": "Marinated tofu, vermicelli, cucumber, tomato, onion, chilli, sesame seeds, Thai peanut dressing (served with sourdough toast)",
+      "price": 520,
+      "tags": [
+        "VEG"
+      ],
+      "image": "/static/seed/showcase/thumbs/item_0037_tofu-vermicelli-saladvg.webp",
+      "popular": false,
+      "featured": false,
+      "cat": "dinner",
+      "sub": "Salads",
+      "order": 36
+    },
+    {
+      "slug": "beast-burger",
+      "name": "Beast Burger",
+      "description": "Halal buff patty, tomato, lettuces, sunny egg, onion jam, pickles, melted cheese, slaw, sriracha mayo - served with chips",
+      "price": 720,
+      "tags": [
+        "NON-VEG",
+        "HALAL"
+      ],
+      "image": "/static/seed/showcase/thumbs/item_0038_beast-burger.webp",
+      "popular": false,
+      "featured": false,
+      "cat": "dinner",
+      "sub": "Burger",
+      "order": 37
+    },
+    {
+      "slug": "chicken-burger",
+      "name": "Chicken Burger",
+      "description": "Japanese style fried chicken, gojijang mayo, lettuces, tomato- served with chips",
+      "price": 690,
+      "tags": [
+        "NON-VEG"
+      ],
+      "image": "/static/seed/showcase/thumbs/item_0039_chicken-burger.webp",
+      "popular": false,
+      "featured": false,
+      "cat": "dinner",
+      "sub": "Burger",
+      "order": 38
+    },
+    {
+      "slug": "portmans-fish-burger",
+      "name": "Portman's Fish Burger",
+      "description": "Battered fish, tartar sauce, lettuces, tomato - served with chips",
+      "price": 690,
+      "tags": [
+        "NON-VEG"
+      ],
+      "image": "/static/seed/showcase/thumbs/item_0040_portmans-fish-burger.webp",
+      "popular": false,
+      "featured": false,
+      "cat": "dinner",
+      "sub": "Burger",
+      "order": 39
+    },
+    {
+      "slug": "veg-bhaji-burger",
+      "name": "Veg Bhaji Burger",
+      "description": "Veg petty, jalapeno, mint yogurt, mango chutney , papad , slaw, corianders, sriracha mayo- served with chips",
+      "price": 590,
+      "tags": [
+        "VEG"
+      ],
+      "image": "/static/seed/showcase/thumbs/item_0041_veg-bhaji-burger.webp",
+      "popular": false,
+      "featured": false,
+      "cat": "dinner",
+      "sub": "Burger",
+      "order": 40
+    },
+    {
+      "slug": "grilled-veg",
+      "name": "Grilled veg",
+      "description": "Zucchini, eggplant, capsicum, pumpkin, sun-dried tomato, mozzarella, pesto sauce",
+      "price": 590,
+      "tags": [
+        "VEG"
+      ],
+      "image": "/static/seed/showcase/thumbs/item_0042_grilled-veg.webp",
+      "popular": false,
+      "featured": false,
+      "cat": "dinner",
+      "sub": "Sandwich",
+      "order": 41
+    },
+    {
+      "slug": "halal-meat-ball",
+      "name": "Halal Meat Ball",
+      "description": "Halal meat ball, tomato relish, melted yak cheese, rocket",
+      "price": 650,
+      "tags": [
+        "NON-VEG",
+        "HALAL"
+      ],
+      "image": "/static/seed/showcase/thumbs/item_0043_halal-meat-ball.webp",
+      "popular": false,
+      "featured": false,
+      "cat": "dinner",
+      "sub": "Sandwich",
+      "order": 42
+    },
+    {
+      "slug": "marinated-tuna",
+      "name": "Marinated Tuna",
+      "description": "Tuna, lime mayo, capers, herbs, boiled eggs, lettuces, tomato",
+      "price": 650,
+      "tags": [
+        "NON-VEG"
+      ],
+      "image": "/static/seed/showcase/thumbs/item_0044_marinated-tuna.webp",
+      "popular": false,
+      "featured": false,
+      "cat": "dinner",
+      "sub": "Sandwich",
+      "order": 43
+    },
+    {
+      "slug": "poached-chicken",
+      "name": "Poached Chicken",
+      "description": "Tender poached halal chicken, avocado, lime mayo, rainbow slaw",
+      "price": 650,
+      "tags": [
+        "NON-VEG"
+      ],
+      "image": "/static/seed/showcase/thumbs/item_0045_poached-chicken.webp",
+      "popular": false,
+      "featured": false,
+      "cat": "dinner",
+      "sub": "Sandwich",
+      "order": 44
+    },
+    {
+      "slug": "vegan-blatvg",
+      "name": "Vegan BLAT[VG]",
+      "description": "Marinated \"tofu bacon\" lettuces tomato, avocado, vegan mayo",
+      "price": 590,
+      "tags": [
+        "VEG"
+      ],
+      "image": "/static/seed/showcase/thumbs/item_0046_vegan-blatvg.webp",
+      "popular": false,
+      "featured": false,
+      "cat": "dinner",
+      "sub": "Sandwich",
+      "order": 45
+    },
+    {
+      "slug": "falafelvg",
+      "name": "Falafel[VG]",
+      "description": "Homemade falafel balls, baba ganoush, hummus, jalapeno, picked cabbage, mixed lefy salad",
+      "price": 590,
+      "tags": [
+        "VEG"
+      ],
+      "image": "/static/seed/showcase/thumbs/item_0047_falafelvg.webp",
+      "popular": false,
+      "featured": false,
+      "cat": "dinner",
+      "sub": "Wraps",
+      "order": 46
+    },
+    {
+      "slug": "grilled-chicken-wrap",
+      "name": "Grilled Chicken Wrap",
+      "description": "Marinated grilled chicken, rainbow slaw, leaves, sriracha mayo",
+      "price": 650,
+      "tags": [
+        "NON-VEG"
+      ],
+      "image": "/static/seed/showcase/thumbs/item_0048_grilled-chicken-wrap.webp",
+      "popular": false,
+      "featured": false,
+      "cat": "dinner",
+      "sub": "Wraps",
+      "order": 47
+    },
+    {
+      "slug": "halal-buff",
+      "name": "Halal Buff",
+      "description": "Rice, minced buff, lettuces, tomato, black beans, parsley, onion",
+      "price": 650,
+      "tags": [
+        "NON-VEG",
+        "HALAL"
+      ],
+      "image": "/static/seed/showcase/thumbs/item_0049_halal-buff.webp",
+      "popular": false,
+      "featured": false,
+      "cat": "dinner",
+      "sub": "Wraps",
+      "order": 48
+    },
+    {
+      "slug": "mexico-brittovg",
+      "name": "Mexico Britto[VG]",
+      "description": "Black beans, tomato salsa, avocado, jalapeno, grilled capsicum, vegan mayo",
+      "price": 650,
+      "tags": [
+        "VEG"
+      ],
+      "image": "/static/seed/showcase/thumbs/item_0050_mexico-brittovg.webp",
+      "popular": false,
+      "featured": false,
+      "cat": "dinner",
+      "sub": "Wraps",
+      "order": 49
+    },
+    {
+      "slug": "moroccan-lamb",
+      "name": "Moroccan Lamb",
+      "description": "Slow cooked lamb, onion, carrot, mint yogurt sauce",
+      "price": 850,
+      "tags": [
+        "NON-VEG",
+        "HALAL"
+      ],
+      "image": "/static/seed/showcase/thumbs/item_0051_moroccan-lamb.webp",
+      "popular": false,
+      "featured": false,
+      "cat": "dinner",
+      "sub": "Wraps",
+      "order": 50
+    },
+    {
+      "slug": "tofu-banhmi",
+      "name": "Tofu Banhmi",
+      "description": "Marinated tofu, onion jam, sunny eggs, mix left salad, pickled Vegs",
+      "price": 590,
+      "tags": [
+        "VEG"
+      ],
+      "image": "/static/seed/showcase/thumbs/item_0052_tofu-banhmi.webp",
+      "popular": false,
+      "featured": false,
+      "cat": "dinner",
+      "sub": "Wraps",
+      "order": 51
+    },
+    {
+      "slug": "grilled-chicken",
+      "name": "Grilled Chicken",
+      "description": "Grilled halal chicken, capsicum, tomato ragu, mozzarella cheese, fresh basil",
+      "price": 850,
+      "tags": [
+        "NON-VEG",
+        "HALAL"
+      ],
+      "image": "/static/seed/showcase/thumbs/item_0053_grilled-chicken.webp",
+      "popular": false,
+      "featured": false,
+      "cat": "dinner",
+      "sub": "Pizza",
+      "order": 52
+    },
+    {
+      "slug": "mixed-seafood",
+      "name": "Mixed Seafood",
+      "description": "Mixed seafood, tomato ragu, mozzarella cheese, parsley",
+      "price": 890,
+      "tags": [
+        "NON-VEG"
+      ],
+      "image": "/static/seed/showcase/thumbs/item_0054_mixed-seafood.webp",
+      "popular": false,
+      "featured": false,
+      "cat": "dinner",
+      "sub": "Pizza",
+      "order": 53
+    },
+    {
+      "slug": "moroccan-buff",
+      "name": "Moroccan Buff",
+      "description": "Halal buff, tomato ragu, mozzarella cheese, parsley",
+      "price": 850,
+      "tags": [
+        "NON-VEG",
+        "HALAL"
+      ],
+      "image": "/static/seed/showcase/thumbs/item_0055_moroccan-buff.webp",
+      "popular": false,
+      "featured": false,
+      "cat": "dinner",
+      "sub": "Pizza",
+      "order": 54
+    },
+    {
+      "slug": "creamy-pumkin",
+      "name": "Creamy Pumkin",
+      "description": "served with garlic bread",
+      "price": 450,
+      "tags": [
+        "VEG"
+      ],
+      "image": "/static/seed/showcase/thumbs/item_0057_creamy-pumkin.webp",
+      "popular": false,
+      "featured": false,
+      "cat": "dinner",
+      "sub": "Soups",
+      "order": 56
+    },
+    {
+      "slug": "pat-thai-halal-chicken",
+      "name": "Pat Thai Halal Chicken",
+      "description": "Stir fried rice noodle in pat thai sauce, with halal chicken, egg, tofu, sprouts, peanuts",
+      "price": 790,
+      "tags": [
+        "HALAL",
+        "NON-VEG"
+      ],
+      "image": "/static/seed/showcase/thumbs/item_0059_pat-thai-halal-chicken.webp",
+      "popular": false,
+      "featured": false,
+      "cat": "dinner",
+      "sub": "Noodle",
+      "order": 58
+    },
+    {
+      "slug": "pat-thai-vg",
+      "name": "Pat Thai [VG]",
+      "description": "Stir fried rice noodle in pat thai sauce, with vegs, egg, tofu, sprouts, peanuts",
+      "price": 690,
+      "tags": [
+        "VEG"
+      ],
+      "image": "/static/seed/showcase/thumbs/item_0060_pat-thai-vg.webp",
+      "popular": false,
+      "featured": false,
+      "cat": "dinner",
+      "sub": "Noodle",
+      "order": 59
+    },
+    {
+      "slug": "singapore-laksa",
+      "name": "Singapore Laksa",
+      "description": "Halal chicken, prawns, fried tofu, jammy egg, sprouts, rice noodle in a thick and spicy coconut broth",
+      "price": 790,
+      "tags": [
+        "NON-VEG",
+        "HALAL"
+      ],
+      "image": "/static/seed/showcase/thumbs/item_0061_singapore-laksa.webp",
+      "popular": false,
+      "featured": false,
+      "cat": "dinner",
+      "sub": "Noodle",
+      "order": 60
+    },
+    {
+      "slug": "tossed-buff-rice-noodle",
+      "name": "Tossed Buff Rice Noodle",
+      "description": "Halal buff mince, rice noodle, cucumber, sprouts with spicy sesame dressing",
+      "price": 750,
+      "tags": [
+        "NON-VEG",
+        "HALAL"
+      ],
+      "image": "/static/seed/showcase/thumbs/item_0062_tossed-buff-rice-noodle.webp",
+      "popular": false,
+      "featured": false,
+      "cat": "dinner",
+      "sub": "Noodle",
+      "order": 61
+    },
+    {
+      "slug": "vegan-ramen-vg",
+      "name": "Vegan Ramen [VG]",
+      "description": "Seaweed, kimchi, sprouts, marinated tofu",
+      "price": 650,
+      "tags": [
+        "VEG"
+      ],
+      "image": "/static/seed/showcase/thumbs/item_0063_vegan-ramen-vg.webp",
+      "popular": false,
+      "featured": false,
+      "cat": "dinner",
+      "sub": "Noodle",
+      "order": 62
+    },
+    {
+      "slug": "gym-protein-bowl",
+      "name": "Gym Protein Bowl",
+      "description": "Grilled chicken breast, avo, baked Vegs , leafy salads , shiitake white sauce",
+      "price": 790,
+      "tags": [
+        "NON-VEG"
+      ],
+      "image": "/static/seed/showcase/thumbs/item_0064_gym-protein-bowl.webp",
+      "popular": false,
+      "featured": false,
+      "cat": "brunch",
+      "sub": "Poke Bowls",
+      "order": 63
+    },
+    {
+      "slug": "himalayan-rice-bowl-chicken",
+      "name": "Himalayan Rice Bowl [Chicken]",
+      "description": "Himalayan red rice with japanese style marinated chicken with egg, onion, chilli oil, sesame",
+      "price": 990,
+      "tags": [
+        "NON-VEG"
+      ],
+      "image": "/static/seed/showcase/thumbs/item_0066_himalayan-rice-bowl-chicken.webp",
+      "popular": false,
+      "featured": false,
+      "cat": "brunch",
+      "sub": "Poke Bowls",
+      "order": 65
+    },
+    {
+      "slug": "himalayan-rice-bowl-lamb",
+      "name": "Himalayan Rice Bowl [Lamb]",
+      "description": "Himalayan red rice with slow cooked lamb, mint souce",
+      "price": 1050,
+      "tags": [
+        "NON-VEG"
+      ],
+      "image": "/static/seed/showcase/thumbs/item_0067_himalayan-rice-bowl-lamb.webp",
+      "popular": false,
+      "featured": false,
+      "cat": "brunch",
+      "sub": "Poke Bowls",
+      "order": 66
+    },
+    {
+      "slug": "himalayan-rice-bowlvg",
+      "name": "Himalayan Rice Bowl[VG]",
+      "description": "Himalayan red rice with stir fried vegs, marinated tofu, seaweed",
+      "price": 890,
+      "tags": [
+        "VEG"
+      ],
+      "image": "/static/seed/showcase/thumbs/item_0068_himalayan-rice-bowlvg.webp",
+      "popular": false,
+      "featured": false,
+      "cat": "brunch",
+      "sub": "Poke Bowls",
+      "order": 67
+    },
+    {
+      "slug": "plant-based-buddha-bowlvg",
+      "name": "Plant Based Buddha Bowl[VG]",
+      "description": "Black bean salsa, grilled veg, pickles, turmeric herb couscous, raisins, leafy greens, quinoa, tomato relish, marinated olives, beets hummus",
+      "price": 790,
+      "tags": [
+        "VEG"
+      ],
+      "image": "/static/seed/showcase/thumbs/item_0069_plant-based-buddha-bowlvg.webp",
+      "popular": false,
+      "featured": false,
+      "cat": "brunch",
+      "sub": "Poke Bowls",
+      "order": 68
+    },
+    {
+      "slug": "the-oriental-bowl",
+      "name": "The Oriental Bowl",
+      "description": "Thai basil fried rice w/tofu & Vegs, chicken karaage, sunny egg, side salad",
+      "price": 790,
+      "tags": [
+        "NON-VEG"
+      ],
+      "image": "/static/seed/showcase/thumbs/item_0070_the-oriental-bowl.webp",
+      "popular": false,
+      "featured": false,
+      "cat": "brunch",
+      "sub": "Poke Bowls",
+      "order": 69
+    },
+    {
+      "slug": "açaí-bowl",
+      "name": "Açaí Bowl",
+      "description": "Açaí, avocado, banana, strawberry, pomegranate, coconut milk, juiced apple topped with seasonal fruits, home made granola, goji berry and hemp seeds",
+      "price": 520,
+      "tags": [],
+      "image": "/static/seed/showcase/thumbs/item_0071_açaí-bowl.webp",
+      "popular": false,
+      "featured": false,
+      "cat": "smoothie-bowl",
+      "sub": null,
+      "order": 70
+    },
+    {
+      "slug": "cacao-pb-bowl",
+      "name": "Cacao & PB Bowl",
+      "description": "Raw cacao powder, raw cacao nibs, banana, peanut butter, coconut milk, coconut water, topped with activated buckwheat, fresh banana, mint and Himalayan salt",
+      "price": 520,
+      "tags": [],
+      "image": "/static/seed/showcase/thumbs/item_0072_cacao-pb-bowl.webp",
+      "popular": false,
+      "featured": false,
+      "cat": "smoothie-bowl",
+      "sub": null,
+      "order": 71
+    },
+    {
+      "slug": "dragon-fruit-bowl",
+      "name": "Dragon Fruit Bowl",
+      "description": "Dragon fruit, ashwogandha, bananas, oats milk, topped with granola, chia, hemp, flex seeds, coconut, fresh fruit",
+      "price": 520,
+      "tags": [],
+      "image": "/static/seed/showcase/thumbs/item_0073_dragon-fruit-bowl.webp",
+      "popular": false,
+      "featured": false,
+      "cat": "smoothie-bowl",
+      "sub": null,
+      "order": 72
+    },
+    {
+      "slug": "golden-turmeric-bowl",
+      "name": "Golden Turmeric Bowl",
+      "description": "Papaya, banana, mango, pineapple, turmeric, maple syrup, juiced apple, topped with seasonal fruits, shredded coconut, mixed seeds",
+      "price": 520,
+      "tags": [],
+      "image": "/static/seed/showcase/thumbs/item_0074_golden-turmeric-bowl.webp",
+      "popular": false,
+      "featured": false,
+      "cat": "smoothie-bowl",
+      "sub": null,
+      "order": 73
+    },
+    {
+      "slug": "harvest-bowl",
+      "name": "Harvest Bowl",
+      "description": "Kale, romaine, avocado, spinach, hempseeds, banana, maple, coconut H2O, topped with walnuts, chia, goji berry, dates and seasonal fruits",
+      "price": 520,
+      "tags": [],
+      "image": "/static/seed/showcase/thumbs/item_0075_harvest-bowl.webp",
+      "popular": false,
+      "featured": false,
+      "cat": "smoothie-bowl",
+      "sub": null,
+      "order": 74
+    },
+    {
+      "slug": "matcha-bowl",
+      "name": "Matcha Bowl",
+      "description": "Matcha, avocado, banana, flex seed spinach, pineapple, coconut water, coconut milk, topped with coconut flakes, chia seeds, and seasonal fruits",
+      "price": 520,
+      "tags": [],
+      "image": "/static/seed/showcase/thumbs/item_0076_matcha-bowl.webp",
+      "popular": false,
+      "featured": false,
+      "cat": "smoothie-bowl",
+      "sub": null,
+      "order": 75
+    },
+    {
+      "slug": "hibiscus-stardom",
+      "name": "Hibiscus Stardom",
+      "description": "",
+      "price": 350,
+      "tags": [],
+      "image": "/static/seed/showcase/thumbs/item_0078_hibiscus-stardom.webp",
+      "popular": false,
+      "featured": false,
+      "cat": "special-menu",
+      "sub": null,
+      "order": 77
+    },
+    {
+      "slug": "himalayan-salted-cream-cold-brew",
+      "name": "Himalayan Salted Cream Cold Brew",
+      "description": "",
+      "price": 400,
+      "tags": [],
+      "image": "/static/seed/showcase/thumbs/item_0079_himalayan-salted-cream-cold-br.webp",
+      "popular": false,
+      "featured": false,
+      "cat": "special-menu",
+      "sub": null,
+      "order": 78
+    },
+    {
+      "slug": "iced-coffee-lemonade",
+      "name": "Iced Coffee Lemonade",
+      "description": "",
+      "price": 300,
+      "tags": [],
+      "image": "/static/seed/showcase/thumbs/item_0080_iced-coffee-lemonade.webp",
+      "popular": false,
+      "featured": false,
+      "cat": "special-menu",
+      "sub": null,
+      "order": 79
+    },
+    {
+      "slug": "iced-orange-americano",
+      "name": "Iced Orange Americano",
+      "description": "",
+      "price": 380,
+      "tags": [],
+      "image": "/static/seed/showcase/thumbs/item_0081_iced-orange-americano.webp",
+      "popular": false,
+      "featured": false,
+      "cat": "special-menu",
+      "sub": null,
+      "order": 80
+    },
+    {
+      "slug": "matcha-coconut-iced-latte",
+      "name": "Matcha Coconut Iced latte",
+      "description": "",
+      "price": 400,
+      "tags": [],
+      "image": "/static/seed/showcase/thumbs/item_0082_matcha-coconut-iced-latte.webp",
+      "popular": false,
+      "featured": false,
+      "cat": "special-menu",
+      "sub": null,
+      "order": 81
+    },
+    {
+      "slug": "nachos",
+      "name": "Nachos",
+      "description": "With buff mince, cheese, guacamole, black beans, salsa",
+      "price": 690,
+      "tags": [
+        "NON-VEG"
+      ],
+      "image": "/static/seed/showcase/thumbs/item_0083_nachos.webp",
+      "popular": false,
+      "featured": false,
+      "cat": "special-menu",
+      "sub": null,
+      "order": 82
+    },
+    {
+      "slug": "passion-fruit-martini",
+      "name": "Passion Fruit Martini",
+      "description": "Passion fruit, vanilla syrup, pineapple juice, lime juice, vodka",
+      "price": 890,
+      "tags": [],
+      "image": "/static/seed/showcase/thumbs/item_0084_passion-fruit-martini.webp",
+      "popular": false,
+      "featured": false,
+      "cat": "special-menu",
+      "sub": null,
+      "order": 83
+    },
+    {
+      "slug": "passion-fruit-smoothie",
+      "name": "Passion Fruit Smoothie",
+      "description": "Passion fruit, pineapple, mango and OJ",
+      "price": 450,
+      "tags": [],
+      "image": "/static/seed/showcase/thumbs/item_0085_passion-fruit-smoothie.webp",
+      "popular": false,
+      "featured": false,
+      "cat": "special-menu",
+      "sub": null,
+      "order": 84
+    },
+    {
+      "slug": "sea-buckthorn-juice",
+      "name": "Sea Buckthorn Juice",
+      "description": "",
+      "price": 380,
+      "tags": [],
+      "image": "/static/seed/showcase/thumbs/item_0086_sea-buckthorn-juice.webp",
+      "popular": false,
+      "featured": false,
+      "cat": "special-menu",
+      "sub": null,
+      "order": 85
+    },
+    {
+      "slug": "affogato-caramel",
+      "name": "Affogato Caramel",
+      "description": "Vanilla ice cream, caramel, expresso",
+      "price": 300,
+      "tags": [],
+      "image": "/static/seed/showcase/thumbs/item_0087_affogato-caramel.webp",
+      "popular": false,
+      "featured": false,
+      "cat": "drinks",
+      "sub": "Coffee",
+      "order": 86
+    },
+    {
+      "slug": "americano",
+      "name": "Americano",
+      "description": "",
+      "price": 250,
+      "tags": [],
+      "image": "/static/seed/showcase/thumbs/item_0088_americano.webp",
+      "popular": false,
+      "featured": false,
+      "cat": "drinks",
+      "sub": "Coffee",
+      "order": 87
+    },
+    {
+      "slug": "cappuccino",
+      "name": "Cappuccino",
+      "description": "",
+      "price": 250,
+      "tags": [
+        "VEG"
+      ],
+      "image": "/static/seed/showcase/thumbs/item_0089_cappuccino.webp",
+      "popular": false,
+      "featured": false,
+      "cat": "drinks",
+      "sub": "Coffee",
+      "order": 88
+    },
+    {
+      "slug": "doppio",
+      "name": "Doppio",
+      "description": "",
+      "price": 190,
+      "tags": [],
+      "image": "/static/seed/showcase/thumbs/item_0090_doppio.webp",
+      "popular": false,
+      "featured": false,
+      "cat": "drinks",
+      "sub": "Coffee",
+      "order": 89
+    },
+    {
+      "slug": "espresso",
+      "name": "Espresso",
+      "description": "",
+      "price": 150,
+      "tags": [],
+      "image": "/static/seed/showcase/thumbs/item_0091_espresso.webp",
+      "popular": false,
+      "featured": false,
+      "cat": "drinks",
+      "sub": "Coffee",
+      "order": 90
+    },
+    {
+      "slug": "flat-white",
+      "name": "Flat white",
+      "description": "",
+      "price": 250,
+      "tags": [],
+      "image": "/static/seed/showcase/thumbs/item_0092_flat-white.webp",
+      "popular": false,
+      "featured": false,
+      "cat": "drinks",
+      "sub": "Coffee",
+      "order": 91
+    },
+    {
+      "slug": "golden-drop",
+      "name": "Golden Drop",
+      "description": "Turmeric shot, ginger, cinnamon (non-caffeinated rainbow latte)",
+      "price": 350,
+      "tags": [],
+      "image": "/static/seed/showcase/thumbs/item_0093_golden-drop.webp",
+      "popular": false,
+      "featured": false,
+      "cat": "drinks",
+      "sub": "Coffee",
+      "order": 92
+    },
+    {
+      "slug": "iced-americano",
+      "name": "Iced Americano",
+      "description": "Espresso cube, espresso shot, ice, H2O",
+      "price": 280,
+      "tags": [],
+      "image": "/static/seed/showcase/thumbs/item_0094_iced-americano.webp",
+      "popular": false,
+      "featured": false,
+      "cat": "drinks",
+      "sub": "Coffee",
+      "order": 93
+    },
+    {
+      "slug": "iced-latte",
+      "name": "Iced Latte",
+      "description": "",
+      "price": 300,
+      "tags": [],
+      "image": "/static/seed/showcase/thumbs/item_0095_iced-latte.webp",
+      "popular": false,
+      "featured": false,
+      "cat": "drinks",
+      "sub": "Coffee",
+      "order": 94
+    },
+    {
+      "slug": "juicery-cold-brew",
+      "name": "Juicery Cold Brew",
+      "description": "Over night cold brew coffee w/roasted coconut and coconut milk",
+      "price": 320,
+      "tags": [],
+      "image": "/static/seed/showcase/thumbs/item_0096_juicery-cold-brew.webp",
+      "popular": false,
+      "featured": false,
+      "cat": "drinks",
+      "sub": "Coffee",
+      "order": 95
+    },
+    {
+      "slug": "latte",
+      "name": "Latte",
+      "description": "",
+      "price": 250,
+      "tags": [],
+      "image": "/static/seed/showcase/thumbs/item_0097_latte.webp",
+      "popular": false,
+      "featured": false,
+      "cat": "drinks",
+      "sub": "Coffee",
+      "order": 96
+    },
+    {
+      "slug": "macchiato",
+      "name": "Macchiato",
+      "description": "",
+      "price": 190,
+      "tags": [],
+      "image": "/static/seed/showcase/thumbs/item_0098_macchiato.webp",
+      "popular": false,
+      "featured": false,
+      "cat": "drinks",
+      "sub": "Coffee",
+      "order": 97
+    },
+    {
+      "slug": "matcha-point",
+      "name": "Matcha Point",
+      "description": "Matcha, moringa, stevia (non-caffeinated rainbow latte)",
+      "price": 350,
+      "tags": [],
+      "image": "/static/seed/showcase/thumbs/item_0099_matcha-point.webp",
+      "popular": false,
+      "featured": false,
+      "cat": "drinks",
+      "sub": "Coffee",
+      "order": 98
+    },
+    {
+      "slug": "the-beet",
+      "name": "The Beet",
+      "description": "Beetroot shot, stevia, cinnamon (non-caffeinated rainbow latte)",
+      "price": 350,
+      "tags": [],
+      "image": "/static/seed/showcase/thumbs/item_0100_the-beet.webp",
+      "popular": false,
+      "featured": false,
+      "cat": "drinks",
+      "sub": "Coffee",
+      "order": 99
+    },
+    {
+      "slug": "citrus-zing-iced-tea",
+      "name": "Citrus Zing [iced tea]",
+      "description": "A caffeine-free, refreshing summer blend with zesty lemon, warming cinnamon and a hint of rosemary and rose, bright, tart and uplifting (served in a pot)",
+      "price": 350,
+      "tags": [],
+      "image": "/static/seed/showcase/thumbs/item_0102_citrus-zing-iced-tea.webp",
+      "popular": false,
+      "featured": false,
+      "cat": "drinks",
+      "sub": "Tea",
+      "order": 101
+    },
+    {
+      "slug": "cold-flu-remedy-herbal-tea",
+      "name": "Cold Flu Remedy [herbal tea]",
+      "description": "A soothing blend of lemongrass, peppermint, ginger, goji berry and dried lemon-crafted to support immunity and relieve cold and flu symptoms (served in a pot]",
+      "price": 350,
+      "tags": [],
+      "image": "/static/seed/showcase/thumbs/item_0103_cold-flu-remedy-herbal-tea.webp",
+      "popular": false,
+      "featured": false,
+      "cat": "drinks",
+      "sub": "Tea",
+      "order": 102
+    },
+    {
+      "slug": "digestion-aid-herbal-tea",
+      "name": "Digestion Aid [herbal tea]",
+      "description": "A soothing blend of peppermint, fennel seeds and liquorice root-crafted to ease bloating, gas and stomach discomfort while offering a refreshing palate-pleasing taste (served in a pot)",
+      "price": 350,
+      "tags": [],
+      "image": "/static/seed/showcase/thumbs/item_0104_digestion-aid-herbal-tea.webp",
+      "popular": false,
+      "featured": false,
+      "cat": "drinks",
+      "sub": "Tea",
+      "order": 103
+    },
+    {
+      "slug": "fuji-yama-iced-tea",
+      "name": "Fuji Yama [iced tea]",
+      "description": "A caffeine-free blend of japanese roasted barley (DaMai) and sweet chinese lychee. Smooth, toasty and fruity-ideal for all ages on hot summer days (served in a pot)",
+      "price": 350,
+      "tags": [],
+      "image": "/static/seed/showcase/thumbs/item_0105_fuji-yama-iced-tea.webp",
+      "popular": false,
+      "featured": false,
+      "cat": "drinks",
+      "sub": "Tea",
+      "order": 104
+    },
+    {
+      "slug": "gypsy-soul-black-tea-blend",
+      "name": "Gypsy Soul [black tea blend]",
+      "description": "A harmonious blend of organic ceylon black tea, chamomile, goji berry, lavender and rosemary. Smooth and full-bodied with floral undertones and a gentle, smoky finish. Crafted for the wanderer and free spirit (served in a pot)",
+      "price": 350,
+      "tags": [],
+      "image": "/static/seed/showcase/thumbs/item_0106_gypsy-soul-black-tea-blend.webp",
+      "popular": false,
+      "featured": false,
+      "cat": "drinks",
+      "sub": "Tea",
+      "order": 105
+    },
+    {
+      "slug": "house-special-handcraft-chai-himalayan-pure-tea",
+      "name": "House Special Handcraft Chai [himalayan pure tea]",
+      "description": "Black tea cardamom, cinnamon, ginger, clove, peppercorn, nutmeg, bay leaves brewed with milk/ soy milk (served in a pot)",
+      "price": 350,
+      "tags": [],
+      "image": "/static/seed/showcase/thumbs/item_0107_house-special-handcraft-chai-h.webp",
+      "popular": false,
+      "featured": false,
+      "cat": "drinks",
+      "sub": "Tea",
+      "order": 106
+    },
+    {
+      "slug": "illam-golden-tips-himalayan-pure-tea",
+      "name": "Illam Golden Tips [himalayan pure tea]",
+      "description": "A rare and premium tea from nepal's illam region, illam golden tip is crafted from handpicked buds using traditional withering, rolling and oxidation methods. It offers a smooth, velvety texture with rich notes of honey, caramel and malt (served in a pot)",
+      "price": 350,
+      "tags": [],
+      "image": "/static/seed/showcase/thumbs/item_0108_illam-golden-tips-himalayan-pu.webp",
+      "popular": false,
+      "featured": false,
+      "cat": "drinks",
+      "sub": "Tea",
+      "order": 107
+    },
+    {
+      "slug": "illam-silver-tips-himalayan-pure-tea",
+      "name": "Illam Silver Tips [himalayan pure tea]",
+      "description": "Crafted from young handpicked buds of the early harvest, this minimally processed tea offers a light, delicate brew with subtle floral notes and a sweet, mellow flavor (served in a pot)",
+      "price": 350,
+      "tags": [],
+      "image": "/static/seed/showcase/thumbs/item_0109_illam-silver-tips-himalayan-pu.webp",
+      "popular": false,
+      "featured": false,
+      "cat": "drinks",
+      "sub": "Tea",
+      "order": 108
+    },
+    {
+      "slug": "jasmine-blossom-green-iced-tea",
+      "name": "Jasmine Blossom Green [iced tea]",
+      "description": "A light floral blend of organic green tea, jasmine and dried lemon with a hint of citrus. Perfect for summer (served in a pot)",
+      "price": 350,
+      "tags": [],
+      "image": "/static/seed/showcase/thumbs/item_0110_jasmine-blossom-green-iced-tea.webp",
+      "popular": false,
+      "featured": false,
+      "cat": "drinks",
+      "sub": "Tea",
+      "order": 109
+    },
+    {
+      "slug": "jasmine-pear-green-green-tea-blend",
+      "name": "Jasmine Pear Green [green tea blend]",
+      "description": "A refreshing blend of jasmine and dried pear-perfect for summer. Delicate floral notes meets crisp pear sweetness on a smooth green tea base, creating a light, elegant and flavorful infusion (served in a pot)",
+      "price": 350,
+      "tags": [],
+      "image": "/static/seed/showcase/thumbs/item_0111_jasmine-pear-green-green-tea-b.webp",
+      "popular": false,
+      "featured": false,
+      "cat": "drinks",
+      "sub": "Tea",
+      "order": 110
+    },
+    {
+      "slug": "kiss-of-the-dragon-green-tea-blend",
+      "name": "Kiss Of The Dragon [green tea blend]",
+      "description": "A romantic tropical blend of organic chinese green tea, jasmine, rose petals, marigold and ripe apple. Fragrant, sweet and floral an enchanting infusion with the allure of young love (served in a pot)",
+      "price": 350,
+      "tags": [],
+      "image": "/static/seed/showcase/thumbs/item_0112_kiss-of-the-dragon-green-tea-b.webp",
+      "popular": false,
+      "featured": false,
+      "cat": "drinks",
+      "sub": "Tea",
+      "order": 111
+    },
+    {
+      "slug": "the-harmony-herbal-tea",
+      "name": "The Harmony [herbal tea]",
+      "description": "A calming caffeine-free blend of organic lemongrass, mint, lavender, rose petals, rosemary, chamomile and dried lemon. Light, floral and refreshing (served in a pot)",
+      "price": 350,
+      "tags": [],
+      "image": "/static/seed/showcase/thumbs/item_0113_the-harmony-herbal-tea.webp",
+      "popular": false,
+      "featured": false,
+      "cat": "drinks",
+      "sub": "Tea",
+      "order": 112
+    },
+    {
+      "slug": "tropical-breakfast-tea-black-tea-blend",
+      "name": "Tropical Breakfast Tea [black tea blend]",
+      "description": "A vibrant blend of black pu-erh, green tea, roasted DaMai and coconut flakes. With rich, toasty and coconut-sweet notes, it supports digestion and metabolism-perfect for the health-concious (served in a pot)",
+      "price": 350,
+      "tags": [],
+      "image": "/static/seed/showcase/thumbs/item_0114_tropical-breakfast-tea-black-t.webp",
+      "popular": false,
+      "featured": false,
+      "cat": "drinks",
+      "sub": "Tea",
+      "order": 113
+    },
+    {
+      "slug": "butterfly-pea",
+      "name": "Butterfly Pea",
+      "description": "",
+      "price": 450,
+      "tags": [],
+      "image": "/static/seed/showcase/thumbs/item_0115_butterfly-pea.webp",
+      "popular": false,
+      "featured": false,
+      "cat": "drinks",
+      "sub": "Kombucha",
+      "order": 114
+    },
+    {
+      "slug": "ginger-lemon",
+      "name": "Ginger Lemon",
+      "description": "",
+      "price": 450,
+      "tags": [],
+      "image": "/static/seed/showcase/thumbs/item_0116_ginger-lemon.webp",
+      "popular": false,
+      "featured": false,
+      "cat": "drinks",
+      "sub": "Kombucha",
+      "order": 115
+    },
+    {
+      "slug": "rhododendron",
+      "name": "Rhododendron",
+      "description": "",
+      "price": 450,
+      "tags": [],
+      "image": "/static/seed/showcase/thumbs/item_0117_rhododendron.webp",
+      "popular": false,
+      "featured": false,
+      "cat": "drinks",
+      "sub": "Kombucha",
+      "order": 116
+    },
+    {
+      "slug": "banana-hamp-lassi-prevent-cancer-chronic-diseases",
+      "name": "Banana Hamp Lassi [prevent cancer, chronic diseases]",
+      "description": "Banana, cardamom hempseeds, homemade yogurt, buffalo milk",
+      "price": 400,
+      "tags": [],
+      "image": "/static/seed/showcase/thumbs/item_0118_banana-hamp-lassi-prevent-canc.webp",
+      "popular": false,
+      "featured": false,
+      "cat": "drinks",
+      "sub": "Smoothie",
+      "order": 117
+    },
+    {
+      "slug": "berry-burst-vitamin-c-k-high-in-potassium",
+      "name": "Berry Burst [vitamin c & k, high in potassium]",
+      "description": "Açaí, strawberry, cranberry, blueberry, banana, dates, oats, hemp seed, milk",
+      "price": 400,
+      "tags": [],
+      "image": "/static/seed/showcase/thumbs/item_0119_berry-burst-vitamin-c-k-high-i.webp",
+      "popular": false,
+      "featured": false,
+      "cat": "drinks",
+      "sub": "Smoothie",
+      "order": 118
+    },
+    {
+      "slug": "flamingo",
+      "name": "Flamingo",
+      "description": "Strawberry, avocado, peanut butter, banana, juiced apple",
+      "price": 400,
+      "tags": [],
+      "image": "/static/seed/showcase/thumbs/item_0120_flamingo.webp",
+      "popular": false,
+      "featured": false,
+      "cat": "drinks",
+      "sub": "Smoothie",
+      "order": 119
+    },
+    {
+      "slug": "golden-mango",
+      "name": "Golden Mango",
+      "description": "Mango, saffron, banana, homemade yogurt, raw honey, buffalo milk or homemade soy milk",
+      "price": 400,
+      "tags": [],
+      "image": "/static/seed/showcase/thumbs/item_0121_golden-mango.webp",
+      "popular": false,
+      "featured": false,
+      "cat": "drinks",
+      "sub": "Smoothie",
+      "order": 120
+    },
+    {
+      "slug": "green-tara-metabolism-booster-high-in-fiber",
+      "name": "Green Tara [metabolism booster, high in fiber]",
+      "description": "Matcha powder, avocado, dates, kale, spinach, coconut milk",
+      "price": 400,
+      "tags": [],
+      "image": "/static/seed/showcase/thumbs/item_0122_green-tara-metabolism-booster-.webp",
+      "popular": false,
+      "featured": false,
+      "cat": "drinks",
+      "sub": "Smoothie",
+      "order": 121
+    },
+    {
+      "slug": "incan-warrior-reduce-high-blood-pressure",
+      "name": "Incan Warrior [reduce high blood pressure]",
+      "description": "Banana, peanut butter, cacao powder, vanilla, raw honey, mint, oats milk",
+      "price": 400,
+      "tags": [],
+      "image": "/static/seed/showcase/thumbs/item_0123_incan-warrior-reduce-high-bloo.webp",
+      "popular": false,
+      "featured": false,
+      "cat": "drinks",
+      "sub": "Smoothie",
+      "order": 122
+    },
+    {
+      "slug": "morning-glory-fat-burn-energy-booster",
+      "name": "Morning Glory [fat burn, energy booster]",
+      "description": "Espresso, almonds, peanut butter, banana, hemp seed, himalayan pink salt, almond milk",
+      "price": 400,
+      "tags": [],
+      "image": "/static/seed/showcase/thumbs/item_0124_morning-glory-fat-burn-energy-.webp",
+      "popular": false,
+      "featured": false,
+      "cat": "drinks",
+      "sub": "Smoothie",
+      "order": 123
+    },
+    {
+      "slug": "nataraj-hangover-digestion",
+      "name": "Nataraj [hangover, digestion]",
+      "description": "Pineapple, banana, activated charcoal, raw honey, ginger, lemon, coconut h20",
+      "price": 400,
+      "tags": [],
+      "image": "/static/seed/showcase/thumbs/item_0125_nataraj-hangover-digestion.webp",
+      "popular": false,
+      "featured": false,
+      "cat": "drinks",
+      "sub": "Smoothie",
+      "order": 124
+    },
+    {
+      "slug": "pbj-antioxidants",
+      "name": "PBJ [antioxidants]",
+      "description": "Strawberry, avocado, peanut butter, banana, juiced apple",
+      "price": 400,
+      "tags": [],
+      "image": "/static/seed/showcase/thumbs/item_0126_pbj-antioxidants.webp",
+      "popular": false,
+      "featured": false,
+      "cat": "drinks",
+      "sub": "Smoothie",
+      "order": 125
+    },
+    {
+      "slug": "snow-white-improving-heart-health-weight-loss",
+      "name": "Snow White [improving heart health, weight loss]",
+      "description": "Fresh young coconut, coconut water, coconut milk, hemp seeds, probiotics",
+      "price": 400,
+      "tags": [],
+      "image": "/static/seed/showcase/thumbs/item_0127_snow-white-improving-heart-hea.webp",
+      "popular": false,
+      "featured": false,
+      "cat": "drinks",
+      "sub": "Smoothie",
+      "order": 126
+    },
+    {
+      "slug": "sunshine-coast-vitamin-c-b9-and-manganese-blood-sugar-control",
+      "name": "Sunshine Coast [vitamin c, B9 and manganese, blood sugar control]",
+      "description": "Banana, strawberry, pomegranate blend with orange juice",
+      "price": 400,
+      "tags": [],
+      "image": "/static/seed/showcase/thumbs/item_0128_sunshine-coast-vitamin-c-b9-an.webp",
+      "popular": false,
+      "featured": false,
+      "cat": "drinks",
+      "sub": "Smoothie",
+      "order": 127
+    },
+    {
+      "slug": "tummy-cleanser-rich-in-enzyme-anti-imflamation",
+      "name": "Tummy Cleanser [rich in enzyme, anti-imflamation]",
+      "description": "Papaya, pineapple, banana, turmeric, coconut milk",
+      "price": 400,
+      "tags": [],
+      "image": "/static/seed/showcase/thumbs/item_0129_tummy-cleanser-rich-in-enzyme-.webp",
+      "popular": false,
+      "featured": false,
+      "cat": "drinks",
+      "sub": "Smoothie",
+      "order": 128
+    },
+    {
+      "slug": "yogi-power",
+      "name": "Yogi Power",
+      "description": "Banana, kale, spinach, spirulina, ashwogandha, hemp seeds, probiotics, maples syrup, juiced apple",
+      "price": 400,
+      "tags": [],
+      "image": "/static/seed/showcase/thumbs/item_0130_yogi-power.webp",
+      "popular": false,
+      "featured": false,
+      "cat": "drinks",
+      "sub": "Smoothie",
+      "order": 129
+    },
+    {
+      "slug": "anti-inflammation-fight-inflammatory",
+      "name": "Anti-Inflammation [fight inflammatory]",
+      "description": "Turmeric, carrot, ginger, lemon, apple, cucumber and grounded pepper",
+      "price": 350,
+      "tags": [],
+      "image": "/static/seed/showcase/thumbs/item_0131_anti-inflammation-fight-inflam.webp",
+      "popular": false,
+      "featured": false,
+      "cat": "drinks",
+      "sub": "Juice",
+      "order": 130
+    },
+    {
+      "slug": "classic-greenie-anti-oxydant-cleanser",
+      "name": "Classic Greenie [anti-oxydant, cleanser]",
+      "description": "Kale, romaine, spinach, parsley, celery, cilantro, wheatgrass, pineapple, apple, lime, chia seeds, cucumber",
+      "price": 350,
+      "tags": [],
+      "image": "/static/seed/showcase/thumbs/item_0132_classic-greenie-anti-oxydant-c.webp",
+      "popular": false,
+      "featured": false,
+      "cat": "drinks",
+      "sub": "Juice",
+      "order": 131
+    },
+    {
+      "slug": "detoxifier-detox-vitamin-rich",
+      "name": "Detoxifier [detox, vitamin rich]",
+      "description": "Thyme, spinach, kale, parsley, apple, cucumber, lemon, ginger",
+      "price": 350,
+      "tags": [],
+      "image": "/static/seed/showcase/thumbs/item_0133_detoxifier-detox-vitamin-rich.webp",
+      "popular": false,
+      "featured": false,
+      "cat": "drinks",
+      "sub": "Juice",
+      "order": 132
+    },
+    {
+      "slug": "flu-slayer-served-hot",
+      "name": "Flu Slayer - Served Hot",
+      "description": "Apple, lemon, ginger, bell pepper, orange, echinacea, garlic (optional)",
+      "price": 350,
+      "tags": [],
+      "image": "/static/seed/showcase/thumbs/item_0134_flu-slayer-served-hot.webp",
+      "popular": false,
+      "featured": false,
+      "cat": "drinks",
+      "sub": "Juice",
+      "order": 133
+    },
+    {
+      "slug": "immune-booster-immunity-vitamin-c",
+      "name": "Immune-Booster [immunity, vitamin c]",
+      "description": "Orange, carrot, lemon, ginger, apple",
+      "price": 350,
+      "tags": [],
+      "image": "/static/seed/showcase/thumbs/item_0135_immune-booster-immunity-vitami.webp",
+      "popular": false,
+      "featured": false,
+      "cat": "drinks",
+      "sub": "Juice",
+      "order": 134
+    },
+    {
+      "slug": "kali-mantra-good-for-hangover",
+      "name": "Kali Mantra [good for hangover]",
+      "description": "Activated charcoal, coconut H2O, lemon, maple syrup, ginger",
+      "price": 350,
+      "tags": [],
+      "image": "/static/seed/showcase/thumbs/item_0136_kali-mantra-good-for-hangover.webp",
+      "popular": false,
+      "featured": false,
+      "cat": "drinks",
+      "sub": "Juice",
+      "order": 135
+    },
+    {
+      "slug": "pink-panda-lower-cholesterol",
+      "name": "Pink Panda [lower cholesterol]",
+      "description": "Beets, carrot, pear, lemongrass, apple, lemon, ginger",
+      "price": 350,
+      "tags": [],
+      "image": "/static/seed/showcase/thumbs/item_0137_pink-panda-lower-cholesterol.webp",
+      "popular": false,
+      "featured": false,
+      "cat": "drinks",
+      "sub": "Juice",
+      "order": 136
+    },
+    {
+      "slug": "skin-remedy-fat-burn-glowing-skin",
+      "name": "Skin Remedy [fat burn, glowing skin]",
+      "description": "Coconut H2O, cucumber, celery, spinach, aloe Vera",
+      "price": 350,
+      "tags": [],
+      "image": "/static/seed/showcase/thumbs/item_0138_skin-remedy-fat-burn-glowing-s.webp",
+      "popular": false,
+      "featured": false,
+      "cat": "drinks",
+      "sub": "Juice",
+      "order": 137
+    },
+    {
+      "slug": "summer-breeze-antioxidants-vitamic-c",
+      "name": "Summer Breeze [antioxidants, vitamic c]",
+      "description": "Watermelon, mint, lemon, pomegranate",
+      "price": 350,
+      "tags": [],
+      "image": "/static/seed/showcase/thumbs/item_0139_summer-breeze-antioxidants-vit.webp",
+      "popular": false,
+      "featured": false,
+      "cat": "drinks",
+      "sub": "Juice",
+      "order": 138
+    },
+    {
+      "slug": "super-veggies-boost-metabolism",
+      "name": "Super Veggies [boost metabolism]",
+      "description": "Kale, spinach, cucumber, parsley, celery, cabbage, wheatgrass, carrot, beets, garlic (optional)",
+      "price": 350,
+      "tags": [],
+      "image": "/static/seed/showcase/thumbs/item_0140_super-veggies-boost-metabolism.webp",
+      "popular": false,
+      "featured": false,
+      "cat": "drinks",
+      "sub": "Juice",
+      "order": 139
+    },
+    {
+      "slug": "the-buzz-high-in-fibre-aids-in-digestion",
+      "name": "The Buzz [high in fibre, aids in digestion]",
+      "description": "Pineapple, mint, cilantro, apple, cucumber and himalayan pink salt",
+      "price": 350,
+      "tags": [],
+      "image": "/static/seed/showcase/thumbs/item_0141_the-buzz-high-in-fibre-aids-in.webp",
+      "popular": false,
+      "featured": false,
+      "cat": "drinks",
+      "sub": "Juice",
+      "order": 140
+    },
+    {
+      "slug": "trojan-blood-blood-purification",
+      "name": "Trojan Blood [blood purification]",
+      "description": "Beetroots, carrot, celery, tomato, orange",
+      "price": 350,
+      "tags": [],
+      "image": "/static/seed/showcase/thumbs/item_0142_trojan-blood-blood-purificatio.webp",
+      "popular": false,
+      "featured": false,
+      "cat": "drinks",
+      "sub": "Juice",
+      "order": 141
+    },
+    {
+      "slug": "verde-rich-in-iron-b2",
+      "name": "Verde [rich in iron, B2]",
+      "description": "Pear, spinach, mint, ginger, lemongrass",
+      "price": 350,
+      "tags": [],
+      "image": "/static/seed/showcase/thumbs/item_0143_verde-rich-in-iron-b2.webp",
+      "popular": false,
+      "featured": false,
+      "cat": "drinks",
+      "sub": "Juice",
+      "order": 142
+    },
+    {
+      "slug": "espresso-lover",
+      "name": "Espresso Lover",
+      "description": "Shot of espresso with flax seed oil, cinnamon",
+      "price": 200,
+      "tags": [],
+      "image": "/static/seed/showcase/thumbs/item_0144_espresso-lover.webp",
+      "popular": false,
+      "featured": false,
+      "cat": "drinks",
+      "sub": "The Bucket list",
+      "order": 143
+    },
+    {
+      "slug": "house-special-fire-coca",
+      "name": "House Special Fire Coca",
+      "description": "House made french style melted hot cacao, hint of chilli, shredded dark and white chocolate, roasted marshmallows",
+      "price": 380,
+      "tags": [],
+      "image": "/static/seed/showcase/thumbs/item_0145_house-special-fire-coca.webp",
+      "popular": false,
+      "featured": false,
+      "cat": "drinks",
+      "sub": "The Bucket list",
+      "order": 144
+    },
+    {
+      "slug": "juicerys-freaky-shake",
+      "name": "Juicery's Freaky Shake",
+      "description": "House made thick choc, ice cream, salted caramel, fresh whipped cream, cocoa nibs, brownie bites",
+      "price": 490,
+      "tags": [],
+      "image": "/static/seed/showcase/thumbs/item_0146_juicerys-freaky-shake.webp",
+      "popular": false,
+      "featured": false,
+      "cat": "drinks",
+      "sub": "The Bucket list",
+      "order": 145
+    },
+    {
+      "slug": "juicerys-signature-iced-latte",
+      "name": "Juicery's Signature Iced Latte",
+      "description": "Iced latte topped with a smooth, sweet cream coffee, a hint of vanilla to finish.",
+      "price": 400,
+      "tags": [],
+      "image": "/static/seed/showcase/thumbs/item_0147_juicerys-signature-iced-latte.webp",
+      "popular": false,
+      "featured": false,
+      "cat": "drinks",
+      "sub": "The Bucket list",
+      "order": 146
+    },
+    {
+      "slug": "coffee-frappe",
+      "name": "Coffee Frappe",
+      "description": "Espresso shots, sugarcane syrup, milk and ice blend",
+      "price": 350,
+      "tags": [],
+      "image": "/static/seed/showcase/thumbs/item_0148_coffee-frappe.webp",
+      "popular": false,
+      "featured": false,
+      "cat": "drinks",
+      "sub": "Frappe",
+      "order": 147
+    },
+    {
+      "slug": "green-tea-matcha-frappe",
+      "name": "Green Tea Matcha Frappe",
+      "description": "Matcha powder, coconut milk, raw honey, ice",
+      "price": 350,
+      "tags": [],
+      "image": "/static/seed/showcase/thumbs/item_0149_green-tea-matcha-frappe.webp",
+      "popular": false,
+      "featured": false,
+      "cat": "drinks",
+      "sub": "Frappe",
+      "order": 148
+    },
+    {
+      "slug": "lemon-mint-frappe",
+      "name": "Lemon Mint Frappe",
+      "description": "Lemon, mint leaves, sugarcane syrup, ice",
+      "price": 350,
+      "tags": [],
+      "image": "/static/seed/showcase/thumbs/item_0150_lemon-mint-frappe.webp",
+      "popular": false,
+      "featured": false,
+      "cat": "drinks",
+      "sub": "Frappe",
+      "order": 149
+    },
+    {
+      "slug": "watermelon-mint-frappe",
+      "name": "Watermelon Mint Frappe",
+      "description": "Fresh watermelon, mint leaves, a hint of lemon, ice",
+      "price": 350,
+      "tags": [],
+      "image": "/static/seed/showcase/thumbs/item_0151_watermelon-mint-frappe.webp",
+      "popular": false,
+      "featured": false,
+      "cat": "drinks",
+      "sub": "Frappe",
+      "order": 150
+    },
+    {
+      "slug": "blueberry",
+      "name": "Blueberry",
+      "description": "Made with fresh fruit & fresh milk (vegan milk available)",
+      "price": 350,
+      "tags": [],
+      "image": "/static/seed/showcase/thumbs/item_0152_blueberry.webp",
+      "popular": false,
+      "featured": false,
+      "cat": "drinks",
+      "sub": "Bubble Tea",
+      "order": 151
+    },
+    {
+      "slug": "mango",
+      "name": "Mango",
+      "description": "Made with fresh fruits & fresh milk (vegan milk available)",
+      "price": 350,
+      "tags": [],
+      "image": "/static/seed/showcase/thumbs/item_0153_mango.webp",
+      "popular": false,
+      "featured": false,
+      "cat": "drinks",
+      "sub": "Bubble Tea",
+      "order": 152
+    },
+    {
+      "slug": "matcha",
+      "name": "Matcha",
+      "description": "Made with fresh fruit & fresh milk (vegan milk available)",
+      "price": 350,
+      "tags": [],
+      "image": "/static/seed/showcase/thumbs/item_0154_matcha.webp",
+      "popular": false,
+      "featured": false,
+      "cat": "drinks",
+      "sub": "Bubble Tea",
+      "order": 153
+    },
+    {
+      "slug": "strawberry",
+      "name": "Strawberry",
+      "description": "Made with fresh fruit & fresh milk (vegan milk available)",
+      "price": 350,
+      "tags": [],
+      "image": "/static/seed/showcase/thumbs/item_0155_strawberry.webp",
+      "popular": false,
+      "featured": false,
+      "cat": "drinks",
+      "sub": "Bubble Tea",
+      "order": 154
+    },
+    {
+      "slug": "thai-iced-tea",
+      "name": "Thai Iced Tea",
+      "description": "Made with fresh fruits & fresh milk (vegan milk available)",
+      "price": 350,
+      "tags": [],
+      "image": "/static/seed/showcase/thumbs/item_0156_thai-iced-tea.webp",
+      "popular": false,
+      "featured": false,
+      "cat": "drinks",
+      "sub": "Bubble Tea",
+      "order": 155
+    },
+    {
+      "slug": "apple-cinnamon-sparkle",
+      "name": "Apple Cinnamon Sparkle",
+      "description": "Apple juice, cinnamon, soda",
+      "price": 350,
+      "tags": [],
+      "image": "/static/seed/showcase/thumbs/item_0157_apple-cinnamon-sparkle.webp",
+      "popular": false,
+      "featured": false,
+      "cat": "drinks",
+      "sub": "Mocktails",
+      "order": 156
+    },
+    {
+      "slug": "kiwi-mocktail",
+      "name": "Kiwi Mocktail",
+      "description": "Kiwi, mint, oj, syrup, sprit, ice",
+      "price": 350,
+      "tags": [],
+      "image": "/static/seed/showcase/thumbs/item_0158_kiwi-mocktail.webp",
+      "popular": false,
+      "featured": false,
+      "cat": "drinks",
+      "sub": "Mocktails",
+      "order": 157
+    },
+    {
+      "slug": "pj-coconut-cooler",
+      "name": "PJ Coconut Cooler",
+      "description": "Pineapple juice, coconut water, OJ",
+      "price": 350,
+      "tags": [],
+      "image": "/static/seed/showcase/thumbs/item_0159_pj-coconut-cooler.webp",
+      "popular": false,
+      "featured": false,
+      "cat": "drinks",
+      "sub": "Mocktails",
+      "order": 158
+    },
+    {
+      "slug": "strawberry-basil-lemonade",
+      "name": "Strawberry Basil Lemonade",
+      "description": "Strawberry, fresh basil, lemonade",
+      "price": 380,
+      "tags": [],
+      "image": "/static/seed/showcase/thumbs/item_0160_strawberry-basil-lemonade.webp",
+      "popular": false,
+      "featured": false,
+      "cat": "drinks",
+      "sub": "Mocktails",
+      "order": 159
+    },
+    {
+      "slug": "cokesprite",
+      "name": "Coke/Sprite",
+      "description": "",
+      "price": 160,
+      "tags": [],
+      "image": "/static/seed/showcase/thumbs/item_0161_cokesprite.webp",
+      "popular": false,
+      "featured": false,
+      "cat": "drinks",
+      "sub": "Soft Drinks",
+      "order": 160
+    },
+    {
+      "slug": "lemon-soda",
+      "name": "Lemon Soda",
+      "description": "",
+      "price": 200,
+      "tags": [],
+      "image": "/static/seed/showcase/thumbs/item_0162_lemon-soda.webp",
+      "popular": false,
+      "featured": false,
+      "cat": "drinks",
+      "sub": "Soft Drinks",
+      "order": 161
+    },
+    {
+      "slug": "water",
+      "name": "Water",
+      "description": "",
+      "price": 50,
+      "tags": [],
+      "image": "/static/seed/showcase/thumbs/item_0163_water.webp",
+      "popular": false,
+      "featured": false,
+      "cat": "drinks",
+      "sub": "Soft Drinks",
+      "order": 162
+    },
+    {
+      "slug": "allergy",
+      "name": "Allergy",
+      "description": "Pineapple, bee pollen, lemon, peppermint oil",
+      "price": 150,
+      "tags": [],
+      "image": "/static/seed/showcase/thumbs/item_0164_allergy.webp",
+      "popular": false,
+      "featured": false,
+      "cat": "drinks",
+      "sub": "Shot",
+      "order": 163
+    },
+    {
+      "slug": "anti-inflammation",
+      "name": "Anti-Inflammation",
+      "description": "Turmeric, black pepper, ginger, lemon, flaxseed oil",
+      "price": 150,
+      "tags": [],
+      "image": "/static/seed/showcase/thumbs/item_0165_anti-inflammation.webp",
+      "popular": false,
+      "featured": false,
+      "cat": "drinks",
+      "sub": "Shot",
+      "order": 164
+    },
+    {
+      "slug": "blood-purification",
+      "name": "Blood Purification",
+      "description": "Beetroots, pink salt, cinnamon",
+      "price": 150,
+      "tags": [],
+      "image": "/static/seed/showcase/thumbs/item_0166_blood-purification.webp",
+      "popular": false,
+      "featured": false,
+      "cat": "drinks",
+      "sub": "Shot",
+      "order": 165
+    },
+    {
+      "slug": "digestion",
+      "name": "Digestion",
+      "description": "Probiotics, ginger, spirulina, juiced apple",
+      "price": 150,
+      "tags": [],
+      "image": "/static/seed/showcase/thumbs/item_0167_digestion.webp",
+      "popular": false,
+      "featured": false,
+      "cat": "drinks",
+      "sub": "Shot",
+      "order": 166
+    },
+    {
+      "slug": "dragon-breathe",
+      "name": "Dragon Breathe",
+      "description": "Garlic, ginger, lemon, jalapeno bell pepper",
+      "price": 150,
+      "tags": [],
+      "image": "/static/seed/showcase/thumbs/item_0168_dragon-breathe.webp",
+      "popular": false,
+      "featured": false,
+      "cat": "drinks",
+      "sub": "Shot",
+      "order": 167
+    },
+    {
+      "slug": "energizer",
+      "name": "Energizer",
+      "description": "Coconut water, peppermint essential oil",
+      "price": 150,
+      "tags": [],
+      "image": "/static/seed/showcase/thumbs/item_0169_energizer.webp",
+      "popular": false,
+      "featured": false,
+      "cat": "drinks",
+      "sub": "Shot",
+      "order": 168
+    },
+    {
+      "slug": "four-play",
+      "name": "Four-Play",
+      "description": "Choose any four of the shots, let's party!!",
+      "price": 500,
+      "tags": [],
+      "image": "/static/seed/showcase/thumbs/item_0170_four-play.webp",
+      "popular": false,
+      "featured": false,
+      "cat": "drinks",
+      "sub": "Shot",
+      "order": 169
+    },
+    {
+      "slug": "hangover-cure",
+      "name": "Hangover Cure",
+      "description": "Activated charcoal, coconut h2o, lemon, bell pepper",
+      "price": 150,
+      "tags": [],
+      "image": "/static/seed/showcase/thumbs/item_0171_hangover-cure.webp",
+      "popular": false,
+      "featured": false,
+      "cat": "drinks",
+      "sub": "Shot",
+      "order": 170
+    },
+    {
+      "slug": "buffalo-wings",
+      "name": "Buffalo Wings",
+      "description": "",
+      "price": 520,
+      "tags": [
+        "NON-VEG"
+      ],
+      "image": "/static/seed/showcase/thumbs/item_0172_buffalo-wings.webp",
+      "popular": false,
+      "featured": false,
+      "cat": "dinner",
+      "sub": "Entree",
+      "order": 171
+    },
+    {
+      "slug": "chicken-satay-whomemade-satay-sauce",
+      "name": "Chicken Satay w/homemade Satay Sauce",
+      "description": "",
+      "price": 520,
+      "tags": [
+        "NON-VEG"
+      ],
+      "image": "/static/seed/showcase/thumbs/item_0173_chicken-satay-whomemade-satay-.webp",
+      "popular": false,
+      "featured": false,
+      "cat": "dinner",
+      "sub": "Entree",
+      "order": 172
+    },
+    {
+      "slug": "fish-and-chips-wtartar-sauce",
+      "name": "Fish and Chips w/tartar Sauce",
+      "description": "",
+      "price": 590,
+      "tags": [
+        "NON-VEG"
+      ],
+      "image": "/static/seed/showcase/thumbs/item_0174_fish-and-chips-wtartar-sauce.webp",
+      "popular": false,
+      "featured": false,
+      "cat": "dinner",
+      "sub": "Entree",
+      "order": 173
+    },
+    {
+      "slug": "japanese-style-fried-chicken-with-lime-mayo",
+      "name": "Japanese Style Fried Chicken with Lime Mayo",
+      "description": "",
+      "price": 530,
+      "tags": [
+        "NON-VEG"
+      ],
+      "image": "/static/seed/showcase/thumbs/item_0175_japanese-style-fried-chicken-w.webp",
+      "popular": false,
+      "featured": false,
+      "cat": "dinner",
+      "sub": "Entree",
+      "order": 174
+    },
+    {
+      "slug": "meditation-humus-plate",
+      "name": "Meditation Humus Plate*",
+      "description": "Humus, cucumber, marinated olives, tomato, onion, feta, flat bread",
+      "price": 720,
+      "tags": [
+        "VEG"
+      ],
+      "image": "/static/seed/showcase/thumbs/item_0176_meditation-humus-plate.webp",
+      "popular": false,
+      "featured": false,
+      "cat": "dinner",
+      "sub": "Entree",
+      "order": 175
+    },
+    {
+      "slug": "pesto-bushecatta",
+      "name": "Pesto Bushecatta",
+      "description": "Pesto, mozzarella, roasted tomato, fresh basil",
+      "price": 490,
+      "tags": [
+        "VEG"
+      ],
+      "image": "/static/seed/showcase/thumbs/item_0177_pesto-bushecatta.webp",
+      "popular": false,
+      "featured": false,
+      "cat": "dinner",
+      "sub": "Entree",
+      "order": 176
+    },
+    {
+      "slug": "potato-chips-with-sriracha-mayo",
+      "name": "Potato Chips with Sriracha Mayo",
+      "description": "",
+      "price": 390,
+      "tags": [
+        "VEG"
+      ],
+      "image": "/static/seed/showcase/thumbs/item_0178_potato-chips-with-sriracha-may.webp",
+      "popular": false,
+      "featured": false,
+      "cat": "dinner",
+      "sub": "Entree",
+      "order": 177
+    },
+    {
+      "slug": "sitaki-mushroom-cheese-balls-with-siracca-mayo",
+      "name": "Sitaki Mushroom Cheese Balls with Siracca Mayo",
+      "description": "",
+      "price": 520,
+      "tags": [
+        "VEG"
+      ],
+      "image": "/static/seed/showcase/thumbs/item_0179_sitaki-mushroom-cheese-balls-w.webp",
+      "popular": false,
+      "featured": false,
+      "cat": "dinner",
+      "sub": "Entree",
+      "order": 178
+    },
+    {
+      "slug": "spanish-style-garlic-and-chilli-prawns",
+      "name": "Spanish Style Garlic and Chilli Prawns",
+      "description": "",
+      "price": 850,
+      "tags": [
+        "NON-VEG"
+      ],
+      "image": "/static/seed/showcase/thumbs/item_0180_spanish-style-garlic-and-chill.webp",
+      "popular": false,
+      "featured": false,
+      "cat": "dinner",
+      "sub": "Entree",
+      "order": 179
+    },
+    {
+      "slug": "spicy-buff-sadheko",
+      "name": "Spicy Buff Sadheko",
+      "description": "Nepali style marinated buff, cucumber, peanuts, red onion, coriander, lime juice",
+      "price": 490,
+      "tags": [
+        "NON-VEG"
+      ],
+      "image": "/static/seed/showcase/thumbs/item_0181_spicy-buff-sadheko.webp",
+      "popular": false,
+      "featured": false,
+      "cat": "dinner",
+      "sub": "Entree",
+      "order": 180
+    },
+    {
+      "slug": "spicy-chicken-sadheko",
+      "name": "Spicy Chicken Sadheko",
+      "description": "Nepali style marinated poached chicken, cucumber, peanuts, red onion, coriander, lime juice",
+      "price": 490,
+      "tags": [
+        "NON-VEG"
+      ],
+      "image": "/static/seed/showcase/thumbs/item_0182_spicy-chicken-sadheko.webp",
+      "popular": false,
+      "featured": false,
+      "cat": "dinner",
+      "sub": "Entree",
+      "order": 181
+    },
+    {
+      "slug": "steam-momo-chicken",
+      "name": "Steam Momo Chicken",
+      "description": "",
+      "price": 350,
+      "tags": [
+        "NON-VEG"
+      ],
+      "image": "/static/seed/showcase/thumbs/item_0183_steam-momo-chicken.webp",
+      "popular": false,
+      "featured": false,
+      "cat": "dinner",
+      "sub": "Entree",
+      "order": 182
+    },
+    {
+      "slug": "steam-momo-veg",
+      "name": "Steam momo veg",
+      "description": "",
+      "price": 300,
+      "tags": [
+        "VEG"
+      ],
+      "image": "/static/seed/showcase/thumbs/item_0184_steam-momo-veg.webp",
+      "popular": false,
+      "featured": false,
+      "cat": "dinner",
+      "sub": "Entree",
+      "order": 183
+    },
+    {
+      "slug": "grilled-chicken-breast",
+      "name": "Grilled Chicken Breast",
+      "description": "Grilled chicken breast with tomato ragu, couscous, olives, crispy aubergine",
+      "price": 890,
+      "tags": [
+        "NON-VEG"
+      ],
+      "image": "/static/seed/showcase/thumbs/item_0186_grilled-chicken-breast.webp",
+      "popular": false,
+      "featured": false,
+      "cat": "dinner",
+      "sub": "Mains",
+      "order": 185
+    },
+    {
+      "slug": "himalayan-rice-chicken-bowl",
+      "name": "Himalayan Rice Chicken Bowl",
+      "description": "Himalayan red rice with japanese style marinated chicken with egg, onion, chilli oil, sesame",
+      "price": 990,
+      "tags": [
+        "NON-VEG"
+      ],
+      "image": "/static/seed/showcase/thumbs/item_0188_himalayan-rice-chicken-bowl.webp",
+      "popular": false,
+      "featured": false,
+      "cat": "dinner",
+      "sub": "Mains",
+      "order": 187
+    },
+    {
+      "slug": "himalayan-rice-lamb-bowl",
+      "name": "Himalayan Rice Lamb Bowl",
+      "description": "Himalayan red rice with clooked lamb, mint souce",
+      "price": 1050,
+      "tags": [
+        "NON-VEG"
+      ],
+      "image": "/static/seed/showcase/thumbs/item_0189_himalayan-rice-lamb-bowl.webp",
+      "popular": false,
+      "featured": false,
+      "cat": "dinner",
+      "sub": "Mains",
+      "order": 188
+    },
+    {
+      "slug": "himalayan-rice-veg-bowl",
+      "name": "Himalayan Rice Veg Bowl",
+      "description": "Himalayan red rice with stir fried vegs, marinated tofu, seafood",
+      "price": 890,
+      "tags": [
+        "VEG"
+      ],
+      "image": "/static/seed/showcase/thumbs/item_0190_himalayan-rice-veg-bowl.webp",
+      "popular": false,
+      "featured": false,
+      "cat": "dinner",
+      "sub": "Mains",
+      "order": 189
+    },
+    {
+      "slug": "pan-fried-basa-fish",
+      "name": "Pan Fried Basa Fish",
+      "description": "Pan fried basa fish with couscous, olives, tomato, crispy aubergine",
+      "price": 890,
+      "tags": [
+        "NON-VEG"
+      ],
+      "image": "/static/seed/showcase/thumbs/item_0191_pan-fried-basa-fish.webp",
+      "popular": false,
+      "featured": false,
+      "cat": "dinner",
+      "sub": "Mains",
+      "order": 190
+    },
+    {
+      "slug": "slow-cooked-chicken-tikka",
+      "name": "Slow Cooked Chicken Tikka",
+      "description": "Slow cooked chicken tikka with quinoa salad, pomogranate, rasion, cashew, flat bread, mint yogurt",
+      "price": 890,
+      "tags": [
+        "NON-VEG"
+      ],
+      "image": "/static/seed/showcase/thumbs/item_0192_slow-cooked-chicken-tikka.webp",
+      "popular": false,
+      "featured": false,
+      "cat": "dinner",
+      "sub": "Mains",
+      "order": 191
+    },
+    {
+      "slug": "aperol-sour",
+      "name": "Aperol Sour",
+      "description": "Gin, aperol, lemon juice, syrup, egg white",
+      "price": 850,
+      "tags": [],
+      "image": "/static/seed/showcase/thumbs/item_0193_aperol-sour.webp",
+      "popular": false,
+      "featured": false,
+      "cat": "bar",
+      "sub": "Signnature Cocktails",
+      "order": 192
+    },
+    {
+      "slug": "cant-beet-the-bat",
+      "name": "Can't Beet The Bat",
+      "description": "Bacardi white rum, homemade beetroot puree, fresh lime juice and sugar syrup with a flamed orange zest",
+      "price": 850,
+      "tags": [],
+      "image": "/static/seed/showcase/thumbs/item_0195_cant-beet-the-bat.webp",
+      "popular": false,
+      "featured": false,
+      "cat": "bar",
+      "sub": "Signnature Cocktails",
+      "order": 194
+    },
+    {
+      "slug": "caramelized-banana-daiquiri",
+      "name": "Caramelized Banana Daiquiri",
+      "description": "Homemade banana and cardamom puree with bacardi white rum, fresh lime juice and sugar syrup",
+      "price": 850,
+      "tags": [],
+      "image": "/static/seed/showcase/thumbs/item_0196_caramelized-banana-daiquiri.webp",
+      "popular": false,
+      "featured": false,
+      "cat": "bar",
+      "sub": "Signnature Cocktails",
+      "order": 195
+    },
+    {
+      "slug": "coconut-lemongrass-daiquiri",
+      "name": "Coconut & Lemongrass Daiquiri",
+      "description": "Fresh lemongrass, bacardi white rum, malibu, fresh lime juice and sugar syrup",
+      "price": 850,
+      "tags": [],
+      "image": "/static/seed/showcase/thumbs/item_0197_coconut-lemongrass-daiquiri.webp",
+      "popular": false,
+      "featured": false,
+      "cat": "bar",
+      "sub": "Signnature Cocktails",
+      "order": 196
+    },
+    {
+      "slug": "cucumber-martini",
+      "name": "Cucumber Martini",
+      "description": "Cucumber, lemon juice, liqure, gin",
+      "price": 850,
+      "tags": [],
+      "image": "/static/seed/showcase/thumbs/item_0198_cucumber-martini.webp",
+      "popular": false,
+      "featured": false,
+      "cat": "bar",
+      "sub": "Signnature Cocktails",
+      "order": 197
+    },
+    {
+      "slug": "malibu-blue-hawaiian",
+      "name": "Malibu Blue Hawaiian",
+      "description": "Malibu, blue curacao, pj and serve",
+      "price": 950,
+      "tags": [],
+      "image": "/static/seed/showcase/thumbs/item_0199_malibu-blue-hawaiian.webp",
+      "popular": false,
+      "featured": false,
+      "cat": "bar",
+      "sub": "Signnature Cocktails",
+      "order": 198
+    },
+    {
+      "slug": "penicillin",
+      "name": "Penicillin",
+      "description": "Whiskey, lemon juice, home made ginger honey syrup",
+      "price": 850,
+      "tags": [],
+      "image": "/static/seed/showcase/thumbs/item_0201_penicillin.webp",
+      "popular": false,
+      "featured": false,
+      "cat": "bar",
+      "sub": "Signnature Cocktails",
+      "order": 200
+    },
+    {
+      "slug": "strawberry-cream",
+      "name": "Strawberry & Cream",
+      "description": "Gin, strawberry jam, cream de cacoa, cream",
+      "price": 890,
+      "tags": [],
+      "image": "/static/seed/showcase/thumbs/item_0202_strawberry-cream.webp",
+      "popular": false,
+      "featured": false,
+      "cat": "bar",
+      "sub": "Signnature Cocktails",
+      "order": 201
+    },
+    {
+      "slug": "tiramusi-martini",
+      "name": "Tiramusi Martini",
+      "description": "Coffee, rum, maple syrup, coconut milk, vanilla",
+      "price": 850,
+      "tags": [],
+      "image": "/static/seed/showcase/thumbs/item_0205_tiramusi-martini.webp",
+      "popular": false,
+      "featured": false,
+      "cat": "bar",
+      "sub": "Signnature Cocktails",
+      "order": 204
+    },
+    {
+      "slug": "watermelon-chilli-margarita",
+      "name": "Watermelon Chilli Margarita",
+      "description": "Chilli salt rim, watermelon, red chilli, tequila, syrup, cointreau, lime",
+      "price": 850,
+      "tags": [],
+      "image": "/static/seed/showcase/thumbs/item_0206_watermelon-chilli-margarita.webp",
+      "popular": false,
+      "featured": false,
+      "cat": "bar",
+      "sub": "Signnature Cocktails",
+      "order": 205
+    },
+    {
+      "slug": "white-lady",
+      "name": "White Lady",
+      "description": "Gin, orange juice, lemon juice, egg white",
+      "price": 850,
+      "tags": [],
+      "image": "/static/seed/showcase/thumbs/item_0207_white-lady.webp",
+      "popular": false,
+      "featured": false,
+      "cat": "bar",
+      "sub": "Signnature Cocktails",
+      "order": 206
+    },
+    {
+      "slug": "gin-tonic",
+      "name": "Gin & Tonic",
+      "description": "",
+      "price": 690,
+      "tags": [],
+      "image": "/static/seed/showcase/thumbs/item_0208_gin-tonic.webp",
+      "popular": false,
+      "featured": false,
+      "cat": "bar",
+      "sub": "Cocktails",
+      "order": 207
+    },
+    {
+      "slug": "margarita",
+      "name": "Margarita",
+      "description": "",
+      "price": 890,
+      "tags": [],
+      "image": "/static/seed/showcase/thumbs/item_0209_margarita.webp",
+      "popular": false,
+      "featured": false,
+      "cat": "bar",
+      "sub": "Cocktails",
+      "order": 208
+    },
+    {
+      "slug": "pina-colada",
+      "name": "Pina Colada",
+      "description": "",
+      "price": 890,
+      "tags": [],
+      "image": "/static/seed/showcase/thumbs/item_0211_pina-colada.webp",
+      "popular": false,
+      "featured": false,
+      "cat": "bar",
+      "sub": "Cocktails",
+      "order": 210
+    },
+    {
+      "slug": "mulled-wine",
+      "name": "Mulled Wine",
+      "description": "",
+      "price": 790,
+      "tags": [],
+      "image": "/static/seed/showcase/thumbs/item_0218_mulled-wine.webp",
+      "popular": false,
+      "featured": false,
+      "cat": "bar",
+      "sub": "Winter Warmer",
+      "order": 217
+    },
+    {
+      "slug": "apple-cider",
+      "name": "Apple Cider",
+      "description": "",
+      "price": 350,
+      "tags": [],
+      "image": "/static/seed/showcase/thumbs/item_0219_apple-cider.webp",
+      "popular": false,
+      "featured": false,
+      "cat": "bar",
+      "sub": "Bottled Beer",
+      "order": 218
+    },
+    {
+      "slug": "carlsberg",
+      "name": "Carlsberg",
+      "description": "650ml",
+      "price": 790,
+      "tags": [],
+      "image": "/static/seed/showcase/thumbs/item_0220_carlsberg.webp",
+      "popular": false,
+      "featured": false,
+      "cat": "bar",
+      "sub": "Bottled Beer",
+      "order": 219
+    },
+    {
+      "slug": "gorkha",
+      "name": "Gorkha",
+      "description": "330ml",
+      "price": 400,
+      "tags": [],
+      "image": "/static/seed/showcase/thumbs/item_0221_gorkha.webp",
+      "popular": false,
+      "featured": false,
+      "cat": "bar",
+      "sub": "Bottled Beer",
+      "order": 220
+    },
+    {
+      "slug": "nepal-ice-premium",
+      "name": "Nepal Ice Premium",
+      "description": "650ml",
+      "price": 590,
+      "tags": [],
+      "image": "/static/seed/showcase/thumbs/item_0222_nepal-ice-premium.webp",
+      "popular": false,
+      "featured": false,
+      "cat": "bar",
+      "sub": "Bottled Beer",
+      "order": 221
+    },
+    {
+      "slug": "tuborg",
+      "name": "Tuborg",
+      "description": "330ml",
+      "price": 400,
+      "tags": [],
+      "image": "/static/seed/showcase/thumbs/item_0223_tuborg.webp",
+      "popular": false,
+      "featured": false,
+      "cat": "bar",
+      "sub": "Bottled Beer",
+      "order": 222
+    },
+    {
+      "slug": "barahsinghe-pilsner",
+      "name": "Barahsinghe Pilsner",
+      "description": "Glass: 400\nPitcher: 1550",
+      "price": 400,
+      "tags": [],
+      "image": "/static/seed/showcase/thumbs/item_0224_barahsinghe-pilsner.webp",
+      "popular": false,
+      "featured": false,
+      "cat": "bar",
+      "sub": "Crafted tap Beer",
+      "order": 223
+    },
+    {
+      "slug": "sherpa-ipa",
+      "name": "Sherpa IPA",
+      "description": "Glass: 550\nPitcher: 1890",
+      "price": 550,
+      "tags": [],
+      "image": "/static/seed/showcase/thumbs/item_0227_sherpa-ipa.webp",
+      "popular": false,
+      "featured": false,
+      "cat": "bar",
+      "sub": "Crafted tap Beer",
+      "order": 226
+    },
+    {
+      "slug": "khukuri-white",
+      "name": "Khukuri (White)",
+      "description": "60ml: 600\nFull:  5600",
+      "price": 600,
+      "tags": [],
+      "image": "/static/seed/showcase/thumbs/item_0230_khukuri-white.webp",
+      "popular": false,
+      "featured": false,
+      "cat": "bar",
+      "sub": "Local Spirits",
+      "order": 229
+    },
+    {
+      "slug": "khukuri-rum",
+      "name": "Khukuri Rum",
+      "description": "60ml: 500\nFull: 5000",
+      "price": 500,
+      "tags": [],
+      "image": "/static/seed/showcase/thumbs/item_0231_khukuri-rum.webp",
+      "popular": false,
+      "featured": false,
+      "cat": "bar",
+      "sub": "Local Spirits",
+      "order": 230
+    },
+    {
+      "slug": "mt-8848-vodka",
+      "name": "Mt. 8848 Vodka",
+      "description": "60ml: 500\nfull (750ml): 4800",
+      "price": 500,
+      "tags": [],
+      "image": "/static/seed/showcase/thumbs/item_0232_mt-8848-vodka.webp",
+      "popular": false,
+      "featured": false,
+      "cat": "bar",
+      "sub": "Local Spirits",
+      "order": 231
+    },
+    {
+      "slug": "nude-vodka",
+      "name": "Nude Vodka",
+      "description": "60ml: 450\nFull (750ml): 4850",
+      "price": 450,
+      "tags": [],
+      "image": "/static/seed/showcase/thumbs/item_0233_nude-vodka.webp",
+      "popular": false,
+      "featured": false,
+      "cat": "bar",
+      "sub": "Local Spirits",
+      "order": 232
+    },
+    {
+      "slug": "ruslan-vodka",
+      "name": "Ruslan Vodka",
+      "description": "60ml: 400\nfull (750ml): 4000",
+      "price": 400,
+      "tags": [],
+      "image": "/static/seed/showcase/thumbs/item_0236_ruslan-vodka.webp",
+      "popular": false,
+      "featured": false,
+      "cat": "bar",
+      "sub": "Local Spirits",
+      "order": 235
+    },
+    {
+      "slug": "absolute-blue",
+      "name": "Absolute Blue",
+      "description": "30ml:500  Full(1000ml): 12900",
+      "price": 500,
+      "tags": [],
+      "image": "/static/seed/showcase/thumbs/item_0239_absolute-blue.webp",
+      "popular": false,
+      "featured": false,
+      "cat": "bar",
+      "sub": "Imported Spirits",
+      "order": 238
+    },
+    {
+      "slug": "j-daniels",
+      "name": "J. Daniels",
+      "description": "30ml: 600 Full(1000ml): 15800",
+      "price": 600,
+      "tags": [],
+      "image": "/static/seed/showcase/thumbs/item_0244_j-daniels.webp",
+      "popular": false,
+      "featured": false,
+      "cat": "bar",
+      "sub": "Imported Spirits",
+      "order": 243
+    },
+    {
+      "slug": "jameson",
+      "name": "Jameson",
+      "description": "30ml: 580\nFull(1000ml):  15200",
+      "price": 580,
+      "tags": [],
+      "image": "/static/seed/showcase/thumbs/item_0248_jameson.webp",
+      "popular": false,
+      "featured": false,
+      "cat": "bar",
+      "sub": "Imported Spirits",
+      "order": 247
+    },
+    {
+      "slug": "jaqermeister",
+      "name": "Jaqermeister",
+      "description": "30ml",
+      "price": 600,
+      "tags": [],
+      "image": "/static/seed/showcase/thumbs/item_0249_jaqermeister.webp",
+      "popular": false,
+      "featured": false,
+      "cat": "bar",
+      "sub": "Imported Spirits",
+      "order": 248
+    },
+    {
+      "slug": "kahlua",
+      "name": "Kahlua",
+      "description": "30ml",
+      "price": 600,
+      "tags": [],
+      "image": "/static/seed/showcase/thumbs/item_0250_kahlua.webp",
+      "popular": false,
+      "featured": false,
+      "cat": "bar",
+      "sub": "Imported Spirits",
+      "order": 249
+    },
+    {
+      "slug": "malibu",
+      "name": "Malibu",
+      "description": "30ml",
+      "price": 600,
+      "tags": [],
+      "image": "/static/seed/showcase/thumbs/item_0251_malibu.webp",
+      "popular": false,
+      "featured": false,
+      "cat": "bar",
+      "sub": "Imported Spirits",
+      "order": 250
+    },
+    {
+      "slug": "robertson-winery-sweet-red",
+      "name": "Robertson Winery (sweet red)",
+      "description": "Glass: 720\nBottle: 2800",
+      "price": 720,
+      "tags": [],
+      "image": "/static/seed/showcase/thumbs/item_0255_robertson-winery-sweet-red.webp",
+      "popular": false,
+      "featured": false,
+      "cat": "bar",
+      "sub": "House Wine",
+      "order": 254
+    },
+    {
+      "slug": "jacobs-creek-chardonnay",
+      "name": "Jacob's Creek Chardonnay",
+      "description": "Bottle",
+      "price": 3500,
+      "tags": [],
+      "image": "/static/seed/showcase/thumbs/item_0257_jacobs-creek-chardonnay.webp",
+      "popular": false,
+      "featured": false,
+      "cat": "bar",
+      "sub": "White Wine",
+      "order": 256
+    },
+    {
+      "slug": "jacobs-creek-merlot",
+      "name": "Jacob's Creek Merlot",
+      "description": "Bottle",
+      "price": 3500,
+      "tags": [],
+      "image": "/static/seed/showcase/thumbs/item_0261_jacobs-creek-merlot.webp",
+      "popular": false,
+      "featured": false,
+      "cat": "bar",
+      "sub": "Red Wine",
+      "order": 260
+    },
+    {
+      "slug": "jacobs-creek-shiraz-mascato",
+      "name": "Jacob's Creek Shiraz Mascato",
+      "description": "Bottle",
+      "price": 3500,
+      "tags": [],
+      "image": "/static/seed/showcase/thumbs/item_0264_jacobs-creek-shiraz-mascato.webp",
+      "popular": false,
+      "featured": false,
+      "cat": "bar",
+      "sub": "Sparkle",
+      "order": 263
+    },
+    {
+      "slug": "jacobs-creek-shiraz-rose",
+      "name": "Jacob's Creek Shiraz Rose",
+      "description": "Bottle",
+      "price": 3800,
+      "tags": [],
+      "image": "/static/seed/showcase/thumbs/item_0265_jacobs-creek-shiraz-rose.webp",
+      "popular": false,
+      "featured": false,
+      "cat": "bar",
+      "sub": "Sparkle",
+      "order": 264
+    },
+    {
+      "slug": "hookah",
+      "name": "Hookah",
+      "description": "Flavour: Double  Apple, Mint, Blueberry, Pann, Orange",
+      "price": 790,
+      "tags": [],
+      "image": "/static/seed/showcase/thumbs/item_0270_hookah.webp",
+      "popular": false,
+      "featured": false,
+      "cat": "hookah",
+      "sub": null,
+      "order": 269
+    },
+    {
+      "slug": "banana-cake",
+      "name": "Banana Cake",
+      "description": "",
+      "price": 250,
+      "tags": [],
+      "image": "/static/seed/showcase/thumbs/item_0271_banana-cake.webp",
+      "popular": false,
+      "featured": false,
+      "cat": "deserts",
+      "sub": null,
+      "order": 270
+    },
+    {
+      "slug": "brownie",
+      "name": "Brownie",
+      "description": "",
+      "price": 250,
+      "tags": [],
+      "image": "/static/seed/showcase/thumbs/item_0272_brownie.webp",
+      "popular": false,
+      "featured": false,
+      "cat": "deserts",
+      "sub": null,
+      "order": 271
+    },
+    {
+      "slug": "brownie-with-ice-cream",
+      "name": "Brownie With Ice Cream",
+      "description": "",
+      "price": 350,
+      "tags": [],
+      "image": "/static/seed/showcase/thumbs/item_0273_brownie-with-ice-cream.webp",
+      "popular": false,
+      "featured": false,
+      "cat": "deserts",
+      "sub": null,
+      "order": 272
+    },
+    {
+      "slug": "carrot-cake",
+      "name": "Carrot Cake",
+      "description": "",
+      "price": 250,
+      "tags": [],
+      "image": "/static/seed/showcase/thumbs/item_0274_carrot-cake.webp",
+      "popular": false,
+      "featured": false,
+      "cat": "deserts",
+      "sub": null,
+      "order": 273
+    },
+    {
+      "slug": "cheese-cake",
+      "name": "Cheese Cake",
+      "description": "",
+      "price": 350,
+      "tags": [],
+      "image": "/static/seed/showcase/thumbs/item_0275_cheese-cake.webp",
+      "popular": false,
+      "featured": false,
+      "cat": "deserts",
+      "sub": null,
+      "order": 274
+    },
+    {
+      "slug": "chocolate-tart",
+      "name": "Chocolate Tart",
+      "description": "",
+      "price": 280,
+      "tags": [],
+      "image": "/static/seed/showcase/thumbs/item_0276_chocolate-tart.webp",
+      "popular": false,
+      "featured": false,
+      "cat": "deserts",
+      "sub": null,
+      "order": 275
+    },
+    {
+      "slug": "cookies",
+      "name": "Cookies",
+      "description": "",
+      "price": 120,
+      "tags": [],
+      "image": "/static/seed/showcase/thumbs/item_0277_cookies.webp",
+      "popular": false,
+      "featured": false,
+      "cat": "deserts",
+      "sub": null,
+      "order": 276
+    },
+    {
+      "slug": "croissant",
+      "name": "Croissant",
+      "description": "",
+      "price": 250,
+      "tags": [],
+      "image": "/static/seed/showcase/thumbs/item_0278_croissant.webp",
+      "popular": false,
+      "featured": false,
+      "cat": "deserts",
+      "sub": null,
+      "order": 277
+    },
+    {
+      "slug": "eclairs",
+      "name": "Eclairs",
+      "description": "",
+      "price": 250,
+      "tags": [],
+      "image": "/static/seed/showcase/thumbs/item_0279_eclairs.webp",
+      "popular": false,
+      "featured": false,
+      "cat": "deserts",
+      "sub": null,
+      "order": 278
+    },
+    {
+      "slug": "energy-ball",
+      "name": "Energy Ball",
+      "description": "",
+      "price": 120,
+      "tags": [],
+      "image": "/static/seed/showcase/thumbs/item_0280_energy-ball.webp",
+      "popular": false,
+      "featured": false,
+      "cat": "deserts",
+      "sub": null,
+      "order": 279
+    },
+    {
+      "slug": "lemon-tart",
+      "name": "Lemon Tart",
+      "description": "",
+      "price": 280,
+      "tags": [],
+      "image": "/static/seed/showcase/thumbs/item_0281_lemon-tart.webp",
+      "popular": false,
+      "featured": false,
+      "cat": "deserts",
+      "sub": null,
+      "order": 280
+    },
+    {
+      "slug": "muffin",
+      "name": "Muffin",
+      "description": "",
+      "price": 120,
+      "tags": [],
+      "image": "/static/seed/showcase/thumbs/item_0282_muffin.webp",
+      "popular": false,
+      "featured": false,
+      "cat": "deserts",
+      "sub": null,
+      "order": 281
+    },
+    {
+      "slug": "tiramisu",
+      "name": "Tiramisu",
+      "description": "",
+      "price": 450,
+      "tags": [],
+      "image": "/static/seed/showcase/thumbs/item_0283_tiramisu.webp",
+      "popular": false,
+      "featured": false,
+      "cat": "deserts",
+      "sub": null,
+      "order": 282
+    },
+    {
+      "slug": "vegan-cake",
+      "name": "Vegan Cake",
+      "description": "",
+      "price": 250,
+      "tags": [],
+      "image": "/static/seed/showcase/thumbs/item_0284_vegan-cake.webp",
+      "popular": false,
+      "featured": false,
+      "cat": "deserts",
+      "sub": null,
+      "order": 283
+    }
+  ]
+}

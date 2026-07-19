@@ -547,16 +547,12 @@ def branch_save(request, pk=None):
     name = request.POST.get('name', '').strip()
     address = request.POST.get('address', '').strip()
     tag = request.POST.get('tag', '').strip()
-    theme = request.POST.get('menu_theme', '').strip()
-    if theme not in THEMES:
-        theme = ''                                    # '' = inherit company default
     if not name:
         return redirect('dashboard:branches')
     if branch:
         branch.name = name
         branch.address = address
         branch.tag = tag
-        branch.menu_theme = theme
         branch.save()
     else:
         base = slugify(name)
@@ -566,7 +562,7 @@ def branch_save(request, pk=None):
             slug = f"{base}-{counter}"
             counter += 1
         Branch.objects.create(company=request.company, name=name, slug=slug,
-                              address=address, tag=tag, menu_theme=theme)
+                              address=address, tag=tag)
     return redirect('dashboard:branches')
 
 
@@ -798,6 +794,30 @@ def branch_promotion_delete(request, slug):
         return forbidden(request)
     BranchAd.objects.filter(branch=branch).delete()
     return redirect('dashboard:branch_promotion', slug=branch.slug)
+
+
+@require_membership
+def branch_theme(request, slug):
+    branch = get_object_or_404(Branch, slug=slug)
+    if not ensure_can_manage_branch(request, branch):
+        return forbidden(request)
+    return render(request, 'dashboard/branch/theme.html', {
+        'active_tab': 'branches', 'branch_tab': 'theme', 'branch': branch,
+    })
+
+
+@require_membership
+@require_POST
+def branch_theme_save(request, slug):
+    branch = get_object_or_404(Branch, slug=slug)
+    if not ensure_can_manage_branch(request, branch):
+        return forbidden(request)
+    theme = request.POST.get('menu_theme', '')
+    if theme not in THEMES:
+        theme = ''                                    # '' = inherit company default
+    branch.menu_theme = theme
+    branch.save(update_fields=['menu_theme'])
+    return redirect('dashboard:branch_theme', slug=branch.slug)
 
 
 def _orders_for(qs, status):

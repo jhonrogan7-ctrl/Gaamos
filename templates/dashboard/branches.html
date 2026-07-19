@@ -1,5 +1,4 @@
 {% extends 'dashboard/base.html' %}
-{% load theme_tags %}
 
 {% block page_title %}Branches{% endblock %}
 {% block subtitle %}{{ request.company.name }} · all locations{% endblock %}
@@ -18,7 +17,7 @@
       {% if can_manage %}
       <div class="sp" style="flex:1"></div>
       <button class="btn ghost"
-              @click="openEdit({{ b.pk }}, '{{ b.name|escapejs }}', '{{ b.address|escapejs }}', '{{ b.tag }}', '{{ b.menu_theme }}')">Edit</button>
+              @click="openEdit({{ b.pk }}, '{{ b.name|escapejs }}', '{{ b.address|escapejs }}', '{{ b.tag }}')">Edit</button>
       {% endif %}
     </div>
     <div class="bstats">
@@ -62,9 +61,6 @@
           <option value="FLAGSHIP">Flagship</option>
           <option value="NEW">New</option>
         </select></div>
-      <div class="fld"><label>Guest menu theme</label>
-        <input type="hidden" name="menu_theme" :value="bTheme">
-        {% theme_picker include_inherit=True alpine=True %}</div>
       <div style="margin-top:16px">
         <button type="submit" class="btn">Save</button>
       </div>
@@ -80,9 +76,9 @@
 <script>
 function branchManager() {
   return {
-    show: false, title: '', formAction: '', bName: '', bAddr: '', bTag: '', bTheme: '',
-    openAdd() { this.title='Add Branch'; this.formAction='{% url "dashboard:branch_add" %}'; this.bName=''; this.bAddr=''; this.bTag=''; this.bTheme=''; this.show=true; },
-    openEdit(pk,name,addr,tag,theme) { this.title='Edit Branch'; this.formAction=`/dashboard/branches/${pk}/edit/`; this.bName=name; this.bAddr=addr; this.bTag=tag; this.bTheme=theme||''; this.show=true; },
+    show: false, title: '', formAction: '', bName: '', bAddr: '', bTag: '',
+    openAdd() { this.title='Add Branch'; this.formAction='{% url "dashboard:branch_add" %}'; this.bName=''; this.bAddr=''; this.bTag=''; this.show=true; },
+    openEdit(pk,name,addr,tag) { this.title='Edit Branch'; this.formAction=`/dashboard/branches/${pk}/edit/`; this.bName=name; this.bAddr=addr; this.bTag=tag; this.show=true; },
   };
 }
 </script>
