@@ -1,8 +1,8 @@
 from django.conf import settings
 from django.conf.urls.i18n import i18n_patterns
-from django.conf.urls.static import static
 from django.contrib import admin
-from django.urls import include, path
+from django.urls import include, path, re_path
+from django.views.static import serve
 
 from core import views as core_views
 
@@ -27,5 +27,12 @@ urlpatterns += [
     path("", include("menu.urls")),
 ]
 
-if settings.DEBUG:
-    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+# Serve tenant media (QR PNGs, logos) from Django in every environment. These
+# files are generated at runtime, so WhiteNoise (static-only, manifest built at
+# boot) can't serve them, and the stack has no separate media server — Cloudflare
+# fronts uvicorn directly. django.conf.urls.static.static() no-ops when DEBUG is
+# False, so the route is wired explicitly here. All media is public by design
+# (QR codes are printed to scan; logos are branding), so no auth gate is needed.
+urlpatterns += [
+    re_path(r"^media/(?P<path>.*)$", serve, {"document_root": settings.MEDIA_ROOT}),
+]
