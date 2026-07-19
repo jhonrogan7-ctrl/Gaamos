@@ -25,6 +25,6 @@ def test_rejects_taken_slug_any_status():
 
 
 @pytest.mark.django_db
-@pytest.mark.parametrize("ok", ["momohouse", "cafe-42", "a1", "sherpa-house-ktm"])
+@pytest.mark.parametrize("ok", ["momohouse", "cafe-42", "a1", "danfe-house-ktm"])
 def test_accepts_valid_free_slugs(ok):
     validate_subdomain_slug(ok)   # no exception

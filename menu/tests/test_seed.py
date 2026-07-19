@@ -14,6 +14,12 @@ class SeedJuiceryTest(TestCase):
         reset_current_company(token)
         super().tearDown()
 
+    def test_juicery_seeds_citrus_theme(self):
+        # Spec: nearest new palette to the old Tropical Juice vibe.
+        call_command('seed_juicery')
+        company = Company.objects.get(slug='juicery')
+        self.assertEqual(company.menu_theme, 'citrus')
+
     def test_seed_creates_juicery_with_stamped_rows(self):
         call_command('seed_juicery')
         company = Company.objects.get(slug='juicery')
@@ -53,10 +59,10 @@ class SeedTestcoTest(TestCase):
     def _company(self):
         return Company.objects.get(slug='testco')
 
-    def test_seed_creates_sherpa_house(self):
+    def test_seed_creates_your_cafe(self):
         call_command('seed_testco')
         company = self._company()
-        self.assertEqual(company.name, 'Sherpa House Kitchen & Bar')
+        self.assertEqual(company.name, 'Your Café')
         self.assertEqual(Branch.all_objects.filter(company=company).count(), 2)
         self.assertEqual(Category.all_objects.filter(company=company).count(), 8)
         self.assertEqual(SubCategory.all_objects.filter(company=company).count(), 17)

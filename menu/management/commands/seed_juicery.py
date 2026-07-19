@@ -37,6 +37,7 @@ class Command(BaseCommand):
                 'facebook': rest.get('facebook', ''),
                 'tiktok': rest.get('tiktok', ''),
                 'status': 'active',
+                'menu_theme': 'citrus',
             },
         )
 

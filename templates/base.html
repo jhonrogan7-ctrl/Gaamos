@@ -1,5 +1,5 @@
-{% load static i18n %}{% get_current_language as LANGUAGE_CODE %}<!DOCTYPE html>
-<html lang="{{ LANGUAGE_CODE|default:'en' }}" data-theme="{{ company.theme|default:'saffron' }}">
+{% load static i18n theme_tags %}{% get_current_language as LANGUAGE_CODE %}<!DOCTYPE html>
+<html lang="{{ LANGUAGE_CODE|default:'en' }}" data-theme="{{ theme|default:'eco' }}" style="{% theme_style theme %}">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">

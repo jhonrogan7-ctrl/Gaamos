@@ -4,6 +4,7 @@ from django.core.exceptions import ValidationError
 from django.db import models
 
 from .tenancy import TenantScopedModel, get_current_company
+from .themes import DEFAULT_THEME, THEME_CHOICES
 
 _TABLE_CODE_ALPHABET = 'abcdefghjkmnpqrstuvwxyz23456789'  # no 0/o/1/l/i
 
@@ -32,13 +33,9 @@ class Company(models.Model):
     menu_layout = models.CharField(
         max_length=20, default='baseline', choices=MENU_LAYOUT_CHOICES)
 
-    MENU_THEME_CHOICES = [
-        ('saffron', 'Saffron Festival'),
-        ('berry', 'Electric Berry'),
-        ('juice', 'Tropical Juice'),
-    ]
+    MENU_THEME_CHOICES = THEME_CHOICES   # name kept: ops form + tests read it
     menu_theme = models.CharField(
-        max_length=20, default='saffron', choices=MENU_THEME_CHOICES)
+        max_length=20, default=DEFAULT_THEME, choices=THEME_CHOICES)
 
     PACKAGE_CHOICES = [('business', 'Business'), ('vip', 'VIP')]
     package = models.CharField(
@@ -62,7 +59,7 @@ class Branch(TenantScopedModel):
     tag = models.CharField(max_length=20, blank=True, choices=TAG_CHOICES)
     menu_theme = models.CharField(              # '' = inherit company default
         max_length=20, blank=True, default='',
-        choices=Company.MENU_THEME_CHOICES)
+        choices=THEME_CHOICES)
     qr_image = models.CharField(max_length=200, blank=True)
 
     class Meta(TenantScopedModel.Meta):

@@ -38,3 +38,4 @@ static/css/app.css
 
 # Compiled gettext catalogs (built by compilemessages)
 *.mo
+/quarantined-media/

@@ -13,6 +13,7 @@ urlpatterns = [
     path('tenants', views.tenants, name='tenants'),
     path('tenants/<int:company_id>/toggle', views.tenant_toggle, name='tenant_toggle'),
     path('tenants/<int:company_id>/reset-password', views.tenant_reset_password, name='tenant_reset_password'),
+    path('tenants/<int:company_id>/impersonate', views.tenant_impersonate, name='tenant_impersonate'),
     path('tenants/new', views.tenant_new, name='tenant_new'),
     path('tenants/<int:company_id>/created', views.tenant_created, name='tenant_created'),
 ]

@@ -5,11 +5,11 @@
   {% csrf_token %}
   <div class="grid gap-4 sm:grid-cols-2">
     <label class="block text-sm font-medium text-ink-2">{% translate "Your name" %} *
-      <input name="name" value="{{ values.name|default:'' }}" placeholder="{% translate 'Aashish Sharma' %}"
+      <input name="name" value="{{ values.name|default:'' }}" placeholder="{% translate 'Suman Thapa' %}"
              class="mk-input" required>
     </label>
     <label class="block text-sm font-medium text-ink-2">{% translate "Venue name" %} *
-      <input name="venue_name" value="{{ values.venue_name|default:'' }}" placeholder="{% translate 'Chill Zone Café' %}"
+      <input name="venue_name" value="{{ values.venue_name|default:'' }}" placeholder="{% translate 'Momo Ghar Café' %}"
              class="mk-input" required>
     </label>
   </div>

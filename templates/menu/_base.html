@@ -1,7 +1,7 @@
 <!doctype html>
-{% load static %}
-{# Guest theme: per-venue persistence lands in Phase 4; default to Saffron Festival. #}
-<html lang="en" data-theme="{{ theme|default:'saffron' }}">
+{% load static theme_tags %}
+{# Theme tokens come inline from menu/themes.py; data-theme keeps the slug for structural CSS hooks. #}
+<html lang="en" data-theme="{{ theme|default:'eco' }}" style="{% theme_style theme %}">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
