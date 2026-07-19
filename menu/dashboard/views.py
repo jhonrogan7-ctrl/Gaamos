@@ -547,16 +547,12 @@ def branch_save(request, pk=None):
     name = request.POST.get('name', '').strip()
     address = request.POST.get('address', '').strip()
     tag = request.POST.get('tag', '').strip()
-    theme = request.POST.get('menu_theme', '').strip()
-    if theme not in THEMES:
-        theme = ''                                    # '' = inherit company default
     if not name:
         return redirect('dashboard:branches')
     if branch:
         branch.name = name
         branch.address = address
         branch.tag = tag
-        branch.menu_theme = theme
         branch.save()
     else:
         base = slugify(name)
@@ -566,7 +562,7 @@ def branch_save(request, pk=None):
             slug = f"{base}-{counter}"
             counter += 1
         Branch.objects.create(company=request.company, name=name, slug=slug,
-                              address=address, tag=tag, menu_theme=theme)
+                              address=address, tag=tag)
     return redirect('dashboard:branches')
 
 

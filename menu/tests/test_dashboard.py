@@ -279,33 +279,30 @@ class BranchManageTest(TenantTestCase):
         self.branch = Branch.objects.create(
             company=self.company, name='Main', slug='main', address='Lakeside')
 
-    def test_branches_picker_offers_inherit_plus_six(self):
+    def test_branches_modal_has_no_theme_picker(self):
         self.client.login(username='own1', password='pass')
         body = self.client.get('/dashboard/branches/').content.decode()
-        self.assertEqual(body.count("@click=\"bTheme='"), 7)  # inherit + 6
-        self.assertIn('Company default', body)
-        self.assertIn('Appetite Stimulators', body)
+        self.assertNotIn('bTheme', body)
+        self.assertNotIn('Company default', body)
+        self.assertNotIn('name="menu_theme"', body)
 
-    def test_add_saves_theme_override(self):
+    def test_add_ignores_posted_theme(self):
+        # theme changes go through the Theme tab only; branch_save must not read the field
         self.client.login(username='own1', password='pass')
         self.client.post('/dashboard/branches/add/', {
             'name': 'Patan', 'address': 'Mangal Bazaar', 'tag': '', 'menu_theme': 'cozy'})
-        self.assertEqual(Branch.objects.get(name='Patan').menu_theme, 'cozy')
+        self.assertEqual(Branch.objects.get(name='Patan').menu_theme, '')
 
-    def test_edit_can_reset_to_company_default(self):
+    def test_edit_preserves_existing_theme(self):
+        # regression: an edit POST without menu_theme must NOT reset the branch to inherit
         self.branch.menu_theme = 'herbal'
         self.branch.save()
         self.client.login(username='own1', password='pass')
         self.client.post(f'/dashboard/branches/{self.branch.pk}/edit/', {
-            'name': 'Main', 'address': 'Lakeside', 'tag': '', 'menu_theme': ''})
+            'name': 'Main Renamed', 'address': 'Lakeside', 'tag': ''})
         self.branch.refresh_from_db()
-        self.assertEqual(self.branch.menu_theme, '')
-
-    def test_invalid_theme_ignored(self):
-        self.client.login(username='own1', password='pass')
-        self.client.post('/dashboard/branches/add/', {
-            'name': 'Bhaktapur', 'address': 'Durbar', 'tag': '', 'menu_theme': 'neon'})
-        self.assertEqual(Branch.objects.get(name='Bhaktapur').menu_theme, '')
+        self.assertEqual(self.branch.name, 'Main Renamed')
+        self.assertEqual(self.branch.menu_theme, 'herbal')
 
     def test_manager_cannot_add_or_edit(self):
         mgr = User.objects.create_user(username='mgr1', password='pass')
@@ -325,7 +322,6 @@ class BranchManageTest(TenantTestCase):
         body = self.client.get('/dashboard/branches/').content.decode()
         self.assertIn('sheet-backdrop', body)
         self.assertIn('branchManager()', body)
-        self.assertIn('Company default', body)      # theme picker inherit option
         self.assertIn('@click="openAdd()"', body)   # add card opens the sheet…
         self.assertNotIn('href="/dashboard/settings/" class="bcard add"', body)  # …old settings-link card is gone
         mgr = User.objects.create_user(username='mgr2', password='pass')
