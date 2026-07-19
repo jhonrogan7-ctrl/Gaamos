@@ -1,0 +1,21 @@
+{% extends "dashboard/base.html" %}
+{% load theme_tags %}
+{% block title %}{{ branch.name }} — Theme{% endblock %}
+{% block page_title %}{{ branch.name }}<small>Theme</small>{% endblock %}
+{% block header_action %}
+  <a href="{% url 'dashboard:branches' %}" style="color:rgba(255,255,255,.7);text-decoration:none;font-size:13px;">← Branches</a>
+{% endblock %}
+{% block content %}
+{% include 'dashboard/branch/_tabs.html' %}
+
+<div class="sec-h"><h3>Guest menu theme</h3><span class="mini">Colours guests see when they open this branch's menu — tap a card to apply it. Company default inherits the venue theme from Settings.</span></div>
+
+<form method="post" action="{% url 'dashboard:branch_theme_save' branch.slug %}">
+  {% csrf_token %}
+  {% theme_picker current=branch.menu_theme include_inherit=True %}
+</form>
+
+<div class="mini" style="margin-top:10px;">
+  <a href="/?branch={{ branch.slug }}" target="_blank" rel="noopener">View menu ↗</a> — opens this branch's guest menu with the currently applied theme.
+</div>
+{% endblock %}
