@@ -800,6 +800,30 @@ def branch_promotion_delete(request, slug):
     return redirect('dashboard:branch_promotion', slug=branch.slug)
 
 
+@require_membership
+def branch_theme(request, slug):
+    branch = get_object_or_404(Branch, slug=slug)
+    if not ensure_can_manage_branch(request, branch):
+        return forbidden(request)
+    return render(request, 'dashboard/branch/theme.html', {
+        'active_tab': 'branches', 'branch_tab': 'theme', 'branch': branch,
+    })
+
+
+@require_membership
+@require_POST
+def branch_theme_save(request, slug):
+    branch = get_object_or_404(Branch, slug=slug)
+    if not ensure_can_manage_branch(request, branch):
+        return forbidden(request)
+    theme = request.POST.get('menu_theme', '')
+    if theme not in THEMES:
+        theme = ''                                    # '' = inherit company default
+    branch.menu_theme = theme
+    branch.save(update_fields=['menu_theme'])
+    return redirect('dashboard:branch_theme', slug=branch.slug)
+
+
 def _orders_for(qs, status):
     qs = qs.select_related('branch', 'table').prefetch_related('items')
     if status in (Order.STATUS_NEW, Order.STATUS_SERVED):
