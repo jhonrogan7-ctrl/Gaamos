@@ -9,7 +9,7 @@
  *   GET /static/ -> stale-while-revalidate (ignoreSearch tolerates ?v=)
  *   anything else (POSTs, /media/, SSE streams, cross-origin) -> untouched
  */
-const VERSION = "v2";
+const VERSION = "v3";
 const CACHE = `gaamos-shell-${VERSION}`;
 
 const PRECACHE = [
