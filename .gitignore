@@ -39,3 +39,5 @@ static/css/app.css
 # Compiled gettext catalogs (built by compilemessages)
 *.mo
 /quarantined-media/
+_find_out/
+menu/fixtures/tranquility-inn-preview.json

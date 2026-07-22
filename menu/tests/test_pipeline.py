@@ -68,6 +68,68 @@ def test_commons_search_parses_and_ranks(monkeypatch):
     assert res[0][1] == "https://x/alpha.jpg"
 
 
+def test_pexels_search_parses_photos(monkeypatch, settings):
+    import menu.pipeline.find_pexels as fp
+    settings.PEXELS_API_KEY = "TESTKEY"
+
+    payload = {"photos": [
+        {"src": {"large": "https://p/large.jpg", "medium": "https://p/med.jpg"},
+         "photographer": "Ada", "alt": "chilli chicken", "url": "https://pexels/1"},
+        {"src": {"medium": "https://p/med2.jpg"},
+         "photographer": "Bo", "alt": "", "url": "https://pexels/2"},
+    ]}
+    captured = {}
+
+    class FakeResp(io.BytesIO):
+        def __enter__(self):
+            return self
+
+        def __exit__(self, *a):
+            return False
+
+    def fake_urlopen(req, *a, **k):
+        captured["auth"] = req.headers.get("Authorization")
+        captured["url"] = req.full_url
+        return FakeResp(json.dumps(payload).encode())
+
+    monkeypatch.setattr(fp.urllib.request, "urlopen", fake_urlopen)
+    res = fp.search("chilli chicken", per_page=2)
+    assert captured["auth"] == "TESTKEY"
+    assert "chilli+chicken" in captured["url"]
+    assert res[0]["url"] == "https://p/large.jpg"        # prefers 'large'
+    assert res[0]["photographer"] == "Ada"
+    assert res[1]["url"] == "https://p/med2.jpg"         # falls back to 'medium'
+
+
+def test_openverse_search_prefers_no_attribution(monkeypatch):
+    import menu.pipeline.find_openverse as fo
+
+    calls = []
+    cc0 = {"results": [{"url": "https://o/cc0.jpg", "title": "Free",
+                        "license": "cc0", "license_version": "1.0",
+                        "attribution": "", "creator": "X", "source": "flickr",
+                        "foreign_landing_url": "https://land/1"}]}
+
+    class FakeResp(io.BytesIO):
+        def __enter__(self):
+            return self
+
+        def __exit__(self, *a):
+            return False
+
+    def fake_urlopen(req, *a, **k):
+        calls.append(req.full_url)
+        return FakeResp(json.dumps(cc0).encode())
+
+    monkeypatch.setattr(fo.urllib.request, "urlopen", fake_urlopen)
+    res = fo.search("tomato soup")
+    # first (cc0/pdm) tier returned results -> stops, one query only
+    assert len(calls) == 1
+    assert "cc0" in calls[0]
+    assert res[0]["url"] == "https://o/cc0.jpg"
+    assert res[0]["license"].startswith("cc0")
+
+
 def test_generate_image_decodes_inline_data():
     raw = b"\x89PNG\r\n\x1a\nFAKEIMAGE"
     b64 = base64.b64encode(raw).decode()

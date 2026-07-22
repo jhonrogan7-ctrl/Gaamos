@@ -100,4 +100,9 @@ MEDIA_ROOT = os.environ.get("MEDIA_ROOT", str(BASE_DIR / "media"))
 GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY", "")
 GEMINI_IMAGE_MODEL = os.environ.get("GEMINI_IMAGE_MODEL", "gemini-2.5-flash-image")
 
+# Free stock-photo APIs for the image 'find' path (all from .env, never committed).
+PEXELS_API_KEY = os.environ.get("PEXELS_API_KEY", "")
+OPENVERSE_CLIENT_ID = os.environ.get("OPENVERSE_CLIENT_ID", "")
+OPENVERSE_CLIENT_SECRET = os.environ.get("OPENVERSE_CLIENT_SECRET", "")
+
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
