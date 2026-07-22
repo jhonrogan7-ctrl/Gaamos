@@ -1,10 +1,14 @@
 import json
+import urllib.request
+from io import BytesIO
 from pathlib import Path
 
 from django.conf import settings
 from django.core.management.base import BaseCommand, CommandError
 from django.db import transaction
+from PIL import Image
 
+from menu.imaging import compute_focal_point
 from menu.models import Company, Branch
 from menu.tenancy import set_current_company, reset_current_company
 
@@ -51,9 +55,83 @@ class Command(BaseCommand):
                 if opts["dry_run"]:
                     transaction.set_rollback(True)
                     self.stdout.write(self.style.WARNING("dry-run — rolled back."))
+            if not opts["dry_run"]:
+                self._apply_images(company, opts)
         finally:
             reset_current_company(token)
 
     def _upsert_catalog(self, company, branches, data, opts):
-        # Filled in by later tasks.
-        pass
+        from menu.models import (Category, SubCategory,
+                                 BranchCategory, BranchSubCategory)
+        self._cat_by_slug, self._sub_by_key = {}, {}
+        for cd in data.get("categories", []):
+            cat, _ = Category.all_objects.update_or_create(
+                company=company, slug=cd["slug"],
+                defaults={"name": cd["name"],
+                          "display_order": cd.get("display_order", 0),
+                          "icon_key": cd.get("icon_key", ""),
+                          "hours_note": cd.get("hours_note", "")})
+            self._cat_by_slug[cd["slug"]] = cat
+            for b in branches:
+                BranchCategory.objects.get_or_create(
+                    branch=b, category=cat,
+                    defaults={"display_order": cd.get("display_order", 0)})
+            for sd in cd.get("subcategories", []):
+                sub, _ = SubCategory.all_objects.update_or_create(
+                    company=company, category=cat, name=sd["name"],
+                    defaults={"icon_key": sd.get("icon_key", "subAll"),
+                              "display_order": sd.get("display_order", 0)})
+                self._sub_by_key[(cd["slug"], sd["name"])] = sub
+                for b in branches:
+                    BranchSubCategory.objects.get_or_create(
+                        branch=b, sub_category=sub,
+                        defaults={"display_order": sd.get("display_order", 0)})
+
+        from menu.models import (MenuItem, BranchMenuItem, BranchItemPlacement)
+        self._items = []
+        for it in data.get("items", []):
+            item, _ = MenuItem.all_objects.update_or_create(
+                company=company, slug=it["slug"],
+                defaults={"name": it["name"],
+                          "description": it.get("description", ""),
+                          "price": it["price"],
+                          "dietary_tags": it.get("tags", []),
+                          "is_popular": it.get("popular", False),
+                          "is_featured": it.get("featured", False)})
+            self._items.append((item, it))
+            if it.get("cat"):
+                cat = self._cat_by_slug[it["cat"]]
+                sub = self._sub_by_key.get((it["cat"], it["sub"])) if it.get("sub") else None
+                for b in branches:
+                    BranchMenuItem.objects.get_or_create(branch=b, menu_item=item)
+                    BranchItemPlacement.objects.get_or_create(
+                        branch=b, menu_item=item, category=cat, sub_category=sub,
+                        defaults={"display_order": it.get("order", 0)})
+
+    def _apply_images(self, company, opts):
+        media_base = opts.get("media_base")
+        for item, rec in self._items:
+            img = rec.get("image")
+            if not img:
+                continue
+            if not media_base:
+                raise CommandError("--media-base is required when items carry images.")
+            url = media_base.rstrip("/") + "/" + img["file"]
+            rel = f"items/{company.slug}/{item.slug}.webp"
+            dest = Path(settings.MEDIA_ROOT) / rel
+            dest.parent.mkdir(parents=True, exist_ok=True)
+            try:
+                with urllib.request.urlopen(url) as resp:
+                    payload = resp.read()
+                Image.open(BytesIO(payload)).verify()   # reject non-images
+                dest.write_bytes(payload)
+            except Exception as exc:
+                if opts.get("strict"):
+                    raise CommandError(f"image download failed for {item.slug}: {exc}")
+                self.stderr.write(f"  ! image download failed for {item.slug}: {exc}")
+                continue
+            item.image_url = f"{settings.MEDIA_URL}{rel}"
+            item.focal_x, item.focal_y = compute_focal_point(str(dest))
+            item.save(update_fields=["image_url", "focal_x", "focal_y"])
+        self.stdout.write(self.style.SUCCESS(
+            f"Imported {len(self._items)} items into '{company.slug}'."))
