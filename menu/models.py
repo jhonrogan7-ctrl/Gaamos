@@ -386,3 +386,57 @@ class ImageAsset(models.Model):
     def origin_link(self):
         url = self.origin_url or ""
         return url if url.startswith(("http://", "https://")) else ""
+
+
+class MenuScan(models.Model):
+    """A staff-uploaded cafe menu document + its extraction job (global, non-tenant)."""
+
+    STATUS_CHOICES = [
+        ('queued', 'Queued'), ('processing', 'Processing'),
+        ('extracted', 'Extracted'), ('imported', 'Imported'), ('failed', 'Failed'),
+    ]
+
+    file = models.CharField(max_length=500)
+    source_cafe = models.CharField(max_length=200, blank=True)
+    status = models.CharField(max_length=12, choices=STATUS_CHOICES, default='queued')
+    raw_extraction = models.JSONField(default=dict, blank=True)
+    error = models.TextField(blank=True)
+    task_id = models.CharField(max_length=100, blank=True)
+    created_by = models.ForeignKey('auth.User', null=True, blank=True,
+                                   on_delete=models.SET_NULL, related_name='menu_scans')
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return f"{self.source_cafe or 'scan'} #{self.pk} ({self.status})"
+
+    @property
+    def file_url(self):
+        from django.conf import settings
+        return f"{settings.MEDIA_URL}{self.file}" if self.file else ""
+
+
+class Item(models.Model):
+    """A global platform-catalog menu item (staff-curated, cross-tenant, reusable)."""
+
+    name = models.CharField(max_length=200)
+    description = models.TextField(blank=True)
+    category = models.CharField(max_length=120, blank=True)
+    reference_price = models.PositiveIntegerField(null=True, blank=True)
+    embedding = VectorField(dimensions=768, null=True, blank=True)
+    image_asset = models.ForeignKey('ImageAsset', null=True, blank=True,
+                                    on_delete=models.SET_NULL, related_name='items')
+    source_scan = models.ForeignKey('MenuScan', null=True, blank=True,
+                                    on_delete=models.SET_NULL, related_name='items')
+    status = models.CharField(max_length=10, default='active')
+    created_at = models.DateTimeField(auto_now_add=True)
+    reviewed_by = models.ForeignKey('auth.User', null=True, blank=True,
+                                    on_delete=models.SET_NULL, related_name='catalog_items')
+
+    class Meta:
+        ordering = ['name']
+
+    def __str__(self):
+        return self.name
