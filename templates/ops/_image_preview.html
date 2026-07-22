@@ -1,30 +1,37 @@
-{% if error %}
-  <div class="il-pv-msg">Couldn't reach Pexels —
-    <a class="il-link" hx-get="{% url 'ops:image_find_another' a.pk %}?offset=0"
-       hx-target="#il-preview-{{ a.pk }}">try again</a></div>
-{% elif no_more %}
-  <div class="il-pv-msg">No more new photos for "{{ term }}".
-    <a class="il-link" hx-get="{% url 'ops:image_find_another' a.pk %}?clear=1"
-       hx-target="#il-preview-{{ a.pk }}">Keep current</a></div>
-{% else %}
-  <div class="il-pv">
+<div class="il-pv">
+  <div class="il-search" id="il-search-{{ a.pk }}">
+    <input class="il-input" type="text" name="term" value="{{ term }}" placeholder="search term">
+    <select class="il-input il-src" name="source">
+      {% for s in sources %}<option value="{{ s }}"{% if s == source %} selected{% endif %}>{{ s }}</option>{% endfor %}
+    </select>
+    <button class="il-btn il-find" type="button"
+            hx-get="{% url 'ops:image_find_another' a.pk %}?offset=0"
+            hx-include="#il-search-{{ a.pk }}"
+            hx-target="#il-preview-{{ a.pk }}">Search</button>
+    <button class="il-btn il-reject" type="button"
+            hx-get="{% url 'ops:image_find_another' a.pk %}?clear=1"
+            hx-target="#il-preview-{{ a.pk }}">✕</button>
+  </div>
+  {% if error %}
+    <div class="il-pv-msg">Couldn't reach {{ source }} — try another source or term.</div>
+  {% elif no_more %}
+    <div class="il-pv-msg">No more results for "{{ term }}" on {{ source }}.</div>
+  {% else %}
     <img class="il-pv-img" src="{{ cand.url }}" alt="candidate" loading="lazy">
-    <div class="il-pv-credit">Candidate · Pexels{% if cand.photographer %} / {{ cand.photographer }}{% endif %}</div>
+    <div class="il-pv-credit">{{ source }}{% if cand.credit %} · {{ cand.credit }}{% endif %}</div>
     <div class="il-pv-actions">
       <form hx-post="{% url 'ops:image_use_photo' a.pk %}" hx-target="#il-card-{{ a.pk }}"
             hx-swap="outerHTML" style="display:contents">
         {% csrf_token %}
         <input type="hidden" name="url" value="{{ cand.url }}">
         <input type="hidden" name="page" value="{{ cand.page }}">
-        <input type="hidden" name="photographer" value="{{ cand.photographer }}">
+        <input type="hidden" name="source" value="{{ source }}">
         <button class="il-btn il-approve" type="submit">Use this</button>
       </form>
       <button class="il-btn il-find" type="button"
               hx-get="{% url 'ops:image_find_another' a.pk %}?offset={{ next_offset }}"
+              hx-include="#il-search-{{ a.pk }}"
               hx-target="#il-preview-{{ a.pk }}">Find another</button>
-      <button class="il-btn il-reject" type="button"
-              hx-get="{% url 'ops:image_find_another' a.pk %}?clear=1"
-              hx-target="#il-preview-{{ a.pk }}">Keep current</button>
     </div>
-  </div>
-{% endif %}
+  {% endif %}
+</div>

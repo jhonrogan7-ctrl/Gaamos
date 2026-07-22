@@ -155,7 +155,7 @@ class ImageFindAnotherTests(TestCase):
     def test_offset_past_end_shows_no_more(self, m):
         self.client.force_login(self.boss)
         body = self._get(offset=9).content.decode()
-        self.assertIn('No more new photos', body)
+        self.assertIn('No more results', body)
 
     def test_clear_returns_empty(self):
         self.client.force_login(self.boss)
@@ -168,7 +168,7 @@ class ImageFindAnotherTests(TestCase):
         self.client.force_login(self.boss)
         resp = self._get(offset=0)
         self.assertEqual(resp.status_code, 200)
-        self.assertIn("Couldn't reach Pexels", resp.content.decode())
+        self.assertIn("Couldn't reach pexels", resp.content.decode())
 
 
 class ImageRerollWiringTests(TestCase):
@@ -238,3 +238,27 @@ class ImageMultiSourceTests(TestCase):
         self.asset.refresh_from_db()
         self.assertEqual(self.asset.source, 'commons')
         self.assertEqual(self.asset.origin_url, 'http://c/new')
+
+
+class ImagePreviewControlsTests(TestCase):
+    def setUp(self):
+        self.apex = {'HTTP_HOST': APEX}
+        self.boss = User.objects.create_superuser('boss', 'b@x.io', 'pw-boss-1')
+        self.asset = ImageAsset.objects.create(
+            source='commons', status='pending', caption='Budweiser',
+            file='imagelib/old.webp', origin_url='https://old/')
+        self.client.force_login(self.boss)
+
+    @patch('menu.pipeline.photo_search.search')
+    def test_preview_renders_term_box_and_selected_source(self, m):
+        m.return_value = [{'url': 'http://i/c.jpg', 'page': 'http://c/',
+                           'credit': 'File:Budweiser beer.jpg', 'source': 'commons'}]
+        body = self.client.get(
+            f'/platform/images/{self.asset.pk}/find-another/?source=commons&term=Budweiser+bottle&offset=0',
+            **self.apex).content.decode()
+        self.assertIn('name="term"', body)
+        self.assertIn('value="Budweiser bottle"', body)          # typed term echoed
+        self.assertIn('name="source"', body)
+        self.assertIn('<option value="commons" selected', body)  # source persisted
+        self.assertIn('File:Budweiser beer.jpg', body)           # credit shown
+        self.assertIn('name="source" value="commons"', body)     # hidden source in Use-this form

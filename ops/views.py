@@ -19,7 +19,6 @@ from menu.dashboard.utils import generate_qr_for_branch
 from menu.impersonation import make_token
 from menu.models import Company, ImageAsset, Membership
 from menu.pipeline import embed as image_embed
-from menu.pipeline import find_pexels
 from menu.pipeline import images as pipeline_images
 from menu.pipeline import photo_search
 
