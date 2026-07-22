@@ -21,6 +21,7 @@ from menu.models import Company, ImageAsset, Membership
 from menu.pipeline import embed as image_embed
 from menu.pipeline import find_pexels
 from menu.pipeline import images as pipeline_images
+from menu.pipeline import photo_search
 
 from .forms import TenantCreateForm
 from .permissions import platform_admin_required
@@ -261,10 +262,13 @@ def image_use_photo(request, asset_id):
     if not url:
         return HttpResponseBadRequest('missing url')
     page = request.POST.get('page', '').strip()
+    source = request.POST.get('source') or 'pexels'
+    if source not in photo_search.SOURCES:
+        source = 'pexels'
     with tempfile.TemporaryDirectory() as tmp:
         raw = str(Path(tmp) / 'raw')
         webp = str(Path(tmp) / 'out.webp')
-        find_pexels.download(url, raw)
+        photo_search.download(source, url, raw)
         pipeline_images.to_thumbnail(raw, webp)
         data = Path(webp).read_bytes()
     content_hash = hashlib.sha256(data).hexdigest()
@@ -278,7 +282,7 @@ def image_use_photo(request, asset_id):
     url_clash = (ImageAsset.objects.filter(origin_url=page_val)
                  .exclude(pk=asset.pk).exists())
     asset.file = rel
-    asset.source = 'pexels'
+    asset.source = source
     asset.content_hash = '' if hash_clash else content_hash
     asset.origin_url = '' if url_clash else page_val
     asset.save(update_fields=['file', 'origin_url', 'source', 'content_hash'])
@@ -294,10 +298,13 @@ def image_find_another(request, asset_id):
         offset = int(request.GET.get('offset', 0))
     except (TypeError, ValueError):
         offset = 0
-    term = asset.caption or asset.found_for_slug
-    ctx = {'a': asset, 'term': term}
+    term = (request.GET.get('term') or asset.caption or asset.found_for_slug or '').strip()
+    source = request.GET.get('source') or 'pexels'
+    if source not in photo_search.SOURCES:
+        source = 'pexels'
+    ctx = {'a': asset, 'term': term, 'source': source, 'sources': photo_search.SOURCES}
     try:
-        results = find_pexels.search(term, per_page=20)
+        results = photo_search.search(source, term, limit=20)
     except Exception:
         ctx['error'] = True
         return render(request, 'ops/_image_preview.html', ctx)

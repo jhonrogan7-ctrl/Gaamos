@@ -23,6 +23,10 @@ def _fake_thumb(src, dest, size=800):
     return dest
 
 
+def _fake_download3(source, url, dest_path):
+    return _fake_download(url, dest_path)
+
+
 class ImageUsePhotoTests(TestCase):
     def setUp(self):
         self.apex = {'HTTP_HOST': APEX}
@@ -186,3 +190,51 @@ class ImageRerollWiringTests(TestCase):
         self.assertIn(f'id="il-preview-{self.asset.pk}"', body)
         self.assertIn('Find another', body)
         self.assertIn(f'/platform/images/{self.asset.pk}/find-another/', body)
+
+
+class ImageMultiSourceTests(TestCase):
+    def setUp(self):
+        self.apex = {'HTTP_HOST': APEX}
+        self.boss = User.objects.create_superuser('boss', 'b@x.io', 'pw-boss-1')
+        self.asset = ImageAsset.objects.create(
+            source='commons', status='pending', caption='Budweiser',
+            file='imagelib/old.webp', origin_url='https://old/')
+        self.client.force_login(self.boss)
+
+    def _find(self, **q):
+        from urllib.parse import urlencode
+        return self.client.get(
+            f'/platform/images/{self.asset.pk}/find-another/?{urlencode(q)}', **self.apex)
+
+    @patch('menu.pipeline.photo_search.search')
+    def test_find_uses_selected_source_and_term(self, m_search):
+        m_search.return_value = [{'url': 'http://i/c.jpg', 'page': 'http://c/',
+                                  'credit': 'File:Budweiser beer.jpg', 'source': 'commons'}]
+        resp = self._find(source='commons', term='Budweiser bottle', offset=0)
+        self.assertEqual(resp.status_code, 200)
+        m_search.assert_called_once_with('commons', 'Budweiser bottle', limit=20)
+        self.assertIn('http://i/c.jpg', resp.content.decode())
+
+    @patch('menu.pipeline.photo_search.search', return_value=[])
+    def test_find_defaults_term_to_caption_and_source_to_pexels(self, m_search):
+        self._find()   # no term/source
+        m_search.assert_called_once_with('pexels', 'Budweiser', limit=20)
+
+    @patch('menu.pipeline.photo_search.search', return_value=[])
+    def test_find_invalid_source_coerced_to_pexels(self, m_search):
+        self._find(source='bing', term='x')
+        m_search.assert_called_once_with('pexels', 'x', limit=20)
+
+    @patch('menu.pipeline.images.to_thumbnail', side_effect=_fake_thumb)
+    @patch('menu.pipeline.photo_search.download', side_effect=_fake_download3)
+    def test_use_photo_sets_source_and_dispatches_download(self, m_dl, m_th):
+        resp = self.client.post(
+            f'/platform/images/{self.asset.pk}/use-photo/',
+            {'url': 'http://i/c.jpg', 'page': 'http://c/new', 'source': 'commons'},
+            **self.apex)
+        self.assertEqual(resp.status_code, 200)
+        m_dl.assert_called_once()
+        self.assertEqual(m_dl.call_args.args[0], 'commons')   # dispatched by source
+        self.asset.refresh_from_db()
+        self.assertEqual(self.asset.source, 'commons')
+        self.assertEqual(self.asset.origin_url, 'http://c/new')
