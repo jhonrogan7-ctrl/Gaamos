@@ -1,10 +1,13 @@
+import hashlib
 import logging
 import secrets
+import tempfile
+from pathlib import Path
 
 from django.conf import settings
 from django.contrib.auth import authenticate, login, logout
 from django.db.models import Count, Q
-from django.http import Http404, HttpResponseBadRequest
+from django.http import Http404, HttpResponse, HttpResponseBadRequest
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.utils import timezone
@@ -16,6 +19,8 @@ from menu.dashboard.utils import generate_qr_for_branch
 from menu.impersonation import make_token
 from menu.models import Company, ImageAsset, Membership
 from menu.pipeline import embed as image_embed
+from menu.pipeline import find_pexels
+from menu.pipeline import images as pipeline_images
 
 from .forms import TenantCreateForm
 from .permissions import platform_admin_required
@@ -246,3 +251,32 @@ def image_browse(request):
         'stats': _stats(), 'active': 'images',
         'assets': assets, 'q': q, 'tag': tag,
     })
+
+
+@platform_admin_required
+@require_POST
+def image_use_photo(request, asset_id):
+    asset = get_object_or_404(ImageAsset, pk=asset_id)
+    url = request.POST.get('url', '').strip()
+    if not url:
+        return HttpResponseBadRequest('missing url')
+    page = request.POST.get('page', '').strip()
+    with tempfile.TemporaryDirectory() as tmp:
+        raw = str(Path(tmp) / 'raw')
+        webp = str(Path(tmp) / 'out.webp')
+        find_pexels.download(url, raw)
+        pipeline_images.to_thumbnail(raw, webp)
+        data = Path(webp).read_bytes()
+    content_hash = hashlib.sha256(data).hexdigest()
+    rel = f'imagelib/{content_hash}.webp'
+    dest = Path(settings.MEDIA_ROOT) / rel
+    dest.parent.mkdir(parents=True, exist_ok=True)
+    dest.write_bytes(data)
+    clash = (ImageAsset.objects.filter(content_hash=content_hash)
+             .exclude(pk=asset.pk).exists())
+    asset.file = rel
+    asset.origin_url = page or url
+    asset.source = 'pexels'
+    asset.content_hash = '' if clash else content_hash
+    asset.save(update_fields=['file', 'origin_url', 'source', 'content_hash'])
+    return render(request, 'ops/_image_card.html', {'a': asset, 'review': True})
