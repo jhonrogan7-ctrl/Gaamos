@@ -107,4 +107,9 @@ PEXELS_API_KEY = os.environ.get("PEXELS_API_KEY", "")
 OPENVERSE_CLIENT_ID = os.environ.get("OPENVERSE_CLIENT_ID", "")
 OPENVERSE_CLIENT_SECRET = os.environ.get("OPENVERSE_CLIENT_SECRET", "")
 
+# Celery + Redis — background-job foundation.
+CELERY_BROKER_URL = os.environ.get("CELERY_BROKER_URL", "redis://redis:6379/0")
+CELERY_RESULT_BACKEND = os.environ.get("CELERY_RESULT_BACKEND", "redis://redis:6379/1")
+CELERY_TASK_ALWAYS_EAGER = os.environ.get("CELERY_TASK_ALWAYS_EAGER", "0") == "1"
+
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
