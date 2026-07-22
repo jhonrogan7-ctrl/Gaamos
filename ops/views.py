@@ -272,11 +272,14 @@ def image_use_photo(request, asset_id):
     dest = Path(settings.MEDIA_ROOT) / rel
     dest.parent.mkdir(parents=True, exist_ok=True)
     dest.write_bytes(data)
-    clash = (ImageAsset.objects.filter(content_hash=content_hash)
-             .exclude(pk=asset.pk).exists())
+    page_val = page or url
+    hash_clash = (ImageAsset.objects.filter(content_hash=content_hash)
+                  .exclude(pk=asset.pk).exists())
+    url_clash = (ImageAsset.objects.filter(origin_url=page_val)
+                 .exclude(pk=asset.pk).exists())
     asset.file = rel
-    asset.origin_url = page or url
     asset.source = 'pexels'
-    asset.content_hash = '' if clash else content_hash
+    asset.content_hash = '' if hash_clash else content_hash
+    asset.origin_url = '' if url_clash else page_val
     asset.save(update_fields=['file', 'origin_url', 'source', 'content_hash'])
     return render(request, 'ops/_image_card.html', {'a': asset, 'review': True})

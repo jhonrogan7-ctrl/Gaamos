@@ -83,3 +83,21 @@ class ImageUsePhotoTests(TestCase):
         self.asset.refresh_from_db()
         self.assertEqual(self.asset.file, f'imagelib/{h}.webp')
         self.assertEqual(self.asset.content_hash, '')          # collision → blank
+
+    @patch('menu.pipeline.images.to_thumbnail', side_effect=_fake_thumb)
+    @patch('menu.pipeline.find_pexels.download', side_effect=_fake_download)
+    def test_origin_url_collision_blanks_origin_url(self, m_dl, m_th):
+        # Other asset shares the posted page URL but NOT the content_hash, so
+        # only the origin_url partial-unique constraint is exercised.
+        ImageAsset.objects.create(source='pexels', status='verified',
+                                  file='imagelib/other.webp',
+                                  origin_url='https://pexels.com/photo/new/',
+                                  content_hash='differenthash')
+        self.client.force_login(self.boss)
+        resp = self._post(url='https://img/new.jpg', page='https://pexels.com/photo/new/')
+        self.assertEqual(resp.status_code, 200)
+        self.asset.refresh_from_db()
+        import hashlib
+        h = hashlib.sha256(b"WEBPBYTES").hexdigest()
+        self.assertEqual(self.asset.file, f'imagelib/{h}.webp')
+        self.assertEqual(self.asset.origin_url, '')             # collision → blank
