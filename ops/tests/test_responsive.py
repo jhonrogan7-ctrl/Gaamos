@@ -74,13 +74,14 @@ class OpsMobileShellTests(TestCase):
         boss = User.objects.create_superuser('boss', 'b@x.io', 'pw')
         self.client.force_login(boss)
 
-    def test_tabbar_present_with_three_links_and_signout(self):
+    def test_tabbar_present_with_four_links_and_signout(self):
         body = self.client.get('/platform/leads', **self.apex).content.decode()
         self.assertIn('class="tabbar"', body)
         tabbar = body.split('class="tabbar"', 1)[1]
         self.assertIn('/platform/leads', tabbar)
         self.assertIn('/platform/tenants', tabbar)
         self.assertIn('/platform/tenants/new', tabbar)
+        self.assertIn('/platform/images/', tabbar)  # image library
         self.assertIn('/platform/logout', tabbar)   # sign-out POST form in the bar
 
     def test_tabbar_active_state_follows_page(self):
