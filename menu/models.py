@@ -2,6 +2,8 @@ import secrets
 
 from django.core.exceptions import ValidationError
 from django.db import models
+from django.db.models import Q
+from pgvector.django import VectorField
 
 from .tenancy import TenantScopedModel, get_current_company
 from .themes import DEFAULT_THEME, THEME_CHOICES
@@ -330,3 +332,52 @@ class Membership(models.Model):
 
     def __str__(self):
         return f"{self.user.username} @ {self.company.slug} ({self.role})"
+
+
+class ImageAsset(models.Model):
+    """Global (cross-tenant) sourcing pool for menu images. NOT tenant-scoped:
+    a staff-only internal library the pipeline matches against before hitting
+    external finders. Never exposed to tenant operators."""
+
+    STATUS_CHOICES = [
+        ('pending', 'Pending'),
+        ('verified', 'Verified'),
+        ('rejected', 'Rejected'),
+    ]
+
+    name = models.CharField(max_length=200, blank=True)
+    caption = models.TextField(blank=True)
+    tags = models.JSONField(default=list)
+    embedding = VectorField(dimensions=768, null=True, blank=True)
+    source = models.CharField(max_length=20)
+    origin_url = models.CharField(max_length=1000, blank=True)
+    prompt = models.TextField(blank=True)
+    license = models.CharField(max_length=200, blank=True)
+    attribution = models.CharField(max_length=500, blank=True)
+    file = models.CharField(max_length=500, blank=True)
+    content_hash = models.CharField(max_length=64, blank=True)
+    status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='pending')
+    found_for_slug = models.CharField(max_length=120, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    reviewed_at = models.DateTimeField(null=True, blank=True)
+    reviewed_by = models.ForeignKey('auth.User', null=True, blank=True,
+                                    on_delete=models.SET_NULL)
+
+    class Meta:
+        ordering = ['-created_at']
+        constraints = [
+            models.UniqueConstraint(
+                fields=['origin_url'], condition=~Q(origin_url=''),
+                name='uniq_imageasset_origin_url'),
+            models.UniqueConstraint(
+                fields=['content_hash'], condition=~Q(content_hash=''),
+                name='uniq_imageasset_content_hash'),
+        ]
+
+    def __str__(self):
+        return self.name or f"ImageAsset #{self.pk}"
+
+    @property
+    def image_url(self):
+        from django.conf import settings
+        return f"{settings.MEDIA_URL}{self.file}" if self.file else ""

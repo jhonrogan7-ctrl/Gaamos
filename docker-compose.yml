@@ -12,7 +12,7 @@ services:
     command: sh -c "bash bin/build-css.sh build && python manage.py migrate --noinput && python manage.py collectstatic --noinput && python manage.py compilemessages && uvicorn config.asgi:application --host 0.0.0.0 --port 8000 --reload"
 
   db:
-    image: postgres:16
+    image: pgvector/pgvector:pg16
     environment:
       POSTGRES_DB: ${POSTGRES_DB:-gaamos}
       POSTGRES_USER: ${POSTGRES_USER:-gaamos}
