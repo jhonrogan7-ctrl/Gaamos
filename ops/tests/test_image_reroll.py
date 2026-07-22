@@ -101,3 +101,67 @@ class ImageUsePhotoTests(TestCase):
         h = hashlib.sha256(b"WEBPBYTES").hexdigest()
         self.assertEqual(self.asset.file, f'imagelib/{h}.webp')
         self.assertEqual(self.asset.origin_url, '')             # collision → blank
+
+
+CANDS = [
+    {'url': 'https://img/a.jpg', 'page': 'https://pexels.com/photo/a/',
+     'photographer': 'Ann', 'alt': 'tea a'},
+    {'url': 'https://img/b.jpg', 'page': 'https://pexels.com/photo/b/',
+     'photographer': 'Bob', 'alt': 'tea b'},
+    {'url': 'https://img/cur.jpg', 'page': 'https://pexels.com/photo/cur/',
+     'photographer': 'Cy', 'alt': 'current'},
+]
+
+
+class ImageFindAnotherTests(TestCase):
+    def setUp(self):
+        self.apex = {'HTTP_HOST': APEX}
+        self.boss = User.objects.create_superuser('boss', 'b@x.io', 'pw-boss-1')
+        self.asset = ImageAsset.objects.create(
+            source='pexels', status='pending', caption='Black Tea',
+            file='imagelib/old.webp',
+            origin_url='https://pexels.com/photo/cur/')  # matches CANDS[2] → filtered out
+
+    def _get(self, **q):
+        from urllib.parse import urlencode
+        qs = ('?' + urlencode(q)) if q else ''
+        return self.client.get(f'/platform/images/{self.asset.pk}/find-another/{qs}',
+                               **self.apex)
+
+    def test_requires_superuser(self):
+        self.assertEqual(self._get(offset=0).status_code, 302)
+
+    @patch('menu.pipeline.find_pexels.search', return_value=list(CANDS))
+    def test_offset_zero_shows_first_non_current_candidate(self, m):
+        self.client.force_login(self.boss)
+        resp = self._get(offset=0)
+        self.assertEqual(resp.status_code, 200)
+        body = resp.content.decode()
+        self.assertIn('https://img/a.jpg', body)         # candidate[0] after filtering current
+        self.assertNotIn('https://img/cur.jpg', body)    # current photo excluded
+        self.assertIn('offset=1', body)                  # Find another advances
+
+    @patch('menu.pipeline.find_pexels.search', return_value=list(CANDS))
+    def test_offset_one_shows_second(self, m):
+        self.client.force_login(self.boss)
+        body = self._get(offset=1).content.decode()
+        self.assertIn('https://img/b.jpg', body)
+
+    @patch('menu.pipeline.find_pexels.search', return_value=list(CANDS))
+    def test_offset_past_end_shows_no_more(self, m):
+        self.client.force_login(self.boss)
+        body = self._get(offset=9).content.decode()
+        self.assertIn('No more new photos', body)
+
+    def test_clear_returns_empty(self):
+        self.client.force_login(self.boss)
+        resp = self._get(clear=1)
+        self.assertEqual(resp.status_code, 200)
+        self.assertEqual(resp.content.decode().strip(), '')
+
+    @patch('menu.pipeline.find_pexels.search', side_effect=RuntimeError('boom'))
+    def test_pexels_error_shows_friendly_message(self, m):
+        self.client.force_login(self.boss)
+        resp = self._get(offset=0)
+        self.assertEqual(resp.status_code, 200)
+        self.assertIn("Couldn't reach Pexels", resp.content.decode())

@@ -283,3 +283,29 @@ def image_use_photo(request, asset_id):
     asset.origin_url = '' if url_clash else page_val
     asset.save(update_fields=['file', 'origin_url', 'source', 'content_hash'])
     return render(request, 'ops/_image_card.html', {'a': asset, 'review': True})
+
+
+@platform_admin_required
+def image_find_another(request, asset_id):
+    asset = get_object_or_404(ImageAsset, pk=asset_id)
+    if request.GET.get('clear'):
+        return HttpResponse('')
+    try:
+        offset = int(request.GET.get('offset', 0))
+    except (TypeError, ValueError):
+        offset = 0
+    term = asset.caption or asset.found_for_slug
+    ctx = {'a': asset, 'term': term}
+    try:
+        results = find_pexels.search(term, per_page=20)
+    except Exception:
+        ctx['error'] = True
+        return render(request, 'ops/_image_preview.html', ctx)
+    candidates = [c for c in results
+                  if c.get('page') != asset.origin_url and c.get('url') != asset.origin_url]
+    if offset < 0 or offset >= len(candidates):
+        ctx['no_more'] = True
+        return render(request, 'ops/_image_preview.html', ctx)
+    ctx['cand'] = candidates[offset]
+    ctx['next_offset'] = offset + 1
+    return render(request, 'ops/_image_preview.html', ctx)

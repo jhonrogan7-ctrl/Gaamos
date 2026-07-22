@@ -1,0 +1,30 @@
+{% if error %}
+  <div class="il-pv-msg">Couldn't reach Pexels —
+    <a class="il-link" hx-get="{% url 'ops:image_find_another' a.pk %}?offset=0"
+       hx-target="#il-preview-{{ a.pk }}">try again</a></div>
+{% elif no_more %}
+  <div class="il-pv-msg">No more new photos for "{{ term }}".
+    <a class="il-link" hx-get="{% url 'ops:image_find_another' a.pk %}?clear=1"
+       hx-target="#il-preview-{{ a.pk }}">Keep current</a></div>
+{% else %}
+  <div class="il-pv">
+    <img class="il-pv-img" src="{{ cand.url }}" alt="candidate" loading="lazy">
+    <div class="il-pv-credit">Candidate · Pexels{% if cand.photographer %} / {{ cand.photographer }}{% endif %}</div>
+    <div class="il-pv-actions">
+      <form hx-post="{% url 'ops:image_use_photo' a.pk %}" hx-target="#il-card-{{ a.pk }}"
+            hx-swap="outerHTML" style="display:contents">
+        {% csrf_token %}
+        <input type="hidden" name="url" value="{{ cand.url }}">
+        <input type="hidden" name="page" value="{{ cand.page }}">
+        <input type="hidden" name="photographer" value="{{ cand.photographer }}">
+        <button class="il-btn il-approve" type="submit">Use this</button>
+      </form>
+      <button class="il-btn il-find" type="button"
+              hx-get="{% url 'ops:image_find_another' a.pk %}?offset={{ next_offset }}"
+              hx-target="#il-preview-{{ a.pk }}">Find another</button>
+      <button class="il-btn il-reject" type="button"
+              hx-get="{% url 'ops:image_find_another' a.pk %}?clear=1"
+              hx-target="#il-preview-{{ a.pk }}">Keep current</button>
+    </div>
+  </div>
+{% endif %}
