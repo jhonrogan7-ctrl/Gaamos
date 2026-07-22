@@ -17,7 +17,8 @@ from django.views.decorators.http import require_POST
 from core.models import Lead
 from menu.dashboard.utils import generate_qr_for_branch
 from menu.impersonation import make_token
-from menu.models import Company, ImageAsset, Membership
+from menu.models import Company, ImageAsset, Membership, MenuScan
+from menu.tasks import extract_menu_scan
 from menu.pipeline import embed as image_embed
 from menu.pipeline import images as pipeline_images
 from menu.pipeline import photo_search
@@ -194,6 +195,36 @@ def tenant_created(request, company_id):
         'stats': _stats(), 'active': 'tenants', 'company': company,
         'base_domain': settings.BASE_DOMAIN, 'note': note,
     })
+
+
+@platform_admin_required
+def scans(request):
+    if request.method == 'POST':
+        upload = request.FILES.get('file')
+        if not upload:
+            return HttpResponseBadRequest('no file')
+        scan = MenuScan.objects.create(
+            source_cafe=request.POST.get('source_cafe', '').strip(),
+            status='queued', created_by=request.user, file='')
+        rel = f"scans/{scan.pk}_{upload.name}"
+        dest = Path(settings.MEDIA_ROOT) / rel
+        dest.parent.mkdir(parents=True, exist_ok=True)
+        with dest.open('wb') as fh:
+            for chunk in upload.chunks():
+                fh.write(chunk)
+        scan.file = rel
+        scan.save(update_fields=['file'])
+        extract_menu_scan.delay(scan.id)
+        return redirect('ops:scans')
+    return render(request, 'ops/scans.html',
+                  {'scans': MenuScan.objects.all(), 'active': 'scans'})
+
+
+@platform_admin_required
+def scan_status(request, scan_id):
+    scan = get_object_or_404(MenuScan, pk=scan_id)
+    return render(request, 'ops/scans.html', {'scans': [scan], 'active': 'scans',
+                                              'fragment': True})
 
 
 @platform_admin_required
