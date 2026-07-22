@@ -40,6 +40,34 @@ def test_build_fixture_merges_routing_and_defaults_null():
     assert fx["categories"] == menu["categories"]
 
 
+def test_commons_search_parses_and_ranks(monkeypatch):
+    import menu.pipeline.find_commons as fc
+
+    payload = {"query": {"pages": {
+        "20": {"index": 2, "title": "File:Beta.jpg",
+               "imageinfo": [{"thumburl": "https://x/beta.jpg", "mime": "image/jpeg"}]},
+        "10": {"index": 1, "title": "File:Alpha.jpg",
+               "imageinfo": [{"thumburl": "https://x/alpha.jpg", "mime": "image/jpeg"}]},
+        "30": {"index": 3, "title": "File:NoImage.jpg", "imageinfo": [{}]},
+    }}}
+
+    class FakeResp(io.BytesIO):
+        def __enter__(self):
+            return self
+
+        def __exit__(self, *a):
+            return False
+
+    def fake_urlopen(req, *a, **k):
+        return FakeResp(json.dumps(payload).encode())
+
+    monkeypatch.setattr(fc.urllib.request, "urlopen", fake_urlopen)
+    res = fc.search("carlsberg beer bottle")
+    # ranked by search index; entries with no thumburl dropped
+    assert [t for t, _, _ in res] == ["File:Alpha.jpg", "File:Beta.jpg"]
+    assert res[0][1] == "https://x/alpha.jpg"
+
+
 def test_generate_image_decodes_inline_data():
     raw = b"\x89PNG\r\n\x1a\nFAKEIMAGE"
     b64 = base64.b64encode(raw).decode()
