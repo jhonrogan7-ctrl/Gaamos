@@ -15,6 +15,7 @@ from core.models import Lead
 from menu.dashboard.utils import generate_qr_for_branch
 from menu.impersonation import make_token
 from menu.models import Company, ImageAsset, Membership
+from menu.pipeline import embed as image_embed
 
 from .forms import TenantCreateForm
 from .permissions import platform_admin_required
@@ -211,4 +212,20 @@ def image_action(request, asset_id):
     asset.reviewed_at = timezone.now()
     asset.reviewed_by = request.user
     asset.save(update_fields=['status', 'reviewed_at', 'reviewed_by'])
+    return redirect('ops:images')
+
+
+@platform_admin_required
+@require_POST
+def image_edit(request, asset_id):
+    asset = get_object_or_404(ImageAsset, pk=asset_id)
+    caption = request.POST.get('caption', '').strip()
+    tags = [t.strip() for t in request.POST.get('tags', '').split(',') if t.strip()]
+    fields = ['tags']
+    asset.tags = tags
+    if caption != asset.caption:
+        asset.caption = caption
+        asset.embedding = image_embed.embed(caption)
+        fields += ['caption', 'embedding']
+    asset.save(update_fields=fields)
     return redirect('ops:images')

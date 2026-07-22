@@ -17,6 +17,12 @@
       <button name="action" value="approve">Approve</button>
       <button name="action" value="reject" class="danger">Reject</button>
     </form>
+    <form method="post" action="{% url 'ops:image_edit' a.pk %}" class="edit">
+      {% csrf_token %}
+      <input name="caption" value="{{ a.caption }}" placeholder="caption">
+      <input name="tags" value="{{ a.tags|join:', ' }}" placeholder="tags, comma, separated">
+      <button>Save</button>
+    </form>
   </div>
   {% empty %}
   <p>Nothing to review. 🎉</p>
