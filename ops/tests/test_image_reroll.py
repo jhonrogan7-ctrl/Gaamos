@@ -165,3 +165,24 @@ class ImageFindAnotherTests(TestCase):
         resp = self._get(offset=0)
         self.assertEqual(resp.status_code, 200)
         self.assertIn("Couldn't reach Pexels", resp.content.decode())
+
+
+class ImageRerollWiringTests(TestCase):
+    def setUp(self):
+        self.apex = {'HTTP_HOST': APEX}
+        self.boss = User.objects.create_superuser('boss', 'b@x.io', 'pw-boss-1')
+        self.asset = ImageAsset.objects.create(
+            source='pexels', status='pending', caption='Black Tea',
+            file='imagelib/x.webp')
+        self.client.force_login(self.boss)
+
+    def test_ops_base_loads_htmx(self):
+        body = self.client.get('/platform/leads', **self.apex).content.decode()
+        self.assertIn('vendor/htmx.min.js', body)
+
+    def test_review_card_has_find_another_and_preview_slot(self):
+        body = self.client.get('/platform/images/', **self.apex).content.decode()
+        self.assertIn(f'id="il-card-{self.asset.pk}"', body)
+        self.assertIn(f'id="il-preview-{self.asset.pk}"', body)
+        self.assertIn('Find another', body)
+        self.assertIn(f'/platform/images/{self.asset.pk}/find-another/', body)

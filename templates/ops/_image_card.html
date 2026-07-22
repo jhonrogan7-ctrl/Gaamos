@@ -1,6 +1,6 @@
 {% comment %} One image-library card. Pass `a` (an ImageAsset) and `review=True` to
 show the Approve/Reject + edit controls (review queue); omit it for read-only browse. {% endcomment %}
-<div class="il-card">
+<div class="il-card" id="il-card-{{ a.pk }}">
   <img class="il-thumb" src="{{ a.image_url }}" alt="{{ a.caption }}" loading="lazy">
   <div class="il-b">
     <div class="il-name">{{ a.caption|default:a.found_for_slug|default:"Untitled" }}</div>
@@ -17,6 +17,10 @@ show the Approve/Reject + edit controls (review queue); omit it for read-only br
         <button class="il-btn il-reject" name="action" value="reject">✕ Reject</button>
       </form>
     </div>
+    <button class="il-btn il-find" type="button"
+            hx-get="{% url 'ops:image_find_another' a.pk %}?offset=0"
+            hx-target="#il-preview-{{ a.pk }}">🔄 Find another photo</button>
+    <div id="il-preview-{{ a.pk }}" class="il-preview"></div>
     <form method="post" action="{% url 'ops:image_edit' a.pk %}" class="il-edit">{% csrf_token %}
       <label>Name</label>
       <input class="il-input" name="caption" value="{{ a.caption }}" placeholder="Readable name">
