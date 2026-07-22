@@ -1,0 +1,25 @@
+{% extends 'ops/base.html' %}
+{% block content %}
+<h1>Image review queue</h1>
+<p>{{ assets|length }} pending image{{ assets|length|pluralize }}.</p>
+<div class="image-grid">
+  {% for a in assets %}
+  <div class="image-card">
+    <img src="{{ a.image_url }}" alt="{{ a.caption }}" loading="lazy">
+    <div class="meta">
+      <div class="caption">{{ a.caption }}</div>
+      <div class="src">{{ a.source }} · found for <code>{{ a.found_for_slug }}</code></div>
+      {% if a.origin_url %}<a href="{{ a.origin_url }}" target="_blank" rel="noopener">source</a>{% endif %}
+      {% if a.tags %}<div class="tags">{% for t in a.tags %}<span>{{ t }}</span>{% endfor %}</div>{% endif %}
+    </div>
+    <form method="post" action="{% url 'ops:image_action' a.pk %}" class="actions">
+      {% csrf_token %}
+      <button name="action" value="approve">Approve</button>
+      <button name="action" value="reject" class="danger">Reject</button>
+    </form>
+  </div>
+  {% empty %}
+  <p>Nothing to review. 🎉</p>
+  {% endfor %}
+</div>
+{% endblock %}

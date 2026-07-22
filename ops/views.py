@@ -7,13 +7,14 @@ from django.db.models import Count
 from django.http import Http404, HttpResponseBadRequest
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
+from django.utils import timezone
 from django.utils.http import url_has_allowed_host_and_scheme
 from django.views.decorators.http import require_POST
 
 from core.models import Lead
 from menu.dashboard.utils import generate_qr_for_branch
 from menu.impersonation import make_token
-from menu.models import Company, Membership
+from menu.models import Company, ImageAsset, Membership
 
 from .forms import TenantCreateForm
 from .permissions import platform_admin_required
@@ -187,3 +188,27 @@ def tenant_created(request, company_id):
         'stats': _stats(), 'active': 'tenants', 'company': company,
         'base_domain': settings.BASE_DOMAIN, 'note': note,
     })
+
+
+@platform_admin_required
+def image_review(request):
+    """Staff review queue: every pending library asset awaiting verification."""
+    assets = ImageAsset.objects.filter(status='pending').order_by('-created_at')
+    return render(request, 'ops/images_review.html', {'assets': assets})
+
+
+@platform_admin_required
+@require_POST
+def image_action(request, asset_id):
+    asset = get_object_or_404(ImageAsset, pk=asset_id)
+    action = request.POST.get('action')
+    if action == 'approve':
+        asset.status = 'verified'
+    elif action == 'reject':
+        asset.status = 'rejected'
+    else:
+        return HttpResponseBadRequest('unknown action')
+    asset.reviewed_at = timezone.now()
+    asset.reviewed_by = request.user
+    asset.save(update_fields=['status', 'reviewed_at', 'reviewed_by'])
+    return redirect('ops:images')

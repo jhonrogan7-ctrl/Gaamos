@@ -16,4 +16,6 @@ urlpatterns = [
     path('tenants/<int:company_id>/impersonate', views.tenant_impersonate, name='tenant_impersonate'),
     path('tenants/new', views.tenant_new, name='tenant_new'),
     path('tenants/<int:company_id>/created', views.tenant_created, name='tenant_created'),
+    path('images/', views.image_review, name='images'),
+    path('images/<int:asset_id>/action/', views.image_action, name='image_action'),
 ]
