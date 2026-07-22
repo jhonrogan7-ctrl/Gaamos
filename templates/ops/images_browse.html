@@ -1,0 +1,23 @@
+{% extends 'ops/base.html' %}
+{% block content %}
+<h1>Verified image library</h1>
+<form method="get" class="filters">
+  <input name="q" value="{{ q }}" placeholder="search caption or name">
+  <input name="tag" value="{{ tag }}" placeholder="tag">
+  <button>Filter</button>
+</form>
+<p>{{ assets|length }} verified image{{ assets|length|pluralize }}.</p>
+<div class="image-grid">
+  {% for a in assets %}
+  <div class="image-card">
+    <img src="{{ a.image_url }}" alt="{{ a.caption }}" loading="lazy">
+    <div class="meta">
+      <div class="caption">{{ a.caption }}</div>
+      {% if a.tags %}<div class="tags">{% for t in a.tags %}<span>{{ t }}</span>{% endfor %}</div>{% endif %}
+    </div>
+  </div>
+  {% empty %}
+  <p>No verified images match.</p>
+  {% endfor %}
+</div>
+{% endblock %}

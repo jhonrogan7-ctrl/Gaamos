@@ -1,6 +1,7 @@
 {% extends 'ops/base.html' %}
 {% block content %}
 <h1>Image review queue</h1>
+<p><a href="{% url 'ops:image_browse' %}">Browse verified library →</a></p>
 <p>{{ assets|length }} pending image{{ assets|length|pluralize }}.</p>
 <div class="image-grid">
   {% for a in assets %}

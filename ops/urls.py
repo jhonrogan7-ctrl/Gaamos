@@ -19,4 +19,5 @@ urlpatterns = [
     path('images/', views.image_review, name='images'),
     path('images/<int:asset_id>/action/', views.image_action, name='image_action'),
     path('images/<int:asset_id>/edit/', views.image_edit, name='image_edit'),
+    path('images/browse/', views.image_browse, name='image_browse'),
 ]

@@ -3,7 +3,7 @@ import secrets
 
 from django.conf import settings
 from django.contrib.auth import authenticate, login, logout
-from django.db.models import Count
+from django.db.models import Count, Q
 from django.http import Http404, HttpResponseBadRequest
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
@@ -229,3 +229,17 @@ def image_edit(request, asset_id):
         fields += ['caption', 'embedding']
     asset.save(update_fields=fields)
     return redirect('ops:images')
+
+
+@platform_admin_required
+def image_browse(request):
+    """Browse/filter the verified pool by free text (caption/name) or a tag."""
+    q = request.GET.get('q', '').strip()
+    tag = request.GET.get('tag', '').strip()
+    assets = ImageAsset.objects.filter(status='verified').order_by('-reviewed_at')
+    if q:
+        assets = assets.filter(Q(caption__icontains=q) | Q(name__icontains=q))
+    if tag:
+        assets = assets.filter(tags__contains=[tag])
+    return render(request, 'ops/images_browse.html',
+                  {'assets': assets, 'q': q, 'tag': tag})
