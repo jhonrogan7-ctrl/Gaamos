@@ -195,7 +195,9 @@ def tenant_created(request, company_id):
 def image_review(request):
     """Staff review queue: every pending library asset awaiting verification."""
     assets = ImageAsset.objects.filter(status='pending').order_by('-created_at')
-    return render(request, 'ops/images_review.html', {'assets': assets})
+    return render(request, 'ops/images_review.html', {
+        'stats': _stats(), 'active': 'images', 'assets': assets,
+    })
 
 
 @platform_admin_required
@@ -221,13 +223,12 @@ def image_edit(request, asset_id):
     asset = get_object_or_404(ImageAsset, pk=asset_id)
     caption = request.POST.get('caption', '').strip()
     tags = [t.strip() for t in request.POST.get('tags', '').split(',') if t.strip()]
-    fields = ['tags']
     asset.tags = tags
+    asset.save(update_fields=['tags'])
     if caption != asset.caption:
         asset.caption = caption
         asset.embedding = image_embed.embed(caption)
-        fields += ['caption', 'embedding']
-    asset.save(update_fields=fields)
+        asset.save(update_fields=['caption', 'embedding'])
     return redirect('ops:images')
 
 
@@ -241,5 +242,7 @@ def image_browse(request):
         assets = assets.filter(Q(caption__icontains=q) | Q(name__icontains=q))
     if tag:
         assets = assets.filter(tags__contains=[tag])
-    return render(request, 'ops/images_browse.html',
-                  {'assets': assets, 'q': q, 'tag': tag})
+    return render(request, 'ops/images_browse.html', {
+        'stats': _stats(), 'active': 'images',
+        'assets': assets, 'q': q, 'tag': tag,
+    })

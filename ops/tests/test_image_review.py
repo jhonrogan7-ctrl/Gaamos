@@ -3,7 +3,7 @@ from django.contrib.auth.models import User
 from django.test import TestCase
 from django.utils import timezone
 
-from menu.models import Company, ImageAsset
+from menu.models import ImageAsset
 
 APEX = settings.BASE_DOMAIN
 

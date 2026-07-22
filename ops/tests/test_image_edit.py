@@ -34,3 +34,13 @@ class ImageEditTests(TestCase):
         self.asset.refresh_from_db()
         self.assertEqual(self.asset.caption, 'halved boiled egg')
         self.assertEqual(list(self.asset.embedding), [0.9] * 768)
+
+    def test_embed_failure_does_not_lose_tag_edit(self):
+        with patch('menu.pipeline.embed.embed', side_effect=RuntimeError('boom')):
+            with self.assertRaises(RuntimeError):
+                self.client.post(f'/platform/images/{self.asset.pk}/edit/',
+                                 {'caption': 'new caption', 'tags': 'egg, breakfast'},
+                                 **self.apex)
+        self.asset.refresh_from_db()
+        self.assertEqual(self.asset.tags, ['egg', 'breakfast'])
+        self.assertEqual(self.asset.caption, 'egg')

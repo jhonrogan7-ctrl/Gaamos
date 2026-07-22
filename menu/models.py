@@ -381,3 +381,8 @@ class ImageAsset(models.Model):
     def image_url(self):
         from django.conf import settings
         return f"{settings.MEDIA_URL}{self.file}" if self.file else ""
+
+    @property
+    def origin_link(self):
+        url = self.origin_url or ""
+        return url if url.startswith(("http://", "https://")) else ""

@@ -10,7 +10,7 @@
     <div class="meta">
       <div class="caption">{{ a.caption }}</div>
       <div class="src">{{ a.source }} · found for <code>{{ a.found_for_slug }}</code></div>
-      {% if a.origin_url %}<a href="{{ a.origin_url }}" target="_blank" rel="noopener">source</a>{% endif %}
+      {% if a.origin_link %}<a href="{{ a.origin_link }}" target="_blank" rel="noopener">source</a>{% endif %}
       {% if a.tags %}<div class="tags">{% for t in a.tags %}<span>{{ t }}</span>{% endfor %}</div>{% endif %}
     </div>
     <form method="post" action="{% url 'ops:image_action' a.pk %}" class="actions">
