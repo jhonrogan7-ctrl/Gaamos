@@ -95,4 +95,9 @@ STORAGES = {
 MEDIA_URL = "/media/"
 MEDIA_ROOT = os.environ.get("MEDIA_ROOT", str(BASE_DIR / "media"))
 
+# Google Gemini / Imagen — image generation for the menu-from-pdf pipeline.
+# Key lives only in .env (gitignored); never commit it.
+GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY", "")
+GEMINI_IMAGE_MODEL = os.environ.get("GEMINI_IMAGE_MODEL", "gemini-2.5-flash-image")
+
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"

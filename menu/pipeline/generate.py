@@ -6,9 +6,18 @@ _ENDPOINT = ("https://generativelanguage.googleapis.com/v1beta/models/"
              "{model}:generateContent?key={key}")
 
 
-def generate_image(prompt, *, api_key, model="gemini-2.5-flash-image",
+def generate_image(prompt, *, api_key=None, model=None,
                    opener=urllib.request.urlopen):
-    """Generate an image from `prompt` via Gemini; return raw image bytes."""
+    """Generate an image from `prompt` via Gemini; return raw image bytes.
+
+    `api_key` and `model` fall back to Django settings (GEMINI_API_KEY /
+    GEMINI_IMAGE_MODEL, sourced from .env) so callers can omit them."""
+    if api_key is None or model is None:
+        from django.conf import settings
+        api_key = api_key or settings.GEMINI_API_KEY
+        model = model or settings.GEMINI_IMAGE_MODEL
+    if not api_key:
+        raise ValueError("No Gemini API key: pass api_key= or set GEMINI_API_KEY in .env")
     url = _ENDPOINT.format(model=model, key=api_key)
     body = {"contents": [{"parts": [{"text": prompt}]}],
             "generationConfig": {"responseModalities": ["IMAGE"]}}
