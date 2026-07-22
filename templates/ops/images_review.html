@@ -1,32 +1,17 @@
 {% extends 'ops/base.html' %}
+{% block title %}Image review{% endblock %}
+{% block top %}Image review queue{% endblock %}
 {% block content %}
-<h1>Image review queue</h1>
-<p><a href="{% url 'ops:image_browse' %}">Browse verified library →</a></p>
-<p>{{ assets|length }} pending image{{ assets|length|pluralize }}.</p>
-<div class="image-grid">
-  {% for a in assets %}
-  <div class="image-card">
-    <img src="{{ a.image_url }}" alt="{{ a.caption }}" loading="lazy">
-    <div class="meta">
-      <div class="caption">{{ a.caption }}</div>
-      <div class="src">{{ a.source }} · found for <code>{{ a.found_for_slug }}</code></div>
-      {% if a.origin_link %}<a href="{{ a.origin_link }}" target="_blank" rel="noopener">source</a>{% endif %}
-      {% if a.tags %}<div class="tags">{% for t in a.tags %}<span>{{ t }}</span>{% endfor %}</div>{% endif %}
-    </div>
-    <form method="post" action="{% url 'ops:image_action' a.pk %}" class="actions">
-      {% csrf_token %}
-      <button name="action" value="approve">Approve</button>
-      <button name="action" value="reject" class="danger">Reject</button>
-    </form>
-    <form method="post" action="{% url 'ops:image_edit' a.pk %}" class="edit">
-      {% csrf_token %}
-      <input name="caption" value="{{ a.caption }}" placeholder="caption">
-      <input name="tags" value="{{ a.tags|join:', ' }}" placeholder="tags, comma, separated">
-      <button>Save</button>
-    </form>
-  </div>
-  {% empty %}
-  <p>Nothing to review. 🎉</p>
-  {% endfor %}
+{% include 'ops/_image_styles.html' %}
+<div class="il-toolbar">
+  <span class="il-count"><b>{{ assets|length }}</b> pending image{{ assets|length|pluralize }} awaiting review</span>
+  <a class="il-link" href="{% url 'ops:image_browse' %}">Browse verified library →</a>
 </div>
+{% if assets %}
+<div class="il-grid">
+  {% for a in assets %}{% include 'ops/_image_card.html' with a=a review=True %}{% endfor %}
+</div>
+{% else %}
+<div class="il-empty">Nothing to review. 🎉</div>
+{% endif %}
 {% endblock %}

@@ -1,0 +1,29 @@
+{% comment %} One image-library card. Pass `a` (an ImageAsset) and `review=True` to
+show the Approve/Reject + edit controls (review queue); omit it for read-only browse. {% endcomment %}
+<div class="il-card">
+  <img class="il-thumb" src="{{ a.image_url }}" alt="{{ a.caption }}" loading="lazy">
+  <div class="il-b">
+    <div class="il-name">{{ a.caption|default:a.found_for_slug|default:"Untitled" }}</div>
+    <div class="il-sub">
+      {% if a.source %}<span class="il-pill">{{ a.source }}</span>{% endif %}
+      {% if a.found_for_slug %}<span>for {{ a.found_for_slug }}</span>{% endif %}
+      {% if a.origin_link %}<a class="il-link" href="{{ a.origin_link }}" target="_blank" rel="noopener">source ↗</a>{% endif %}
+    </div>
+    {% if a.tags %}<div class="il-tags">{% for t in a.tags %}<span class="il-tag">{{ t }}</span>{% endfor %}</div>{% endif %}
+    {% if review %}
+    <div class="il-actions">
+      <form method="post" action="{% url 'ops:image_action' a.pk %}" style="display:contents">{% csrf_token %}
+        <button class="il-btn il-approve" name="action" value="approve">✓ Approve</button>
+        <button class="il-btn il-reject" name="action" value="reject">✕ Reject</button>
+      </form>
+    </div>
+    <form method="post" action="{% url 'ops:image_edit' a.pk %}" class="il-edit">{% csrf_token %}
+      <label>Name</label>
+      <input class="il-input" name="caption" value="{{ a.caption }}" placeholder="Readable name">
+      <label>Tags</label>
+      <input class="il-input" name="tags" value="{{ a.tags|join:', ' }}" placeholder="comma, separated, tags">
+      <button class="il-save">Save changes</button>
+    </form>
+    {% endif %}
+  </div>
+</div>

@@ -1,23 +1,21 @@
 {% extends 'ops/base.html' %}
+{% block title %}Image library{% endblock %}
+{% block top %}Verified image library{% endblock %}
 {% block content %}
-<h1>Verified image library</h1>
-<form method="get" class="filters">
-  <input name="q" value="{{ q }}" placeholder="search caption or name">
-  <input name="tag" value="{{ tag }}" placeholder="tag">
-  <button>Filter</button>
+{% include 'ops/_image_styles.html' %}
+<form method="get" class="il-filter">
+  <input class="il-input" name="q" value="{{ q }}" placeholder="Search name or caption" style="max-width:240px">
+  <input class="il-input" name="tag" value="{{ tag }}" placeholder="Filter by tag" style="max-width:160px">
+  <button class="il-save" style="margin-top:0">Filter</button>
 </form>
-<p>{{ assets|length }} verified image{{ assets|length|pluralize }}.</p>
-<div class="image-grid">
-  {% for a in assets %}
-  <div class="image-card">
-    <img src="{{ a.image_url }}" alt="{{ a.caption }}" loading="lazy">
-    <div class="meta">
-      <div class="caption">{{ a.caption }}</div>
-      {% if a.tags %}<div class="tags">{% for t in a.tags %}<span>{{ t }}</span>{% endfor %}</div>{% endif %}
-    </div>
-  </div>
-  {% empty %}
-  <p>No verified images match.</p>
-  {% endfor %}
+<div class="il-toolbar">
+  <span class="il-count"><b>{{ assets|length }}</b> verified image{{ assets|length|pluralize }}{% if q or tag %} matching{% endif %}</span>
 </div>
+{% if assets %}
+<div class="il-grid">
+  {% for a in assets %}{% include 'ops/_image_card.html' with a=a %}{% endfor %}
+</div>
+{% else %}
+<div class="il-empty">No verified images match.</div>
+{% endif %}
 {% endblock %}
