@@ -105,6 +105,8 @@ LIBRARY_MATCH_THRESHOLD = float(os.environ.get("LIBRARY_MATCH_THRESHOLD", "0.75"
 ITEM_MATCH_THRESHOLD = float(os.environ.get("ITEM_MATCH_THRESHOLD", "0.85"))
 # Below this extractor confidence a scanned item is flagged for human review.
 SCAN_CONFIDENCE_THRESHOLD = float(os.environ.get("SCAN_CONFIDENCE_THRESHOLD", "0.7"))
+# Which photo source the bulk scan image job uses when the library has no match.
+SCAN_IMAGE_SOURCE = os.environ.get("SCAN_IMAGE_SOURCE", "pexels")
 
 # Free stock-photo APIs for the image 'find' path (all from .env, never committed).
 PEXELS_API_KEY = os.environ.get("PEXELS_API_KEY", "")
