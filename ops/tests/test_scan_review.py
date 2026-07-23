@@ -49,7 +49,7 @@ class ScanReviewTests(TestCase):
 
     def test_approve_links_to_existing_above_threshold(self):
         existing = Item.objects.create(name='Black Tea', category='Hot Drinks',
-                                       embedding=[1.0] + [0.0] * 767)
+                                       status='active', embedding=[1.0] + [0.0] * 767)
         # query embed identical to existing → similarity 1.0 ≥ threshold → link, no new row
         with patch('menu.pipeline.embed.embed', _emb([1.0] + [0.0] * 767)):
             resp = self.client.post(f'/platform/scans/{self.scan.pk}/approve/',

@@ -393,7 +393,8 @@ class MenuScan(models.Model):
 
     STATUS_CHOICES = [
         ('queued', 'Queued'), ('processing', 'Processing'),
-        ('extracted', 'Extracted'), ('imported', 'Imported'), ('failed', 'Failed'),
+        ('extracted', 'Extracted'), ('reviewed', 'Reviewed'),
+        ('imported', 'Imported'), ('failed', 'Failed'),
     ]
 
     file = models.CharField(max_length=500)
@@ -419,18 +420,53 @@ class MenuScan(models.Model):
 
 
 class Item(models.Model):
-    """A global platform-catalog menu item (staff-curated, cross-tenant, reusable)."""
+    """A global platform-catalog menu item (staff-curated, cross-tenant, reusable).
 
+    One item = one price. A price variant (Half/Full, 60ml/Qtr., Yellow/Blue) is a
+    SEPARATE Item sharing a `base_name` — founder decision D3 — so every variant
+    carries its own photo, tags and library match.
+    """
+
+    STATUS_CHOICES = [
+        ('draft', 'Draft'), ('active', 'Active'),
+        ('merged', 'Merged'), ('rejected', 'Rejected'),
+    ]
+
+    # Identity
     name = models.CharField(max_length=200)
+    base_name = models.CharField(max_length=200, blank=True)
+    variant_label = models.CharField(max_length=80, blank=True)
     description = models.TextField(blank=True)
     category = models.CharField(max_length=120, blank=True)
+    tags = models.JSONField(default=list, blank=True)
+
+    # Commerce
     reference_price = models.PositiveIntegerField(null=True, blank=True)
+    currency = models.CharField(max_length=3, default='NPR')
+
+    # Classification
+    dietary_tags = models.JSONField(default=list, blank=True)
+
+    # Media + matching
     embedding = VectorField(dimensions=768, null=True, blank=True)
     image_asset = models.ForeignKey('ImageAsset', null=True, blank=True,
                                     on_delete=models.SET_NULL, related_name='items')
+
+    # Provenance — verbatim print, so nothing is ever unrecoverable
     source_scan = models.ForeignKey('MenuScan', null=True, blank=True,
                                     on_delete=models.SET_NULL, related_name='items')
-    status = models.CharField(max_length=10, default='active')
+    source_page = models.PositiveSmallIntegerField(null=True, blank=True)
+    raw_name = models.CharField(max_length=300, blank=True)
+    raw_price_text = models.CharField(max_length=120, blank=True)
+    raw_section = models.CharField(max_length=200, blank=True)
+    split_from = models.CharField(max_length=300, blank=True)
+    confidence = models.FloatField(default=1.0)
+    needs_review = models.BooleanField(default=False)
+
+    # Lifecycle
+    status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='draft')
+    merged_into = models.ForeignKey('self', null=True, blank=True,
+                                    on_delete=models.SET_NULL, related_name='merged_from')
     created_at = models.DateTimeField(auto_now_add=True)
     reviewed_by = models.ForeignKey('auth.User', null=True, blank=True,
                                     on_delete=models.SET_NULL, related_name='catalog_items')
