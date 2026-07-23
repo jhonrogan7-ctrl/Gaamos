@@ -2,27 +2,44 @@
 {% block title %}Review scan{% endblock %}
 {% block top %}Review — {{ scan.source_cafe|default:"scan" }}{% endblock %}
 {% block content %}
+{% include 'ops/_image_styles.html' %}
 <p><a class="il-link" href="{% url 'ops:scans' %}">← All scans</a></p>
+{% if not groups %}<div class="il-empty">No draft items left to review. 🎉</div>{% endif %}
 {% for g in groups %}
-<h3>{{ g.name }}</h3>
+<h3>{{ g.name|default:"(no category)" }}</h3>
 <table class="tbl">
-  <thead><tr><th>Name</th><th>Description</th><th>Price</th><th>Dedup</th><th></th></tr></thead>
+  <thead><tr><th>Item</th><th>Price</th><th>Dietary</th><th>Flags</th><th>Dedup</th><th></th></tr></thead>
   <tbody>
   {% for r in g.rows %}
   <tr>
-    <form method="post" action="{% url 'ops:scan_approve' scan.pk %}"
-          hx-post="{% url 'ops:scan_approve' scan.pk %}" hx-swap="innerHTML"
-          hx-target="#res-{{ forloop.parentloop.counter }}-{{ forloop.counter }}">
-      {% csrf_token %}
-      <td><input name="name" value="{{ r.it.name }}"><input type="hidden" name="category" value="{{ r.category }}"></td>
-      <td><input name="description" value="{{ r.it.description }}"></td>
-      <td><input name="reference_price" value="{{ r.it.price|default_if_none:'' }}" style="width:70px"></td>
-      <td>{% if r.match %}<b>≈ {{ r.match.item.name }}</b> ({{ r.match.similarity|floatformat:2 }})
-            <button name="link_to" value="{{ r.match.item.pk }}" class="btn btn-sm ghost">Link</button>
-          {% else %}new{% endif %}</td>
-      <td><button class="btn btn-sm primary">Add</button>
-          <span id="res-{{ forloop.parentloop.counter }}-{{ forloop.counter }}"></span></td>
-    </form>
+    <td>{{ r.item.name }}
+        {% if r.item.variant_label %}<span class="il-pill">{{ r.item.variant_label }}</span>{% endif %}
+        {% if r.item.description %}<div class="il-sub">{{ r.item.description }}</div>{% endif %}
+        {% if r.item.tags %}<div class="il-tags">{% for t in r.item.tags %}<span class="il-tag">{{ t }}</span>{% endfor %}</div>{% endif %}</td>
+    <td>{% if r.item.reference_price is None %}<b>—</b>{% else %}{{ r.item.currency }} {{ r.item.reference_price }}{% endif %}
+        {% if r.item.raw_price_text %}<div class="il-sub">printed: {{ r.item.raw_price_text }}</div>{% endif %}</td>
+    <td>{% for d in r.item.dietary_tags %}<span class="il-tag">{{ d }}</span>{% endfor %}</td>
+    <td>{% if r.item.needs_review %}<span class="il-pill">needs review</span>{% endif %}
+        <div class="il-sub">p{{ r.item.source_page|default:"?" }} · {{ r.item.confidence|floatformat:2 }}</div></td>
+    <td>{% if r.match %}≈ {{ r.match.item.name }} ({{ r.match.similarity|floatformat:2 }})
+          <form method="post" action="{% url 'ops:item_action' r.item.pk %}"
+                hx-post="{% url 'ops:item_action' r.item.pk %}"
+                hx-target="#res-{{ r.item.pk }}" hx-swap="innerHTML" style="display:inline">
+            {% csrf_token %}
+            <input type="hidden" name="merge_into" value="{{ r.match.item.pk }}">
+            <button class="btn btn-sm ghost" name="action" value="merge">Merge</button>
+          </form>
+        {% else %}new{% endif %}</td>
+    <td>
+      <form method="post" action="{% url 'ops:item_action' r.item.pk %}"
+            hx-post="{% url 'ops:item_action' r.item.pk %}"
+            hx-target="#res-{{ r.item.pk }}" hx-swap="innerHTML" style="display:inline">
+        {% csrf_token %}
+        <button class="btn btn-sm primary" name="action" value="approve">Approve</button>
+        <button class="btn btn-sm ghost" name="action" value="reject">Reject</button>
+      </form>
+      <span id="res-{{ r.item.pk }}"></span>
+    </td>
   </tr>
   {% endfor %}
   </tbody>

@@ -21,7 +21,6 @@ from menu.impersonation import make_token
 from menu.models import Company, ImageAsset, Item, Membership, MenuScan
 from menu.tasks import extract_menu_scan
 from menu.pipeline import embed as image_embed
-from menu.pipeline import embed as item_embed
 from menu.pipeline import images as pipeline_images
 from menu.pipeline import photo_search
 
@@ -229,9 +228,13 @@ def scan_status(request, scan_id):
                                               'fragment': True})
 
 
-def _dedup_matches(text, limit=1):
-    """Top catalog Items by cosine similarity to `text`, above ITEM_MATCH_THRESHOLD."""
-    vec = item_embed.embed(text)
+def _dedup_matches(vec, limit=1):
+    """Top catalog Items by cosine similarity to `vec`, above ITEM_MATCH_THRESHOLD.
+
+    Takes a vector rather than text: every draft already carries the embedding
+    the extraction task computed, so the review screen renders with zero API
+    calls instead of one per row.
+    """
     qs = (Item.objects.filter(status='active').exclude(embedding=None)
           .annotate(distance=CosineDistance('embedding', vec))
           .order_by('distance')[:limit])
@@ -243,59 +246,66 @@ def _dedup_matches(text, limit=1):
     return out
 
 
+def _sync_scan_status(scan):
+    """A scan is `reviewed` once no draft rows are left to decide on."""
+    if scan is None:
+        return
+    if not Item.objects.filter(source_scan=scan, status='draft').exists():
+        if scan.status != 'reviewed':
+            scan.status = 'reviewed'
+            scan.save(update_fields=['status'])
+
+
 @platform_admin_required
 def scan_review(request, scan_id):
     scan = get_object_or_404(MenuScan, pk=scan_id)
+    drafts = Item.objects.filter(source_scan=scan, status='draft')
     has_catalog = Item.objects.filter(status='active').exclude(embedding=None).exists()
-    groups = []
-    for cat in scan.raw_extraction.get('categories', []):
-        rows = []
-        for it in cat.get('items', []):
-            text = f"{it.get('name','')} {it.get('description','')}".strip()
-            matches = _dedup_matches(text) if has_catalog else []
-            rows.append({'it': it, 'category': cat.get('name', ''),
-                         'match': matches[0] if matches else None})
-        groups.append({'name': cat.get('name', ''), 'rows': rows})
-    return render(request, 'ops/scan_review.html',
-                  {'scan': scan, 'groups': groups, 'active': 'scans'})
+    grouped = {}
+    for item in drafts:
+        matches = (_dedup_matches(item.embedding)
+                   if has_catalog and item.embedding is not None else [])
+        grouped.setdefault(item.category, []).append(
+            {'item': item, 'match': matches[0] if matches else None})
+    return render(request, 'ops/scan_review.html', {
+        'scan': scan, 'active': 'scans',
+        'groups': [{'name': name, 'rows': rows} for name, rows in grouped.items()],
+    })
 
 
 @platform_admin_required
 @require_POST
-def scan_approve(request, scan_id):
-    scan = get_object_or_404(MenuScan, pk=scan_id)
-    name = request.POST.get('name', '').strip()
-    if not name:
-        return HttpResponseBadRequest('missing name')
-    link_to = request.POST.get('link_to')
-    if link_to:
-        item = get_object_or_404(Item, pk=link_to, status='active')
-        if item.source_scan_id is None:
-            item.source_scan = scan
-            item.save(update_fields=['source_scan'])
-        scan.status = 'imported'
-        scan.save(update_fields=['status'])
-        return HttpResponse(f'<span class="ok">Linked to #{item.pk}</span>')
-    ref_price = None
-    raw_price = (request.POST.get('reference_price') or '').strip()
-    if raw_price:
-        if not raw_price.isdigit():
-            return HttpResponseBadRequest('reference_price must be a non-negative integer')
-        ref_price = int(raw_price)
-    text = f"{name} {request.POST.get('description','')}".strip()
-    if Item.objects.filter(source_scan=scan, name=name).exists():
-        scan.status = 'imported'
-        scan.save(update_fields=['status'])
-        return HttpResponse('<span class="ok">Already added</span>')
-    Item.objects.create(
-        name=name, description=request.POST.get('description', '').strip(),
-        category=request.POST.get('category', '').strip(),
-        reference_price=ref_price,
-        embedding=item_embed.embed(text), source_scan=scan,
-        reviewed_by=request.user, status='active')
-    scan.status = 'imported'
-    scan.save(update_fields=['status'])
-    return HttpResponse('<span class="ok">Added ✓</span>')
+def item_action(request, item_id):
+    """Move a draft catalog item through the review lifecycle.
+
+    Shared by the table review screen and (spec B) the card workbench.
+    """
+    item = get_object_or_404(Item, pk=item_id)
+    action = request.POST.get('action')
+    if action == 'approve':
+        item.status = 'active'
+        item.reviewed_by = request.user
+        item.save(update_fields=['status', 'reviewed_by'])
+        label = 'Approved ✓'
+    elif action == 'reject':
+        item.status = 'rejected'
+        item.reviewed_by = request.user
+        item.save(update_fields=['status', 'reviewed_by'])
+        label = 'Rejected'
+    elif action == 'merge':
+        target = Item.objects.filter(pk=request.POST.get('merge_into'),
+                                     status='active').first()
+        if target is None:
+            return HttpResponseBadRequest('merge_into must be an active item')
+        item.status = 'merged'
+        item.merged_into = target
+        item.reviewed_by = request.user
+        item.save(update_fields=['status', 'merged_into', 'reviewed_by'])
+        label = f'Merged into #{target.pk}'
+    else:
+        return HttpResponseBadRequest('unknown action')
+    _sync_scan_status(item.source_scan)
+    return HttpResponse(f'<span class="ok">{label}</span>')
 
 
 @platform_admin_required
