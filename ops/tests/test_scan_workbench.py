@@ -149,3 +149,82 @@ class ItemTagEditTests(TestCase):
         self.client.post(self.url, {'tags': ''}, **self.apex)
         self.item.refresh_from_db()
         self.assertEqual(self.item.tags, [])
+
+
+class WorkbenchScreenTests(TestCase):
+    def setUp(self):
+        self.apex = {'HTTP_HOST': APEX}
+        self.boss = User.objects.create_superuser('boss', 'b@x.io', 'pw-boss-1')
+        self.scan = MenuScan.objects.create(file='scans/x.pdf', status='extracted',
+                                            source_cafe='Kailash')
+        self.asset = ImageAsset.objects.create(source='pexels', status='verified',
+                                               file='imagelib/a.webp')
+        self.with_photo = Item.objects.create(
+            source_scan=self.scan, status='draft', name='Chicken Momo',
+            raw_name='Chicken Momo', image_asset=self.asset)
+        self.without = Item.objects.create(
+            source_scan=self.scan, status='draft', name='Veg Momo',
+            raw_name='Veg Momo')
+        self.client.force_login(self.boss)
+        self.url = f'/platform/scans/{self.scan.pk}/workbench/'
+
+    def test_workbench_requires_superuser(self):
+        self.client.logout()
+        self.assertEqual(self.client.get(self.url, **self.apex).status_code, 302)
+
+    def test_workbench_renders_a_card_per_item(self):
+        body = self.client.get(self.url, **self.apex).content.decode()
+        self.assertIn(f'sc-card-{self.with_photo.pk}', body)
+        self.assertIn(f'sc-card-{self.without.pk}', body)
+        self.assertIn('Veg Momo', body)
+
+    def test_workbench_hides_rejected_and_merged_rows(self):
+        Item.objects.create(source_scan=self.scan, status='rejected', name='Ghost Item')
+        keeper = Item.objects.create(source_scan=self.scan, status='active', name='Keeper')
+        Item.objects.create(source_scan=self.scan, status='merged', name='Dup Item',
+                            merged_into=keeper)
+        body = self.client.get(self.url, **self.apex).content.decode()
+        self.assertNotIn('Ghost Item', body)
+        self.assertNotIn('Dup Item', body)
+
+    def test_workbench_counts_how_many_have_photos(self):
+        body = self.client.get(self.url, **self.apex).content.decode()
+        self.assertIn('1 of 2', body)
+
+    def test_progress_fragment_reports_the_same_count(self):
+        body = self.client.get(
+            f'/platform/scans/{self.scan.pk}/image-progress/', **self.apex).content.decode()
+        self.assertIn('1 of 2', body)
+
+    def test_find_images_dispatches_the_job_and_records_its_id(self):
+        class FakeResult:
+            id = 'job-123'
+
+        with patch('menu.tasks.find_images_for_scan.delay',
+                   return_value=FakeResult()) as delay:
+            resp = self.client.post(f'/platform/scans/{self.scan.pk}/find-images/',
+                                    **self.apex)
+        self.assertEqual(resp.status_code, 302)
+        delay.assert_called_once_with(self.scan.pk)
+        self.scan.refresh_from_db()
+        self.assertEqual(self.scan.image_task_id, 'job-123')
+
+    def test_find_images_requires_superuser(self):
+        self.client.logout()
+        with patch('menu.tasks.find_images_for_scan.delay') as delay:
+            resp = self.client.post(f'/platform/scans/{self.scan.pk}/find-images/',
+                                    **self.apex)
+        self.assertEqual(resp.status_code, 302)
+        delay.assert_not_called()
+
+    def test_find_images_rejects_a_get(self):
+        with patch('menu.tasks.find_images_for_scan.delay') as delay:
+            resp = self.client.get(f'/platform/scans/{self.scan.pk}/find-images/',
+                                   **self.apex)
+        self.assertEqual(resp.status_code, 405)
+        delay.assert_not_called()
+
+    def test_workbench_links_to_the_table_view_and_publish(self):
+        body = self.client.get(self.url, **self.apex).content.decode()
+        self.assertIn(f'/platform/scans/{self.scan.pk}/review/', body)
+        self.assertIn(f'/platform/scans/{self.scan.pk}/publish/', body)

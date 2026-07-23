@@ -19,7 +19,8 @@
         {% if s.error %}<br><small>{{ s.error|truncatechars:80 }}</small>{% endif %}</td>
     <td>{{ s.created_at|date:"Y-m-d H:i" }}</td>
     <td>{% if s.status == 'extracted' or s.status == 'reviewed' or s.status == 'imported' %}<a class="btn btn-sm primary"
-          href="{% url 'ops:scan_review' s.pk %}">Review</a>{% endif %}</td>
+          href="{% url 'ops:scan_review' s.pk %}">Review</a>
+        <a class="btn btn-sm ghost" href="{% url 'ops:scan_workbench' s.pk %}">Workbench</a>{% endif %}</td>
   </tr>
   {% empty %}
   <tr><td colspan="4">No scans yet. Upload a menu to start.</td></tr>

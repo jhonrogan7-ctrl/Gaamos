@@ -19,7 +19,7 @@ from core.models import Lead
 from menu.dashboard.utils import generate_qr_for_branch
 from menu.impersonation import make_token
 from menu.models import Company, ImageAsset, Item, Membership, MenuScan
-from menu.tasks import extract_menu_scan
+from menu.tasks import extract_menu_scan, find_images_for_scan
 from menu.pipeline import embed as image_embed
 from menu.pipeline import embed as item_embed
 from menu.pipeline import intake as pipeline_intake
@@ -427,6 +427,55 @@ def item_edit_tags(request, item_id):
     item.tags = normalize.clean_tags(raw, item.raw_name or item.name)
     item.save(update_fields=['tags'])
     return render(request, 'ops/_scan_item_card.html', {'it': item})
+
+
+def _workbench_items(scan):
+    """The rows a human is still working on: rejected and merged are decided."""
+    return (Item.objects.filter(source_scan=scan)
+            .exclude(status__in=('rejected', 'merged')))
+
+
+def _image_progress(scan):
+    items = _workbench_items(scan)
+    total = items.count()
+    return {'scan': scan, 'total': total,
+            'with_photo': items.filter(image_asset__isnull=False).count()}
+
+
+@platform_admin_required
+def scan_workbench(request, scan_id):
+    """Card grid over this scan's rows — the image half of the review job.
+
+    Data corrections live on the table view (B2); both screens act on the same
+    rows, so neither owns state the other lacks.
+    """
+    scan = get_object_or_404(MenuScan, pk=scan_id)
+    ctx = _image_progress(scan)
+    ctx.update({'active': 'scans', 'items': _workbench_items(scan)})
+    return render(request, 'ops/scan_workbench.html', ctx)
+
+
+@platform_admin_required
+def scan_image_progress(request, scan_id):
+    scan = get_object_or_404(MenuScan, pk=scan_id)
+    return render(request, 'ops/_scan_image_progress.html', _image_progress(scan))
+
+
+@platform_admin_required
+@require_POST
+def scan_find_images(request, scan_id):
+    scan = get_object_or_404(MenuScan, pk=scan_id)
+    result = find_images_for_scan.delay(scan.pk)
+    scan.image_task_id = getattr(result, 'id', '') or ''
+    scan.save(update_fields=['image_task_id'])
+    return redirect('ops:scan_workbench', scan_id=scan.pk)
+
+
+@platform_admin_required
+def scan_publish(request, scan_id):
+    """Placeholder — Task 9 replaces this with the real publish screen."""
+    scan = get_object_or_404(MenuScan, pk=scan_id)
+    return render(request, 'ops/scan_publish.html', {'scan': scan, 'active': 'scans'})
 
 
 @platform_admin_required

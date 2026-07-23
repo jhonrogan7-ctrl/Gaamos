@@ -4,6 +4,7 @@
 {% block content %}
 {% include 'ops/_image_styles.html' %}
 <p><a class="il-link" href="{% url 'ops:scans' %}">← All scans</a></p>
+<p><a class="il-link" href="{% url 'ops:scan_workbench' scan.pk %}">Card workbench (photos) →</a></p>
 {% if not groups %}<div class="il-empty">No draft items left to review. 🎉</div>{% endif %}
 {% for g in groups %}
 <h3>{{ g.name|default:"(no category)" }}</h3>
