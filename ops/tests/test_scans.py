@@ -46,3 +46,12 @@ class ScanUploadTests(TestCase):
                                        raw_extraction={}, file='scans/x.pdf')
         body = self.client.get('/platform/scans/', **self.apex).content.decode()
         self.assertIn(f'/platform/scans/{scan.pk}/review/', body)
+
+    def test_reviewed_scan_still_shows_review_link(self):
+        """Deciding the last draft flips the scan to `reviewed` — staff must
+        still be able to reopen it, exactly as for `imported`."""
+        self.client.force_login(self.boss)
+        scan = MenuScan.objects.create(source_cafe='Cafe', status='reviewed',
+                                       raw_extraction={}, file='scans/x.pdf')
+        body = self.client.get('/platform/scans/', **self.apex).content.decode()
+        self.assertIn(f'/platform/scans/{scan.pk}/review/', body)

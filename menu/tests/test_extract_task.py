@@ -106,6 +106,34 @@ def test_screenshot_page_flags_its_items(tmp_path, settings):
 
 
 @pytest.mark.django_db
+def test_failed_rewrite_keeps_the_previous_drafts(tmp_path, settings):
+    """A re-extraction that dies partway must not leave a half-written scan:
+    the previous drafts survive intact rather than being replaced by a fragment."""
+    scan = _scan(tmp_path, settings)
+    with patch("menu.pipeline.extract.extract_menu", return_value=MENU), \
+         patch("menu.pipeline.embed.embed", _emb([0.1] * 768)):
+        extract_menu_scan(scan.id)
+    first = set(Item.objects.filter(source_scan=scan).values_list("pk", flat=True))
+    assert len(first) == 2
+
+    calls = {"n": 0}
+
+    def flaky(text):
+        calls["n"] += 1
+        if calls["n"] > 1:
+            raise RuntimeError("embed boom")
+        return [0.2] * 768
+
+    with patch("menu.pipeline.extract.extract_menu", return_value=MENU), \
+         patch("menu.pipeline.embed.embed", flaky):
+        extract_menu_scan(scan.id)
+
+    scan.refresh_from_db()
+    assert scan.status == "failed"
+    assert set(Item.objects.filter(source_scan=scan).values_list("pk", flat=True)) == first
+
+
+@pytest.mark.django_db
 def test_task_marks_failed_on_error(tmp_path, settings):
     scan = _scan(tmp_path, settings)
     with patch("menu.pipeline.extract.extract_menu", side_effect=RuntimeError("boom")):

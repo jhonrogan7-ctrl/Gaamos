@@ -118,6 +118,35 @@ class ScanReviewTests(TestCase):
                                **self.apex).content.decode()
         self.assertIn('Merge', body)
 
+    def test_active_catalog_item_cannot_be_acted_on(self):
+        """A published catalog row is not review material — a stray POST must
+        never flip an item tenants are already using."""
+        live = Item.objects.create(name='Live Catalog Item', status='active')
+        resp = self.client.post(self._url(live), {'action': 'reject'}, **self.apex)
+        self.assertEqual(resp.status_code, 404)
+        live.refresh_from_db()
+        self.assertEqual(live.status, 'active')
+
+    def test_approving_a_merged_row_clears_the_merge_pointer(self):
+        """Undoing a merge must not leave an active row pointing at a keeper."""
+        keeper = Item.objects.create(name='Keeper', status='active',
+                                     embedding=[0.5] * 768)
+        self.client.post(self._url(self.tea),
+                         {'action': 'merge', 'merge_into': str(keeper.pk)}, **self.apex)
+        resp = self.client.post(self._url(self.tea), {'action': 'approve'}, **self.apex)
+        self.assertEqual(resp.status_code, 200)
+        self.tea.refresh_from_db()
+        self.assertEqual(self.tea.status, 'active')
+        self.assertIsNone(self.tea.merged_into_id)
+
+    def test_a_rejected_row_can_be_reconsidered(self):
+        """Reject is a decision, not a dead end — misclicks stay recoverable."""
+        self.client.post(self._url(self.tea), {'action': 'reject'}, **self.apex)
+        resp = self.client.post(self._url(self.tea), {'action': 'approve'}, **self.apex)
+        self.assertEqual(resp.status_code, 200)
+        self.tea.refresh_from_db()
+        self.assertEqual(self.tea.status, 'active')
+
     def test_review_makes_no_embedding_calls(self):
         """Drafts already carry their vectors from extraction — rendering the
         review screen must not call Gemini once per row."""

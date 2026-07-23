@@ -3,6 +3,7 @@ from pathlib import Path
 
 from celery import shared_task
 from django.conf import settings
+from django.db import transaction
 
 from menu.models import Item, MenuScan
 from menu.pipeline import embed, extract, normalize
@@ -17,15 +18,18 @@ def _write_drafts(scan, payload):
     """Replace this scan's drafts with freshly normalized rows.
 
     Idempotent by design: only `draft` rows are deleted, so re-running a scan
-    never destroys a row a human already approved, merged or rejected.
+    never destroys a row a human already approved, merged or rejected. Atomic
+    because the rewrite calls the embedding API once per row — a failure halfway
+    through must leave the previous drafts standing, not a fragment of the new set.
     """
-    Item.objects.filter(source_scan=scan, status="draft").delete()
-    page_types = normalize.page_type_map(payload)
-    for raw in payload.get("items", []):
-        fields = normalize.normalize_item(raw, page_types)
-        text = f"{fields['name']} {fields['description']}".strip()
-        Item.objects.create(source_scan=scan, status="draft",
-                            embedding=embed.embed(text), **fields)
+    with transaction.atomic():
+        Item.objects.filter(source_scan=scan, status="draft").delete()
+        page_types = normalize.page_type_map(payload)
+        for raw in payload.get("items", []):
+            fields = normalize.normalize_item(raw, page_types)
+            text = f"{fields['name']} {fields['description']}".strip()
+            Item.objects.create(source_scan=scan, status="draft",
+                                embedding=embed.embed(text), **fields)
 
 
 @shared_task

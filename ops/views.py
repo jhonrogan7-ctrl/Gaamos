@@ -277,21 +277,26 @@ def scan_review(request, scan_id):
 @platform_admin_required
 @require_POST
 def item_action(request, item_id):
-    """Move a draft catalog item through the review lifecycle.
+    """Move a scanned catalog item through the review lifecycle.
 
-    Shared by the table review screen and (spec B) the card workbench.
+    Shared by the table review screen and (spec B) the card workbench. Rows that
+    are already `active` are out of scope — a published catalog item tenants may
+    be using is not review material, so it 404s rather than being flipped. Every
+    other status stays actionable, so a misclicked reject or merge is recoverable.
     """
-    item = get_object_or_404(Item, pk=item_id)
+    item = get_object_or_404(Item.objects.exclude(status='active'), pk=item_id)
     action = request.POST.get('action')
     if action == 'approve':
         item.status = 'active'
+        item.merged_into = None      # leaving a merge pointer behind would lie
         item.reviewed_by = request.user
-        item.save(update_fields=['status', 'reviewed_by'])
+        item.save(update_fields=['status', 'merged_into', 'reviewed_by'])
         label = 'Approved ✓'
     elif action == 'reject':
         item.status = 'rejected'
+        item.merged_into = None
         item.reviewed_by = request.user
-        item.save(update_fields=['status', 'reviewed_by'])
+        item.save(update_fields=['status', 'merged_into', 'reviewed_by'])
         label = 'Rejected'
     elif action == 'merge':
         target = Item.objects.filter(pk=request.POST.get('merge_into'),
