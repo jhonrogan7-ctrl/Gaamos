@@ -103,3 +103,104 @@ class TestCleanCurrency:
         assert normalize.clean_currency(None) == 'NPR'
         assert normalize.clean_currency('Rs.') == 'NPR'
         assert normalize.clean_currency('RS') == 'NPR'
+
+
+CLEAN = {
+    'name': 'Veg Chowmein', 'base_name': 'Chowmein', 'variant_label': 'Veg',
+    'description': 'stir fried noodles', 'category': 'Chowmein',
+    'price': 200, 'currency': 'NPR',
+    'dietary_tags': ['veg'], 'tags': ['veg', 'chowmein'],
+    'raw_name': 'Veg. Chowmein', 'raw_price_text': '200',
+    'raw_section': 'CHOWMEIN', 'split_from': '',
+    'source_page': 1, 'confidence': 0.95,
+}
+
+
+class TestPageTypeMap:
+    def test_maps_index_to_type(self):
+        payload = {'pages': [{'index': 1, 'page_type': 'menu'},
+                             {'index': 5, 'page_type': 'signage'}]}
+        assert normalize.page_type_map(payload) == {1: 'menu', 5: 'signage'}
+
+    def test_empty_payload(self):
+        assert normalize.page_type_map({}) == {}
+
+
+class TestNormalizeItem:
+    def test_maps_every_canonical_field(self):
+        got = normalize.normalize_item(CLEAN, {1: 'menu'}, threshold=0.7)
+        assert got['name'] == 'Veg Chowmein'
+        assert got['base_name'] == 'Chowmein'
+        assert got['variant_label'] == 'Veg'
+        assert got['description'] == 'stir fried noodles'
+        assert got['category'] == 'Chowmein'
+        assert got['tags'] == ['veg', 'chowmein']
+        assert got['dietary_tags'] == ['veg']
+        assert got['reference_price'] == 200
+        assert got['currency'] == 'NPR'
+        assert got['raw_name'] == 'Veg. Chowmein'
+        assert got['raw_price_text'] == '200'
+        assert got['raw_section'] == 'CHOWMEIN'
+        assert got['split_from'] == ''
+        assert got['source_page'] == 1
+        assert got['confidence'] == 0.95
+
+    def test_clean_item_does_not_need_review(self):
+        assert normalize.normalize_item(CLEAN, {1: 'menu'}, threshold=0.7)['needs_review'] is False
+
+    def test_low_confidence_needs_review(self):
+        raw = dict(CLEAN, confidence=0.4)
+        assert normalize.normalize_item(raw, {1: 'menu'}, threshold=0.7)['needs_review'] is True
+
+    def test_null_price_needs_review(self):
+        # Kailash prints 'Red Bull Yellow' with no price at all.
+        raw = dict(CLEAN, price=None)
+        got = normalize.normalize_item(raw, {1: 'menu'}, threshold=0.7)
+        assert got['reference_price'] is None
+        assert got['needs_review'] is True
+
+    def test_non_menu_page_needs_review(self):
+        # A PhavBaji screenshot shows another restaurant's menu — never trust it.
+        got = normalize.normalize_item(CLEAN, {1: 'screenshot'}, threshold=0.7)
+        assert got['needs_review'] is True
+
+    def test_non_npr_currency_needs_review(self):
+        raw = dict(CLEAN, currency='USD')
+        got = normalize.normalize_item(raw, {1: 'menu'}, threshold=0.7)
+        assert got['currency'] == 'USD'
+        assert got['needs_review'] is True
+
+    def test_dropped_tag_needs_review(self):
+        # The model tried to add a word of its own — worth a human glance.
+        raw = dict(CLEAN, tags=['veg', 'chowmein', 'noodles'])
+        got = normalize.normalize_item(raw, {1: 'menu'}, threshold=0.7)
+        assert got['tags'] == ['veg', 'chowmein']
+        assert got['needs_review'] is True
+
+    def test_dropped_dietary_needs_review(self):
+        raw = dict(CLEAN, dietary_tags=['veg', 'halal'])
+        got = normalize.normalize_item(raw, {1: 'menu'}, threshold=0.7)
+        assert got['dietary_tags'] == ['veg']
+        assert got['needs_review'] is True
+
+    def test_unknown_page_defaults_to_menu(self):
+        assert normalize.normalize_item(CLEAN, {}, threshold=0.7)['needs_review'] is False
+
+    def test_unparseable_confidence_needs_review(self):
+        raw = dict(CLEAN, confidence='high')
+        assert normalize.normalize_item(raw, {1: 'menu'}, threshold=0.7)['needs_review'] is True
+
+    def test_missing_optional_fields_default_to_blank(self):
+        got = normalize.normalize_item(
+            {'name': 'Black Tea', 'raw_name': 'Black Tea', 'price': 50, 'source_page': 1},
+            {1: 'menu'}, threshold=0.7)
+        assert got['base_name'] == ''
+        assert got['variant_label'] == ''
+        assert got['description'] == ''
+        assert got['tags'] == []
+        assert got['dietary_tags'] == []
+        assert got['needs_review'] is False
+
+    def test_threshold_defaults_to_the_setting(self, settings):
+        settings.SCAN_CONFIDENCE_THRESHOLD = 0.99
+        assert normalize.normalize_item(CLEAN, {1: 'menu'})['needs_review'] is True

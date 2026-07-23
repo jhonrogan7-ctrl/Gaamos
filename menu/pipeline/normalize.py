@@ -60,3 +60,65 @@ def clean_currency(value):
     """A three-letter uppercase code; anything else falls back to NPR."""
     cleaned = (value or "").strip().upper()
     return cleaned if len(cleaned) == 3 and cleaned.isalpha() else "NPR"
+
+
+def page_type_map(payload):
+    """{page index: page_type} from the extraction manifest."""
+    return {p.get("index"): (p.get("page_type") or "menu")
+            for p in (payload.get("pages") or [])}
+
+
+def normalize_item(raw, page_types=None, *, threshold=None):
+    """Map one raw extracted item onto the canonical field set.
+
+    Returns a dict whose keys are exactly the Item fields the extraction task
+    assigns, plus `needs_review`. `page_types` comes from page_type_map, so an
+    item lifted off a signboard or a screenshot of someone else's menu is
+    flagged rather than trusted.
+    """
+    if threshold is None:
+        from django.conf import settings
+        threshold = settings.SCAN_CONFIDENCE_THRESHOLD
+    page_types = page_types or {}
+
+    raw_name = (raw.get("raw_name") or raw.get("name") or "").strip()
+    tags_in, dietary_in = raw.get("tags"), raw.get("dietary_tags")
+    tags = clean_tags(tags_in, raw_name)
+    dietary = clean_dietary(dietary_in)
+    price = clean_price(raw.get("price"))
+    currency = clean_currency(raw.get("currency"))
+    source_page = raw.get("source_page")
+    page_type = page_types.get(source_page, "menu")
+
+    try:
+        confidence = float(raw.get("confidence", 1.0))
+    except (TypeError, ValueError):
+        confidence = 0.0
+
+    # A dropped value means the model tried to add something of its own.
+    dropped = (len(tags) < len(_nonempty(tags_in))
+               or len(dietary) < len(_nonempty(dietary_in)))
+
+    return {
+        "name": (raw.get("name") or raw_name).strip(),
+        "base_name": (raw.get("base_name") or "").strip(),
+        "variant_label": (raw.get("variant_label") or "").strip(),
+        "description": (raw.get("description") or "").strip(),
+        "category": (raw.get("category") or "").strip(),
+        "tags": tags,
+        "dietary_tags": dietary,
+        "reference_price": price,
+        "currency": currency,
+        "raw_name": raw_name,
+        "raw_price_text": (raw.get("raw_price_text") or "").strip(),
+        "raw_section": (raw.get("raw_section") or "").strip(),
+        "split_from": (raw.get("split_from") or "").strip(),
+        "source_page": source_page,
+        "confidence": confidence,
+        "needs_review": bool(
+            confidence < threshold
+            or price is None
+            or page_type != "menu"
+            or currency != "NPR"
+            or dropped),
+    }
