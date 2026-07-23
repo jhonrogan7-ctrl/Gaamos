@@ -1,0 +1,31 @@
+{% extends 'ops/base.html' %}
+{% block title %}Review scan{% endblock %}
+{% block top %}Review — {{ scan.source_cafe|default:"scan" }}{% endblock %}
+{% block content %}
+<p><a class="il-link" href="{% url 'ops:scans' %}">← All scans</a></p>
+{% for g in groups %}
+<h3>{{ g.name }}</h3>
+<table class="tbl">
+  <thead><tr><th>Name</th><th>Description</th><th>Price</th><th>Dedup</th><th></th></tr></thead>
+  <tbody>
+  {% for r in g.rows %}
+  <tr>
+    <form method="post" action="{% url 'ops:scan_approve' scan.pk %}"
+          hx-post="{% url 'ops:scan_approve' scan.pk %}" hx-swap="innerHTML"
+          hx-target="#res-{{ forloop.parentloop.counter }}-{{ forloop.counter }}">
+      {% csrf_token %}
+      <td><input name="name" value="{{ r.it.name }}"><input type="hidden" name="category" value="{{ r.category }}"></td>
+      <td><input name="description" value="{{ r.it.description }}"></td>
+      <td><input name="reference_price" value="{{ r.it.price|default_if_none:'' }}" style="width:70px"></td>
+      <td>{% if r.match %}<b>≈ {{ r.match.item.name }}</b> ({{ r.match.similarity|floatformat:2 }})
+            <button name="link_to" value="{{ r.match.item.pk }}" class="btn btn-sm ghost">Link</button>
+          {% else %}new{% endif %}</td>
+      <td><button class="btn btn-sm primary">Add</button>
+          <span id="res-{{ forloop.parentloop.counter }}-{{ forloop.counter }}"></span></td>
+    </form>
+  </tr>
+  {% endfor %}
+  </tbody>
+</table>
+{% endfor %}
+{% endblock %}

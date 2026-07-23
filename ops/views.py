@@ -13,13 +13,15 @@ from django.urls import reverse
 from django.utils import timezone
 from django.utils.http import url_has_allowed_host_and_scheme
 from django.views.decorators.http import require_POST
+from pgvector.django import CosineDistance
 
 from core.models import Lead
 from menu.dashboard.utils import generate_qr_for_branch
 from menu.impersonation import make_token
-from menu.models import Company, ImageAsset, Membership, MenuScan
+from menu.models import Company, ImageAsset, Item, Membership, MenuScan
 from menu.tasks import extract_menu_scan
 from menu.pipeline import embed as image_embed
+from menu.pipeline import embed as item_embed
 from menu.pipeline import images as pipeline_images
 from menu.pipeline import photo_search
 
@@ -225,6 +227,61 @@ def scan_status(request, scan_id):
     scan = get_object_or_404(MenuScan, pk=scan_id)
     return render(request, 'ops/scans.html', {'scans': [scan], 'active': 'scans',
                                               'fragment': True})
+
+
+def _dedup_matches(text, limit=1):
+    """Top catalog Items by cosine similarity to `text`, above ITEM_MATCH_THRESHOLD."""
+    vec = item_embed.embed(text)
+    qs = (Item.objects.filter(status='active').exclude(embedding=None)
+          .annotate(distance=CosineDistance('embedding', vec))
+          .order_by('distance')[:limit])
+    out = []
+    for it in qs:
+        sim = 1.0 - float(it.distance)
+        if sim >= settings.ITEM_MATCH_THRESHOLD:
+            out.append({'item': it, 'similarity': sim})
+    return out, vec
+
+
+@platform_admin_required
+def scan_review(request, scan_id):
+    scan = get_object_or_404(MenuScan, pk=scan_id)
+    groups = []
+    for cat in scan.raw_extraction.get('categories', []):
+        rows = []
+        for it in cat.get('items', []):
+            text = f"{it.get('name','')} {it.get('description','')}".strip()
+            matches, _ = _dedup_matches(text) if Item.objects.exists() else ([], None)
+            rows.append({'it': it, 'category': cat.get('name', ''),
+                         'match': matches[0] if matches else None})
+        groups.append({'name': cat.get('name', ''), 'rows': rows})
+    return render(request, 'ops/scan_review.html',
+                  {'scan': scan, 'groups': groups, 'active': 'scans'})
+
+
+@platform_admin_required
+@require_POST
+def scan_approve(request, scan_id):
+    scan = get_object_or_404(MenuScan, pk=scan_id)
+    name = request.POST.get('name', '').strip()
+    if not name:
+        return HttpResponseBadRequest('missing name')
+    link_to = request.POST.get('link_to')
+    if link_to:
+        item = get_object_or_404(Item, pk=link_to)
+        if item.source_scan_id is None:
+            item.source_scan = scan
+            item.save(update_fields=['source_scan'])
+        return HttpResponse(f'<span class="ok">Linked to #{item.pk}</span>')
+    price = request.POST.get('reference_price') or None
+    text = f"{name} {request.POST.get('description','')}".strip()
+    Item.objects.create(
+        name=name, description=request.POST.get('description', '').strip(),
+        category=request.POST.get('category', '').strip(),
+        reference_price=int(price) if price else None,
+        embedding=item_embed.embed(text), source_scan=scan,
+        reviewed_by=request.user, status='active')
+    return HttpResponse('<span class="ok">Added ✓</span>')
 
 
 @platform_admin_required

@@ -102,6 +102,7 @@ GEMINI_IMAGE_MODEL = os.environ.get("GEMINI_IMAGE_MODEL", "gemini-2.5-flash-imag
 GEMINI_EMBED_MODEL = os.environ.get("GEMINI_EMBED_MODEL", "text-embedding-004")
 GEMINI_VISION_MODEL = os.environ.get("GEMINI_VISION_MODEL", "gemini-2.5-flash")
 LIBRARY_MATCH_THRESHOLD = float(os.environ.get("LIBRARY_MATCH_THRESHOLD", "0.75"))
+ITEM_MATCH_THRESHOLD = float(os.environ.get("ITEM_MATCH_THRESHOLD", "0.85"))
 
 # Free stock-photo APIs for the image 'find' path (all from .env, never committed).
 PEXELS_API_KEY = os.environ.get("PEXELS_API_KEY", "")
