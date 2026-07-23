@@ -9,39 +9,70 @@ _ENDPOINT = ("https://generativelanguage.googleapis.com/v1beta/models/"
              "{model}:generateContent?key={key}")
 
 _PROMPT = (
-    "You are given a restaurant/cafe menu document. Extract every menu item. "
-    "Return JSON only, matching the schema: an object with a `categories` array; "
-    "each category has `name` and an `items` array; each item has `name`, "
-    "`description` (empty string if none), and `price` (integer rupees, or null if "
-    "unreadable). Do not invent items; transcribe faithfully.")
+    "You are given a restaurant/cafe menu document. Return JSON only.\n"
+    "1. Transcribe faithfully. Never invent an item that is not printed.\n"
+    "2. If one printed line names several products (for example "
+    "'Coke/Fanta/Sprite'), emit ONE item per product and set `split_from` to the "
+    "full printed line.\n"
+    "3. If a row carries several prices - a matrix with column headers such as "
+    "'60ml | Qtr.' or 'HALF | FULL', or an inline '200/260' - emit ONE item per "
+    "price. Set `base_name` to the shared product name, `variant_label` to that "
+    "price's label, and `name` to the full display name.\n"
+    "4. `tags` must contain ONLY words that appear in that item's printed name. "
+    "Never add synonyms, translations or inferred ingredients.\n"
+    "5. `dietary_tags` may only use these values: "
+    "veg, vegan, egg, chicken, buff, pork, fish, mutton. Infer them from the "
+    "section heading, any veg/non-veg glyph, and the item name.\n"
+    "6. `price` is an integer or null. Never guess a price that is not printed.\n"
+    "7. Copy the verbatim printed text into `raw_name`, `raw_price_text` and "
+    "`raw_section`.\n"
+    "8. Classify every page in `pages`: `menu` for a page listing items, "
+    "`signage` for artwork or a signboard, `contact` for WiFi/phone/QR/payment "
+    "pages, `screenshot` for anything showing browser or phone UI.\n"
+    "9. Where a price column is misaligned or ambiguous, return a low "
+    "`confidence` rather than a guess.")
+
+_ITEM_SCHEMA = {
+    "type": "object",
+    "properties": {
+        "name": {"type": "string"},
+        "base_name": {"type": "string"},
+        "variant_label": {"type": "string"},
+        "description": {"type": "string"},
+        "category": {"type": "string"},
+        "price": {"type": "integer", "nullable": True},
+        "currency": {"type": "string"},
+        "dietary_tags": {"type": "array", "items": {"type": "string"}},
+        "tags": {"type": "array", "items": {"type": "string"}},
+        "raw_name": {"type": "string"},
+        "raw_price_text": {"type": "string"},
+        "raw_section": {"type": "string"},
+        "split_from": {"type": "string"},
+        "source_page": {"type": "integer"},
+        "confidence": {"type": "number"},
+    },
+    "required": ["name", "raw_name", "source_page"],
+}
 
 _SCHEMA = {
     "type": "object",
     "properties": {
-        "categories": {
+        "pages": {
             "type": "array",
             "items": {
                 "type": "object",
                 "properties": {
-                    "name": {"type": "string"},
-                    "items": {
-                        "type": "array",
-                        "items": {
-                            "type": "object",
-                            "properties": {
-                                "name": {"type": "string"},
-                                "description": {"type": "string"},
-                                "price": {"type": "integer", "nullable": True},
-                            },
-                            "required": ["name"],
-                        },
-                    },
+                    "index": {"type": "integer"},
+                    "page_type": {"type": "string", "enum": [
+                        "menu", "signage", "contact", "screenshot", "unknown"]},
+                    "confidence": {"type": "number"},
                 },
-                "required": ["name", "items"],
+                "required": ["index", "page_type"],
             },
         },
+        "items": {"type": "array", "items": _ITEM_SCHEMA},
     },
-    "required": ["categories"],
+    "required": ["pages", "items"],
 }
 
 
