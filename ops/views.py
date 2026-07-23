@@ -11,6 +11,7 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.utils import timezone
 from django.utils.http import url_has_allowed_host_and_scheme
+from django.utils.text import slugify
 from django.views.decorators.http import require_POST
 from pgvector.django import CosineDistance
 
@@ -21,6 +22,7 @@ from menu.models import Company, ImageAsset, Item, Membership, MenuScan
 from menu.tasks import extract_menu_scan
 from menu.pipeline import embed as image_embed
 from menu.pipeline import embed as item_embed
+from menu.pipeline import intake as pipeline_intake
 from menu.pipeline import photo_search
 
 from .forms import TenantCreateForm
@@ -342,6 +344,79 @@ def scan_combine(request, scan_id):
         sibling.save(update_fields=['status', 'merged_into', 'reviewed_by'])
     _sync_scan_status(scan)
     return redirect('ops:scan_review', scan_id=scan.pk)
+
+
+def _scan_image_source(raw):
+    """Coerce a user-supplied source to a known one, defaulting to the setting."""
+    return raw if raw in photo_search.SOURCES else settings.SCAN_IMAGE_SOURCE
+
+
+@platform_admin_required
+def item_find_photo(request, item_id):
+    """Item-centric twin of image_find_another: search for a photo FOR A DISH.
+
+    Stateless offset paging, exactly like the asset flow — the browser holds the
+    position, the server holds nothing.
+    """
+    item = get_object_or_404(Item, pk=item_id)
+    if request.GET.get('clear'):
+        return HttpResponse('')
+    try:
+        offset = int(request.GET.get('offset', 0))
+    except (TypeError, ValueError):
+        offset = 0
+    term = (request.GET.get('term') or item.name or item.raw_name or '').strip()
+    source = _scan_image_source(request.GET.get('source'))
+    ctx = {'term': term, 'source': source, 'sources': photo_search.SOURCES,
+           'find_url': reverse('ops:item_find_photo', args=[item.pk]),
+           'use_url': reverse('ops:item_use_photo', args=[item.pk]),
+           'slot': f'item-{item.pk}', 'card_id': f'sc-card-{item.pk}'}
+    try:
+        results = photo_search.search(source, term, limit=20)
+    except Exception:
+        ctx['error'] = True
+        return render(request, 'ops/_image_preview.html', ctx)
+    current = item.image_asset.origin_url if item.image_asset_id else ''
+    candidates = [c for c in results
+                  if not current or (c.get('page') != current and c.get('url') != current)]
+    if offset < 0 or offset >= len(candidates):
+        ctx['no_more'] = True
+        return render(request, 'ops/_image_preview.html', ctx)
+    ctx['cand'] = candidates[offset]
+    ctx['next_offset'] = offset + 1
+    return render(request, 'ops/_image_preview.html', ctx)
+
+
+@platform_admin_required
+@require_POST
+def item_use_photo(request, item_id):
+    """Download the chosen candidate, deposit it in the library, attach it.
+
+    The asset is recorded with the item's tags, so the library is searchable from
+    the first deposit rather than after a human gets round to captioning it.
+    """
+    item = get_object_or_404(Item, pk=item_id)
+    url = request.POST.get('url', '').strip()
+    if not url:
+        return HttpResponseBadRequest('missing url')
+    page = request.POST.get('page', '').strip()
+    source = _scan_image_source(request.POST.get('source'))
+    webp = photo_search.fetch_thumbnail(source, url)
+    asset = pipeline_intake.record(
+        source=source, webp_bytes=webp, item_name=item.name,
+        found_for_slug=slugify(item.name), origin_url=page or url, tags=item.tags)
+    if asset is None:
+        return HttpResponseBadRequest('that photo was rejected before')
+    item.image_asset = asset
+    item.save(update_fields=['image_asset'])
+    return render(request, 'ops/_scan_item_card.html', {'it': item})
+
+
+@platform_admin_required
+@require_POST
+def item_edit_tags(request, item_id):
+    item = get_object_or_404(Item, pk=item_id)
+    return render(request, 'ops/_scan_item_card.html', {'it': item})
 
 
 @platform_admin_required
