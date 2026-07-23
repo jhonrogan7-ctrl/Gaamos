@@ -2,6 +2,8 @@ import secrets
 
 from django.core.exceptions import ValidationError
 from django.db import models
+from django.db.models import Q
+from pgvector.django import VectorField
 
 from .tenancy import TenantScopedModel, get_current_company
 from .themes import DEFAULT_THEME, THEME_CHOICES
@@ -330,3 +332,147 @@ class Membership(models.Model):
 
     def __str__(self):
         return f"{self.user.username} @ {self.company.slug} ({self.role})"
+
+
+class ImageAsset(models.Model):
+    """Global (cross-tenant) sourcing pool for menu images. NOT tenant-scoped:
+    a staff-only internal library the pipeline matches against before hitting
+    external finders. Never exposed to tenant operators."""
+
+    STATUS_CHOICES = [
+        ('pending', 'Pending'),
+        ('verified', 'Verified'),
+        ('rejected', 'Rejected'),
+    ]
+
+    name = models.CharField(max_length=200, blank=True)
+    caption = models.TextField(blank=True)
+    tags = models.JSONField(default=list)
+    embedding = VectorField(dimensions=768, null=True, blank=True)
+    source = models.CharField(max_length=20)
+    origin_url = models.CharField(max_length=1000, blank=True)
+    prompt = models.TextField(blank=True)
+    license = models.CharField(max_length=200, blank=True)
+    attribution = models.CharField(max_length=500, blank=True)
+    file = models.CharField(max_length=500, blank=True)
+    content_hash = models.CharField(max_length=64, blank=True)
+    status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='pending')
+    found_for_slug = models.CharField(max_length=120, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    reviewed_at = models.DateTimeField(null=True, blank=True)
+    reviewed_by = models.ForeignKey('auth.User', null=True, blank=True,
+                                    on_delete=models.SET_NULL)
+
+    class Meta:
+        ordering = ['-created_at']
+        constraints = [
+            models.UniqueConstraint(
+                fields=['origin_url'], condition=~Q(origin_url=''),
+                name='uniq_imageasset_origin_url'),
+            models.UniqueConstraint(
+                fields=['content_hash'], condition=~Q(content_hash=''),
+                name='uniq_imageasset_content_hash'),
+        ]
+
+    def __str__(self):
+        return self.name or f"ImageAsset #{self.pk}"
+
+    @property
+    def image_url(self):
+        from django.conf import settings
+        return f"{settings.MEDIA_URL}{self.file}" if self.file else ""
+
+    @property
+    def origin_link(self):
+        url = self.origin_url or ""
+        return url if url.startswith(("http://", "https://")) else ""
+
+
+class MenuScan(models.Model):
+    """A staff-uploaded cafe menu document + its extraction job (global, non-tenant)."""
+
+    STATUS_CHOICES = [
+        ('queued', 'Queued'), ('processing', 'Processing'),
+        ('extracted', 'Extracted'), ('reviewed', 'Reviewed'),
+        ('imported', 'Imported'), ('failed', 'Failed'),
+    ]
+
+    file = models.CharField(max_length=500)
+    source_cafe = models.CharField(max_length=200, blank=True)
+    status = models.CharField(max_length=12, choices=STATUS_CHOICES, default='queued')
+    raw_extraction = models.JSONField(default=dict, blank=True)
+    error = models.TextField(blank=True)
+    task_id = models.CharField(max_length=100, blank=True)
+    created_by = models.ForeignKey('auth.User', null=True, blank=True,
+                                   on_delete=models.SET_NULL, related_name='menu_scans')
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return f"{self.source_cafe or 'scan'} #{self.pk} ({self.status})"
+
+    @property
+    def file_url(self):
+        from django.conf import settings
+        return f"{settings.MEDIA_URL}{self.file}" if self.file else ""
+
+
+class Item(models.Model):
+    """A global platform-catalog menu item (staff-curated, cross-tenant, reusable).
+
+    One item = one price. A price variant (Half/Full, 60ml/Qtr., Yellow/Blue) is a
+    SEPARATE Item sharing a `base_name` — founder decision D3 — so every variant
+    carries its own photo, tags and library match.
+    """
+
+    STATUS_CHOICES = [
+        ('draft', 'Draft'), ('active', 'Active'),
+        ('merged', 'Merged'), ('rejected', 'Rejected'),
+    ]
+
+    # Identity
+    name = models.CharField(max_length=200)
+    base_name = models.CharField(max_length=200, blank=True)
+    variant_label = models.CharField(max_length=80, blank=True)
+    description = models.TextField(blank=True)
+    category = models.CharField(max_length=120, blank=True)
+    tags = models.JSONField(default=list, blank=True)
+
+    # Commerce
+    reference_price = models.PositiveIntegerField(null=True, blank=True)
+    currency = models.CharField(max_length=3, default='NPR')
+
+    # Classification
+    dietary_tags = models.JSONField(default=list, blank=True)
+
+    # Media + matching
+    embedding = VectorField(dimensions=768, null=True, blank=True)
+    image_asset = models.ForeignKey('ImageAsset', null=True, blank=True,
+                                    on_delete=models.SET_NULL, related_name='items')
+
+    # Provenance — verbatim print, so nothing is ever unrecoverable
+    source_scan = models.ForeignKey('MenuScan', null=True, blank=True,
+                                    on_delete=models.SET_NULL, related_name='items')
+    source_page = models.PositiveSmallIntegerField(null=True, blank=True)
+    raw_name = models.CharField(max_length=300, blank=True)
+    raw_price_text = models.CharField(max_length=120, blank=True)
+    raw_section = models.CharField(max_length=200, blank=True)
+    split_from = models.CharField(max_length=300, blank=True)
+    confidence = models.FloatField(default=1.0)
+    needs_review = models.BooleanField(default=False)
+
+    # Lifecycle
+    status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='draft')
+    merged_into = models.ForeignKey('self', null=True, blank=True,
+                                    on_delete=models.SET_NULL, related_name='merged_from')
+    created_at = models.DateTimeField(auto_now_add=True)
+    reviewed_by = models.ForeignKey('auth.User', null=True, blank=True,
+                                    on_delete=models.SET_NULL, related_name='catalog_items')
+
+    class Meta:
+        ordering = ['name']
+
+    def __str__(self):
+        return self.name

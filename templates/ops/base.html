@@ -8,6 +8,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="{% static 'css/app.css' %}?v={{ asset_v|default:'ops1' }}">
+  <script src="{% static 'vendor/htmx.min.js' %}" defer></script>
   <link rel="manifest" href="{% static 'pwa/manifest-ops.webmanifest' %}">
   <meta name="theme-color" content="#15171d">
   <link rel="apple-touch-icon" sizes="180x180" href="{% static 'pwa/icon-ops-180.png' %}">
@@ -33,6 +34,14 @@
     <a href="{% url 'ops:tenant_new' %}" class="nav {% if active == 'new' %}on{% endif %}">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 8v8M8 12h8"/></svg>
       New tenant
+    </a>
+    <a href="{% url 'ops:images' %}" class="nav {% if active == 'images' %}on{% endif %}">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+      Images
+    </a>
+    <a href="{% url 'ops:scans' %}" class="nav {% if active == 'scans' %}on{% endif %}">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>
+      Scans
     </a>
     <div class="grp">Account</div>
     <form method="post" action="{% url 'ops:logout' %}">{% csrf_token %}
@@ -70,6 +79,10 @@
   <a href="{% url 'ops:tenant_new' %}" class="tb {% if active == 'new' %}on{% endif %}">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 8v8M8 12h8"/></svg>
     <span>New</span>
+  </a>
+  <a href="{% url 'ops:images' %}" class="tb {% if active == 'images' %}on{% endif %}">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+    <span>Images</span>
   </a>
   <form method="post" action="{% url 'ops:logout' %}" style="display:contents">{% csrf_token %}
     <button type="submit" class="tb">

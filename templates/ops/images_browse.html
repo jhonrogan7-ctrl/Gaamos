@@ -1,0 +1,21 @@
+{% extends 'ops/base.html' %}
+{% block title %}Image library{% endblock %}
+{% block top %}Verified image library{% endblock %}
+{% block content %}
+{% include 'ops/_image_styles.html' %}
+<form method="get" class="il-filter">
+  <input class="il-input" name="q" value="{{ q }}" placeholder="Search name or caption" style="max-width:240px">
+  <input class="il-input" name="tag" value="{{ tag }}" placeholder="Filter by tag" style="max-width:160px">
+  <button class="il-save" style="margin-top:0">Filter</button>
+</form>
+<div class="il-toolbar">
+  <span class="il-count"><b>{{ assets|length }}</b> verified image{{ assets|length|pluralize }}{% if q or tag %} matching{% endif %}</span>
+</div>
+{% if assets %}
+<div class="il-grid">
+  {% for a in assets %}{% include 'ops/_image_card.html' with a=a %}{% endfor %}
+</div>
+{% else %}
+<div class="il-empty">No verified images match.</div>
+{% endif %}
+{% endblock %}

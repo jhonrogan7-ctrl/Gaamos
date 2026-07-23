@@ -1,0 +1,59 @@
+{% extends 'ops/base.html' %}
+{% block title %}Review scan{% endblock %}
+{% block top %}Review — {{ scan.source_cafe|default:"scan" }}{% endblock %}
+{% block content %}
+{% include 'ops/_image_styles.html' %}
+<p><a class="il-link" href="{% url 'ops:scans' %}">← All scans</a></p>
+{% if not groups %}<div class="il-empty">No draft items left to review. 🎉</div>{% endif %}
+{% for g in groups %}
+<h3>{{ g.name|default:"(no category)" }}</h3>
+<form method="post" action="{% url 'ops:scan_combine' scan.pk %}"
+      id="combine-{{ forloop.counter }}">{% csrf_token %}</form>
+<table class="tbl">
+  <thead><tr><th title="Combine over-split rows">⧉</th><th>Item</th><th>Price</th><th>Dietary</th><th>Flags</th><th>Dedup</th><th></th></tr></thead>
+  <tbody>
+  {% for r in g.rows %}
+  <tr>
+    <td>
+      <input type="radio" name="keep" value="{{ r.item.pk }}"
+             form="combine-{{ forloop.parentloop.counter }}" title="keep this row">
+      <input type="checkbox" name="sibling" value="{{ r.item.pk }}"
+             form="combine-{{ forloop.parentloop.counter }}" title="fold into the kept row">
+    </td>
+    <td>{{ r.item.name }}
+        {% if r.item.variant_label %}<span class="il-pill">{{ r.item.variant_label }}</span>{% endif %}
+        {% if r.item.description %}<div class="il-sub">{{ r.item.description }}</div>{% endif %}
+        {% if r.item.tags %}<div class="il-tags">{% for t in r.item.tags %}<span class="il-tag">{{ t }}</span>{% endfor %}</div>{% endif %}</td>
+    <td>{% if r.item.reference_price is None %}<b>—</b>{% else %}{{ r.item.currency }} {{ r.item.reference_price }}{% endif %}
+        {% if r.item.raw_price_text %}<div class="il-sub">printed: {{ r.item.raw_price_text }}</div>{% endif %}</td>
+    <td>{% for d in r.item.dietary_tags %}<span class="il-tag">{{ d }}</span>{% endfor %}</td>
+    <td>{% if r.item.needs_review %}<span class="il-pill">needs review</span>{% endif %}
+        <div class="il-sub">p{{ r.item.source_page|default:"?" }} · {{ r.item.confidence|floatformat:2 }}</div></td>
+    <td>{% if r.match %}≈ {{ r.match.item.name }} ({{ r.match.similarity|floatformat:2 }})
+          <form method="post" action="{% url 'ops:item_action' r.item.pk %}"
+                hx-post="{% url 'ops:item_action' r.item.pk %}"
+                hx-target="#res-{{ r.item.pk }}" hx-swap="innerHTML" style="display:inline">
+            {% csrf_token %}
+            <input type="hidden" name="merge_into" value="{{ r.match.item.pk }}">
+            <button class="btn btn-sm ghost" name="action" value="merge">Merge</button>
+          </form>
+        {% else %}new{% endif %}</td>
+    <td>
+      <form method="post" action="{% url 'ops:item_action' r.item.pk %}"
+            hx-post="{% url 'ops:item_action' r.item.pk %}"
+            hx-target="#res-{{ r.item.pk }}" hx-swap="innerHTML" style="display:inline">
+        {% csrf_token %}
+        <button class="btn btn-sm primary" name="action" value="approve">Approve</button>
+        <button class="btn btn-sm ghost" name="action" value="reject">Reject</button>
+      </form>
+      <span id="res-{{ r.item.pk }}"></span>
+    </td>
+  </tr>
+  {% endfor %}
+  </tbody>
+</table>
+<button class="btn btn-sm ghost" type="submit" form="combine-{{ forloop.counter }}">
+  ⧉ Combine selected into the kept row
+</button>
+{% endfor %}
+{% endblock %}
