@@ -240,18 +240,19 @@ def _dedup_matches(text, limit=1):
         sim = 1.0 - float(it.distance)
         if sim >= settings.ITEM_MATCH_THRESHOLD:
             out.append({'item': it, 'similarity': sim})
-    return out, vec
+    return out
 
 
 @platform_admin_required
 def scan_review(request, scan_id):
     scan = get_object_or_404(MenuScan, pk=scan_id)
+    has_catalog = Item.objects.filter(status='active').exclude(embedding=None).exists()
     groups = []
     for cat in scan.raw_extraction.get('categories', []):
         rows = []
         for it in cat.get('items', []):
             text = f"{it.get('name','')} {it.get('description','')}".strip()
-            matches, _ = _dedup_matches(text) if Item.objects.exists() else ([], None)
+            matches = _dedup_matches(text) if has_catalog else []
             rows.append({'it': it, 'category': cat.get('name', ''),
                          'match': matches[0] if matches else None})
         groups.append({'name': cat.get('name', ''), 'rows': rows})
@@ -268,19 +269,28 @@ def scan_approve(request, scan_id):
         return HttpResponseBadRequest('missing name')
     link_to = request.POST.get('link_to')
     if link_to:
-        item = get_object_or_404(Item, pk=link_to)
+        item = get_object_or_404(Item, pk=link_to, status='active')
         if item.source_scan_id is None:
             item.source_scan = scan
             item.save(update_fields=['source_scan'])
+        scan.status = 'imported'
+        scan.save(update_fields=['status'])
         return HttpResponse(f'<span class="ok">Linked to #{item.pk}</span>')
-    price = request.POST.get('reference_price') or None
+    ref_price = None
+    raw_price = (request.POST.get('reference_price') or '').strip()
+    if raw_price:
+        if not raw_price.isdigit():
+            return HttpResponseBadRequest('reference_price must be a non-negative integer')
+        ref_price = int(raw_price)
     text = f"{name} {request.POST.get('description','')}".strip()
     Item.objects.create(
         name=name, description=request.POST.get('description', '').strip(),
         category=request.POST.get('category', '').strip(),
-        reference_price=int(price) if price else None,
+        reference_price=ref_price,
         embedding=item_embed.embed(text), source_scan=scan,
         reviewed_by=request.user, status='active')
+    scan.status = 'imported'
+    scan.save(update_fields=['status'])
     return HttpResponse('<span class="ok">Added ✓</span>')
 
 

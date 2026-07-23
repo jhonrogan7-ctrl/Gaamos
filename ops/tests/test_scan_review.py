@@ -57,3 +57,21 @@ class ScanReviewTests(TestCase):
                                      'link_to': str(existing.pk)}, **self.apex)
         self.assertEqual(resp.status_code, 200)
         self.assertEqual(Item.objects.filter(name='Black Tea').count(), 1)  # no duplicate
+
+    def test_approve_bad_price_is_400(self):
+        resp = self.client.post(f'/platform/scans/{self.scan.pk}/approve/',
+                                {'name': 'Black Tea', 'description': 'hot milk tea',
+                                 'category': 'Hot Drinks', 'reference_price': 'abc'},
+                                **self.apex)
+        self.assertEqual(resp.status_code, 400)
+        self.assertFalse(Item.objects.filter(name='Black Tea').exists())
+
+    def test_approve_marks_scan_imported(self):
+        with patch('menu.pipeline.embed.embed', _emb([0.2] * 768)):
+            resp = self.client.post(f'/platform/scans/{self.scan.pk}/approve/',
+                                    {'name': 'Black Tea', 'description': 'hot milk tea',
+                                     'category': 'Hot Drinks', 'reference_price': '50'},
+                                    **self.apex)
+        self.assertEqual(resp.status_code, 200)
+        self.scan.refresh_from_db()
+        self.assertEqual(self.scan.status, 'imported')
