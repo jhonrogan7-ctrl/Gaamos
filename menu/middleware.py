@@ -14,9 +14,10 @@ class RateLimitMiddleware:
     def __init__(self, get_response):
         self.get_response = get_response
 
-    # Guest menu reads only — never throttle the authenticated dashboard, the
-    # admin, or static assets (a single dashboard page pulls many of these).
-    EXEMPT_PREFIXES = ('/dashboard/', '/admin/', '/static/', '/media/')
+    # Guest menu reads only — never throttle the authenticated tenant dashboard,
+    # the authenticated staff platform (/platform/), the admin, or static assets
+    # (a single dashboard page pulls many of these).
+    EXEMPT_PREFIXES = ('/dashboard/', '/platform/', '/admin/', '/static/', '/media/')
 
     def __call__(self, request):
         if request.path.startswith(self.EXEMPT_PREFIXES):
