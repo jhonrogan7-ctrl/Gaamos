@@ -8,7 +8,7 @@ from django.core.management.base import BaseCommand, CommandError
 from django.db import transaction
 from PIL import Image
 
-from menu.imaging import compute_focal_point
+from menu import publish
 from menu.models import Company, Branch
 from menu.tenancy import set_current_company, reset_current_company
 
@@ -61,21 +61,15 @@ class Command(BaseCommand):
             reset_current_company(token)
 
     def _upsert_catalog(self, company, branches, data, opts):
-        from menu.models import (Category, SubCategory,
-                                 BranchCategory, BranchSubCategory)
+        from menu.models import SubCategory, BranchSubCategory
         self._cat_by_slug, self._sub_by_key = {}, {}
         for cd in data.get("categories", []):
-            cat, _ = Category.all_objects.update_or_create(
-                company=company, slug=cd["slug"],
-                defaults={"name": cd["name"],
-                          "display_order": cd.get("display_order", 0),
-                          "icon_key": cd.get("icon_key", ""),
-                          "hours_note": cd.get("hours_note", "")})
+            cat, _ = publish.ensure_category(
+                company, branches, name=cd["name"], slug=cd["slug"],
+                display_order=cd.get("display_order", 0),
+                icon_key=cd.get("icon_key", ""), hours_note=cd.get("hours_note", ""),
+                update=True)   # the fixture is the source of truth for an import
             self._cat_by_slug[cd["slug"]] = cat
-            for b in branches:
-                BranchCategory.objects.get_or_create(
-                    branch=b, category=cat,
-                    defaults={"display_order": cd.get("display_order", 0)})
             for sd in cd.get("subcategories", []):
                 sub, _ = SubCategory.all_objects.update_or_create(
                     company=company, category=cat, name=sd["name"],
@@ -87,26 +81,17 @@ class Command(BaseCommand):
                         branch=b, sub_category=sub,
                         defaults={"display_order": sd.get("display_order", 0)})
 
-        from menu.models import (MenuItem, BranchMenuItem, BranchItemPlacement)
         self._items = []
         for it in data.get("items", []):
-            item, _ = MenuItem.all_objects.update_or_create(
-                company=company, slug=it["slug"],
-                defaults={"name": it["name"],
-                          "description": it.get("description", ""),
-                          "price": it["price"],
-                          "dietary_tags": it.get("tags", []),
-                          "is_popular": it.get("popular", False),
-                          "is_featured": it.get("featured", False)})
+            cat = self._cat_by_slug[it["cat"]] if it.get("cat") else None
+            sub = self._sub_by_key.get((it["cat"], it["sub"])) if it.get("sub") else None
+            item, _ = publish.upsert_menu_item(
+                company, branches if cat is not None else [], slug=it["slug"],
+                name=it["name"], description=it.get("description", ""),
+                price=it["price"], dietary_tags=it.get("tags", []),
+                category=cat, sub_category=sub, display_order=it.get("order", 0),
+                popular=it.get("popular", False), featured=it.get("featured", False))
             self._items.append((item, it))
-            if it.get("cat"):
-                cat = self._cat_by_slug[it["cat"]]
-                sub = self._sub_by_key.get((it["cat"], it["sub"])) if it.get("sub") else None
-                for b in branches:
-                    BranchMenuItem.objects.get_or_create(branch=b, menu_item=item)
-                    BranchItemPlacement.objects.get_or_create(
-                        branch=b, menu_item=item, category=cat, sub_category=sub,
-                        defaults={"display_order": it.get("order", 0)})
 
     def _apply_images(self, company, opts):
         media_base = opts.get("media_base")
@@ -117,9 +102,9 @@ class Command(BaseCommand):
             if not media_base:
                 raise CommandError("--media-base is required when items carry images.")
             url = media_base.rstrip("/") + "/" + img["file"]
-            rel = f"items/{company.slug}/{item.slug}.webp"
-            dest = Path(settings.MEDIA_ROOT) / rel
-            dest.parent.mkdir(parents=True, exist_ok=True)
+            tmpdir = Path(settings.MEDIA_ROOT) / "_import_tmp"
+            tmpdir.mkdir(parents=True, exist_ok=True)
+            dest = tmpdir / f"{item.slug}.webp"
             try:
                 with urllib.request.urlopen(url) as resp:
                     payload = resp.read()
@@ -130,8 +115,9 @@ class Command(BaseCommand):
                     raise CommandError(f"image download failed for {item.slug}: {exc}")
                 self.stderr.write(f"  ! image download failed for {item.slug}: {exc}")
                 continue
-            item.image_url = f"{settings.MEDIA_URL}{rel}"
-            item.focal_x, item.focal_y = compute_focal_point(str(dest))
+            item.image_url, item.focal_x, item.focal_y = publish.copy_image_to_tenant(
+                company, item.slug, dest)
             item.save(update_fields=["image_url", "focal_x", "focal_y"])
+            dest.unlink(missing_ok=True)
         self.stdout.write(self.style.SUCCESS(
             f"Imported {len(self._items)} items into '{company.slug}'."))

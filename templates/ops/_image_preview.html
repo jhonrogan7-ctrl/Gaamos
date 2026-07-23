@@ -1,16 +1,19 @@
+{% comment %} Photo candidate preview, shared by the asset re-roll and the scan
+workbench. The caller supplies find_url / use_url / slot / card_id — never
+hardcode an endpoint here, both flows render this file. {% endcomment %}
 <div class="il-pv">
-  <div class="il-search" id="il-search-{{ a.pk }}">
+  <div class="il-search" id="il-search-{{ slot }}">
     <input class="il-input" type="text" name="term" value="{{ term }}" placeholder="search term">
     <select class="il-input il-src" name="source">
       {% for s in sources %}<option value="{{ s }}"{% if s == source %} selected{% endif %}>{{ s }}</option>{% endfor %}
     </select>
     <button class="il-btn il-find" type="button"
-            hx-get="{% url 'ops:image_find_another' a.pk %}?offset=0"
-            hx-include="#il-search-{{ a.pk }}"
-            hx-target="#il-preview-{{ a.pk }}">Search</button>
+            hx-get="{{ find_url }}?offset=0"
+            hx-include="#il-search-{{ slot }}"
+            hx-target="#il-preview-{{ slot }}">Search</button>
     <button class="il-btn il-reject" type="button"
-            hx-get="{% url 'ops:image_find_another' a.pk %}?clear=1"
-            hx-target="#il-preview-{{ a.pk }}">✕</button>
+            hx-get="{{ find_url }}?clear=1"
+            hx-target="#il-preview-{{ slot }}">✕</button>
   </div>
   {% if error %}
     <div class="il-pv-msg">Couldn't reach {{ source }} — try another source or term.</div>
@@ -20,7 +23,7 @@
     <img class="il-pv-img" src="{{ cand.url }}" alt="candidate" loading="lazy">
     <div class="il-pv-credit">{{ source }}{% if cand.credit %} · {{ cand.credit }}{% endif %}</div>
     <div class="il-pv-actions">
-      <form hx-post="{% url 'ops:image_use_photo' a.pk %}" hx-target="#il-card-{{ a.pk }}"
+      <form hx-post="{{ use_url }}" hx-target="#{{ card_id }}"
             hx-swap="outerHTML" style="display:contents">
         {% csrf_token %}
         <input type="hidden" name="url" value="{{ cand.url }}">
@@ -29,9 +32,9 @@
         <button class="il-btn il-approve" type="submit">Use this</button>
       </form>
       <button class="il-btn il-find" type="button"
-              hx-get="{% url 'ops:image_find_another' a.pk %}?offset={{ next_offset }}"
-              hx-include="#il-search-{{ a.pk }}"
-              hx-target="#il-preview-{{ a.pk }}">Find another</button>
+              hx-get="{{ find_url }}?offset={{ next_offset }}"
+              hx-include="#il-search-{{ slot }}"
+              hx-target="#il-preview-{{ slot }}">Find another</button>
     </div>
   {% endif %}
 </div>

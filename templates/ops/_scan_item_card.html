@@ -1,0 +1,41 @@
+{% comment %} One scanned-item card for the workbench. Pass `it` (an Item).
+Image controls and tags live here; name/price/description corrections belong to
+the table review screen (B2) — two views over the same rows, each good at one job. {% endcomment %}
+<div class="il-card" id="sc-card-{{ it.pk }}">
+  {% if it.image_asset %}
+    <img class="il-thumb" src="{{ it.image_asset.image_url }}" alt="{{ it.name }}" loading="lazy">
+  {% else %}
+    <div class="il-thumb il-empty">no photo yet</div>
+  {% endif %}
+  <div class="il-b">
+    <div class="il-name">{{ it.name }}</div>
+    <div class="il-sub">
+      {% if it.variant_label %}<span class="il-pill">{{ it.variant_label }}</span>{% endif %}
+      {% if it.reference_price is None %}<b>—</b>{% else %}{{ it.currency }} {{ it.reference_price }}{% endif %}
+      {% if it.needs_review %}<span class="il-pill">needs review</span>{% endif %}
+    </div>
+    {% if it.dietary_tags %}<div class="il-tags">{% for d in it.dietary_tags %}<span class="il-tag">{{ d }}</span>{% endfor %}</div>{% endif %}
+    <form method="post" action="{% url 'ops:item_edit_tags' it.pk %}" class="il-edit"
+          hx-post="{% url 'ops:item_edit_tags' it.pk %}"
+          hx-target="#sc-card-{{ it.pk }}" hx-swap="outerHTML">{% csrf_token %}
+      <label>Tags</label>
+      <input class="il-input" name="tags" value="{{ it.tags|join:', ' }}"
+             placeholder="comma, separated, tags">
+      <button class="il-save">Save tags</button>
+    </form>
+    <div class="il-actions">
+      <form method="post" action="{% url 'ops:item_action' it.pk %}"
+            hx-post="{% url 'ops:item_action' it.pk %}"
+            hx-target="#sc-res-{{ it.pk }}" hx-swap="innerHTML" style="display:contents">
+        {% csrf_token %}
+        <button class="il-btn il-approve" name="action" value="approve">✓ Approve</button>
+        <button class="il-btn il-reject" name="action" value="reject">✕ Reject</button>
+      </form>
+    </div>
+    <span id="sc-res-{{ it.pk }}"></span>
+    <button class="il-btn il-find" type="button"
+            hx-get="{% url 'ops:item_find_photo' it.pk %}?offset=0"
+            hx-target="#il-preview-item-{{ it.pk }}">🔄 Find another photo</button>
+    <div id="il-preview-item-{{ it.pk }}" class="il-preview"></div>
+  </div>
+</div>

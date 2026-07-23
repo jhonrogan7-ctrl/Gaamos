@@ -72,3 +72,27 @@ def test_menuscan_accepts_reviewed_status():
     scan = MenuScan.objects.create(file="scans/x.pdf", status="reviewed")
     assert scan.status == "reviewed"
     assert "reviewed" in dict(MenuScan.STATUS_CHOICES)
+
+
+@pytest.mark.django_db
+def test_scan_tracks_its_image_job_separately_from_extraction():
+    scan = MenuScan.objects.create(file='scans/x.pdf', task_id='extract-1',
+                                   image_task_id='images-1')
+    scan.refresh_from_db()
+    assert scan.task_id == 'extract-1'
+    assert scan.image_task_id == 'images-1'
+
+
+@pytest.mark.django_db
+def test_image_task_id_defaults_to_blank_not_null():
+    scan = MenuScan.objects.create(file='scans/x.pdf')
+    scan.refresh_from_db()
+    assert scan.image_task_id == ''
+
+
+def test_scan_image_source_setting_is_a_known_photo_source():
+    from django.conf import settings
+
+    from menu.pipeline import photo_search
+
+    assert settings.SCAN_IMAGE_SOURCE in photo_search.SOURCES

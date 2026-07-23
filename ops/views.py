@@ -1,28 +1,32 @@
 import hashlib
 import logging
 import secrets
-import tempfile
 from pathlib import Path
 
 from django.conf import settings
 from django.contrib.auth import authenticate, login, logout
+from django.db import transaction
 from django.db.models import Count, Q
 from django.http import Http404, HttpResponse, HttpResponseBadRequest
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.utils import timezone
 from django.utils.http import url_has_allowed_host_and_scheme
+from django.utils.text import slugify
 from django.views.decorators.http import require_POST
 from pgvector.django import CosineDistance
 
 from core.models import Lead
 from menu.dashboard.utils import generate_qr_for_branch
 from menu.impersonation import make_token
-from menu.models import Company, ImageAsset, Item, Membership, MenuScan
-from menu.tasks import extract_menu_scan
+from menu import publish
+from menu.models import Branch, Company, ImageAsset, Item, Membership, MenuScan
+from menu.tenancy import reset_current_company, set_current_company
+from menu.tasks import extract_menu_scan, find_images_for_scan
 from menu.pipeline import embed as image_embed
 from menu.pipeline import embed as item_embed
-from menu.pipeline import images as pipeline_images
+from menu.pipeline import intake as pipeline_intake
+from menu.pipeline import normalize
 from menu.pipeline import photo_search
 
 from .forms import TenantCreateForm
@@ -346,6 +350,173 @@ def scan_combine(request, scan_id):
     return redirect('ops:scan_review', scan_id=scan.pk)
 
 
+def _scan_image_source(raw):
+    """Coerce a user-supplied source to a known one, defaulting to the setting."""
+    return raw if raw in photo_search.SOURCES else settings.SCAN_IMAGE_SOURCE
+
+
+@platform_admin_required
+def item_find_photo(request, item_id):
+    """Item-centric twin of image_find_another: search for a photo FOR A DISH.
+
+    Stateless offset paging, exactly like the asset flow — the browser holds the
+    position, the server holds nothing.
+    """
+    item = get_object_or_404(Item, pk=item_id)
+    if request.GET.get('clear'):
+        return HttpResponse('')
+    try:
+        offset = int(request.GET.get('offset', 0))
+    except (TypeError, ValueError):
+        offset = 0
+    term = (request.GET.get('term') or item.name or item.raw_name or '').strip()
+    source = _scan_image_source(request.GET.get('source'))
+    ctx = {'term': term, 'source': source, 'sources': photo_search.SOURCES,
+           'find_url': reverse('ops:item_find_photo', args=[item.pk]),
+           'use_url': reverse('ops:item_use_photo', args=[item.pk]),
+           'slot': f'item-{item.pk}', 'card_id': f'sc-card-{item.pk}'}
+    try:
+        results = photo_search.search(source, term, limit=20)
+    except Exception:
+        ctx['error'] = True
+        return render(request, 'ops/_image_preview.html', ctx)
+    current = item.image_asset.origin_url if item.image_asset_id else ''
+    candidates = [c for c in results
+                  if not current or (c.get('page') != current and c.get('url') != current)]
+    if offset < 0 or offset >= len(candidates):
+        ctx['no_more'] = True
+        return render(request, 'ops/_image_preview.html', ctx)
+    ctx['cand'] = candidates[offset]
+    ctx['next_offset'] = offset + 1
+    return render(request, 'ops/_image_preview.html', ctx)
+
+
+@platform_admin_required
+@require_POST
+def item_use_photo(request, item_id):
+    """Download the chosen candidate, deposit it in the library, attach it.
+
+    The asset is recorded with the item's tags, so the library is searchable from
+    the first deposit rather than after a human gets round to captioning it.
+    """
+    item = get_object_or_404(Item, pk=item_id)
+    url = request.POST.get('url', '').strip()
+    if not url:
+        return HttpResponseBadRequest('missing url')
+    page = request.POST.get('page', '').strip()
+    source = _scan_image_source(request.POST.get('source'))
+    webp = photo_search.fetch_thumbnail(source, url)
+    asset = pipeline_intake.record(
+        source=source, webp_bytes=webp, item_name=item.name,
+        found_for_slug=slugify(item.name), origin_url=page or url, tags=item.tags)
+    if asset is None:
+        return HttpResponseBadRequest('that photo was rejected before')
+    item.image_asset = asset
+    item.save(update_fields=['image_asset'])
+    return render(request, 'ops/_scan_item_card.html', {'it': item})
+
+
+@platform_admin_required
+@require_POST
+def item_edit_tags(request, item_id):
+    """Save hand-corrected tags through spec A's validator.
+
+    D6 is enforced here as well as at extraction: a tag whose words are not in
+    the item's own printed name is dropped, whoever typed it. No re-embed —
+    `Item.embedding` derives from name + description, untouched by this view.
+    """
+    item = get_object_or_404(Item, pk=item_id)
+    raw = [t.strip() for t in request.POST.get('tags', '').split(',') if t.strip()]
+    item.tags = normalize.clean_tags(raw, item.raw_name or item.name)
+    item.save(update_fields=['tags'])
+    return render(request, 'ops/_scan_item_card.html', {'it': item})
+
+
+def _workbench_items(scan):
+    """The rows a human is still working on: rejected and merged are decided."""
+    return (Item.objects.filter(source_scan=scan)
+            .exclude(status__in=('rejected', 'merged')))
+
+
+def _image_progress(scan):
+    items = _workbench_items(scan)
+    total = items.count()
+    return {'scan': scan, 'total': total,
+            'with_photo': items.filter(image_asset__isnull=False).count()}
+
+
+@platform_admin_required
+def scan_workbench(request, scan_id):
+    """Card grid over this scan's rows — the image half of the review job.
+
+    Data corrections live on the table view (B2); both screens act on the same
+    rows, so neither owns state the other lacks.
+    """
+    scan = get_object_or_404(MenuScan, pk=scan_id)
+    ctx = _image_progress(scan)
+    ctx.update({'active': 'scans', 'items': _workbench_items(scan)})
+    return render(request, 'ops/scan_workbench.html', ctx)
+
+
+@platform_admin_required
+def scan_image_progress(request, scan_id):
+    scan = get_object_or_404(MenuScan, pk=scan_id)
+    return render(request, 'ops/_scan_image_progress.html', _image_progress(scan))
+
+
+@platform_admin_required
+@require_POST
+def scan_find_images(request, scan_id):
+    scan = get_object_or_404(MenuScan, pk=scan_id)
+    result = find_images_for_scan.delay(scan.pk)
+    scan.image_task_id = getattr(result, 'id', '') or ''
+    scan.save(update_fields=['image_task_id'])
+    return redirect('ops:scan_workbench', scan_id=scan.pk)
+
+
+@platform_admin_required
+def scan_publish(request, scan_id):
+    """Publish this scan's approved rows into one tenant (B4).
+
+    Scoped to the scanned menu in hand, matching the scan → review → hand to the
+    client flow. Composing a menu from the whole catalog is a different screen
+    for a different job.
+    """
+    scan = get_object_or_404(MenuScan, pk=scan_id)
+    active = Item.objects.filter(source_scan=scan, status='active')
+    if request.method != 'POST':
+        # This is an apex screen, so there is NO tenant context: never walk a
+        # scoped related manager like `company.branches` (see the comment above
+        # `tenants`). Branches are fetched explicitly via all_objects instead.
+        return render(request, 'ops/scan_publish.html', {
+            'scan': scan, 'active': 'scans', 'items': active,
+            'companies': Company.objects.filter(status='active').order_by('name'),
+            'branches': (Branch.all_objects.select_related('company')
+                         .order_by('company__name', 'name')),
+        })
+
+    company = Company.objects.filter(pk=request.POST.get('company')).first()
+    if company is None:
+        return HttpResponseBadRequest('pick a company')
+    branch_ids = request.POST.getlist('branch')
+    branches = list(Branch.all_objects.filter(company=company, pk__in=branch_ids))
+    if not branches or len(branches) != len(set(branch_ids)):
+        return HttpResponseBadRequest('pick at least one branch of that company')
+    items = list(active.filter(pk__in=request.POST.getlist('item')))
+
+    token = set_current_company(company)
+    try:
+        with transaction.atomic():
+            report = publish.publish_items(company, branches, items)
+            scan.status = 'imported'
+            scan.save(update_fields=['status'])
+    finally:
+        reset_current_company(token)
+    return render(request, 'ops/_publish_report.html', {
+        'scan': scan, 'active': 'scans', 'company': company, 'report': report,
+    })
+
+
 @platform_admin_required
 def image_review(request):
     """Staff review queue: every pending library asset awaiting verification."""
@@ -414,12 +585,7 @@ def image_use_photo(request, asset_id):
     source = request.POST.get('source') or 'pexels'
     if source not in photo_search.SOURCES:
         source = 'pexels'
-    with tempfile.TemporaryDirectory() as tmp:
-        raw = str(Path(tmp) / 'raw')
-        webp = str(Path(tmp) / 'out.webp')
-        photo_search.download(source, url, raw)
-        pipeline_images.to_thumbnail(raw, webp)
-        data = Path(webp).read_bytes()
+    data = photo_search.fetch_thumbnail(source, url)
     content_hash = hashlib.sha256(data).hexdigest()
     rel = f'imagelib/{content_hash}.webp'
     dest = Path(settings.MEDIA_ROOT) / rel
@@ -451,7 +617,10 @@ def image_find_another(request, asset_id):
     source = request.GET.get('source') or 'pexels'
     if source not in photo_search.SOURCES:
         source = 'pexels'
-    ctx = {'a': asset, 'term': term, 'source': source, 'sources': photo_search.SOURCES}
+    ctx = {'a': asset, 'term': term, 'source': source, 'sources': photo_search.SOURCES,
+           'find_url': reverse('ops:image_find_another', args=[asset.pk]),
+           'use_url': reverse('ops:image_use_photo', args=[asset.pk]),
+           'slot': asset.pk, 'card_id': f'il-card-{asset.pk}'}
     try:
         results = photo_search.search(source, term, limit=20)
     except Exception:

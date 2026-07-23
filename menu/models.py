@@ -403,6 +403,7 @@ class MenuScan(models.Model):
     raw_extraction = models.JSONField(default=dict, blank=True)
     error = models.TextField(blank=True)
     task_id = models.CharField(max_length=100, blank=True)
+    image_task_id = models.CharField(max_length=100, blank=True)
     created_by = models.ForeignKey('auth.User', null=True, blank=True,
                                    on_delete=models.SET_NULL, related_name='menu_scans')
     created_at = models.DateTimeField(auto_now_add=True)

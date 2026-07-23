@@ -1,7 +1,10 @@
 """Normalized multi-source photo search + download over the three finders, for
 the image re-roll. One uniform candidate shape: {url, page, credit, source}.
 Finders are called via module attribute so tests can patch them."""
-from menu.pipeline import find_commons, find_openverse, find_pexels
+import tempfile
+from pathlib import Path
+
+from menu.pipeline import find_commons, find_openverse, find_pexels, images
 
 SOURCES = ['pexels', 'commons', 'openverse']
 
@@ -35,3 +38,19 @@ def download(source, url, dest):
     if source == 'openverse':
         return find_openverse.download(url, dest)
     raise ValueError(f'unknown source: {source}')
+
+
+def fetch_thumbnail(source, url, size=800):
+    """Download `url` from `source` and return normalized webp bytes.
+
+    The download → to_thumbnail → read-bytes sequence every caller needs, in one
+    place: the asset re-roll, the item re-roll and the bulk scan job all deposit
+    the same normalized bytes. Both collaborators are looked up as module
+    attributes so tests can patch them.
+    """
+    with tempfile.TemporaryDirectory() as tmp:
+        raw = str(Path(tmp) / 'raw')
+        webp = str(Path(tmp) / 'out.webp')
+        download(source, url, raw)
+        images.to_thumbnail(raw, webp, size)
+        return Path(webp).read_bytes()

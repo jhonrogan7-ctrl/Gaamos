@@ -1,0 +1,24 @@
+{% extends 'ops/base.html' %}
+{% block title %}Published{% endblock %}
+{% block top %}Published to {{ company.name }}{% endblock %}
+{% block content %}
+{% include 'ops/_image_styles.html' %}
+<p><a class="il-link" href="{% url 'ops:scan_workbench' scan.pk %}">← Workbench</a></p>
+<div class="il-toolbar">
+  <span class="il-count">{{ report.created }} created</span>
+  <span class="il-count">{{ report.updated }} updated</span>
+</div>
+{% if report.categories_created %}
+  <h3>Categories created</h3>
+  <div class="il-tags">{% for c in report.categories_created %}<span class="il-tag">{{ c }}</span>{% endfor %}</div>
+{% endif %}
+{% if report.zero_priced %}
+  <h3>Published at Rs 0 — these have no printed price</h3>
+  <p class="il-sub">They are live and orderable at zero. Fix each one in the tenant's dashboard.</p>
+  <ul>{% for name in report.zero_priced %}<li>{{ name }}</li>{% endfor %}</ul>
+{% endif %}
+{% if report.skipped %}
+  <h3>Skipped — not approved</h3>
+  <ul>{% for name in report.skipped %}<li>{{ name }}</li>{% endfor %}</ul>
+{% endif %}
+{% endblock %}
