@@ -127,3 +127,68 @@ class ScanReviewTests(TestCase):
                    side_effect=AssertionError('embedded during render')):
             resp = self.client.get(f'/platform/scans/{self.scan.pk}/review/', **self.apex)
         self.assertEqual(resp.status_code, 200)
+
+
+class ScanCombineTests(TestCase):
+    def setUp(self):
+        self.apex = {'HTTP_HOST': APEX}
+        self.boss = User.objects.create_superuser('boss', 'b@x.io', 'pw-boss-1')
+        self.scan = MenuScan.objects.create(source_cafe='Kailash Parbat',
+                                            status='extracted', file='scans/k.pdf')
+        line = 'Coke/Fanta/Sprite/Dew/Slice'
+        self.coke, self.fanta, self.sprite = (
+            Item.objects.create(source_scan=self.scan, status='draft', name=name,
+                                category='Soft Drinks', reference_price=100,
+                                raw_name=line, split_from=line, embedding=[0.1] * 768)
+            for name in ('Coke', 'Fanta', 'Sprite'))
+        self.client.force_login(self.boss)
+        self.url = f'/platform/scans/{self.scan.pk}/combine/'
+
+    def test_combine_folds_siblings_into_the_keeper(self):
+        with patch('menu.pipeline.embed.embed', _emb([0.3] * 768)):
+            resp = self.client.post(
+                self.url, {'keep': str(self.coke.pk),
+                           'sibling': [str(self.fanta.pk), str(self.sprite.pk)]},
+                **self.apex)
+        self.assertEqual(resp.status_code, 302)
+        self.coke.refresh_from_db()
+        self.fanta.refresh_from_db()
+        self.sprite.refresh_from_db()
+        # the keeper takes back the full printed line
+        self.assertEqual(self.coke.name, 'Coke/Fanta/Sprite/Dew/Slice')
+        self.assertEqual(self.coke.variant_label, '')
+        self.assertEqual(list(self.coke.embedding), [0.3] * 768)   # re-embedded
+        self.assertEqual(self.fanta.status, 'merged')
+        self.assertEqual(self.fanta.merged_into_id, self.coke.pk)
+        self.assertEqual(self.sprite.merged_into_id, self.coke.pk)
+
+    def test_combine_needs_at_least_one_sibling(self):
+        resp = self.client.post(self.url, {'keep': str(self.coke.pk)}, **self.apex)
+        self.assertEqual(resp.status_code, 400)
+        self.coke.refresh_from_db()
+        self.assertEqual(self.coke.name, 'Coke')
+
+    def test_keeper_must_be_a_draft_of_this_scan(self):
+        other = Item.objects.create(name='Elsewhere', status='draft')
+        resp = self.client.post(self.url, {'keep': str(other.pk),
+                                           'sibling': [str(self.fanta.pk)]}, **self.apex)
+        self.assertEqual(resp.status_code, 400)
+
+    def test_siblings_from_another_scan_are_ignored(self):
+        stranger = MenuScan.objects.create(file='scans/z.pdf')
+        outsider = Item.objects.create(source_scan=stranger, status='draft', name='Outsider')
+        with patch('menu.pipeline.embed.embed', _emb([0.3] * 768)):
+            resp = self.client.post(
+                self.url, {'keep': str(self.coke.pk),
+                           'sibling': [str(self.fanta.pk), str(outsider.pk)]}, **self.apex)
+        self.assertEqual(resp.status_code, 302)
+        outsider.refresh_from_db()
+        self.assertEqual(outsider.status, 'draft')
+
+    def test_combine_requires_superuser(self):
+        self.client.logout()
+        resp = self.client.post(self.url, {'keep': str(self.coke.pk),
+                                           'sibling': [str(self.fanta.pk)]}, **self.apex)
+        self.assertEqual(resp.status_code, 302)
+        self.fanta.refresh_from_db()
+        self.assertEqual(self.fanta.status, 'draft')

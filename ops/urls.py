@@ -20,6 +20,7 @@ urlpatterns = [
     path('scans/<int:scan_id>/status/', views.scan_status, name='scan_status'),
     path('scans/<int:scan_id>/review/', views.scan_review, name='scan_review'),
     path('scans/items/<int:item_id>/action/', views.item_action, name='item_action'),
+    path('scans/<int:scan_id>/combine/', views.scan_combine, name='scan_combine'),
     path('images/', views.image_review, name='images'),
     path('images/<int:asset_id>/action/', views.image_action, name='image_action'),
     path('images/<int:asset_id>/edit/', views.image_edit, name='image_edit'),

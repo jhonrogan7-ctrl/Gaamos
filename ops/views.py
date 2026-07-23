@@ -21,6 +21,7 @@ from menu.impersonation import make_token
 from menu.models import Company, ImageAsset, Item, Membership, MenuScan
 from menu.tasks import extract_menu_scan
 from menu.pipeline import embed as image_embed
+from menu.pipeline import embed as item_embed
 from menu.pipeline import images as pipeline_images
 from menu.pipeline import photo_search
 
@@ -306,6 +307,38 @@ def item_action(request, item_id):
         return HttpResponseBadRequest('unknown action')
     _sync_scan_status(item.source_scan)
     return HttpResponse(f'<span class="ok">{label}</span>')
+
+
+@platform_admin_required
+@require_POST
+def scan_combine(request, scan_id):
+    """Fold over-split draft rows back into one.
+
+    The extractor splits a multi-product line into an item per product (D5);
+    when it splits too eagerly, staff pick a surviving row and the rest become
+    `merged` into it. The keeper takes back the full printed line.
+    """
+    scan = get_object_or_404(MenuScan, pk=scan_id)
+    keeper = Item.objects.filter(pk=request.POST.get('keep'), source_scan=scan,
+                                 status='draft').first()
+    if keeper is None:
+        return HttpResponseBadRequest('keep must be a draft item of this scan')
+    siblings = list(Item.objects.filter(pk__in=request.POST.getlist('sibling'),
+                                        source_scan=scan, status='draft')
+                    .exclude(pk=keeper.pk))
+    if not siblings:
+        return HttpResponseBadRequest('combine needs at least one other draft row')
+    keeper.name = keeper.split_from or keeper.name
+    keeper.variant_label = ''
+    keeper.embedding = item_embed.embed(f"{keeper.name} {keeper.description}".strip())
+    keeper.save(update_fields=['name', 'variant_label', 'embedding'])
+    for sibling in siblings:
+        sibling.status = 'merged'
+        sibling.merged_into = keeper
+        sibling.reviewed_by = request.user
+        sibling.save(update_fields=['status', 'merged_into', 'reviewed_by'])
+    _sync_scan_status(scan)
+    return redirect('ops:scan_review', scan_id=scan.pk)
 
 
 @platform_admin_required

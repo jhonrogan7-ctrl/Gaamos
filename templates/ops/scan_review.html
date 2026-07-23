@@ -7,11 +7,19 @@
 {% if not groups %}<div class="il-empty">No draft items left to review. 🎉</div>{% endif %}
 {% for g in groups %}
 <h3>{{ g.name|default:"(no category)" }}</h3>
+<form method="post" action="{% url 'ops:scan_combine' scan.pk %}"
+      id="combine-{{ forloop.counter }}">{% csrf_token %}</form>
 <table class="tbl">
-  <thead><tr><th>Item</th><th>Price</th><th>Dietary</th><th>Flags</th><th>Dedup</th><th></th></tr></thead>
+  <thead><tr><th title="Combine over-split rows">⧉</th><th>Item</th><th>Price</th><th>Dietary</th><th>Flags</th><th>Dedup</th><th></th></tr></thead>
   <tbody>
   {% for r in g.rows %}
   <tr>
+    <td>
+      <input type="radio" name="keep" value="{{ r.item.pk }}"
+             form="combine-{{ forloop.parentloop.counter }}" title="keep this row">
+      <input type="checkbox" name="sibling" value="{{ r.item.pk }}"
+             form="combine-{{ forloop.parentloop.counter }}" title="fold into the kept row">
+    </td>
     <td>{{ r.item.name }}
         {% if r.item.variant_label %}<span class="il-pill">{{ r.item.variant_label }}</span>{% endif %}
         {% if r.item.description %}<div class="il-sub">{{ r.item.description }}</div>{% endif %}
@@ -44,5 +52,8 @@
   {% endfor %}
   </tbody>
 </table>
+<button class="btn btn-sm ghost" type="submit" form="combine-{{ forloop.counter }}">
+  ⧉ Combine selected into the kept row
+</button>
 {% endfor %}
 {% endblock %}
