@@ -444,7 +444,10 @@ def image_find_another(request, asset_id):
     source = request.GET.get('source') or 'pexels'
     if source not in photo_search.SOURCES:
         source = 'pexels'
-    ctx = {'a': asset, 'term': term, 'source': source, 'sources': photo_search.SOURCES}
+    ctx = {'a': asset, 'term': term, 'source': source, 'sources': photo_search.SOURCES,
+           'find_url': reverse('ops:image_find_another', args=[asset.pk]),
+           'use_url': reverse('ops:image_use_photo', args=[asset.pk]),
+           'slot': asset.pk, 'card_id': f'il-card-{asset.pk}'}
     try:
         results = photo_search.search(source, term, limit=20)
     except Exception:

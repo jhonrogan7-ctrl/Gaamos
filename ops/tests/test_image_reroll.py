@@ -170,6 +170,32 @@ class ImageFindAnotherTests(TestCase):
         self.assertEqual(resp.status_code, 200)
         self.assertIn("Couldn't reach pexels", resp.content.decode())
 
+    @patch('menu.pipeline.find_pexels.search', return_value=list(CANDS))
+    def test_preview_still_targets_the_asset_endpoints(self, _m):
+        """The partial is generalized, not rewired: the asset flow must render
+        byte-identical URLs and DOM ids."""
+        self.client.force_login(self.boss)
+        body = self.client.get(
+            f'/platform/images/{self.asset.pk}/find-another/?offset=0',
+            **self.apex).content.decode()
+        self.assertIn(f'/platform/images/{self.asset.pk}/find-another/', body)
+        self.assertIn(f'/platform/images/{self.asset.pk}/use-photo/', body)
+        self.assertIn(f'id="il-search-{self.asset.pk}"', body)
+        self.assertIn(f'#il-preview-{self.asset.pk}', body)
+        self.assertIn(f'#il-card-{self.asset.pk}', body)
+
+    def test_preview_template_hardcodes_no_endpoint(self):
+        """Guards the generalization: a hardcoded url tag would silently break
+        the item flow, which renders the same file."""
+        from pathlib import Path
+
+        from django.conf import settings
+
+        src = Path(settings.BASE_DIR) / 'templates' / 'ops' / '_image_preview.html'
+        text = src.read_text()
+        self.assertNotIn("ops:image_find_another", text)
+        self.assertNotIn("ops:image_use_photo", text)
+
 
 class ImageRerollWiringTests(TestCase):
     def setUp(self):
