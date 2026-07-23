@@ -1,7 +1,6 @@
 import hashlib
 import logging
 import secrets
-import tempfile
 from pathlib import Path
 
 from django.conf import settings
@@ -22,7 +21,6 @@ from menu.models import Company, ImageAsset, Item, Membership, MenuScan
 from menu.tasks import extract_menu_scan
 from menu.pipeline import embed as image_embed
 from menu.pipeline import embed as item_embed
-from menu.pipeline import images as pipeline_images
 from menu.pipeline import photo_search
 
 from .forms import TenantCreateForm
@@ -414,12 +412,7 @@ def image_use_photo(request, asset_id):
     source = request.POST.get('source') or 'pexels'
     if source not in photo_search.SOURCES:
         source = 'pexels'
-    with tempfile.TemporaryDirectory() as tmp:
-        raw = str(Path(tmp) / 'raw')
-        webp = str(Path(tmp) / 'out.webp')
-        photo_search.download(source, url, raw)
-        pipeline_images.to_thumbnail(raw, webp)
-        data = Path(webp).read_bytes()
+    data = photo_search.fetch_thumbnail(source, url)
     content_hash = hashlib.sha256(data).hexdigest()
     rel = f'imagelib/{content_hash}.webp'
     dest = Path(settings.MEDIA_ROOT) / rel
