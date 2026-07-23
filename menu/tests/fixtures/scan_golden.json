@@ -1,0 +1,105 @@
+[
+  {
+    "id": "kailash-hard-drinks-matrix-60ml",
+    "why": "HARD DRINKS prints a 60ml | Qtr. column matrix; each price is its own item",
+    "page_types": {"2": "menu"},
+    "raw": {"name": "Ruslan Vodka (60ml)", "base_name": "Ruslan Vodka",
+            "variant_label": "60ml", "category": "Hard Drinks", "price": 300,
+            "raw_name": "Ruslan Vodka", "raw_price_text": "300    850",
+            "raw_section": "HARD DRINKS", "tags": ["ruslan", "vodka"],
+            "source_page": 2, "confidence": 0.93},
+    "expect": {"name": "Ruslan Vodka (60ml)", "base_name": "Ruslan Vodka",
+               "variant_label": "60ml", "reference_price": 300,
+               "tags": ["ruslan", "vodka"], "needs_review": false}
+  },
+  {
+    "id": "kailash-hard-drinks-matrix-qtr",
+    "why": "the second price in the same printed row",
+    "page_types": {"2": "menu"},
+    "raw": {"name": "Ruslan Vodka (Qtr.)", "base_name": "Ruslan Vodka",
+            "variant_label": "Qtr.", "category": "Hard Drinks", "price": 850,
+            "raw_name": "Ruslan Vodka", "raw_price_text": "300    850",
+            "raw_section": "HARD DRINKS", "source_page": 2, "confidence": 0.93},
+    "expect": {"variant_label": "Qtr.", "reference_price": 850, "needs_review": false}
+  },
+  {
+    "id": "tranquility-red-bull-blue",
+    "why": "printed '200 / 400'; the old schema kept 200 and lost 400 into prose",
+    "page_types": {"8": "menu"},
+    "raw": {"name": "Red Bull Blue", "base_name": "Red Bull", "variant_label": "Blue",
+            "category": "Soft Drinks", "price": 400, "raw_name": "Red Bull (Yellow/Blue)",
+            "raw_price_text": "200 / 400", "raw_section": "SOFT DRINKS",
+            "tags": ["red", "bull", "blue"], "source_page": 8, "confidence": 0.9},
+    "expect": {"reference_price": 400, "base_name": "Red Bull",
+               "tags": ["red", "bull", "blue"], "needs_review": false}
+  },
+  {
+    "id": "kailash-coke-split",
+    "why": "'Coke/Fanta/Sprite/Dew/Slice 100/-' is five products on one line",
+    "page_types": {"4": "menu"},
+    "raw": {"name": "Coke", "base_name": "Coke", "category": "Soft Drinks",
+            "price": 100, "raw_name": "Coke/Fanta/Sprite/Dew/Slice",
+            "raw_price_text": "100", "raw_section": "SOFT DRINKS",
+            "split_from": "Coke/Fanta/Sprite/Dew/Slice", "tags": ["coke"],
+            "source_page": 4, "confidence": 0.88},
+    "expect": {"name": "Coke", "split_from": "Coke/Fanta/Sprite/Dew/Slice",
+               "reference_price": 100, "tags": ["coke"], "needs_review": false}
+  },
+  {
+    "id": "chillzone-pancake-count-mismatch",
+    "why": "'PANCAKE plain/Honey/Banana 170/210/-' prints 3 names but only 2 prices",
+    "page_types": {"1": "menu"},
+    "raw": {"name": "Pancake Banana", "base_name": "Pancake", "variant_label": "Banana",
+            "category": "Muesli/Porridge", "price": null,
+            "raw_name": "PANCAKE plain/Honey/Banana", "raw_price_text": "170/210/-",
+            "split_from": "PANCAKE plain/Honey/Banana", "source_page": 1,
+            "confidence": 0.55},
+    "expect": {"reference_price": null, "needs_review": true}
+  },
+  {
+    "id": "kailash-red-bull-yellow-no-price",
+    "why": "printed with no price at all — never guess one",
+    "page_types": {"4": "menu"},
+    "raw": {"name": "Red Bull Yellow", "base_name": "Red Bull", "variant_label": "Yellow",
+            "category": "Soft Drinks", "price": null, "raw_name": "Red Bull Yellow",
+            "raw_price_text": "", "source_page": 4, "confidence": 0.9},
+    "expect": {"reference_price": null, "needs_review": true}
+  },
+  {
+    "id": "phavbaji-rakhis-usd",
+    "why": "a screenshot of another restaurant's menu, priced in USD",
+    "page_types": {"3": "screenshot"},
+    "raw": {"name": "Palak Paneer", "category": "Vegetarian", "price": 10,
+            "currency": "USD", "raw_name": "Palak Paneer", "raw_price_text": "$10.00",
+            "source_page": 3, "confidence": 0.92},
+    "expect": {"currency": "USD", "reference_price": 10, "needs_review": true}
+  },
+  {
+    "id": "kailash-chalkboard-signage",
+    "why": "page 5 is a hand-drawn signboard; anything lifted off it is suspect",
+    "page_types": {"5": "signage"},
+    "raw": {"name": "Food Music Drinks", "raw_name": "Food Music Drinks",
+            "price": null, "source_page": 5, "confidence": 0.3},
+    "expect": {"needs_review": true}
+  },
+  {
+    "id": "tag-invention-is-stripped",
+    "why": "D6 — the model added 'dumpling', a word not printed on the menu",
+    "page_types": {"4": "menu"},
+    "raw": {"name": "Veg Mo:Mo", "category": "Mo:Mo", "price": 250,
+            "raw_name": "Veg. Mo:Mo", "tags": ["veg", "mo:mo", "dumpling"],
+            "dietary_tags": ["veg"], "source_page": 4, "confidence": 0.95},
+    "expect": {"tags": ["veg", "mo:mo"], "dietary_tags": ["veg"], "needs_review": true}
+  },
+  {
+    "id": "chicken-bbq-per-kg",
+    "why": "portion unit printed in the name becomes the variant label",
+    "page_types": {"6": "menu"},
+    "raw": {"name": "Chicken BBQ (per kg)", "base_name": "Chicken BBQ",
+            "variant_label": "per kg", "category": "Buff Snacks", "price": 1600,
+            "raw_name": "Chicken BBQ (Per Kg)", "dietary_tags": ["chicken"],
+            "tags": ["chicken", "bbq"], "source_page": 6, "confidence": 0.94},
+    "expect": {"variant_label": "per kg", "reference_price": 1600,
+               "dietary_tags": ["chicken"], "needs_review": false}
+  }
+]
