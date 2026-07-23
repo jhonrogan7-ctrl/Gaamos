@@ -6,7 +6,7 @@ from django.conf import settings
 from django.db import transaction
 
 from menu.models import Item, MenuScan
-from menu.pipeline import embed, extract, normalize
+from menu.pipeline import embed, extract, find_library, intake, normalize, photo_search
 
 
 @shared_task
@@ -50,3 +50,48 @@ def extract_menu_scan(scan_id):
         scan.status = "failed"
         scan.error = str(exc)
         scan.save(update_fields=["status", "error"])
+
+
+@shared_task
+def find_images_for_scan(scan_id):
+    """Give every photo-less row on this scan an image: library first, then the
+    top external hit.
+
+    A library hit attaches an already-verified asset with no download and no
+    intake — that is the library paying off. An external hit is deposited as
+    `pending`, so it flows through the existing image review queue and the next
+    scanned menu costs fewer API calls than this one. An item that finds nothing
+    keeps its placeholder; the per-card re-roll button is the retry, which is why
+    no per-item error is stored.
+    """
+    from django.utils.text import slugify
+
+    scan = MenuScan.objects.get(pk=scan_id)
+    source = settings.SCAN_IMAGE_SOURCE
+    items = Item.objects.filter(source_scan=scan, image_asset__isnull=True,
+                                status__in=('draft', 'active'))
+    for item in items:
+        text = f"{item.name} {item.description}".strip()
+        try:
+            hits = find_library.search(text)
+        except Exception:
+            hits = []
+        if hits:
+            item.image_asset_id = hits[0]['asset_id']
+            item.save(update_fields=['image_asset'])
+            continue
+        try:
+            results = photo_search.search(source, item.name, limit=5)
+            if not results:
+                continue
+            webp = photo_search.fetch_thumbnail(source, results[0]['url'])
+        except Exception:
+            continue          # one dead URL must not cost the scan its images
+        asset = intake.record(source=source, webp_bytes=webp, item_name=item.name,
+                              found_for_slug=slugify(item.name),
+                              origin_url=results[0].get('page') or results[0]['url'],
+                              tags=item.tags)
+        if asset is None:
+            continue          # rejected tombstone — never re-ingest a bad source
+        item.image_asset = asset
+        item.save(update_fields=['image_asset'])
