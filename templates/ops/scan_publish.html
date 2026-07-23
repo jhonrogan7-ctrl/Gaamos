@@ -1,4 +1,38 @@
 {% extends 'ops/base.html' %}
-{% block title %}Publish{% endblock %}
+{% block title %}Publish scan{% endblock %}
 {% block top %}Publish — {{ scan.source_cafe|default:"scan" }}{% endblock %}
-{% block content %}<div class="il-empty">Publish screen — next task.</div>{% endblock %}
+{% block content %}
+{% include 'ops/_image_styles.html' %}
+<p><a class="il-link" href="{% url 'ops:scan_workbench' scan.pk %}">← Workbench</a></p>
+{% if not items %}
+  <div class="il-empty">No approved items on this scan yet — approve some first.</div>
+{% else %}
+<form method="post" action="{% url 'ops:scan_publish' scan.pk %}">{% csrf_token %}
+  <label>Tenant</label>
+  <select class="il-input" name="company" required>
+    <option value="">Pick a company…</option>
+    {% for c in companies %}<option value="{{ c.pk }}">{{ c.name }} ({{ c.slug }})</option>{% endfor %}
+  </select>
+  <label>Branches (tick only branches of the company you picked)</label>
+  {% for b in branches %}
+    <label class="il-filter"><input type="checkbox" name="branch" value="{{ b.pk }}">
+      {{ b.company.slug }} / {{ b.name }}</label>
+  {% endfor %}
+  <label>Items ({{ items|length }} approved)</label>
+  <table class="tbl">
+    <thead><tr><th></th><th>Item</th><th>Price</th><th>Category</th></tr></thead>
+    <tbody>
+    {% for it in items %}
+      <tr>
+        <td><input type="checkbox" name="item" value="{{ it.pk }}" checked></td>
+        <td>{{ it.name }}</td>
+        <td>{% if it.reference_price is None %}<b>— publishes at Rs 0</b>{% else %}Rs {{ it.reference_price }}{% endif %}</td>
+        <td>{{ it.category|default:"Menu" }}</td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+  <button class="btn btn-sm primary">Publish to tenant</button>
+</form>
+{% endif %}
+{% endblock %}

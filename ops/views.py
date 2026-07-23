@@ -5,6 +5,7 @@ from pathlib import Path
 
 from django.conf import settings
 from django.contrib.auth import authenticate, login, logout
+from django.db import transaction
 from django.db.models import Count, Q
 from django.http import Http404, HttpResponse, HttpResponseBadRequest
 from django.shortcuts import get_object_or_404, redirect, render
@@ -18,7 +19,9 @@ from pgvector.django import CosineDistance
 from core.models import Lead
 from menu.dashboard.utils import generate_qr_for_branch
 from menu.impersonation import make_token
-from menu.models import Company, ImageAsset, Item, Membership, MenuScan
+from menu import publish
+from menu.models import Branch, Company, ImageAsset, Item, Membership, MenuScan
+from menu.tenancy import reset_current_company, set_current_company
 from menu.tasks import extract_menu_scan, find_images_for_scan
 from menu.pipeline import embed as image_embed
 from menu.pipeline import embed as item_embed
@@ -473,9 +476,45 @@ def scan_find_images(request, scan_id):
 
 @platform_admin_required
 def scan_publish(request, scan_id):
-    """Placeholder — Task 9 replaces this with the real publish screen."""
+    """Publish this scan's approved rows into one tenant (B4).
+
+    Scoped to the scanned menu in hand, matching the scan → review → hand to the
+    client flow. Composing a menu from the whole catalog is a different screen
+    for a different job.
+    """
     scan = get_object_or_404(MenuScan, pk=scan_id)
-    return render(request, 'ops/scan_publish.html', {'scan': scan, 'active': 'scans'})
+    active = Item.objects.filter(source_scan=scan, status='active')
+    if request.method != 'POST':
+        # This is an apex screen, so there is NO tenant context: never walk a
+        # scoped related manager like `company.branches` (see the comment above
+        # `tenants`). Branches are fetched explicitly via all_objects instead.
+        return render(request, 'ops/scan_publish.html', {
+            'scan': scan, 'active': 'scans', 'items': active,
+            'companies': Company.objects.filter(status='active').order_by('name'),
+            'branches': (Branch.all_objects.select_related('company')
+                         .order_by('company__name', 'name')),
+        })
+
+    company = Company.objects.filter(pk=request.POST.get('company')).first()
+    if company is None:
+        return HttpResponseBadRequest('pick a company')
+    branch_ids = request.POST.getlist('branch')
+    branches = list(Branch.all_objects.filter(company=company, pk__in=branch_ids))
+    if not branches or len(branches) != len(set(branch_ids)):
+        return HttpResponseBadRequest('pick at least one branch of that company')
+    items = list(active.filter(pk__in=request.POST.getlist('item')))
+
+    token = set_current_company(company)
+    try:
+        with transaction.atomic():
+            report = publish.publish_items(company, branches, items)
+            scan.status = 'imported'
+            scan.save(update_fields=['status'])
+    finally:
+        reset_current_company(token)
+    return render(request, 'ops/_publish_report.html', {
+        'scan': scan, 'active': 'scans', 'company': company, 'report': report,
+    })
 
 
 @platform_admin_required
