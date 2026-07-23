@@ -18,7 +18,7 @@
     <td><span class="ops-chip {{ s.status }}">{{ s.get_status_display }}</span>
         {% if s.error %}<br><small>{{ s.error|truncatechars:80 }}</small>{% endif %}</td>
     <td>{{ s.created_at|date:"Y-m-d H:i" }}</td>
-    <td>{% if s.status == 'extracted' %}<a class="btn btn-sm primary"
+    <td>{% if s.status == 'extracted' or s.status == 'imported' %}<a class="btn btn-sm primary"
           href="{% url 'ops:scan_review' s.pk %}">Review</a>{% endif %}</td>
   </tr>
   {% empty %}

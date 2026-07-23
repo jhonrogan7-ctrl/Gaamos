@@ -283,6 +283,10 @@ def scan_approve(request, scan_id):
             return HttpResponseBadRequest('reference_price must be a non-negative integer')
         ref_price = int(raw_price)
     text = f"{name} {request.POST.get('description','')}".strip()
+    if Item.objects.filter(source_scan=scan, name=name).exists():
+        scan.status = 'imported'
+        scan.save(update_fields=['status'])
+        return HttpResponse('<span class="ok">Already added</span>')
     Item.objects.create(
         name=name, description=request.POST.get('description', '').strip(),
         category=request.POST.get('category', '').strip(),

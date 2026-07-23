@@ -75,3 +75,20 @@ class ScanReviewTests(TestCase):
         self.assertEqual(resp.status_code, 200)
         self.scan.refresh_from_db()
         self.assertEqual(self.scan.status, 'imported')
+
+    def test_approve_is_idempotent(self):
+        with patch('menu.pipeline.embed.embed', _emb([0.2] * 768)):
+            resp1 = self.client.post(f'/platform/scans/{self.scan.pk}/approve/',
+                                     {'name': 'Black Tea', 'description': 'hot milk tea',
+                                      'category': 'Hot Drinks', 'reference_price': '50'},
+                                     **self.apex)
+            resp2 = self.client.post(f'/platform/scans/{self.scan.pk}/approve/',
+                                     {'name': 'Black Tea', 'description': 'hot milk tea',
+                                      'category': 'Hot Drinks', 'reference_price': '50'},
+                                     **self.apex)
+        self.assertEqual(resp1.status_code, 200)
+        self.assertEqual(resp2.status_code, 200)
+        self.assertEqual(
+            Item.objects.filter(source_scan=self.scan, name='Black Tea').count(), 1)
+        self.scan.refresh_from_db()
+        self.assertEqual(self.scan.status, 'imported')

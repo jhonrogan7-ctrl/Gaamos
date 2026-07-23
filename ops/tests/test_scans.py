@@ -39,3 +39,10 @@ class ScanUploadTests(TestCase):
         resp = self.client.post('/platform/scans/', {'source_cafe': 'X', 'file': f}, **self.apex)
         self.assertEqual(resp.status_code, 302)
         self.assertEqual(MenuScan.objects.count(), 0)
+
+    def test_imported_scan_still_shows_review_link(self):
+        self.client.force_login(self.boss)
+        scan = MenuScan.objects.create(source_cafe='Cafe', status='imported',
+                                       raw_extraction={}, file='scans/x.pdf')
+        body = self.client.get('/platform/scans/', **self.apex).content.decode()
+        self.assertIn(f'/platform/scans/{scan.pk}/review/', body)
