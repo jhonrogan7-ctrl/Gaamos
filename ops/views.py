@@ -23,6 +23,7 @@ from menu.tasks import extract_menu_scan
 from menu.pipeline import embed as image_embed
 from menu.pipeline import embed as item_embed
 from menu.pipeline import intake as pipeline_intake
+from menu.pipeline import normalize
 from menu.pipeline import photo_search
 
 from .forms import TenantCreateForm
@@ -415,7 +416,16 @@ def item_use_photo(request, item_id):
 @platform_admin_required
 @require_POST
 def item_edit_tags(request, item_id):
+    """Save hand-corrected tags through spec A's validator.
+
+    D6 is enforced here as well as at extraction: a tag whose words are not in
+    the item's own printed name is dropped, whoever typed it. No re-embed —
+    `Item.embedding` derives from name + description, untouched by this view.
+    """
     item = get_object_or_404(Item, pk=item_id)
+    raw = [t.strip() for t in request.POST.get('tags', '').split(',') if t.strip()]
+    item.tags = normalize.clean_tags(raw, item.raw_name or item.name)
+    item.save(update_fields=['tags'])
     return render(request, 'ops/_scan_item_card.html', {'it': item})
 
 

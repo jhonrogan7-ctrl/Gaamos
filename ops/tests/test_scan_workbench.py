@@ -103,3 +103,49 @@ class ItemPhotoTests(TestCase):
         self.assertEqual(resp.status_code, 400)
         self.item.refresh_from_db()
         self.assertIsNone(self.item.image_asset_id)
+
+
+class ItemTagEditTests(TestCase):
+    def setUp(self):
+        self.apex = {'HTTP_HOST': APEX}
+        self.boss = User.objects.create_superuser('boss', 'b@x.io', 'pw-boss-1')
+        self.scan = MenuScan.objects.create(file='scans/x.pdf', status='extracted')
+        self.item = Item.objects.create(
+            source_scan=self.scan, status='draft', name='Veg Mo:Mo',
+            raw_name='Veg. Mo:Mo', tags=['veg'], embedding=[0.4] * 768)
+        self.client.force_login(self.boss)
+        self.url = f'/platform/scans/items/{self.item.pk}/tags/'
+
+    def test_tag_edit_requires_superuser(self):
+        self.client.logout()
+        resp = self.client.post(self.url, {'tags': 'veg, mo:mo'}, **self.apex)
+        self.assertEqual(resp.status_code, 302)
+        self.item.refresh_from_db()
+        self.assertEqual(self.item.tags, ['veg'])
+
+    def test_tags_are_saved_and_the_card_comes_back(self):
+        resp = self.client.post(self.url, {'tags': 'veg, mo:mo'}, **self.apex)
+        self.assertEqual(resp.status_code, 200)
+        self.item.refresh_from_db()
+        self.assertEqual(self.item.tags, ['veg', 'mo:mo'])
+        self.assertIn(f'sc-card-{self.item.pk}', resp.content.decode())
+
+    def test_a_tag_absent_from_the_printed_name_is_dropped(self):
+        """D6 holds on the edit path too — staff cannot type an invented tag in."""
+        self.client.post(self.url, {'tags': 'veg, dumpling'}, **self.apex)
+        self.item.refresh_from_db()
+        self.assertEqual(self.item.tags, ['veg'])
+
+    def test_editing_tags_does_not_re_embed(self):
+        """The vector derives from name + description; tags do not touch it."""
+        with patch('menu.pipeline.embed.embed',
+                   side_effect=AssertionError('embedded on a tag edit')):
+            resp = self.client.post(self.url, {'tags': 'veg'}, **self.apex)
+        self.assertEqual(resp.status_code, 200)
+        self.item.refresh_from_db()
+        self.assertEqual(list(self.item.embedding), [0.4] * 768)
+
+    def test_clearing_the_box_clears_the_tags(self):
+        self.client.post(self.url, {'tags': ''}, **self.apex)
+        self.item.refresh_from_db()
+        self.assertEqual(self.item.tags, [])
