@@ -43,9 +43,9 @@ STEPS = [
     {"n": "3", "title": _("Receive orders"), "body": _("Guests scan, browse, and order from their own phone. Orders appear in your live queue the moment they're placed.")},
 ]
 BRANCHES = [
-    {"initials": "MG", "name": "Momo Ghar — Lakeside", "prefix": "momoghar", "orders": "42"},
-    {"initials": "MG", "name": "Momo Ghar — City Center", "prefix": "momoghar-city", "orders": "31"},
-    {"initials": "TC", "name": "The Terrace Café", "prefix": "theterrace", "orders": "18"},
+    {"initials": "YC", "name": "Your Café — Lakeside", "prefix": "yourcafe", "orders": "42"},
+    {"initials": "YC", "name": "Your Café — City Center", "prefix": "yourcafe-city", "orders": "31"},
+    {"initials": "YH", "name": "Your Hotel", "prefix": "yourhotel", "orders": "18"},
 ]
 TIERS = [
     {"name": _("Business"), "price": "Rs 3,000", "per": _("/month"),

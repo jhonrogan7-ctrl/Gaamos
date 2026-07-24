@@ -1,0 +1,21 @@
+{% extends 'ops/base.html' %}
+{% block title %}Workbench{% endblock %}
+{% block top %}Workbench — {{ scan.source_cafe|default:"scan" }}{% endblock %}
+{% block content %}
+{% include 'ops/_image_styles.html' %}
+<div class="il-toolbar">
+  <a class="il-link" href="{% url 'ops:scans' %}">← All scans</a>
+  <span class="il-count">{{ total }} item{{ total|pluralize }}</span>
+  {% include 'ops/_scan_image_progress.html' %}
+  <form method="post" action="{% url 'ops:scan_find_images' scan.pk %}"
+        style="display:inline">{% csrf_token %}
+    <button class="il-btn il-find">🔎 Find photos for all</button>
+  </form>
+  <a class="il-btn" href="{% url 'ops:scan_publish' scan.pk %}">↗ Publish to tenant</a>
+  <a class="il-link" href="{% url 'ops:scan_review' scan.pk %}">Table view (edit names &amp; prices)</a>
+</div>
+{% if not items %}<div class="il-empty">Nothing left to review on this scan. 🎉</div>{% endif %}
+<div class="il-grid">
+  {% for it in items %}{% include 'ops/_scan_item_card.html' %}{% endfor %}
+</div>
+{% endblock %}

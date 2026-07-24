@@ -1,0 +1,4 @@
+<span id="sc-progress"
+      hx-get="{% url 'ops:scan_image_progress' scan.pk %}"
+      hx-trigger="every 5s"
+      hx-swap="outerHTML">{{ with_photo }} of {{ total }} have photos</span>

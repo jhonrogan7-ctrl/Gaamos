@@ -216,8 +216,8 @@ msgid "Venue name"
 msgstr "स्थलको नाम"
 
 #: templates/marketing/_contact_form.html:12
-msgid "Momo Ghar Café"
-msgstr "मःमः घर क्याफे"
+msgid "Your Hotel"
+msgstr "तपाईंको होटल"
 
 #: templates/marketing/_contact_form.html:17
 msgid "Phone"

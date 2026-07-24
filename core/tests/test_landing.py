@@ -29,7 +29,7 @@ def test_landing_how_and_multibranch(client):
     assert "Live by lunchtime" in body
     assert "Print your QRs" in body
     assert "Every location. One dashboard." in body
-    assert "theterrace." in body  # branch domain built from base_domain
+    assert "yourhotel." in body  # branch domain built from base_domain
 
 
 @pytest.mark.django_db

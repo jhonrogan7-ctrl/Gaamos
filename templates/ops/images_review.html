@@ -1,0 +1,17 @@
+{% extends 'ops/base.html' %}
+{% block title %}Image review{% endblock %}
+{% block top %}Image review queue{% endblock %}
+{% block content %}
+{% include 'ops/_image_styles.html' %}
+<div class="il-toolbar">
+  <span class="il-count"><b>{{ assets|length }}</b> pending image{{ assets|length|pluralize }} awaiting review</span>
+  <a class="il-link" href="{% url 'ops:image_browse' %}">Browse verified library →</a>
+</div>
+{% if assets %}
+<div class="il-grid">
+  {% for a in assets %}{% include 'ops/_image_card.html' with a=a review=True %}{% endfor %}
+</div>
+{% else %}
+<div class="il-empty">Nothing to review. 🎉</div>
+{% endif %}
+{% endblock %}

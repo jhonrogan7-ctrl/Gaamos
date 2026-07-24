@@ -108,4 +108,33 @@ STORAGES = {
 MEDIA_URL = "/media/"
 MEDIA_ROOT = os.environ.get("MEDIA_ROOT", str(BASE_DIR / "media"))
 
+# Google Gemini / Imagen — image generation for the menu-from-pdf pipeline.
+# Key lives only in .env (gitignored); never commit it.
+GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY", "")
+GEMINI_IMAGE_MODEL = os.environ.get("GEMINI_IMAGE_MODEL", "gemini-2.5-flash-image")
+GEMINI_EMBED_MODEL = os.environ.get("GEMINI_EMBED_MODEL", "gemini-embedding-001")
+GEMINI_VISION_MODEL = os.environ.get("GEMINI_VISION_MODEL", "gemini-2.5-flash")
+LIBRARY_MATCH_THRESHOLD = float(os.environ.get("LIBRARY_MATCH_THRESHOLD", "0.75"))
+ITEM_MATCH_THRESHOLD = float(os.environ.get("ITEM_MATCH_THRESHOLD", "0.85"))
+# Below this extractor confidence a scanned item is flagged for human review.
+SCAN_CONFIDENCE_THRESHOLD = float(os.environ.get("SCAN_CONFIDENCE_THRESHOLD", "0.7"))
+# Which photo source the bulk scan image job uses when the library has no match.
+SCAN_IMAGE_SOURCE = os.environ.get("SCAN_IMAGE_SOURCE", "pexels")
+
+# NVIDIA-hosted FLUX — the working image-generation backend while Gemini image
+# gen is blocked on billing. Key lives only in .env (gitignored).
+NVIDIA_API_KEY = os.environ.get("NVIDIA_API_KEY", "")
+NVIDIA_IMAGE_MODEL = os.environ.get("NVIDIA_IMAGE_MODEL",
+                                    "black-forest-labs/flux.2-klein-4b")
+
+# Free stock-photo APIs for the image 'find' path (all from .env, never committed).
+PEXELS_API_KEY = os.environ.get("PEXELS_API_KEY", "")
+OPENVERSE_CLIENT_ID = os.environ.get("OPENVERSE_CLIENT_ID", "")
+OPENVERSE_CLIENT_SECRET = os.environ.get("OPENVERSE_CLIENT_SECRET", "")
+
+# Celery + Redis — background-job foundation.
+CELERY_BROKER_URL = os.environ.get("CELERY_BROKER_URL", "redis://redis:6379/0")
+CELERY_RESULT_BACKEND = os.environ.get("CELERY_RESULT_BACKEND", "redis://redis:6379/1")
+CELERY_TASK_ALWAYS_EAGER = os.environ.get("CELERY_TASK_ALWAYS_EAGER", "0") == "1"
+
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"

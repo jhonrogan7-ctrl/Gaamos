@@ -1,0 +1,57 @@
+<style>
+  .il-toolbar { display: flex; flex-wrap: wrap; align-items: center; gap: 14px; margin: 0 0 18px; }
+  .il-count { font-family: var(--bd); font-size: 13px; color: var(--ink-2); font-weight: 600; }
+  .il-count b { color: var(--ink); font-weight: 800; }
+  .il-filter { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin: 0 0 16px; }
+  .il-input {
+    font-family: var(--bd); font-size: 13px; padding: 9px 12px; border: 1px solid var(--line-2);
+    border-radius: 10px; background: #fff; color: var(--ink); min-width: 0; width: 100%;
+  }
+  .il-input:focus { outline: none; border-color: var(--ink-3); }
+
+  .il-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 16px; }
+  .il-card {
+    background: var(--panel); border: 1px solid var(--line); border-radius: 14px;
+    overflow: hidden; display: flex; flex-direction: column;
+    box-shadow: 0 1px 2px rgba(20, 23, 29, .05);
+  }
+  .il-thumb { display: block; width: 100%; aspect-ratio: 4 / 3; object-fit: cover; background: var(--bg); }
+  .il-b { padding: 12px 13px 14px; display: flex; flex-direction: column; gap: 9px; flex: 1; }
+
+  .il-name { font-family: var(--hd); font-weight: 800; font-size: 15.5px; line-height: 1.2; color: var(--ink); }
+  .il-sub { display: flex; flex-wrap: wrap; align-items: center; gap: 7px; font-family: var(--bd); font-size: 11px; color: var(--ink-3); font-weight: 600; }
+  .il-pill { display: inline-block; padding: 2px 9px; border-radius: 999px; background: var(--bg); color: var(--ink-2); font-size: 10.5px; font-weight: 800; text-transform: capitalize; }
+  .il-link { color: var(--accent-deep); font-weight: 700; text-decoration: none; }
+  .il-link:hover { text-decoration: underline; }
+
+  .il-tags { display: flex; flex-wrap: wrap; gap: 5px; }
+  .il-tag { display: inline-block; padding: 3px 10px; border-radius: 999px; background: var(--accent-soft); color: var(--accent-deep); font-family: var(--bd); font-size: 11px; font-weight: 700; }
+
+  .il-actions { display: flex; gap: 8px; margin-top: 2px; }
+  .il-btn { flex: 1; font-family: var(--bd); font-size: 12.5px; font-weight: 800; padding: 9px 10px; border-radius: 10px; border: 1px solid transparent; cursor: pointer; text-align: center; }
+  .il-approve { background: #1a9d54; color: #fff; }
+  .il-approve:hover { background: #158546; }
+  .il-reject { background: #fff; color: var(--accent-deep); border-color: var(--accent-soft); }
+  .il-reject:hover { border-color: var(--accent); }
+
+  .il-edit { display: flex; flex-direction: column; gap: 6px; border-top: 1px dashed var(--line); padding-top: 11px; margin-top: 3px; }
+  .il-edit label { font-family: var(--bd); font-size: 10px; font-weight: 800; color: var(--ink-3); text-transform: uppercase; letter-spacing: .04em; }
+  .il-save { align-self: flex-start; background: var(--ink); color: #fff; font-family: var(--bd); font-size: 11.5px; font-weight: 700; padding: 7px 15px; border-radius: 9px; border: 0; cursor: pointer; margin-top: 3px; }
+  .il-save:hover { background: #000; }
+
+  .il-empty { padding: 46px 16px; text-align: center; color: var(--ink-3); font-family: var(--bd); font-weight: 600; font-size: 14px; }
+
+  .il-find { width: 100%; background: #fff; color: var(--ink); border: 1px solid var(--line-2); margin-top: 2px; }
+  .il-find:hover { border-color: var(--ink-3); }
+  .il-preview:empty { display: none; }
+  .il-preview { margin-top: 4px; }
+  .il-pv { display: flex; flex-direction: column; gap: 8px; padding: 10px; border: 1px dashed var(--line-2); border-radius: 12px; background: var(--bg); }
+  .il-pv-img { width: 100%; aspect-ratio: 4 / 3; object-fit: cover; border-radius: 9px; background: #fff; }
+  .il-pv-credit { font-family: var(--bd); font-size: 10.5px; color: var(--ink-3); font-weight: 600; }
+  .il-pv-actions { display: flex; flex-wrap: wrap; gap: 6px; }
+  .il-pv-actions .il-btn { flex: 1; min-width: 84px; }
+  .il-pv-msg { padding: 10px; border: 1px dashed var(--line-2); border-radius: 12px; background: var(--bg); font-family: var(--bd); font-size: 12px; color: var(--ink-2); font-weight: 600; }
+  .il-search { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+  .il-search .il-input { flex: 1; min-width: 90px; }
+  .il-search .il-src { flex: 0 0 auto; width: auto; text-transform: capitalize; }
+</style>

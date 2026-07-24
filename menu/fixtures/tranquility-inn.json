@@ -1,0 +1,3159 @@
+{
+  "company": "tranquility-inn",
+  "branches": [
+    "restaurant"
+  ],
+  "categories": [
+    {
+      "slug": "hot-drinks",
+      "name": "Hot Drinks",
+      "display_order": 1,
+      "icon_key": "",
+      "hours_note": "",
+      "subcategories": []
+    },
+    {
+      "slug": "breakfast",
+      "name": "Breakfast",
+      "display_order": 2,
+      "icon_key": "",
+      "hours_note": "",
+      "subcategories": []
+    },
+    {
+      "slug": "fresh-fruit-juice",
+      "name": "Fresh Fruit Juice",
+      "display_order": 3,
+      "icon_key": "",
+      "hours_note": "",
+      "subcategories": []
+    },
+    {
+      "slug": "milk-shake-lassi",
+      "name": "Milk Shake / Lassi",
+      "display_order": 4,
+      "icon_key": "",
+      "hours_note": "",
+      "subcategories": []
+    },
+    {
+      "slug": "special-cold-drinks",
+      "name": "Special Cold Drinks",
+      "display_order": 5,
+      "icon_key": "",
+      "hours_note": "",
+      "subcategories": []
+    },
+    {
+      "slug": "a-la-carte-breakfast",
+      "name": "A La Carte Breakfast",
+      "display_order": 6,
+      "icon_key": "",
+      "hours_note": "",
+      "subcategories": []
+    },
+    {
+      "slug": "salad",
+      "name": "Salad",
+      "display_order": 7,
+      "icon_key": "",
+      "hours_note": "",
+      "subcategories": []
+    },
+    {
+      "slug": "snacks",
+      "name": "Snacks",
+      "display_order": 8,
+      "icon_key": "",
+      "hours_note": "",
+      "subcategories": []
+    },
+    {
+      "slug": "non-veg-snacks",
+      "name": "Non-Veg Snacks",
+      "display_order": 9,
+      "icon_key": "",
+      "hours_note": "",
+      "subcategories": []
+    },
+    {
+      "slug": "buff-snacks",
+      "name": "Buff Snacks",
+      "display_order": 10,
+      "icon_key": "",
+      "hours_note": "",
+      "subcategories": []
+    },
+    {
+      "slug": "pork-snacks",
+      "name": "Pork Snacks",
+      "display_order": 11,
+      "icon_key": "",
+      "hours_note": "",
+      "subcategories": []
+    },
+    {
+      "slug": "fish-item",
+      "name": "Fish Item",
+      "display_order": 12,
+      "icon_key": "",
+      "hours_note": "",
+      "subcategories": []
+    },
+    {
+      "slug": "soup-with-garlic-bread",
+      "name": "Soup with Garlic Bread",
+      "display_order": 13,
+      "icon_key": "",
+      "hours_note": "",
+      "subcategories": []
+    },
+    {
+      "slug": "pancakes",
+      "name": "Pancakes",
+      "display_order": 14,
+      "icon_key": "",
+      "hours_note": "",
+      "subcategories": []
+    },
+    {
+      "slug": "sandwich-and-burger",
+      "name": "Sandwich and Burger",
+      "display_order": 15,
+      "icon_key": "",
+      "hours_note": "",
+      "subcategories": []
+    },
+    {
+      "slug": "continental",
+      "name": "Continental",
+      "display_order": 16,
+      "icon_key": "",
+      "hours_note": "",
+      "subcategories": []
+    },
+    {
+      "slug": "italian-spaghetti-penne",
+      "name": "Italian (Spaghetti / Penne)",
+      "display_order": 17,
+      "icon_key": "",
+      "hours_note": "",
+      "subcategories": []
+    },
+    {
+      "slug": "pizza",
+      "name": "Pizza",
+      "display_order": 18,
+      "icon_key": "",
+      "hours_note": "",
+      "subcategories": []
+    },
+    {
+      "slug": "nepali-thali-set",
+      "name": "Nepali Thali Set",
+      "display_order": 19,
+      "icon_key": "",
+      "hours_note": "",
+      "subcategories": []
+    },
+    {
+      "slug": "tranquility-special-wrap",
+      "name": "Tranquility Special Wrap",
+      "display_order": 20,
+      "icon_key": "",
+      "hours_note": "",
+      "subcategories": []
+    },
+    {
+      "slug": "khaja-set",
+      "name": "Khaja Set",
+      "display_order": 21,
+      "icon_key": "",
+      "hours_note": "",
+      "subcategories": []
+    },
+    {
+      "slug": "spring-roll",
+      "name": "Spring Roll",
+      "display_order": 22,
+      "icon_key": "",
+      "hours_note": "",
+      "subcategories": []
+    },
+    {
+      "slug": "dessert",
+      "name": "Dessert",
+      "display_order": 23,
+      "icon_key": "",
+      "hours_note": "",
+      "subcategories": []
+    },
+    {
+      "slug": "soft-drinks",
+      "name": "Soft Drinks",
+      "display_order": 24,
+      "icon_key": "",
+      "hours_note": "",
+      "subcategories": []
+    },
+    {
+      "slug": "bbq",
+      "name": "BBQ",
+      "display_order": 25,
+      "icon_key": "",
+      "hours_note": "",
+      "subcategories": []
+    },
+    {
+      "slug": "hookah",
+      "name": "Hookah",
+      "display_order": 26,
+      "icon_key": "",
+      "hours_note": "",
+      "subcategories": []
+    },
+    {
+      "slug": "beer",
+      "name": "Beer",
+      "display_order": 27,
+      "icon_key": "",
+      "hours_note": "",
+      "subcategories": []
+    },
+    {
+      "slug": "cocktail",
+      "name": "Cocktail",
+      "display_order": 28,
+      "icon_key": "",
+      "hours_note": "",
+      "subcategories": []
+    },
+    {
+      "slug": "wine",
+      "name": "Wine",
+      "display_order": 29,
+      "icon_key": "",
+      "hours_note": "",
+      "subcategories": []
+    },
+    {
+      "slug": "hard-drinks",
+      "name": "Hard Drinks",
+      "display_order": 30,
+      "icon_key": "",
+      "hours_note": "",
+      "subcategories": []
+    }
+  ],
+  "items": [
+    {
+      "slug": "black-tea",
+      "name": "Black Tea",
+      "cat": "hot-drinks",
+      "sub": null,
+      "description": "",
+      "price": 50,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 1,
+      "image": {
+        "file": "hot-drinks-black-tea.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a clear glass cup of strong black tea, no milk, professional beverage photography, straight-on angle, soft natural light, condensation on the glass, clean neutral background, vibrant, high detail"
+      }
+    },
+    {
+      "slug": "milk-tea",
+      "name": "Milk Tea",
+      "cat": "hot-drinks",
+      "sub": null,
+      "description": "",
+      "price": 70,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 2,
+      "image": {
+        "file": "hot-drinks-milk-tea.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a glass cup of Nepali milk tea, creamy tan colour, professional beverage photography, straight-on angle, soft natural light, condensation on the glass, clean neutral background, vibrant, high detail"
+      }
+    },
+    {
+      "slug": "lemon-tea",
+      "name": "Lemon Tea",
+      "cat": "hot-drinks",
+      "sub": null,
+      "description": "",
+      "price": 60,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 3,
+      "image": {
+        "file": "hot-drinks-lemon-tea.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a clear glass of amber lemon tea with a floating lemon slice, professional beverage photography, straight-on angle, soft natural light, condensation on the glass, clean neutral background, vibrant, high detail"
+      }
+    },
+    {
+      "slug": "masala-tea",
+      "name": "Masala Tea",
+      "cat": "hot-drinks",
+      "sub": null,
+      "description": "",
+      "price": 80,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 4,
+      "image": {
+        "file": "hot-drinks-masala-tea.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a cup of spiced masala chai with cardamom pods and cinnamon beside it, professional beverage photography, straight-on angle, soft natural light, condensation on the glass, clean neutral background, vibrant, high detail"
+      }
+    },
+    {
+      "slug": "mint-tea",
+      "name": "Mint Tea",
+      "cat": "hot-drinks",
+      "sub": null,
+      "description": "",
+      "price": 65,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 5,
+      "image": {
+        "file": "hot-drinks-mint-tea.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a clear glass of pale green mint tea with fresh mint leaves, professional beverage photography, straight-on angle, soft natural light, condensation on the glass, clean neutral background, vibrant, high detail"
+      }
+    },
+    {
+      "slug": "milk-coffee",
+      "name": "Milk Coffee",
+      "cat": "hot-drinks",
+      "sub": null,
+      "description": "",
+      "price": 100,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 6,
+      "image": {
+        "file": "hot-drinks-milk-coffee.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a white cup of milk coffee with light crema, professional beverage photography, straight-on angle, soft natural light, condensation on the glass, clean neutral background, vibrant, high detail"
+      }
+    },
+    {
+      "slug": "black-coffee",
+      "name": "Black Coffee",
+      "cat": "hot-drinks",
+      "sub": null,
+      "description": "",
+      "price": 80,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 7,
+      "image": {
+        "file": "hot-drinks-black-coffee.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a small white cup of black coffee, dark and glossy, professional beverage photography, straight-on angle, soft natural light, condensation on the glass, clean neutral background, vibrant, high detail"
+      }
+    },
+    {
+      "slug": "hot-lemon",
+      "name": "Hot Lemon",
+      "cat": "hot-drinks",
+      "sub": null,
+      "description": "",
+      "price": 50,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 8,
+      "image": {
+        "file": "hot-drinks-hot-lemon.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a tall glass of steaming hot lemon water with a lemon wedge, professional beverage photography, straight-on angle, soft natural light, condensation on the glass, clean neutral background, vibrant, high detail"
+      }
+    },
+    {
+      "slug": "ginger-lemon-honey",
+      "name": "Ginger Lemon Honey",
+      "cat": "hot-drinks",
+      "sub": null,
+      "description": "",
+      "price": 120,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 9,
+      "image": {
+        "file": "hot-drinks-ginger-lemon-honey.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a glass mug of ginger lemon honey tea, honey drizzling in, ginger slices, professional beverage photography, straight-on angle, soft natural light, condensation on the glass, clean neutral background, vibrant, high detail"
+      }
+    },
+    {
+      "slug": "glass-of-hot-chocolate",
+      "name": "Glass of Hot Chocolate",
+      "cat": "hot-drinks",
+      "sub": null,
+      "description": "",
+      "price": 220,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 10,
+      "image": {
+        "file": "hot-drinks-glass-of-hot-chocolate.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a tall glass of hot chocolate topped with whipped cream, professional beverage photography, straight-on angle, soft natural light, condensation on the glass, clean neutral background, vibrant, high detail"
+      }
+    },
+    {
+      "slug": "glass-of-hot-milk-local",
+      "name": "Glass of Hot Milk (Local)",
+      "cat": "hot-drinks",
+      "sub": null,
+      "description": "",
+      "price": 110,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 11,
+      "image": {
+        "file": "hot-drinks-glass-of-hot-milk-local.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a tall glass of hot fresh milk, gently steaming, professional beverage photography, straight-on angle, soft natural light, condensation on the glass, clean neutral background, vibrant, high detail"
+      }
+    },
+    {
+      "slug": "simple-breakfast",
+      "name": "Simple Breakfast",
+      "cat": "breakfast",
+      "sub": null,
+      "description": "Two egg any style, toast butter and jam, hash brown potato, tea or coffee.",
+      "price": 280,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 1,
+      "image": {
+        "file": "breakfast-simple-breakfast.webp",
+        "source": "found",
+        "origin_url": null,
+        "prompt": null
+      }
+    },
+    {
+      "slug": "indian-breakfast",
+      "name": "Indian Breakfast",
+      "cat": "breakfast",
+      "sub": null,
+      "description": "Aloo paratha with curd / puri bhaji, tea or coffee.",
+      "price": 250,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 2,
+      "image": {
+        "file": "breakfast-indian-breakfast.webp",
+        "source": "found",
+        "origin_url": null,
+        "prompt": null
+      }
+    },
+    {
+      "slug": "tranquility-special-breakfast",
+      "name": "Tranquility Special Breakfast",
+      "cat": "breakfast",
+      "sub": null,
+      "description": "Fresh juice, muesli with curd, two egg any style, hash brown potatoes, toast with butter jam, chicken sausage, tea or coffee.",
+      "price": 550,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 3,
+      "image": {
+        "file": "breakfast-tranquility-special-breakfast.webp",
+        "source": "found",
+        "origin_url": null,
+        "prompt": null
+      }
+    },
+    {
+      "slug": "seasonal-fruit",
+      "name": "Seasonal Fruit",
+      "cat": "fresh-fruit-juice",
+      "sub": null,
+      "description": "Watermelon, Papaya, Pineapple, Mango, Orange.",
+      "price": 250,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 1,
+      "image": {
+        "file": "fresh-fruit-juice-seasonal-fruit.webp",
+        "source": "found",
+        "origin_url": null,
+        "prompt": null
+      }
+    },
+    {
+      "slug": "can-juice",
+      "name": "Can Juice",
+      "cat": "fresh-fruit-juice",
+      "sub": null,
+      "description": "",
+      "price": 180,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 2,
+      "image": {
+        "file": "fresh-fruit-juice-can-juice.webp",
+        "source": "found",
+        "origin_url": null,
+        "prompt": null
+      }
+    },
+    {
+      "slug": "plain",
+      "name": "Plain",
+      "cat": "milk-shake-lassi",
+      "sub": null,
+      "description": "",
+      "price": 150,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 1,
+      "image": {
+        "file": "milk-shake-lassi-plain.webp",
+        "source": "found",
+        "origin_url": null,
+        "prompt": null
+      }
+    },
+    {
+      "slug": "sweet",
+      "name": "Sweet",
+      "cat": "milk-shake-lassi",
+      "sub": null,
+      "description": "",
+      "price": 180,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 2,
+      "image": {
+        "file": "milk-shake-lassi-sweet.webp",
+        "source": "found",
+        "origin_url": null,
+        "prompt": null
+      }
+    },
+    {
+      "slug": "banana",
+      "name": "Banana",
+      "cat": "milk-shake-lassi",
+      "sub": null,
+      "description": "",
+      "price": 200,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 3,
+      "image": {
+        "file": "milk-shake-lassi-banana.webp",
+        "source": "found",
+        "origin_url": null,
+        "prompt": null
+      }
+    },
+    {
+      "slug": "chocolate",
+      "name": "Chocolate",
+      "cat": "milk-shake-lassi",
+      "sub": null,
+      "description": "",
+      "price": 260,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 4,
+      "image": {
+        "file": "milk-shake-lassi-chocolate.webp",
+        "source": "found",
+        "origin_url": null,
+        "prompt": null
+      }
+    },
+    {
+      "slug": "mix-fruit",
+      "name": "Mix Fruit",
+      "cat": "milk-shake-lassi",
+      "sub": null,
+      "description": "",
+      "price": 320,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 5,
+      "image": {
+        "file": "milk-shake-lassi-mix-fruit.webp",
+        "source": "found",
+        "origin_url": null,
+        "prompt": null
+      }
+    },
+    {
+      "slug": "lemon-nana",
+      "name": "Lemon Nana",
+      "cat": "special-cold-drinks",
+      "sub": null,
+      "description": "",
+      "price": 150,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 1,
+      "image": {
+        "file": "special-cold-drinks-lemon-nana.webp",
+        "source": "found",
+        "origin_url": null,
+        "prompt": null
+      }
+    },
+    {
+      "slug": "ice-tea",
+      "name": "Ice Tea",
+      "cat": "special-cold-drinks",
+      "sub": null,
+      "description": "",
+      "price": 180,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 2,
+      "image": {
+        "file": "special-cold-drinks-ice-tea.webp",
+        "source": "found",
+        "origin_url": null,
+        "prompt": null
+      }
+    },
+    {
+      "slug": "ice-coffee",
+      "name": "Ice Coffee",
+      "cat": "special-cold-drinks",
+      "sub": null,
+      "description": "",
+      "price": 200,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 3,
+      "image": {
+        "file": "special-cold-drinks-ice-coffee.webp",
+        "source": "found",
+        "origin_url": null,
+        "prompt": null
+      }
+    },
+    {
+      "slug": "two-egg-any-style",
+      "name": "Two Egg (any style)",
+      "cat": "a-la-carte-breakfast",
+      "sub": null,
+      "description": "",
+      "price": 110,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 1,
+      "image": {
+        "file": "a-la-carte-breakfast-two-egg-any-style.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "two sunny-side-up eggs on a white plate with buttered toast, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, fresh vibrant colours, appetising, high detail"
+      }
+    },
+    {
+      "slug": "french-toast",
+      "name": "French Toast",
+      "cat": "a-la-carte-breakfast",
+      "sub": null,
+      "description": "",
+      "price": 250,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 2,
+      "image": {
+        "file": "a-la-carte-breakfast-french-toast.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "two slices of golden french toast dusted with sugar, honey drizzle, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, fresh vibrant colours, appetising, high detail"
+      }
+    },
+    {
+      "slug": "fruit-muesli-with-curd-honey",
+      "name": "Fruit Muesli with Curd Honey",
+      "cat": "a-la-carte-breakfast",
+      "sub": null,
+      "description": "",
+      "price": 300,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 3,
+      "image": {
+        "file": "a-la-carte-breakfast-fruit-muesli-with-curd-honey.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a bowl of muesli with thick curd, fresh fruit and honey drizzling, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, fresh vibrant colours, appetising, high detail"
+      }
+    },
+    {
+      "slug": "grilled-cheese-toast",
+      "name": "Grilled Cheese Toast",
+      "cat": "a-la-carte-breakfast",
+      "sub": null,
+      "description": "",
+      "price": 250,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 4,
+      "image": {
+        "file": "a-la-carte-breakfast-grilled-cheese-toast.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "grilled cheese toast, melted cheese browned on top, cut diagonally, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, fresh vibrant colours, appetising, high detail"
+      }
+    },
+    {
+      "slug": "masala-omelette",
+      "name": "Masala Omelette",
+      "cat": "a-la-carte-breakfast",
+      "sub": null,
+      "description": "",
+      "price": 150,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 5,
+      "image": {
+        "file": "a-la-carte-breakfast-masala-omelette.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a masala omelette with onion, tomato and green chilli, on a white plate, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, fresh vibrant colours, appetising, high detail"
+      }
+    },
+    {
+      "slug": "bread-omelette",
+      "name": "Bread Omelette",
+      "cat": "a-la-carte-breakfast",
+      "sub": null,
+      "description": "",
+      "price": 150,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 6,
+      "image": {
+        "file": "a-la-carte-breakfast-bread-omelette.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a folded omelette served with sliced bread, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, fresh vibrant colours, appetising, high detail"
+      }
+    },
+    {
+      "slug": "aloo-paratha",
+      "name": "Aloo Paratha",
+      "cat": "a-la-carte-breakfast",
+      "sub": null,
+      "description": "",
+      "price": 200,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 7,
+      "image": {
+        "file": "a-la-carte-breakfast-aloo-paratha.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a golden aloo paratha with butter melting on top, curd and pickle beside, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, fresh vibrant colours, appetising, high detail"
+      }
+    },
+    {
+      "slug": "green-salad",
+      "name": "Green Salad",
+      "cat": "salad",
+      "sub": null,
+      "description": "",
+      "price": 250,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 1,
+      "image": {
+        "file": "salad-green-salad.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a plate of fresh green salad — cucumber, tomato, onion rings, carrot, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, fresh vibrant colours, appetising, high detail"
+      }
+    },
+    {
+      "slug": "potato-egg-salad",
+      "name": "Potato Egg Salad",
+      "cat": "salad",
+      "sub": null,
+      "description": "",
+      "price": 280,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 2,
+      "image": {
+        "file": "salad-potato-egg-salad.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a bowl of potato and boiled egg salad with herbs, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, fresh vibrant colours, appetising, high detail"
+      }
+    },
+    {
+      "slug": "russian-salad",
+      "name": "Russian Salad",
+      "cat": "salad",
+      "sub": null,
+      "description": "",
+      "price": 350,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 3,
+      "image": {
+        "file": "salad-russian-salad.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a bowl of creamy Russian salad with diced vegetables, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, fresh vibrant colours, appetising, high detail"
+      }
+    },
+    {
+      "slug": "french-fries",
+      "name": "French Fries",
+      "cat": "snacks",
+      "sub": null,
+      "description": "",
+      "price": 250,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 1,
+      "image": {
+        "file": "snacks-french-fries.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a basket of golden french fries with ketchup dip, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, fresh vibrant colours, appetising, high detail"
+      }
+    },
+    {
+      "slug": "veg-pakauda",
+      "name": "Veg. Pakauda",
+      "cat": "snacks",
+      "sub": null,
+      "description": "",
+      "price": 280,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 2,
+      "image": {
+        "file": "snacks-veg-pakauda.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a plate of crispy mixed vegetable pakora with green chutney, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, fresh vibrant colours, appetising, high detail"
+      }
+    },
+    {
+      "slug": "aloo-pakauda",
+      "name": "Aloo Pakauda",
+      "cat": "snacks",
+      "sub": null,
+      "description": "",
+      "price": 290,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 3,
+      "image": {
+        "file": "snacks-aloo-pakauda.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a plate of golden potato pakora fritters with chutney, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, fresh vibrant colours, appetising, high detail"
+      }
+    },
+    {
+      "slug": "chow-chow-sadheko",
+      "name": "Chow Chow Sadheko",
+      "cat": "snacks",
+      "sub": null,
+      "description": "",
+      "price": 180,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 4,
+      "image": {
+        "file": "snacks-chow-chow-sadheko.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a plate of spicy Nepali sadheko noodles with onion, chilli and coriander, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, fresh vibrant colours, appetising, high detail"
+      }
+    },
+    {
+      "slug": "bhatmas-sadheko",
+      "name": "Bhatmas Sadheko",
+      "cat": "snacks",
+      "sub": null,
+      "description": "",
+      "price": 230,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 5,
+      "image": {
+        "file": "snacks-bhatmas-sadheko.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a plate of spicy crispy soybean salad with onion, chilli and coriander, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, fresh vibrant colours, appetising, high detail"
+      }
+    },
+    {
+      "slug": "peanut-sadheko",
+      "name": "Peanut Sadheko",
+      "cat": "snacks",
+      "sub": null,
+      "description": "",
+      "price": 220,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 6,
+      "image": {
+        "file": "snacks-peanut-sadheko.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a plate of spicy peanut sadheko with red onion, green chilli and coriander, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, fresh vibrant colours, appetising, high detail"
+      }
+    },
+    {
+      "slug": "chau-chau-sadheko",
+      "name": "Chau Chau Sadheko",
+      "cat": "snacks",
+      "sub": null,
+      "description": "",
+      "price": 170,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 7,
+      "image": {
+        "file": "snacks-chau-chau-sadheko.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a plate of crushed instant-noodle sadheko, spicy, with onion and coriander, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, fresh vibrant colours, appetising, high detail"
+      }
+    },
+    {
+      "slug": "masala-papad",
+      "name": "Masala Papad",
+      "cat": "snacks",
+      "sub": null,
+      "description": "",
+      "price": 180,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 8,
+      "image": {
+        "file": "snacks-masala-papad.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a crisp papad topped with chopped onion, tomato and masala, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, fresh vibrant colours, appetising, high detail"
+      }
+    },
+    {
+      "slug": "dry-papad-3pcs",
+      "name": "Dry Papad (3pcs)",
+      "cat": "snacks",
+      "sub": null,
+      "description": "",
+      "price": 80,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 9,
+      "image": {
+        "file": "snacks-dry-papad-3pcs.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "three plain roasted papads stacked on a plate, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, fresh vibrant colours, appetising, high detail"
+      }
+    },
+    {
+      "slug": "chips-chilly",
+      "name": "Chips Chilly",
+      "cat": "snacks",
+      "sub": null,
+      "description": "",
+      "price": 320,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 10,
+      "image": {
+        "file": "snacks-chips-chilly.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "potato chips tossed chilli-style with capsicum, onion and sauce, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, fresh vibrant colours, appetising, high detail"
+      }
+    },
+    {
+      "slug": "popcorn-prawn",
+      "name": "Popcorn / Prawn",
+      "cat": "snacks",
+      "sub": null,
+      "description": "",
+      "price": 150,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 11,
+      "image": {
+        "file": "snacks-popcorn-prawn.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a bowl of crispy popcorn prawns with dipping sauce, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, fresh vibrant colours, appetising, high detail"
+      }
+    },
+    {
+      "slug": "aloo-jeera",
+      "name": "Aloo Jeera",
+      "cat": "snacks",
+      "sub": null,
+      "description": "",
+      "price": 280,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 12,
+      "image": {
+        "file": "snacks-aloo-jeera.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a bowl of cumin-tempered potatoes garnished with coriander, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, fresh vibrant colours, appetising, high detail"
+      }
+    },
+    {
+      "slug": "chicken-sadheko",
+      "name": "Chicken Sadheko",
+      "cat": "non-veg-snacks",
+      "sub": null,
+      "description": "",
+      "price": 350,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 1,
+      "image": {
+        "file": "non-veg-snacks-chicken-sadheko.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a plate of spicy chicken sadheko with onion, chilli and coriander, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, fresh vibrant colours, appetising, high detail"
+      }
+    },
+    {
+      "slug": "chicken-chilly",
+      "name": "Chicken Chilly",
+      "cat": "non-veg-snacks",
+      "sub": null,
+      "description": "",
+      "price": 400,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 2,
+      "image": {
+        "file": "non-veg-snacks-chicken-chilly.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "chicken chilli with capsicum and onion in glossy red sauce, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, fresh vibrant colours, appetising, high detail"
+      }
+    },
+    {
+      "slug": "chicken-fry",
+      "name": "Chicken Fry",
+      "cat": "non-veg-snacks",
+      "sub": null,
+      "description": "",
+      "price": 330,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 3,
+      "image": {
+        "file": "non-veg-snacks-chicken-fry.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a plate of crispy golden chicken pieces with a fresh salad garnish, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, fresh vibrant colours, appetising, high detail"
+      }
+    },
+    {
+      "slug": "chicken-drumstick",
+      "name": "Chicken Drumstick",
+      "cat": "non-veg-snacks",
+      "sub": null,
+      "description": "",
+      "price": 380,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 4,
+      "image": {
+        "file": "non-veg-snacks-chicken-drumstick.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "two crispy golden chicken drumsticks with dipping sauce, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, fresh vibrant colours, appetising, high detail"
+      }
+    },
+    {
+      "slug": "chicken-tawa",
+      "name": "Chicken Tawa",
+      "cat": "non-veg-snacks",
+      "sub": null,
+      "description": "",
+      "price": 350,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 5,
+      "image": {
+        "file": "non-veg-snacks-chicken-tawa.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "tawa-fried chicken pieces with onion and green chilli on a hot pan, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, fresh vibrant colours, appetising, high detail"
+      }
+    },
+    {
+      "slug": "chicken-finger",
+      "name": "Chicken Finger",
+      "cat": "non-veg-snacks",
+      "sub": null,
+      "description": "",
+      "price": 450,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 6,
+      "image": {
+        "file": "non-veg-snacks-chicken-finger.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "crispy breaded chicken fingers with ketchup, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, fresh vibrant colours, appetising, high detail"
+      }
+    },
+    {
+      "slug": "sausage-boil-fry-3pcs",
+      "name": "Sausage Boil / Fry (3pcs)",
+      "cat": "non-veg-snacks",
+      "sub": null,
+      "description": "Boil 250 / Fry 280.",
+      "price": 250,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 7,
+      "image": {
+        "file": "non-veg-snacks-sausage-boil-fry-3pcs.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "three grilled chicken sausages sliced diagonally on a plate, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, fresh vibrant colours, appetising, high detail"
+      }
+    },
+    {
+      "slug": "chicken-meat-ball",
+      "name": "Chicken Meat Ball",
+      "cat": "non-veg-snacks",
+      "sub": null,
+      "description": "",
+      "price": 480,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 8,
+      "image": {
+        "file": "non-veg-snacks-chicken-meat-ball.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "chicken meatballs in a light glossy sauce, garnished with coriander, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, fresh vibrant colours, appetising, high detail"
+      }
+    },
+    {
+      "slug": "buff-sadheko",
+      "name": "Buff Sadheko",
+      "cat": "buff-snacks",
+      "sub": null,
+      "description": "",
+      "price": 350,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 1,
+      "image": {
+        "file": "buff-snacks-buff-sadheko.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a plate of spicy buff sadheko with onion, chilli and coriander, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, fresh vibrant colours, appetising, high detail"
+      }
+    },
+    {
+      "slug": "buff-sukuti",
+      "name": "Buff Sukuti",
+      "cat": "buff-snacks",
+      "sub": null,
+      "description": "",
+      "price": 400,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 2,
+      "image": {
+        "file": "buff-snacks-buff-sukuti.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a plate of dried buffalo sukuti tossed with onion, chilli and coriander, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, fresh vibrant colours, appetising, high detail"
+      }
+    },
+    {
+      "slug": "buff-tawa",
+      "name": "Buff Tawa",
+      "cat": "buff-snacks",
+      "sub": null,
+      "description": "",
+      "price": 350,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 3,
+      "image": {
+        "file": "buff-snacks-buff-tawa.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "tawa-fried buffalo meat with onion and chilli, sizzling, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, fresh vibrant colours, appetising, high detail"
+      }
+    },
+    {
+      "slug": "buff-fry",
+      "name": "Buff Fry",
+      "cat": "buff-snacks",
+      "sub": null,
+      "description": "",
+      "price": 300,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 4,
+      "image": {
+        "file": "buff-snacks-buff-fry.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a plate of dry-fried buffalo meat pieces with cucumber garnish, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, fresh vibrant colours, appetising, high detail"
+      }
+    },
+    {
+      "slug": "buff-sekuwa",
+      "name": "Buff Sekuwa",
+      "cat": "buff-snacks",
+      "sub": null,
+      "description": "",
+      "price": 300,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 5,
+      "image": {
+        "file": "buff-snacks-buff-sekuwa.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "grilled buffalo sekuwa skewers, charred edges, with onion rings, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, fresh vibrant colours, appetising, high detail"
+      }
+    },
+    {
+      "slug": "buff-choila",
+      "name": "Buff Choila",
+      "cat": "buff-snacks",
+      "sub": null,
+      "description": "",
+      "price": 450,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 6,
+      "image": {
+        "file": "buff-snacks-buff-choila.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "Newari buff choila, smoky spiced grilled buffalo with beaten rice, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, fresh vibrant colours, appetising, high detail"
+      }
+    },
+    {
+      "slug": "buff-chilly",
+      "name": "Buff Chilly",
+      "cat": "buff-snacks",
+      "sub": null,
+      "description": "",
+      "price": 390,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 7,
+      "image": {
+        "file": "buff-snacks-buff-chilly.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "buffalo chilli with capsicum and onion in glossy dark sauce, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, fresh vibrant colours, appetising, high detail"
+      }
+    },
+    {
+      "slug": "buff-gravy",
+      "name": "Buff Gravy",
+      "cat": "buff-snacks",
+      "sub": null,
+      "description": "",
+      "price": 390,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 8,
+      "image": {
+        "file": "buff-snacks-buff-gravy.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a bowl of buffalo meat curry in rich brown gravy with coriander, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, fresh vibrant colours, appetising, high detail"
+      }
+    },
+    {
+      "slug": "pork-sadheko",
+      "name": "Pork Sadheko",
+      "cat": "pork-snacks",
+      "sub": null,
+      "description": "",
+      "price": 390,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 1,
+      "image": {
+        "file": "pork-snacks-pork-sadheko.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a plate of spicy pork sadheko with onion, chilli and coriander, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, fresh vibrant colours, appetising, high detail"
+      }
+    },
+    {
+      "slug": "pork-tawa",
+      "name": "Pork Tawa",
+      "cat": "pork-snacks",
+      "sub": null,
+      "description": "",
+      "price": 420,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 2,
+      "image": {
+        "file": "pork-snacks-pork-tawa.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "tawa-fried pork pieces with onion and green chilli, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, fresh vibrant colours, appetising, high detail"
+      }
+    },
+    {
+      "slug": "pork-fry",
+      "name": "Pork Fry",
+      "cat": "pork-snacks",
+      "sub": null,
+      "description": "",
+      "price": 320,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 3,
+      "image": {
+        "file": "pork-snacks-pork-fry.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a plate of crisp dry-fried pork belly pieces with cucumber, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, fresh vibrant colours, appetising, high detail"
+      }
+    },
+    {
+      "slug": "pork-chilly",
+      "name": "Pork Chilly",
+      "cat": "pork-snacks",
+      "sub": null,
+      "description": "",
+      "price": 450,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 4,
+      "image": {
+        "file": "pork-snacks-pork-chilly.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "pork chilli with capsicum and onion in glossy red sauce, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, fresh vibrant colours, appetising, high detail"
+      }
+    },
+    {
+      "slug": "pork-sekuwa",
+      "name": "Pork Sekuwa",
+      "cat": "pork-snacks",
+      "sub": null,
+      "description": "",
+      "price": 320,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 5,
+      "image": {
+        "file": "pork-snacks-pork-sekuwa.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "grilled pork sekuwa skewers with charred edges and onion, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, fresh vibrant colours, appetising, high detail"
+      }
+    },
+    {
+      "slug": "pork-gravy",
+      "name": "Pork Gravy",
+      "cat": "pork-snacks",
+      "sub": null,
+      "description": "",
+      "price": 400,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 6,
+      "image": {
+        "file": "pork-snacks-pork-gravy.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a bowl of pork curry in thick brown gravy with coriander, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, fresh vibrant colours, appetising, high detail"
+      }
+    },
+    {
+      "slug": "fish-fried",
+      "name": "Fish Fried",
+      "cat": "fish-item",
+      "sub": null,
+      "description": "",
+      "price": 400,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 1,
+      "image": {
+        "file": "fish-item-fish-fried.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "crisp golden fish fillets with lemon wedges and onion rings, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, fresh vibrant colours, appetising, high detail"
+      }
+    },
+    {
+      "slug": "fish-finger",
+      "name": "Fish Finger",
+      "cat": "fish-item",
+      "sub": null,
+      "description": "",
+      "price": 450,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 2,
+      "image": {
+        "file": "fish-item-fish-finger.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "breaded fish fingers with tartare dipping sauce, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, fresh vibrant colours, appetising, high detail"
+      }
+    },
+    {
+      "slug": "veg-soup",
+      "name": "Veg. Soup",
+      "cat": "soup-with-garlic-bread",
+      "sub": null,
+      "description": "",
+      "price": 230,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 1,
+      "image": {
+        "file": "soup-with-garlic-bread-veg-soup.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a bowl of clear vegetable soup with garlic bread on the side, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, fresh vibrant colours, appetising, high detail"
+      }
+    },
+    {
+      "slug": "tomato-soup",
+      "name": "Tomato Soup",
+      "cat": "soup-with-garlic-bread",
+      "sub": null,
+      "description": "",
+      "price": 220,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 2,
+      "image": {
+        "file": "soup-with-garlic-bread-tomato-soup.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a bowl of creamy tomato soup with a cream swirl and garlic bread, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, fresh vibrant colours, appetising, high detail"
+      }
+    },
+    {
+      "slug": "mushroom-soup",
+      "name": "Mushroom Soup",
+      "cat": "soup-with-garlic-bread",
+      "sub": null,
+      "description": "",
+      "price": 290,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 3,
+      "image": {
+        "file": "soup-with-garlic-bread-mushroom-soup.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a bowl of creamy mushroom soup with sliced mushrooms and garlic bread, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, fresh vibrant colours, appetising, high detail"
+      }
+    },
+    {
+      "slug": "chicken-soup",
+      "name": "Chicken Soup",
+      "cat": "soup-with-garlic-bread",
+      "sub": null,
+      "description": "",
+      "price": 330,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 4,
+      "image": {
+        "file": "soup-with-garlic-bread-chicken-soup.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a bowl of clear chicken soup with shredded chicken and garlic bread, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, fresh vibrant colours, appetising, high detail"
+      }
+    },
+    {
+      "slug": "noodles-soup",
+      "name": "Noodles Soup",
+      "cat": "soup-with-garlic-bread",
+      "sub": null,
+      "description": "",
+      "price": 150,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 5,
+      "image": {
+        "file": "soup-with-garlic-bread-noodles-soup.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a bowl of noodle soup in clear broth with vegetables, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, fresh vibrant colours, appetising, high detail"
+      }
+    },
+    {
+      "slug": "egg-noodles-soup",
+      "name": "Egg Noodles Soup",
+      "cat": "soup-with-garlic-bread",
+      "sub": null,
+      "description": "",
+      "price": 180,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 6,
+      "image": {
+        "file": "soup-with-garlic-bread-egg-noodles-soup.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a bowl of egg noodle soup with ribbons of egg in clear broth, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, fresh vibrant colours, appetising, high detail"
+      }
+    },
+    {
+      "slug": "plain-pancake",
+      "name": "Plain Pancake",
+      "cat": "pancakes",
+      "sub": null,
+      "description": "",
+      "price": 200,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 1,
+      "image": {
+        "file": "pancakes-plain-pancake.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a stack of plain pancakes with a pat of butter, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, fresh vibrant colours, appetising, high detail"
+      }
+    },
+    {
+      "slug": "chocolate-pancake",
+      "name": "Chocolate Pancake",
+      "cat": "pancakes",
+      "sub": null,
+      "description": "",
+      "price": 280,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 2,
+      "image": {
+        "file": "pancakes-chocolate-pancake.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a stack of pancakes with chocolate sauce pouring over, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, fresh vibrant colours, appetising, high detail"
+      }
+    },
+    {
+      "slug": "mix-fruit-pancake",
+      "name": "Mix Fruit Pancake",
+      "cat": "pancakes",
+      "sub": null,
+      "description": "",
+      "price": 320,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 3,
+      "image": {
+        "file": "pancakes-mix-fruit-pancake.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a stack of pancakes topped with mixed fresh fruit, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, fresh vibrant colours, appetising, high detail"
+      }
+    },
+    {
+      "slug": "lemon-sugar-pancake",
+      "name": "Lemon Sugar Pancake",
+      "cat": "pancakes",
+      "sub": null,
+      "description": "",
+      "price": 220,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 4,
+      "image": {
+        "file": "pancakes-lemon-sugar-pancake.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "pancakes rolled with lemon and sugar, lemon wedge beside, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, fresh vibrant colours, appetising, high detail"
+      }
+    },
+    {
+      "slug": "banana-pancake",
+      "name": "Banana Pancake",
+      "cat": "pancakes",
+      "sub": null,
+      "description": "",
+      "price": 250,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 5,
+      "image": {
+        "file": "pancakes-banana-pancake.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a stack of pancakes topped with banana slices and honey, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, fresh vibrant colours, appetising, high detail"
+      }
+    },
+    {
+      "slug": "veg-sandwich-burger",
+      "name": "Veg. Sandwich / Burger",
+      "cat": "sandwich-and-burger",
+      "sub": null,
+      "description": "With french fries.",
+      "price": 320,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 1,
+      "image": {
+        "file": "sandwich-and-burger-veg-sandwich-burger.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a veg burger with lettuce, tomato and cheese, french fries beside, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, fresh vibrant colours, appetising, high detail"
+      }
+    },
+    {
+      "slug": "chicken-sandwich-burger",
+      "name": "Chicken Sandwich / Burger",
+      "cat": "sandwich-and-burger",
+      "sub": null,
+      "description": "With french fries.",
+      "price": 400,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 2,
+      "image": {
+        "file": "sandwich-and-burger-chicken-sandwich-burger.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a chicken burger with crisp lettuce and mayo, french fries beside, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, fresh vibrant colours, appetising, high detail"
+      }
+    },
+    {
+      "slug": "club-sandwich",
+      "name": "Club Sandwich",
+      "cat": "sandwich-and-burger",
+      "sub": null,
+      "description": "With french fries.",
+      "price": 450,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 3,
+      "image": {
+        "file": "sandwich-and-burger-club-sandwich.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a triple-decker club sandwich cut into quarters, held with picks, fries beside, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, fresh vibrant colours, appetising, high detail"
+      }
+    },
+    {
+      "slug": "grilled-chicken",
+      "name": "Grilled Chicken",
+      "cat": "continental",
+      "sub": null,
+      "description": "With french fries.",
+      "price": 500,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 1,
+      "image": {
+        "file": "continental-grilled-chicken.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a grilled chicken breast with char marks, french fries and salad, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, fresh vibrant colours, appetising, high detail"
+      }
+    },
+    {
+      "slug": "grilled-fish",
+      "name": "Grilled Fish",
+      "cat": "continental",
+      "sub": null,
+      "description": "With french fries.",
+      "price": 500,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 2,
+      "image": {
+        "file": "continental-grilled-fish.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a grilled fish fillet with lemon wedge, french fries and salad, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, fresh vibrant colours, appetising, high detail"
+      }
+    },
+    {
+      "slug": "fish-and-chips",
+      "name": "Fish and Chips",
+      "cat": "continental",
+      "sub": null,
+      "description": "With french fries.",
+      "price": 580,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 3,
+      "image": {
+        "file": "continental-fish-and-chips.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "crisp battered fish fillets with thick-cut chips and tartare sauce, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, fresh vibrant colours, appetising, high detail"
+      }
+    },
+    {
+      "slug": "chicken-leg-fry",
+      "name": "Chicken Leg Fry",
+      "cat": "continental",
+      "sub": null,
+      "description": "With french fries.",
+      "price": 580,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 4,
+      "image": {
+        "file": "continental-chicken-leg-fry.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a roasted chicken leg quarter with crisp golden skin, served with chips, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, fresh vibrant colours, appetising, high detail"
+      }
+    },
+    {
+      "slug": "buffalo-wings-2-pcs",
+      "name": "Buffalo Wings (2 pcs)",
+      "cat": "continental",
+      "sub": null,
+      "description": "With french fries.",
+      "price": 400,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 5,
+      "image": {
+        "file": "continental-buffalo-wings-2-pcs.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "two buffalo wings glazed in red hot sauce with a dip, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, fresh vibrant colours, appetising, high detail"
+      }
+    },
+    {
+      "slug": "nepolitana",
+      "name": "Nepolitana",
+      "cat": "italian-spaghetti-penne",
+      "sub": null,
+      "description": "",
+      "price": 450,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 1,
+      "image": {
+        "file": "italian-spaghetti-penne-nepolitana.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a bowl of spaghetti napolitana in tomato sauce with basil, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, fresh vibrant colours, appetising, high detail"
+      }
+    },
+    {
+      "slug": "carbonara",
+      "name": "Carbonara",
+      "cat": "italian-spaghetti-penne",
+      "sub": null,
+      "description": "",
+      "price": 500,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 2,
+      "image": {
+        "file": "italian-spaghetti-penne-carbonara.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a bowl of creamy carbonara spaghetti with black pepper, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, fresh vibrant colours, appetising, high detail"
+      }
+    },
+    {
+      "slug": "chicken-bolognese",
+      "name": "Chicken Bolognese",
+      "cat": "italian-spaghetti-penne",
+      "sub": null,
+      "description": "",
+      "price": 550,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 3,
+      "image": {
+        "file": "italian-spaghetti-penne-chicken-bolognese.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a bowl of spaghetti bolognese with chicken mince ragu and herbs, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, fresh vibrant colours, appetising, high detail"
+      }
+    },
+    {
+      "slug": "chicken-pizza",
+      "name": "Chicken Pizza",
+      "cat": "pizza",
+      "sub": null,
+      "description": "",
+      "price": 800,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 1,
+      "image": {
+        "file": "pizza-chicken-pizza.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a whole chicken pizza with melted cheese and onion, one slice lifted, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, fresh vibrant colours, appetising, high detail"
+      }
+    },
+    {
+      "slug": "margarita",
+      "name": "Margarita",
+      "cat": "pizza",
+      "sub": null,
+      "description": "",
+      "price": 650,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 2,
+      "image": {
+        "file": "pizza-margarita.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a margherita pizza with tomato, mozzarella and fresh basil, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, fresh vibrant colours, appetising, high detail"
+      }
+    },
+    {
+      "slug": "cheese-pizza",
+      "name": "Cheese Pizza",
+      "cat": "pizza",
+      "sub": null,
+      "description": "",
+      "price": 800,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 3,
+      "image": {
+        "file": "pizza-cheese-pizza.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a plain cheese pizza, golden bubbling mozzarella, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, fresh vibrant colours, appetising, high detail"
+      }
+    },
+    {
+      "slug": "mix-pizza",
+      "name": "Mix Pizza",
+      "cat": "pizza",
+      "sub": null,
+      "description": "",
+      "price": 950,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 4,
+      "image": {
+        "file": "pizza-mix-pizza.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a mixed toppings pizza with capsicum, onion, chicken and olives, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, fresh vibrant colours, appetising, high detail"
+      }
+    },
+    {
+      "slug": "veg-thali",
+      "name": "Veg. Thali",
+      "cat": "nepali-thali-set",
+      "sub": null,
+      "description": "",
+      "price": 350,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 1,
+      "image": {
+        "file": "nepali-thali-set-veg-thali.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a Nepali veg thali on a steel plate — rice, daal, veg curry, saag, curd, pickle, papad, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, fresh vibrant colours, appetising, high detail"
+      }
+    },
+    {
+      "slug": "chicken-thali",
+      "name": "Chicken Thali",
+      "cat": "nepali-thali-set",
+      "sub": null,
+      "description": "",
+      "price": 500,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 2,
+      "image": {
+        "file": "nepali-thali-set-chicken-thali.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a Nepali chicken thali on a steel plate with chicken curry, rice, daal, saag and pickle, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, fresh vibrant colours, appetising, high detail"
+      }
+    },
+    {
+      "slug": "mutton-thali",
+      "name": "Mutton Thali",
+      "cat": "nepali-thali-set",
+      "sub": null,
+      "description": "",
+      "price": 650,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 3,
+      "image": {
+        "file": "nepali-thali-set-mutton-thali.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a Nepali mutton thali on a steel plate with mutton curry, rice, daal and sides, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, fresh vibrant colours, appetising, high detail"
+      }
+    },
+    {
+      "slug": "fish-thali",
+      "name": "Fish Thali",
+      "cat": "nepali-thali-set",
+      "sub": null,
+      "description": "",
+      "price": 500,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 4,
+      "image": {
+        "file": "nepali-thali-set-fish-thali.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a Nepali fish thali on a steel plate with fish curry, rice, daal and sides, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, fresh vibrant colours, appetising, high detail"
+      }
+    },
+    {
+      "slug": "buff-thali",
+      "name": "Buff Thali",
+      "cat": "nepali-thali-set",
+      "sub": null,
+      "description": "",
+      "price": 580,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 5,
+      "image": {
+        "file": "nepali-thali-set-buff-thali.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a Nepali buffalo meat thali on a steel plate with buff curry, rice, daal and sides, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, fresh vibrant colours, appetising, high detail"
+      }
+    },
+    {
+      "slug": "pork-thali",
+      "name": "Pork Thali",
+      "cat": "nepali-thali-set",
+      "sub": null,
+      "description": "",
+      "price": 580,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 6,
+      "image": {
+        "file": "nepali-thali-set-pork-thali.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a Nepali pork thali on a steel plate with pork curry, rice, daal and sides, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, fresh vibrant colours, appetising, high detail"
+      }
+    },
+    {
+      "slug": "egg-thali",
+      "name": "Egg Thali",
+      "cat": "nepali-thali-set",
+      "sub": null,
+      "description": "",
+      "price": 480,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 7,
+      "image": {
+        "file": "nepali-thali-set-egg-thali.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a Nepali egg thali on a steel plate with egg curry, rice, daal and sides, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, fresh vibrant colours, appetising, high detail"
+      }
+    },
+    {
+      "slug": "dhido-fapar-or-kodo-extra",
+      "name": "Dhido Fapar or Kodo (Extra)",
+      "cat": "nepali-thali-set",
+      "sub": null,
+      "description": "",
+      "price": 200,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 8,
+      "image": {
+        "file": "nepali-thali-set-dhido-fapar-or-kodo-extra.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a bowl of Nepali dhido made from buckwheat, served with curry and gundruk, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, fresh vibrant colours, appetising, high detail"
+      }
+    },
+    {
+      "slug": "veg-wrap",
+      "name": "Veg. Wrap",
+      "cat": "tranquility-special-wrap",
+      "sub": null,
+      "description": "",
+      "price": 320,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 1,
+      "image": {
+        "file": "tranquility-special-wrap-veg-wrap.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a veg wrap cut in half showing vegetable filling, wrapped in paper, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, fresh vibrant colours, appetising, high detail"
+      }
+    },
+    {
+      "slug": "chicken-wrap",
+      "name": "Chicken Wrap",
+      "cat": "tranquility-special-wrap",
+      "sub": null,
+      "description": "",
+      "price": 400,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 2,
+      "image": {
+        "file": "tranquility-special-wrap-chicken-wrap.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a chicken wrap cut in half showing grilled chicken and salad filling, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, fresh vibrant colours, appetising, high detail"
+      }
+    },
+    {
+      "slug": "veg-khaja-set",
+      "name": "Veg Khaja Set",
+      "cat": "khaja-set",
+      "sub": null,
+      "description": "Salad, pickle, papad, prawn, peanut, bhatmas sadheko, aloo jeera, beaten rice, curry.",
+      "price": 350,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 1,
+      "image": {
+        "file": "khaja-set-veg-khaja-set.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a Nepali veg khaja set platter — beaten rice, bhatmas, peanuts, aloo jeera, pickle and papad, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, fresh vibrant colours, appetising, high detail"
+      }
+    },
+    {
+      "slug": "chicken-khaja-set",
+      "name": "Chicken Khaja Set",
+      "cat": "khaja-set",
+      "sub": null,
+      "description": "Salad, pickle, papad, prawn, peanut, bhatmas sadheko, aloo jeera, beaten rice, curry.",
+      "price": 550,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 2,
+      "image": {
+        "file": "khaja-set-chicken-khaja-set.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a Nepali khaja set platter with chicken curry, beaten rice, bhatmas, peanuts and pickle, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, fresh vibrant colours, appetising, high detail"
+      }
+    },
+    {
+      "slug": "buff-khaja-set",
+      "name": "Buff Khaja Set",
+      "cat": "khaja-set",
+      "sub": null,
+      "description": "Salad, pickle, papad, prawn, peanut, bhatmas sadheko, aloo jeera, beaten rice, curry.",
+      "price": 580,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 3,
+      "image": {
+        "file": "khaja-set-buff-khaja-set.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a Nepali khaja set platter with buff curry, beaten rice, bhatmas, peanuts and pickle, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, fresh vibrant colours, appetising, high detail"
+      }
+    },
+    {
+      "slug": "pork-khaja-set",
+      "name": "Pork Khaja Set",
+      "cat": "khaja-set",
+      "sub": null,
+      "description": "Salad, pickle, papad, prawn, peanut, bhatmas sadheko, aloo jeera, beaten rice, curry.",
+      "price": 600,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 4,
+      "image": {
+        "file": "khaja-set-pork-khaja-set.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a Nepali khaja set platter with pork curry, beaten rice, bhatmas, peanuts and pickle, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, fresh vibrant colours, appetising, high detail"
+      }
+    },
+    {
+      "slug": "veg-spring-roll",
+      "name": "Veg. Spring Roll",
+      "cat": "spring-roll",
+      "sub": null,
+      "description": "",
+      "price": 350,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 1,
+      "image": {
+        "file": "spring-roll-veg-spring-roll.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "three crisp vegetable spring rolls with dipping sauce and salad garnish, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, fresh vibrant colours, appetising, high detail"
+      }
+    },
+    {
+      "slug": "chicken-spring-roll",
+      "name": "Chicken Spring Roll",
+      "cat": "spring-roll",
+      "sub": null,
+      "description": "",
+      "price": 400,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 2,
+      "image": {
+        "file": "spring-roll-chicken-spring-roll.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "three crisp chicken spring rolls, one cut open, with dipping sauce, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, fresh vibrant colours, appetising, high detail"
+      }
+    },
+    {
+      "slug": "rice-pudding",
+      "name": "Rice Pudding",
+      "cat": "dessert",
+      "sub": null,
+      "description": "",
+      "price": 300,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 1,
+      "image": {
+        "file": "dessert-rice-pudding.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a bowl of creamy rice pudding kheer topped with nuts, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, fresh vibrant colours, appetising, high detail"
+      }
+    },
+    {
+      "slug": "chocolate-pancake-2",
+      "name": "Chocolate Pancake",
+      "cat": "dessert",
+      "sub": null,
+      "description": "",
+      "price": 330,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 2,
+      "image": {
+        "file": "dessert-chocolate-pancake-2.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a pancake folded with chocolate sauce, dusted with sugar, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, fresh vibrant colours, appetising, high detail"
+      }
+    },
+    {
+      "slug": "fruit-salad",
+      "name": "Fruit Salad",
+      "cat": "dessert",
+      "sub": null,
+      "description": "",
+      "price": 380,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 3,
+      "image": {
+        "file": "dessert-fruit-salad.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a bowl of fresh mixed fruit salad, colourful chunks, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, fresh vibrant colours, appetising, high detail"
+      }
+    },
+    {
+      "slug": "banana-fritter",
+      "name": "Banana Fritter",
+      "cat": "dessert",
+      "sub": null,
+      "description": "",
+      "price": 220,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 4,
+      "image": {
+        "file": "dessert-banana-fritter.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "golden banana fritters dusted with sugar and honey, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, fresh vibrant colours, appetising, high detail"
+      }
+    },
+    {
+      "slug": "coke-fanta-sprite",
+      "name": "Coke / Fanta / Sprite",
+      "cat": "soft-drinks",
+      "sub": null,
+      "description": "",
+      "price": 90,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 1,
+      "image": {
+        "file": "soft-drinks-coke-fanta-sprite.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "three chilled soft drink glasses — cola, orange and lemon-lime — over ice, professional beverage photography, straight-on angle, soft natural light, condensation on the glass, clean neutral background, vibrant, high detail"
+      }
+    },
+    {
+      "slug": "coke-fanta-sprite-1-5-ltr",
+      "name": "Coke / Fanta / Sprite (1.5 ltr.)",
+      "cat": "soft-drinks",
+      "sub": null,
+      "description": "",
+      "price": 250,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 2,
+      "image": {
+        "file": "soft-drinks-coke-fanta-sprite-1-5-ltr.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a large chilled soft drink bottle with a filled glass of cola over ice, professional beverage photography, straight-on angle, soft natural light, condensation on the glass, clean neutral background, vibrant, high detail"
+      }
+    },
+    {
+      "slug": "mineral-water",
+      "name": "Mineral Water",
+      "cat": "soft-drinks",
+      "sub": null,
+      "description": "",
+      "price": 50,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 3,
+      "image": {
+        "file": "soft-drinks-mineral-water.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a chilled bottle of mineral water with condensation and a filled glass, professional beverage photography, straight-on angle, soft natural light, condensation on the glass, clean neutral background, vibrant, high detail"
+      }
+    },
+    {
+      "slug": "lemon-soda",
+      "name": "Lemon Soda",
+      "cat": "soft-drinks",
+      "sub": null,
+      "description": "",
+      "price": 150,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 4,
+      "image": {
+        "file": "soft-drinks-lemon-soda.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a tall glass of fizzy lemon soda with lemon slice and ice, professional beverage photography, straight-on angle, soft natural light, condensation on the glass, clean neutral background, vibrant, high detail"
+      }
+    },
+    {
+      "slug": "red-bull-yellow-blue",
+      "name": "Red Bull (Yellow / Blue)",
+      "cat": "soft-drinks",
+      "sub": null,
+      "description": "Yellow 200 / Blue 400.",
+      "price": 200,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 5,
+      "image": {
+        "file": "soft-drinks-red-bull-yellow-blue.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "an energy drink poured over ice in a tall glass, pale gold, professional beverage photography, straight-on angle, soft natural light, condensation on the glass, clean neutral background, vibrant, high detail"
+      }
+    },
+    {
+      "slug": "can-juice-2",
+      "name": "Can Juice",
+      "cat": "soft-drinks",
+      "sub": null,
+      "description": "",
+      "price": 180,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 6,
+      "image": null
+    },
+    {
+      "slug": "apple-cider",
+      "name": "Apple Cider",
+      "cat": "soft-drinks",
+      "sub": null,
+      "description": "",
+      "price": 320,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 7,
+      "image": {
+        "file": "soft-drinks-apple-cider.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a chilled glass of sparkling apple cider with apple slices, professional beverage photography, straight-on angle, soft natural light, condensation on the glass, clean neutral background, vibrant, high detail"
+      }
+    },
+    {
+      "slug": "frooti",
+      "name": "Frooti",
+      "cat": "soft-drinks",
+      "sub": null,
+      "description": "",
+      "price": 60,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 8,
+      "image": {
+        "file": "soft-drinks-frooti.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a glass of chilled mango drink with a mango slice on the rim, professional beverage photography, straight-on angle, soft natural light, condensation on the glass, clean neutral background, vibrant, high detail"
+      }
+    },
+    {
+      "slug": "chicken-bbq-per-kg",
+      "name": "Chicken BBQ (Per Kg)",
+      "cat": "bbq",
+      "sub": null,
+      "description": "",
+      "price": 1600,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 1,
+      "image": {
+        "file": "bbq-chicken-bbq-per-kg.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a platter of charcoal barbecued chicken pieces with char marks and onion rings, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, fresh vibrant colours, appetising, high detail"
+      }
+    },
+    {
+      "slug": "buff-bbq-per-kg",
+      "name": "Buff BBQ (Per Kg)",
+      "cat": "bbq",
+      "sub": null,
+      "description": "",
+      "price": 1700,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 2,
+      "image": {
+        "file": "bbq-buff-bbq-per-kg.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a platter of charcoal barbecued buffalo meat pieces, smoky and charred, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, fresh vibrant colours, appetising, high detail"
+      }
+    },
+    {
+      "slug": "pork-bbq-per-kg",
+      "name": "Pork BBQ (Per Kg)",
+      "cat": "bbq",
+      "sub": null,
+      "description": "",
+      "price": 1800,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 3,
+      "image": {
+        "file": "bbq-pork-bbq-per-kg.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a platter of charcoal barbecued pork pieces, glazed and charred, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, fresh vibrant colours, appetising, high detail"
+      }
+    },
+    {
+      "slug": "hookah-mint-double-apple",
+      "name": "Hookah (Mint / Double Apple)",
+      "cat": "hookah",
+      "sub": null,
+      "description": "",
+      "price": 500,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 1,
+      "image": {
+        "file": "hookah-hookah-mint-double-apple.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "an ornate blue glass shisha hookah pipe on a table, soft evening light, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, fresh vibrant colours, appetising, high detail"
+      }
+    },
+    {
+      "slug": "extra-coil",
+      "name": "Extra Coil",
+      "cat": "hookah",
+      "sub": null,
+      "description": "",
+      "price": 50,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 2,
+      "image": null
+    },
+    {
+      "slug": "surya-1-pcs",
+      "name": "Surya (1 pcs)",
+      "cat": "hookah",
+      "sub": null,
+      "description": "",
+      "price": 35,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 3,
+      "image": null
+    },
+    {
+      "slug": "shikhar-ice",
+      "name": "Shikhar Ice",
+      "cat": "hookah",
+      "sub": null,
+      "description": "",
+      "price": 30,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 4,
+      "image": null
+    },
+    {
+      "slug": "khukuri",
+      "name": "Khukuri",
+      "cat": "hookah",
+      "sub": null,
+      "description": "",
+      "price": 15,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 5,
+      "image": null
+    },
+    {
+      "slug": "tuborg-beer",
+      "name": "Tuborg Beer",
+      "cat": "beer",
+      "sub": null,
+      "description": "",
+      "price": 650,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 1,
+      "image": {
+        "file": "beer-tuborg-beer.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a chilled golden lager poured into a frosted glass, unbranded bottle behind, professional beverage photography, straight-on angle, soft natural light, condensation on the glass, clean neutral background, vibrant, high detail"
+      }
+    },
+    {
+      "slug": "san-miguel",
+      "name": "San Miguel",
+      "cat": "beer",
+      "sub": null,
+      "description": "",
+      "price": 480,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 2,
+      "image": {
+        "file": "beer-san-miguel.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a chilled pale lager in a tall glass with a thick white head, professional beverage photography, straight-on angle, soft natural light, condensation on the glass, clean neutral background, vibrant, high detail"
+      }
+    },
+    {
+      "slug": "gorkha-small",
+      "name": "Gorkha Small",
+      "cat": "beer",
+      "sub": null,
+      "description": "",
+      "price": 280,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 3,
+      "image": {
+        "file": "beer-gorkha-small.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a small chilled beer glass with golden lager and condensation, professional beverage photography, straight-on angle, soft natural light, condensation on the glass, clean neutral background, vibrant, high detail"
+      }
+    },
+    {
+      "slug": "carlsberg",
+      "name": "Carlsberg",
+      "cat": "beer",
+      "sub": null,
+      "description": "",
+      "price": 700,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 4,
+      "image": {
+        "file": "beer-carlsberg.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a chilled crisp lager in a frosted pilsner glass, professional beverage photography, straight-on angle, soft natural light, condensation on the glass, clean neutral background, vibrant, high detail"
+      }
+    },
+    {
+      "slug": "can-beer",
+      "name": "Can Beer",
+      "cat": "beer",
+      "sub": null,
+      "description": "",
+      "price": 380,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 5,
+      "image": {
+        "file": "beer-can-beer.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "an unbranded chilled beer can beside a glass of poured lager, professional beverage photography, straight-on angle, soft natural light, condensation on the glass, clean neutral background, vibrant, high detail"
+      }
+    },
+    {
+      "slug": "budweiser",
+      "name": "Budweiser",
+      "cat": "beer",
+      "sub": null,
+      "description": "",
+      "price": 580,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 6,
+      "image": {
+        "file": "beer-budweiser.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a chilled amber lager in a tall glass, condensation on the sides, professional beverage photography, straight-on angle, soft natural light, condensation on the glass, clean neutral background, vibrant, high detail"
+      }
+    },
+    {
+      "slug": "planter-punch",
+      "name": "Planter Punch",
+      "cat": "cocktail",
+      "sub": null,
+      "description": "Rum, orange juice, pineapple juice, ice cube, lemon juice.",
+      "price": 550,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 1,
+      "image": {
+        "file": "cocktail-planter-punch.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a tall tropical rum punch cocktail, layered orange and red, with pineapple garnish, professional beverage photography, straight-on angle, soft natural light, condensation on the glass, clean neutral background, vibrant, high detail"
+      }
+    },
+    {
+      "slug": "screwdriver",
+      "name": "Screwdriver",
+      "cat": "cocktail",
+      "sub": null,
+      "description": "Vodka, orange juice, ice cube, lemon juice.",
+      "price": 450,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 2,
+      "image": {
+        "file": "cocktail-screwdriver.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a tall glass of screwdriver cocktail, bright orange over ice, orange slice garnish, professional beverage photography, straight-on angle, soft natural light, condensation on the glass, clean neutral background, vibrant, high detail"
+      }
+    },
+    {
+      "slug": "sherpa-punch",
+      "name": "Sherpa Punch",
+      "cat": "cocktail",
+      "sub": null,
+      "description": "Ginger, lemon honey, hot water, rum.",
+      "price": 400,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 3,
+      "image": {
+        "file": "cocktail-sherpa-punch.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a warm hot toddy in a clear glass mug with ginger, lemon slice and honey, professional beverage photography, straight-on angle, soft natural light, condensation on the glass, clean neutral background, vibrant, high detail"
+      }
+    },
+    {
+      "slug": "tranquility-special-cocktail",
+      "name": "Tranquility Special Cocktail",
+      "cat": "cocktail",
+      "sub": null,
+      "description": "Vodka, rum, whisky, lemon juice, sugar syrup, ice cube.",
+      "price": 650,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 4,
+      "image": {
+        "file": "cocktail-tranquility-special-cocktail.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a signature cocktail in a coupe glass, pale amber with a foam top and cherry garnish, professional beverage photography, straight-on angle, soft natural light, condensation on the glass, clean neutral background, vibrant, high detail"
+      }
+    },
+    {
+      "slug": "mojito",
+      "name": "Mojito",
+      "cat": "cocktail",
+      "sub": null,
+      "description": "Rum, mint, sugar syrup, lemon soda, ice cube.",
+      "price": 520,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 5,
+      "image": {
+        "file": "cocktail-mojito.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a classic mojito in a tall glass with crushed mint, lime wedges and crushed ice, professional beverage photography, straight-on angle, soft natural light, condensation on the glass, clean neutral background, vibrant, high detail"
+      }
+    },
+    {
+      "slug": "big-master-nepali-wine",
+      "name": "Big Master / Nepali Wine",
+      "cat": "wine",
+      "sub": null,
+      "description": "Per bottle.",
+      "price": 1480,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 1,
+      "image": {
+        "file": "wine-big-master-nepali-wine.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a glass of red wine beside an unbranded dark wine bottle, warm light, professional beverage photography, straight-on angle, soft natural light, condensation on the glass, clean neutral background, vibrant, high detail"
+      }
+    },
+    {
+      "slug": "j-p-imported-wine",
+      "name": "J.P. / Imported Wine",
+      "cat": "wine",
+      "sub": null,
+      "description": "Per bottle.",
+      "price": 2580,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 2,
+      "image": {
+        "file": "wine-j-p-imported-wine.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a poured glass of red wine on a dark table, soft backlight, professional beverage photography, straight-on angle, soft natural light, condensation on the glass, clean neutral background, vibrant, high detail"
+      }
+    },
+    {
+      "slug": "rum",
+      "name": "Rum",
+      "cat": "hard-drinks",
+      "sub": null,
+      "description": "Per peg (60ml) Rs 300. Quarter 880 · Half 1720 · Full 3300.",
+      "price": 300,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 1,
+      "image": {
+        "file": "hard-drinks-rum.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a measured pour of dark rum in a short tumbler over a large ice cube, professional beverage photography, straight-on angle, soft natural light, condensation on the glass, clean neutral background, vibrant, high detail"
+      }
+    },
+    {
+      "slug": "ruslan-vodka",
+      "name": "Ruslan Vodka",
+      "cat": "hard-drinks",
+      "sub": null,
+      "description": "Per peg (60ml) Rs 290. Quarter 830 · Half 1560 · Full 2980.",
+      "price": 290,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 2,
+      "image": {
+        "file": "hard-drinks-ruslan-vodka.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a chilled shot of clear vodka in a frosted glass, ice crystals, professional beverage photography, straight-on angle, soft natural light, condensation on the glass, clean neutral background, vibrant, high detail"
+      }
+    },
+    {
+      "slug": "8848-vodka",
+      "name": "8848 Vodka",
+      "cat": "hard-drinks",
+      "sub": null,
+      "description": "Per peg (60ml) Rs 350. Quarter 970 · Half 1740 · Full 3280.",
+      "price": 350,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 3,
+      "image": {
+        "file": "hard-drinks-8848-vodka.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a chilled shot of clear vodka in a frosted glass, ice crystals, professional beverage photography, straight-on angle, soft natural light, condensation on the glass, clean neutral background, vibrant, high detail"
+      }
+    },
+    {
+      "slug": "silver-oak-vodka",
+      "name": "Silver Oak Vodka",
+      "cat": "hard-drinks",
+      "sub": null,
+      "description": "Per peg (60ml) Rs 220. Quarter 580 · Half 1100 · Full 1890.",
+      "price": 220,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 4,
+      "image": {
+        "file": "hard-drinks-silver-oak-vodka.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a chilled shot of clear vodka in a frosted glass, ice crystals, professional beverage photography, straight-on angle, soft natural light, condensation on the glass, clean neutral background, vibrant, high detail"
+      }
+    },
+    {
+      "slug": "golden-oak",
+      "name": "Golden Oak",
+      "cat": "hard-drinks",
+      "sub": null,
+      "description": "Per peg (60ml) Rs 230. Quarter 590 · Half 1100 · Full 1900.",
+      "price": 230,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 5,
+      "image": {
+        "file": "hard-drinks-golden-oak.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a glass of golden whisky on a dark wooden bar with a single ice cube, professional beverage photography, straight-on angle, soft natural light, condensation on the glass, clean neutral background, vibrant, high detail"
+      }
+    },
+    {
+      "slug": "old-durbar-red",
+      "name": "Old Durbar (Red)",
+      "cat": "hard-drinks",
+      "sub": null,
+      "description": "Per peg (60ml) Rs 390. Quarter 1150 · Half 2100 · Full 4000.",
+      "price": 390,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 6,
+      "image": {
+        "file": "hard-drinks-old-durbar-red.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a glass of golden whisky on a dark wooden bar with a single ice cube, professional beverage photography, straight-on angle, soft natural light, condensation on the glass, clean neutral background, vibrant, high detail"
+      }
+    },
+    {
+      "slug": "old-durbar-black-chimney",
+      "name": "Old Durbar (Black Chimney)",
+      "cat": "hard-drinks",
+      "sub": null,
+      "description": "Per peg (60ml) Rs 450. Quarter 1300 · Half 2480 · Full 4500.",
+      "price": 450,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 7,
+      "image": {
+        "file": "hard-drinks-old-durbar-black-chimney.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a glass of golden whisky on a dark wooden bar with a single ice cube, professional beverage photography, straight-on angle, soft natural light, condensation on the glass, clean neutral background, vibrant, high detail"
+      }
+    },
+    {
+      "slug": "kala-patthar",
+      "name": "Kala Patthar",
+      "cat": "hard-drinks",
+      "sub": null,
+      "description": "Per peg (60ml) Rs 380. Quarter 950 · Half 1750 · Full 3350.",
+      "price": 380,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 8,
+      "image": {
+        "file": "hard-drinks-kala-patthar.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a glass of golden whisky on a dark wooden bar with a single ice cube, professional beverage photography, straight-on angle, soft natural light, condensation on the glass, clean neutral background, vibrant, high detail"
+      }
+    },
+    {
+      "slug": "gorkha-s-guns",
+      "name": "Gorkha's Guns",
+      "cat": "hard-drinks",
+      "sub": null,
+      "description": "Per peg (60ml) Rs 470. Quarter 1350 · Half 2580 · Full 4600.",
+      "price": 470,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 9,
+      "image": {
+        "file": "hard-drinks-gorkha-s-guns.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a glass of golden whisky on a dark wooden bar with a single ice cube, professional beverage photography, straight-on angle, soft natural light, condensation on the glass, clean neutral background, vibrant, high detail"
+      }
+    },
+    {
+      "slug": "signature-green",
+      "name": "Signature Green",
+      "cat": "hard-drinks",
+      "sub": null,
+      "description": "Per peg (60ml) Rs 350. Quarter 970 · Half 1780 · Full 3400.",
+      "price": 350,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 10,
+      "image": {
+        "file": "hard-drinks-signature-green.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a glass of golden whisky on a dark wooden bar with a single ice cube, professional beverage photography, straight-on angle, soft natural light, condensation on the glass, clean neutral background, vibrant, high detail"
+      }
+    },
+    {
+      "slug": "black-oak",
+      "name": "Black Oak",
+      "cat": "hard-drinks",
+      "sub": null,
+      "description": "Per peg (60ml) Rs 280. Quarter 780 · Half 1480 · Full 2700.",
+      "price": 280,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 11,
+      "image": {
+        "file": "hard-drinks-black-oak.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a glass of golden whisky on a dark wooden bar with a single ice cube, professional beverage photography, straight-on angle, soft natural light, condensation on the glass, clean neutral background, vibrant, high detail"
+      }
+    },
+    {
+      "slug": "mustang",
+      "name": "Mustang",
+      "cat": "hard-drinks",
+      "sub": null,
+      "description": "Per peg (60ml) Rs 220. Quarter 580 · Half 1090 · Full 1890.",
+      "price": 220,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 12,
+      "image": {
+        "file": "hard-drinks-mustang.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a glass of golden whisky on a dark wooden bar with a single ice cube, professional beverage photography, straight-on angle, soft natural light, condensation on the glass, clean neutral background, vibrant, high detail"
+      }
+    },
+    {
+      "slug": "jameson",
+      "name": "Jameson",
+      "cat": "hard-drinks",
+      "sub": null,
+      "description": "Per peg (60ml) Rs 750. Quarter 2150 · Half 4700 · Full 8500.",
+      "price": 750,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 13,
+      "image": {
+        "file": "hard-drinks-jameson.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a glass of golden whisky on a dark wooden bar with a single ice cube, professional beverage photography, straight-on angle, soft natural light, condensation on the glass, clean neutral background, vibrant, high detail"
+      }
+    },
+    {
+      "slug": "black-label",
+      "name": "Black Label",
+      "cat": "hard-drinks",
+      "sub": null,
+      "description": "Per peg (60ml) Rs 750. Quarter 2375 · Half 4400 · Full 9500.",
+      "price": 750,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 14,
+      "image": {
+        "file": "hard-drinks-black-label.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a glass of golden whisky on a dark wooden bar with a single ice cube, professional beverage photography, straight-on angle, soft natural light, condensation on the glass, clean neutral background, vibrant, high detail"
+      }
+    },
+    {
+      "slug": "red-label",
+      "name": "Red Label",
+      "cat": "hard-drinks",
+      "sub": null,
+      "description": "Per peg (60ml) Rs 750. Quarter 2100 · Half 4700 · Full 8500.",
+      "price": 750,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 15,
+      "image": {
+        "file": "hard-drinks-red-label.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a glass of golden whisky on a dark wooden bar with a single ice cube, professional beverage photography, straight-on angle, soft natural light, condensation on the glass, clean neutral background, vibrant, high detail"
+      }
+    },
+    {
+      "slug": "jack-daniel-s",
+      "name": "Jack Daniel's",
+      "cat": "hard-drinks",
+      "sub": null,
+      "description": "Per peg (60ml) Rs 790. Quarter 2400 · Half 4800 · Full 9600.",
+      "price": 790,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 16,
+      "image": {
+        "file": "hard-drinks-jack-daniel-s.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a glass of golden whisky on a dark wooden bar with a single ice cube, professional beverage photography, straight-on angle, soft natural light, condensation on the glass, clean neutral background, vibrant, high detail"
+      }
+    },
+    {
+      "slug": "double-black",
+      "name": "Double Black",
+      "cat": "hard-drinks",
+      "sub": null,
+      "description": "Per peg (60ml) Rs 980. Quarter 2700 · Half 5500 · Full 11580.",
+      "price": 980,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 17,
+      "image": {
+        "file": "hard-drinks-double-black.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a glass of golden whisky on a dark wooden bar with a single ice cube, professional beverage photography, straight-on angle, soft natural light, condensation on the glass, clean neutral background, vibrant, high detail"
+      }
+    },
+    {
+      "slug": "tequila-shot",
+      "name": "Tequila Shot",
+      "cat": "hard-drinks",
+      "sub": null,
+      "description": "",
+      "price": 500,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 18,
+      "image": {
+        "file": "hard-drinks-tequila-shot.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a tequila shot glass with a salt rim and a lime wedge beside it, professional beverage photography, straight-on angle, soft natural light, condensation on the glass, clean neutral background, vibrant, high detail"
+      }
+    }
+  ]
+}

@@ -3,6 +3,19 @@ import tempfile
 
 import pytest
 from django.conf import settings
+from django.core.cache import cache
+
+
+@pytest.fixture(autouse=True)
+def _clear_cache():
+    """Reset the cache before every test.
+
+    RateLimitMiddleware counts requests per IP in the cache; without this the
+    counter accumulates across the whole suite (every test hits the same test
+    IP) and late tests eventually trip the 429 throttle. Clearing per test keeps
+    each test's rate-limit window isolated."""
+    cache.clear()
+    yield
 
 
 @pytest.fixture(scope='session', autouse=True)

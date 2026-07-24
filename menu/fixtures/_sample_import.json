@@ -1,0 +1,6 @@
+{"company": "showcase", "branches": ["your-classic-cafe"],
+ "categories": [{"slug": "demo", "name": "Demo", "display_order": 1, "icon_key": "",
+                 "hours_note": "", "subcategories": []}],
+ "items": [{"slug": "demo-water", "name": "Water", "cat": "demo", "sub": null,
+            "description": "Still water.", "price": 50, "tags": ["veg"],
+            "popular": false, "featured": false, "order": 1, "image": null}]}
