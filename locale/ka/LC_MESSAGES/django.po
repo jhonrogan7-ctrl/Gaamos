@@ -221,8 +221,8 @@ msgid "Venue name"
 msgstr "დაწესებულების სახელი"
 
 #: templates/marketing/_contact_form.html:12
-msgid "Momo Ghar Café"
-msgstr "კაფე Momo Ghar"
+msgid "Your Hotel"
+msgstr "თქვენი სასტუმრო"
 
 #: templates/marketing/_contact_form.html:17
 msgid "Phone"
