@@ -99,7 +99,7 @@ MEDIA_ROOT = os.environ.get("MEDIA_ROOT", str(BASE_DIR / "media"))
 # Key lives only in .env (gitignored); never commit it.
 GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY", "")
 GEMINI_IMAGE_MODEL = os.environ.get("GEMINI_IMAGE_MODEL", "gemini-2.5-flash-image")
-GEMINI_EMBED_MODEL = os.environ.get("GEMINI_EMBED_MODEL", "text-embedding-004")
+GEMINI_EMBED_MODEL = os.environ.get("GEMINI_EMBED_MODEL", "gemini-embedding-001")
 GEMINI_VISION_MODEL = os.environ.get("GEMINI_VISION_MODEL", "gemini-2.5-flash")
 LIBRARY_MATCH_THRESHOLD = float(os.environ.get("LIBRARY_MATCH_THRESHOLD", "0.75"))
 ITEM_MATCH_THRESHOLD = float(os.environ.get("ITEM_MATCH_THRESHOLD", "0.85"))
