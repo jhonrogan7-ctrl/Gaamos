@@ -23,7 +23,7 @@ pairings caught only by eye. With one document, the asset key
 `slugify("<section> <item>")` and the fixture key `slugify(section)-slugify(item)`
 are the same string **by construction**.
 
-## The five phases
+## The six phases
 
 Work through them in order. Check the count at the end of each — a run that
 "succeeded" with 0 items has happened.
@@ -96,7 +96,45 @@ They are listed at the end of the run under `content-filtered`.
 
 Do NOT pass `--embed` — Gemini embeddings are billing-blocked.
 
-### 4. Build — sheet + assets become the fixture
+### 4. Audit — look at every image before it ships
+
+Counts do not tell you whether a photo is the dish. Build contact sheets and
+read them:
+
+    docker compose exec -T web python -c "
+    from PIL import Image, ImageDraw
+    import pathlib
+    files = sorted(pathlib.Path('menu/fixtures/media/<slug>').glob('*.webp'))
+    per, cols, cell = 24, 6, 200
+    for s in range((len(files) + per - 1) // per):
+        chunk = files[s*per:(s+1)*per]
+        rows = (len(chunk) + cols - 1) // cols
+        sheet = Image.new('RGB', (cols*cell, rows*cell), 'white')
+        d = ImageDraw.Draw(sheet)
+        for i, f in enumerate(chunk):
+            im = Image.open(f).convert('RGB').resize((cell, cell))
+            x, y = (i % cols)*cell, (i // cols)*cell
+            sheet.paste(im, (x, y)); d.text((x+3, y+3), f.stem[:26], fill='yellow')
+        sheet.save(f'/tmp/audit{s}.png')"
+
+**The generator does not know Nepali dish words.** On the Chill Zone run it
+rendered 7 of 8 momo as meatballs or vegetable blobs — one jhol momo came back
+with a cartoon panda in the bowl — and every thali as a plate of fried meat.
+Counts, `no image` and the Unsplash check were all green while a third of the
+signature dishes were wrong.
+
+The fix is to name **the form the word already denotes**, which stays inside the
+no-invented-claims rule: momo → "steamed pleated dumplings", thali → "a round
+steel tray of rice with small bowls of curry and lentil dal", pakoda →
+"fritters", palak paneer → "cubes of paneer in spinach gravy". Reword in the
+sheet, delete those `ImageAsset` rows (the run skips keys that already exist),
+and re-run:
+
+    docker compose exec -T web python manage.py shell -c "
+    from menu.models import ImageAsset
+    ImageAsset.objects.filter(source='flux', found_for_slug__in=[...]).delete()"
+
+### 5. Build — sheet + assets become the fixture
 
     docker compose exec -T web python manage.py build_venue_fixture \
         --prompts /tmp/<venue>-sheet.md --company <slug>
@@ -110,7 +148,7 @@ venue's "black tea" adopts the first venue's image by exact key. If a venue
 supplies its own photographs, pass `--vault-listing` (an `ls > names.txt` of the
 folder) and `--vault-dir`; the fuzzy passes exist only for that case.
 
-### 5. Seed + import — the tenant
+### 6. Seed + import — the tenant
 
     docker compose exec -T web python manage.py seed_venue \
         --fixture menu/fixtures/<slug>.json
@@ -136,6 +174,7 @@ images render.
 | A pipeline edit has no effect on a job | Celery has no autoreload | `docker compose restart worker` |
 | A tenant's file overwritten | Media filename lacking the company | Media must live under `<company>/` |
 | "succeeded" with 0 items | Wrong sheet path, or no `###` sections | Check counts at every phase |
+| Every count green but photos are the wrong dish | The generator does not know `momo`, `thali`, `pakoda` | Name the form the word denotes; re-roll (phase 4) |
 | `/platform/` route 404s under curl | Apex-only; wrong Host header, or port 8000 not 8005 | `-H "Host: zxyn.online" http://localhost:8005/…` |
 
 ## Tests
