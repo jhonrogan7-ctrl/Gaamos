@@ -108,6 +108,12 @@ SCAN_CONFIDENCE_THRESHOLD = float(os.environ.get("SCAN_CONFIDENCE_THRESHOLD", "0
 # Which photo source the bulk scan image job uses when the library has no match.
 SCAN_IMAGE_SOURCE = os.environ.get("SCAN_IMAGE_SOURCE", "pexels")
 
+# NVIDIA-hosted FLUX — the working image-generation backend while Gemini image
+# gen is blocked on billing. Key lives only in .env (gitignored).
+NVIDIA_API_KEY = os.environ.get("NVIDIA_API_KEY", "")
+NVIDIA_IMAGE_MODEL = os.environ.get("NVIDIA_IMAGE_MODEL",
+                                    "black-forest-labs/flux.2-klein-4b")
+
 # Free stock-photo APIs for the image 'find' path (all from .env, never committed).
 PEXELS_API_KEY = os.environ.get("PEXELS_API_KEY", "")
 OPENVERSE_CLIENT_ID = os.environ.get("OPENVERSE_CLIENT_ID", "")
