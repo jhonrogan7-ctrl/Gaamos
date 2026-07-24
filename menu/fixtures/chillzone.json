@@ -1,212 +1,213 @@
 {
-  "company": {
+  "venue": {
+    "slug": "chillzone",
     "name": "Chill Zone",
     "tagline": "Chill out with great food, drinks and vibes",
     "phone": "",
     "email": "",
     "instagram": "",
     "facebook": "",
-    "tiktok": ""
+    "tiktok": "",
+    "branches": [
+      {
+        "slug": "main",
+        "name": "Chill Zone",
+        "address": "",
+        "tag": "FLAGSHIP"
+      }
+    ]
   },
-  "branches": [
-    {
-      "slug": "main",
-      "name": "Chill Zone",
-      "address": "",
-      "tag": "FLAGSHIP"
-    }
-  ],
   "categories": [
     {
       "slug": "hot-drinks",
       "name": "Hot Drinks",
-      "icon_key": "coffee",
+      "display_order": 1,
+      "icon_key": "",
       "hours_note": "",
-      "display_order": 0,
       "subcategories": []
     },
     {
       "slug": "breakfast",
       "name": "Breakfast",
-      "icon_key": "brunch",
+      "display_order": 2,
+      "icon_key": "",
       "hours_note": "",
-      "display_order": 1,
       "subcategories": []
     },
     {
       "slug": "toast",
       "name": "Toast",
-      "icon_key": "snack",
+      "display_order": 3,
+      "icon_key": "",
       "hours_note": "",
-      "display_order": 2,
       "subcategories": []
     },
     {
-      "slug": "eggs",
-      "name": "Egg (2 Eggs)",
-      "icon_key": "brunch",
+      "slug": "egg-2eggs",
+      "name": "Egg (2Eggs)",
+      "display_order": 4,
+      "icon_key": "",
       "hours_note": "",
-      "display_order": 3,
       "subcategories": []
     },
     {
       "slug": "muesli-porridge",
-      "name": "Muesli & Porridge",
-      "icon_key": "bowl",
+      "name": "Muesli / Porridge",
+      "display_order": 5,
+      "icon_key": "",
       "hours_note": "",
-      "display_order": 4,
       "subcategories": []
     },
     {
       "slug": "sandwich-burger",
       "name": "Sandwich & Burger",
-      "icon_key": "snack",
+      "display_order": 6,
+      "icon_key": "",
       "hours_note": "",
-      "display_order": 5,
       "subcategories": []
     },
     {
       "slug": "soft-drinks",
       "name": "Soft Drinks",
-      "icon_key": "bar",
+      "display_order": 7,
+      "icon_key": "",
       "hours_note": "",
-      "display_order": 6,
       "subcategories": []
     },
     {
       "slug": "soups",
       "name": "Soups",
-      "icon_key": "bowl",
+      "display_order": 8,
+      "icon_key": "",
       "hours_note": "",
-      "display_order": 7,
       "subcategories": []
     },
     {
       "slug": "rice",
       "name": "Rice",
-      "icon_key": "rice",
+      "display_order": 9,
+      "icon_key": "",
       "hours_note": "",
-      "display_order": 8,
       "subcategories": []
     },
     {
       "slug": "biryani",
       "name": "Biryani",
-      "icon_key": "rice",
+      "display_order": 10,
+      "icon_key": "",
       "hours_note": "",
-      "display_order": 9,
       "subcategories": []
     },
     {
       "slug": "indian-style",
       "name": "Indian Style",
-      "icon_key": "dinner",
+      "display_order": 11,
+      "icon_key": "",
       "hours_note": "",
-      "display_order": 10,
       "subcategories": []
     },
     {
       "slug": "nepali-thali",
       "name": "Nepali Thali",
-      "icon_key": "special",
+      "display_order": 12,
+      "icon_key": "",
       "hours_note": "",
-      "display_order": 11,
       "subcategories": []
     },
     {
       "slug": "khaja-set",
       "name": "Khaja Set",
-      "icon_key": "snack",
+      "display_order": 13,
+      "icon_key": "",
       "hours_note": "",
-      "display_order": 12,
       "subcategories": []
     },
     {
       "slug": "momo",
       "name": "Mo:Mo",
-      "icon_key": "dinner",
+      "display_order": 14,
+      "icon_key": "",
       "hours_note": "",
-      "display_order": 13,
       "subcategories": []
     },
     {
       "slug": "pakoda",
       "name": "Pakoda",
-      "icon_key": "snack",
-      "hours_note": "",
-      "display_order": 14,
-      "subcategories": []
-    },
-    {
-      "slug": "rice-roti",
-      "name": "Rice & Roti (Chapati)",
-      "icon_key": "rice",
-      "hours_note": "",
       "display_order": 15,
+      "icon_key": "",
+      "hours_note": "",
       "subcategories": []
     },
     {
-      "slug": "pasta",
-      "name": "Pasta & Spaghetti",
-      "icon_key": "pizza",
-      "hours_note": "",
+      "slug": "rice-roti-chapati",
+      "name": "Rice & Roti (Chapati)",
       "display_order": 16,
+      "icon_key": "",
+      "hours_note": "",
+      "subcategories": []
+    },
+    {
+      "slug": "pasta-spaghetti",
+      "name": "Pasta & Spaghetti",
+      "display_order": 17,
+      "icon_key": "",
+      "hours_note": "",
       "subcategories": []
     },
     {
       "slug": "snacks",
       "name": "Snacks",
-      "icon_key": "snack",
+      "display_order": 18,
+      "icon_key": "",
       "hours_note": "",
-      "display_order": 17,
       "subcategories": []
     },
     {
       "slug": "chowmin-thukpa",
-      "name": "Chowmin/Thukpa",
-      "icon_key": "noodles",
+      "name": "Chowmin / Thukpa",
+      "display_order": 19,
+      "icon_key": "",
       "hours_note": "",
-      "display_order": 18,
       "subcategories": []
     },
     {
       "slug": "wrap",
       "name": "Wrap",
-      "icon_key": "snack",
+      "display_order": 20,
+      "icon_key": "",
       "hours_note": "",
-      "display_order": 19,
       "subcategories": []
     },
     {
       "slug": "salad",
       "name": "Salad",
-      "icon_key": "bowl",
+      "display_order": 21,
+      "icon_key": "",
       "hours_note": "",
-      "display_order": 20,
       "subcategories": []
     },
     {
       "slug": "chill-zone-special",
       "name": "Chill Zone Special",
-      "icon_key": "special",
+      "display_order": 22,
+      "icon_key": "",
       "hours_note": "",
-      "display_order": 21,
       "subcategories": []
     },
     {
       "slug": "fresh-juice",
       "name": "Fresh Juice",
-      "icon_key": "juice",
+      "display_order": 23,
+      "icon_key": "",
       "hours_note": "",
-      "display_order": 22,
       "subcategories": []
     },
     {
       "slug": "lassi-shake",
-      "name": "Lassi/Shake",
-      "icon_key": "smoothie",
+      "name": "Lassi / Shake",
+      "display_order": 24,
+      "icon_key": "",
       "hours_note": "",
-      "display_order": 23,
       "subcategories": []
     }
   ],
@@ -214,1667 +215,2116 @@
     {
       "slug": "black-tea",
       "name": "Black Tea",
-      "price": 40,
       "cat": "hot-drinks",
       "sub": null,
-      "tags": [
-        "VEG"
-      ],
+      "description": "Black tea.",
+      "price": 40,
+      "tags": [],
       "popular": false,
       "featured": false,
-      "image": "https://images.unsplash.com/photo-1683533698664-12ee473e8c9d?auto=format&fit=crop&w=800&q=60",
-      "description": "Classic black tea, brewed strong."
+      "order": 1,
+      "image": {
+        "file": "hot-drinks-black-tea.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a clear glass cup of strong black tea, no milk, professional beverage photography, straight-on angle, soft natural light, condensation on the glass, clean neutral background, vibrant, high detail"
+      }
     },
     {
       "slug": "milk-tea",
       "name": "Milk Tea",
-      "price": 60,
       "cat": "hot-drinks",
       "sub": null,
-      "tags": [
-        "VEG"
-      ],
-      "popular": true,
+      "description": "Tea brewed with milk.",
+      "price": 60,
+      "tags": [],
+      "popular": false,
       "featured": false,
-      "image": "https://images.unsplash.com/photo-1683533698664-12ee473e8c9d?auto=format&fit=crop&w=800&q=60",
-      "description": "Nepali-style milk tea, lightly spiced."
+      "order": 2,
+      "image": {
+        "file": "hot-drinks-milk-tea.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a glass cup of Nepali milk tea, creamy tan colour, professional beverage photography, straight-on angle, soft natural light, condensation on the glass, clean neutral background, vibrant, high detail"
+      }
     },
     {
       "slug": "masala-tea",
       "name": "Masala Tea",
-      "price": 70,
       "cat": "hot-drinks",
       "sub": null,
-      "tags": [
-        "VEG"
-      ],
+      "description": "Tea with masala spices.",
+      "price": 70,
+      "tags": [],
       "popular": false,
       "featured": false,
-      "image": "https://images.unsplash.com/photo-1683533698664-12ee473e8c9d?auto=format&fit=crop&w=800&q=60",
-      "description": "Milk tea brewed with cardamom, cinnamon and ginger."
+      "order": 3,
+      "image": {
+        "file": "hot-drinks-masala-tea.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a cup of spiced masala chai with cardamom pods and cinnamon beside it, professional beverage photography, straight-on angle, soft natural light, condensation on the glass, clean neutral background, vibrant, high detail"
+      }
     },
     {
       "slug": "lemon-tea",
       "name": "Lemon Tea",
-      "price": 50,
       "cat": "hot-drinks",
       "sub": null,
-      "tags": [
-        "VEG"
-      ],
+      "description": "Tea with lemon.",
+      "price": 50,
+      "tags": [],
       "popular": false,
       "featured": false,
-      "image": null,
-      "description": "Black tea with fresh lemon."
+      "order": 4,
+      "image": {
+        "file": "hot-drinks-lemon-tea.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a clear glass of amber lemon tea with a floating lemon slice, professional beverage photography, straight-on angle, soft natural light, condensation on the glass, clean neutral background, vibrant, high detail"
+      }
     },
     {
       "slug": "ginger-lemon-honey",
       "name": "Ginger Lemon Honey",
-      "price": 120,
       "cat": "hot-drinks",
       "sub": null,
-      "tags": [
-        "VEG"
-      ],
+      "description": "Ginger, lemon and honey.",
+      "price": 120,
+      "tags": [],
       "popular": false,
       "featured": false,
-      "image": null,
-      "description": "Hot water steeped with ginger, lemon and honey."
+      "order": 5,
+      "image": {
+        "file": "hot-drinks-ginger-lemon-honey.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a glass mug of ginger lemon honey tea, honey drizzling in, ginger slices, professional beverage photography, straight-on angle, soft natural light, condensation on the glass, clean neutral background, vibrant, high detail"
+      }
     },
     {
       "slug": "milk-coffee",
       "name": "Milk Coffee",
-      "price": 90,
       "cat": "hot-drinks",
       "sub": null,
-      "tags": [
-        "VEG"
-      ],
+      "description": "Coffee with milk.",
+      "price": 90,
+      "tags": [],
       "popular": false,
       "featured": false,
-      "image": "https://images.unsplash.com/photo-1497515114629-f71d768fd07c?auto=format&fit=crop&w=800&q=60",
-      "description": "Coffee with steamed milk."
+      "order": 6,
+      "image": {
+        "file": "hot-drinks-milk-coffee.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a white cup of milk coffee with light crema, professional beverage photography, straight-on angle, soft natural light, condensation on the glass, clean neutral background, vibrant, high detail"
+      }
     },
     {
       "slug": "black-coffee",
       "name": "Black Coffee",
-      "price": 70,
       "cat": "hot-drinks",
       "sub": null,
-      "tags": [
-        "VEG"
-      ],
+      "description": "Coffee without milk.",
+      "price": 70,
+      "tags": [],
       "popular": false,
       "featured": false,
-      "image": "https://images.unsplash.com/photo-1497515114629-f71d768fd07c?auto=format&fit=crop&w=800&q=60",
-      "description": "Simple brewed black coffee."
+      "order": 7,
+      "image": {
+        "file": "hot-drinks-black-coffee.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a small white cup of black coffee, dark and glossy, professional beverage photography, straight-on angle, soft natural light, condensation on the glass, clean neutral background, vibrant, high detail"
+      }
     },
     {
       "slug": "hot-chocolate",
       "name": "Hot Chocolate",
-      "price": 210,
       "cat": "hot-drinks",
       "sub": null,
-      "tags": [
-        "VEG"
-      ],
+      "description": "Hot chocolate.",
+      "price": 210,
+      "tags": [],
       "popular": false,
       "featured": false,
-      "image": "https://images.unsplash.com/photo-1542990253-0d0f5be5f0ed?auto=format&fit=crop&w=800&q=60",
-      "description": "Rich hot chocolate, topped with cream."
+      "order": 8,
+      "image": {
+        "file": "hot-drinks-hot-chocolate.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a mug of hot chocolate, professional beverage photography, straight-on angle, soft natural light, condensation on the glass, clean neutral background, vibrant, high detail"
+      }
     },
     {
       "slug": "organic-americano-hot-ice",
-      "name": "Organic Americano (Hot/Ice)",
-      "price": 130,
+      "name": "Organic Americano (Hot / Ice)",
       "cat": "hot-drinks",
       "sub": null,
-      "tags": [
-        "VEG"
-      ],
+      "description": "Americano from organic beans, hot or iced.",
+      "price": 130,
+      "tags": [],
       "popular": false,
       "featured": false,
-      "image": "https://images.unsplash.com/photo-1579992357154-faf4bde95b3d?auto=format&fit=crop&w=800&q=60",
-      "description": "Organic single-origin beans, hot or over ice."
+      "order": 9,
+      "image": {
+        "file": "hot-drinks-organic-americano-hot-ice.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a cup of americano coffee, professional beverage photography, straight-on angle, soft natural light, condensation on the glass, clean neutral background, vibrant, high detail"
+      }
     },
     {
       "slug": "organic-espresso-hot-ice",
-      "name": "Organic Espresso (Hot/Ice)",
-      "price": 110,
+      "name": "Organic Espresso (Hot / Ice)",
       "cat": "hot-drinks",
       "sub": null,
-      "tags": [
-        "VEG"
-      ],
+      "description": "Espresso from organic beans, hot or iced.",
+      "price": 110,
+      "tags": [],
       "popular": false,
       "featured": false,
-      "image": "https://images.unsplash.com/photo-1579992357154-faf4bde95b3d?auto=format&fit=crop&w=800&q=60",
-      "description": "Organic single-origin espresso shot, hot or over ice."
+      "order": 10,
+      "image": {
+        "file": "hot-drinks-organic-espresso-hot-ice.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a small cup of espresso, professional beverage photography, straight-on angle, soft natural light, condensation on the glass, clean neutral background, vibrant, high detail"
+      }
     },
     {
       "slug": "simple-breakfast",
       "name": "Simple Breakfast",
-      "price": 250,
       "cat": "breakfast",
       "sub": null,
-      "tags": [
-        "VEG"
-      ],
+      "description": "",
+      "price": 250,
+      "tags": [],
       "popular": false,
       "featured": false,
-      "image": "https://images.unsplash.com/photo-1525184782196-8e2ded604bf7?auto=format&fit=crop&w=800&q=60",
-      "description": "Eggs, toast and a side of the day."
+      "order": 1,
+      "image": null
     },
     {
       "slug": "american-breakfast",
       "name": "American Breakfast",
-      "price": 360,
       "cat": "breakfast",
       "sub": null,
-      "tags": [
-        "VEG"
-      ],
+      "description": "",
+      "price": 360,
+      "tags": [],
       "popular": false,
       "featured": false,
-      "image": "https://images.unsplash.com/photo-1525184782196-8e2ded604bf7?auto=format&fit=crop&w=800&q=60",
-      "description": "Eggs, toast, hash browns, sausage and beans."
+      "order": 2,
+      "image": null
     },
     {
       "slug": "chill-zone-special-breakfast",
       "name": "Chill Zone Special Breakfast",
-      "price": 420,
       "cat": "breakfast",
       "sub": null,
-      "tags": [
-        "VEG"
-      ],
-      "popular": true,
-      "featured": true,
-      "image": "https://images.unsplash.com/photo-1550304939-ee0be36f980f?auto=format&fit=crop&w=800&q=60",
-      "description": "Our loaded house breakfast platter."
+      "description": "",
+      "price": 420,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 3,
+      "image": null
     },
     {
       "slug": "plain-toast",
       "name": "Plain Toast",
-      "price": 100,
       "cat": "toast",
       "sub": null,
-      "tags": [
-        "VEG"
-      ],
+      "description": "Toasted bread.",
+      "price": 100,
+      "tags": [],
       "popular": false,
       "featured": false,
-      "image": "https://images.unsplash.com/photo-1643473806845-485d1f11688c?auto=format&fit=crop&w=800&q=60",
-      "description": "Toasted bread, butter on the side."
+      "order": 1,
+      "image": {
+        "file": "toast-plain-toast.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "slices of plain toast on a plate, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, fresh vibrant colours, appetising, high detail"
+      }
     },
     {
       "slug": "cheese-toast",
       "name": "Cheese Toast",
-      "price": 180,
       "cat": "toast",
       "sub": null,
-      "tags": [
-        "VEG"
-      ],
+      "description": "Toast with cheese.",
+      "price": 180,
+      "tags": [],
       "popular": false,
       "featured": false,
-      "image": "https://images.unsplash.com/photo-1643473806845-485d1f11688c?auto=format&fit=crop&w=800&q=60",
-      "description": "Melted cheese on toasted bread."
+      "order": 2,
+      "image": {
+        "file": "toast-cheese-toast.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "cheese toast on a plate, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, fresh vibrant colours, appetising, high detail"
+      }
     },
     {
       "slug": "cheese-tomato-toast",
       "name": "Cheese Tomato Toast",
-      "price": 200,
       "cat": "toast",
       "sub": null,
-      "tags": [
-        "VEG"
-      ],
+      "description": "Toast with cheese and tomato.",
+      "price": 200,
+      "tags": [],
       "popular": false,
       "featured": false,
-      "image": "https://images.unsplash.com/photo-1647338732688-6c1930461cc3?auto=format&fit=crop&w=800&q=60",
-      "description": "Melted cheese and tomato on toast."
+      "order": 3,
+      "image": {
+        "file": "toast-cheese-tomato-toast.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "cheese and tomato toast on a plate, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, fresh vibrant colours, appetising, high detail"
+      }
     },
     {
       "slug": "french-toast",
       "name": "French Toast",
-      "price": 210,
       "cat": "toast",
       "sub": null,
-      "tags": [
-        "VEG"
-      ],
+      "description": "French toast.",
+      "price": 210,
+      "tags": [],
       "popular": false,
       "featured": false,
-      "image": "https://images.unsplash.com/photo-1595044643502-616eeebbdff3?auto=format&fit=crop&w=800&q=60",
-      "description": "Egg-dipped toast, pan-fried golden."
+      "order": 4,
+      "image": {
+        "file": "toast-french-toast.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "golden egg-dipped french toast slices on a plate, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, fresh vibrant colours, appetising, high detail"
+      }
     },
     {
       "slug": "boiled-egg",
       "name": "Boiled Egg",
-      "price": 120,
-      "cat": "eggs",
+      "cat": "egg-2eggs",
       "sub": null,
+      "description": "Two boiled eggs.",
+      "price": 120,
       "tags": [],
       "popular": false,
       "featured": false,
-      "image": "https://images.unsplash.com/photo-1618666185561-baed3459ff18?auto=format&fit=crop&w=800&q=60",
-      "description": "Two eggs, boiled to order."
+      "order": 1,
+      "image": {
+        "file": "egg-2eggs-boiled-egg.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "two boiled eggs on a plate, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, fresh vibrant colours, appetising, high detail"
+      }
     },
     {
       "slug": "fried-egg",
       "name": "Fried Egg",
-      "price": 130,
-      "cat": "eggs",
+      "cat": "egg-2eggs",
       "sub": null,
+      "description": "Two eggs, pan-cooked.",
+      "price": 130,
       "tags": [],
       "popular": false,
       "featured": false,
-      "image": "https://images.unsplash.com/photo-1618666185561-baed3459ff18?auto=format&fit=crop&w=800&q=60",
-      "description": "Two eggs, fried sunny side up."
+      "order": 2,
+      "image": {
+        "file": "egg-2eggs-fried-egg.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "two sunny-side-up eggs on a plate, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, fresh vibrant colours, appetising, high detail"
+      }
     },
     {
       "slug": "scrambled-egg",
       "name": "Scrambled Egg",
-      "price": 140,
-      "cat": "eggs",
+      "cat": "egg-2eggs",
       "sub": null,
+      "description": "Two scrambled eggs.",
+      "price": 140,
       "tags": [],
       "popular": false,
       "featured": false,
-      "image": "https://images.unsplash.com/photo-1612451223000-8605c4f730fe?auto=format&fit=crop&w=800&q=60",
-      "description": "Two eggs, soft scrambled."
+      "order": 3,
+      "image": {
+        "file": "egg-2eggs-scrambled-egg.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "scrambled eggs on a plate, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, fresh vibrant colours, appetising, high detail"
+      }
     },
     {
       "slug": "masala-omelette",
       "name": "Masala Omelette",
-      "price": 160,
-      "cat": "eggs",
+      "cat": "egg-2eggs",
       "sub": null,
-      "tags": [
-        "VEG"
-      ],
-      "popular": true,
+      "description": "Two-egg omelette with masala spices.",
+      "price": 160,
+      "tags": [],
+      "popular": false,
       "featured": false,
-      "image": "https://images.unsplash.com/photo-1612528449289-9936d474b8f4?auto=format&fit=crop&w=800&q=60",
-      "description": "Two-egg omelette with onion, tomato and spices."
+      "order": 4,
+      "image": {
+        "file": "egg-2eggs-masala-omelette.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a masala omelette on a plate, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, fresh vibrant colours, appetising, high detail"
+      }
     },
     {
       "slug": "cheese-omelette",
       "name": "Cheese Omelette",
-      "price": 220,
-      "cat": "eggs",
+      "cat": "egg-2eggs",
       "sub": null,
-      "tags": [
-        "VEG"
-      ],
+      "description": "Two-egg omelette with cheese.",
+      "price": 220,
+      "tags": [],
       "popular": false,
       "featured": false,
-      "image": "https://images.unsplash.com/photo-1612528449289-9936d474b8f4?auto=format&fit=crop&w=800&q=60",
-      "description": "Two-egg omelette with melted cheese."
+      "order": 5,
+      "image": {
+        "file": "egg-2eggs-cheese-omelette.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a cheese omelette on a plate, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, fresh vibrant colours, appetising, high detail"
+      }
     },
     {
       "slug": "plain-omelette",
       "name": "Plain Omelette",
-      "price": 120,
-      "cat": "eggs",
+      "cat": "egg-2eggs",
       "sub": null,
-      "tags": [
-        "VEG"
-      ],
+      "description": "Two-egg plain omelette.",
+      "price": 120,
+      "tags": [],
       "popular": false,
       "featured": false,
-      "image": "https://images.unsplash.com/photo-1612528449289-9936d474b8f4?auto=format&fit=crop&w=800&q=60",
-      "description": "Simple two-egg omelette."
+      "order": 6,
+      "image": {
+        "file": "egg-2eggs-plain-omelette.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a plain omelette on a plate, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, fresh vibrant colours, appetising, high detail"
+      }
     },
     {
       "slug": "plain-muesli-with-curd-or-milk",
       "name": "Plain Muesli with Curd or Milk",
-      "price": 250,
       "cat": "muesli-porridge",
       "sub": null,
-      "tags": [
-        "VEG"
-      ],
+      "description": "Muesli with curd or milk.",
+      "price": 250,
+      "tags": [],
       "popular": false,
       "featured": false,
-      "image": "https://images.unsplash.com/photo-1614961234274-f204d01c115e?auto=format&fit=crop&w=800&q=60",
-      "description": "House muesli, served with curd or milk."
+      "order": 1,
+      "image": {
+        "file": "muesli-porridge-plain-muesli-with-curd-or-milk.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a bowl of muesli with curd, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, fresh vibrant colours, appetising, high detail"
+      }
     },
     {
       "slug": "mix-fruit-muesli-with-curd",
       "name": "Mix Fruit Muesli with Curd",
-      "price": 330,
       "cat": "muesli-porridge",
       "sub": null,
-      "tags": [
-        "VEG"
-      ],
+      "description": "Muesli with mixed fruit and curd.",
+      "price": 330,
+      "tags": [],
       "popular": false,
       "featured": false,
-      "image": "https://images.unsplash.com/photo-1614961234274-f204d01c115e?auto=format&fit=crop&w=800&q=60",
-      "description": "Muesli topped with seasonal mixed fruit and curd."
+      "order": 2,
+      "image": {
+        "file": "muesli-porridge-mix-fruit-muesli-with-curd.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a bowl of muesli with mixed fruit and curd, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, fresh vibrant colours, appetising, high detail"
+      }
     },
     {
       "slug": "porridge-plain",
       "name": "Porridge (Plain)",
-      "price": 190,
       "cat": "muesli-porridge",
       "sub": null,
-      "tags": [
-        "VEG"
-      ],
+      "description": "Plain porridge.",
+      "price": 190,
+      "tags": [],
       "popular": false,
       "featured": false,
-      "image": "https://images.unsplash.com/photo-1610406765661-57646c40da59?auto=format&fit=crop&w=800&q=60",
-      "description": "Warm oat porridge."
+      "order": 3,
+      "image": {
+        "file": "muesli-porridge-porridge-plain.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a bowl of creamy plain porridge, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, fresh vibrant colours, appetising, high detail"
+      }
     },
     {
       "slug": "porridge-banana",
       "name": "Porridge (Banana)",
-      "price": 230,
       "cat": "muesli-porridge",
       "sub": null,
-      "tags": [
-        "VEG"
-      ],
+      "description": "Porridge with banana.",
+      "price": 230,
+      "tags": [],
       "popular": false,
       "featured": false,
-      "image": "https://images.unsplash.com/photo-1610406765661-57646c40da59?auto=format&fit=crop&w=800&q=60",
-      "description": "Warm oat porridge topped with banana."
+      "order": 4,
+      "image": {
+        "file": "muesli-porridge-porridge-banana.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a bowl of porridge with banana, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, fresh vibrant colours, appetising, high detail"
+      }
     },
     {
       "slug": "pancake-plain",
       "name": "Pancake (Plain)",
-      "price": 170,
       "cat": "muesli-porridge",
       "sub": null,
-      "tags": [
-        "VEG"
-      ],
+      "description": "Plain pancakes.",
+      "price": 170,
+      "tags": [],
       "popular": false,
       "featured": false,
-      "image": "https://images.unsplash.com/photo-1610406765661-57646c40da59?auto=format&fit=crop&w=800&q=60",
-      "description": "Stack of plain pancakes."
+      "order": 5,
+      "image": {
+        "file": "muesli-porridge-pancake-plain.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "pancakes on a plate, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, fresh vibrant colours, appetising, high detail"
+      }
     },
     {
       "slug": "pancake-honey-banana",
-      "name": "Pancake (Honey/Banana)",
-      "price": 210,
+      "name": "Pancake (Honey / Banana)",
       "cat": "muesli-porridge",
       "sub": null,
-      "tags": [
-        "VEG"
-      ],
+      "description": "Pancakes with honey or banana.",
+      "price": 210,
+      "tags": [],
       "popular": false,
       "featured": false,
-      "image": "https://images.unsplash.com/photo-1610406765661-57646c40da59?auto=format&fit=crop&w=800&q=60",
-      "description": "Pancake stack with honey or banana."
+      "order": 6,
+      "image": {
+        "file": "muesli-porridge-pancake-honey-banana.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "pancakes with honey and banana, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, fresh vibrant colours, appetising, high detail"
+      }
     },
     {
-      "slug": "veg-sandwich",
-      "name": "Veg Sandwich",
+      "slug": "veg",
+      "name": "Veg",
+      "cat": "sandwich-burger",
+      "sub": null,
+      "description": "",
       "price": 290,
-      "cat": "sandwich-burger",
-      "sub": null,
-      "tags": [
-        "VEG"
-      ],
+      "tags": [],
       "popular": false,
       "featured": false,
-      "image": "https://images.unsplash.com/photo-1665233272941-ae681d11fc06?auto=format&fit=crop&w=800&q=60",
-      "description": "Fresh vegetables layered on toasted bread."
+      "order": 1,
+      "image": null
     },
     {
-      "slug": "chicken-sandwich",
-      "name": "Chicken Sandwich",
+      "slug": "chicken",
+      "name": "Chicken",
+      "cat": "sandwich-burger",
+      "sub": null,
+      "description": "",
       "price": 380,
-      "cat": "sandwich-burger",
-      "sub": null,
       "tags": [],
       "popular": false,
       "featured": false,
-      "image": "https://images.unsplash.com/photo-1665233272941-ae681d11fc06?auto=format&fit=crop&w=800&q=60",
-      "description": "Grilled chicken sandwich with veggies."
+      "order": 2,
+      "image": null
     },
     {
-      "slug": "tuna-sandwich",
-      "name": "Tuna Sandwich",
+      "slug": "tuna",
+      "name": "Tuna",
+      "cat": "sandwich-burger",
+      "sub": null,
+      "description": "",
       "price": 410,
-      "cat": "sandwich-burger",
-      "sub": null,
       "tags": [],
       "popular": false,
       "featured": false,
-      "image": "https://images.unsplash.com/photo-1665233272941-ae681d11fc06?auto=format&fit=crop&w=800&q=60",
-      "description": "Tuna salad sandwich."
+      "order": 3,
+      "image": null
     },
     {
-      "slug": "bacon-sandwich",
-      "name": "Bacon Sandwich",
-      "price": 450,
+      "slug": "bacon",
+      "name": "Bacon",
       "cat": "sandwich-burger",
       "sub": null,
+      "description": "",
+      "price": 450,
       "tags": [],
       "popular": false,
       "featured": false,
-      "image": "https://images.unsplash.com/photo-1665233272941-ae681d11fc06?auto=format&fit=crop&w=800&q=60",
-      "description": "Crispy bacon sandwich."
+      "order": 4,
+      "image": null
     },
     {
       "slug": "club-sandwich",
       "name": "Club Sandwich",
+      "cat": "sandwich-burger",
+      "sub": null,
+      "description": "Club sandwich.",
       "price": 460,
-      "cat": "sandwich-burger",
-      "sub": null,
-      "tags": [
-        "VEG"
-      ],
-      "popular": true,
-      "featured": false,
-      "image": "https://images.unsplash.com/photo-1665233272941-ae681d11fc06?auto=format&fit=crop&w=800&q=60",
-      "description": "Triple-decker club with chicken, egg and bacon."
-    },
-    {
-      "slug": "cheese-tomato-sandwich",
-      "name": "Cheese Tomato Sandwich",
-      "price": 320,
-      "cat": "sandwich-burger",
-      "sub": null,
-      "tags": [
-        "VEG"
-      ],
+      "tags": [],
       "popular": false,
       "featured": false,
-      "image": "https://images.unsplash.com/photo-1665233272941-ae681d11fc06?auto=format&fit=crop&w=800&q=60",
-      "description": "Cheese and tomato sandwich, toasted."
+      "order": 5,
+      "image": {
+        "file": "sandwich-burger-club-sandwich.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a club sandwich cut into triangles on a plate, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, fresh vibrant colours, appetising, high detail"
+      }
+    },
+    {
+      "slug": "cheese-tomato",
+      "name": "Cheese Tomato",
+      "cat": "sandwich-burger",
+      "sub": null,
+      "description": "",
+      "price": 320,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 6,
+      "image": null
     },
     {
       "slug": "coke-fanta-sprite",
       "name": "Coke / Fanta / Sprite",
-      "price": 100,
       "cat": "soft-drinks",
       "sub": null,
-      "tags": [
-        "VEG"
-      ],
+      "description": "Coke, Fanta or Sprite.",
+      "price": 100,
+      "tags": [],
       "popular": false,
       "featured": false,
-      "image": "https://images.unsplash.com/photo-1567977701640-3b6cf5037f19?auto=format&fit=crop&w=800&q=60",
-      "description": "Chilled, 250 ml bottle."
+      "order": 1,
+      "image": {
+        "file": "soft-drinks-coke-fanta-sprite.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "three chilled soft drink glasses — cola, orange and lemon-lime — over ice, professional beverage photography, straight-on angle, soft natural light, condensation on the glass, clean neutral background, vibrant, high detail"
+      }
     },
     {
       "slug": "fresh-lemon-soda",
       "name": "Fresh Lemon Soda",
-      "price": 120,
       "cat": "soft-drinks",
       "sub": null,
-      "tags": [
-        "VEG"
-      ],
+      "description": "Fresh lemon soda.",
+      "price": 120,
+      "tags": [],
       "popular": false,
       "featured": false,
-      "image": "https://images.unsplash.com/photo-1567977701640-3b6cf5037f19?auto=format&fit=crop&w=800&q=60",
-      "description": "Soda water with fresh lime."
+      "order": 2,
+      "image": {
+        "file": "soft-drinks-fresh-lemon-soda.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a glass of lemon soda with ice, professional beverage photography, straight-on angle, soft natural light, condensation on the glass, clean neutral background, vibrant, high detail"
+      }
     },
     {
       "slug": "mint-lemonade",
       "name": "Mint Lemonade",
-      "price": 250,
       "cat": "soft-drinks",
       "sub": null,
-      "tags": [
-        "VEG"
-      ],
+      "description": "Mint lemonade.",
+      "price": 250,
+      "tags": [],
       "popular": false,
       "featured": false,
-      "image": "https://images.unsplash.com/photo-1567977701640-3b6cf5037f19?auto=format&fit=crop&w=800&q=60",
-      "description": "Fresh mint and lemon lemonade."
+      "order": 3,
+      "image": {
+        "file": "soft-drinks-mint-lemonade.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a glass of mint lemonade, professional beverage photography, straight-on angle, soft natural light, condensation on the glass, clean neutral background, vibrant, high detail"
+      }
     },
     {
       "slug": "xtreme",
       "name": "Xtreme",
-      "price": 260,
       "cat": "soft-drinks",
       "sub": null,
-      "tags": [
-        "VEG"
-      ],
+      "description": "",
+      "price": 260,
+      "tags": [],
       "popular": false,
       "featured": false,
-      "image": "https://images.unsplash.com/photo-1567977701640-3b6cf5037f19?auto=format&fit=crop&w=800&q=60",
-      "description": "Chilled Xtreme energy drink."
+      "order": 4,
+      "image": null
     },
     {
       "slug": "red-bull-blue",
       "name": "Red Bull Blue",
-      "price": 430,
       "cat": "soft-drinks",
       "sub": null,
-      "tags": [
-        "VEG"
-      ],
+      "description": "Red Bull Blue Edition.",
+      "price": 430,
+      "tags": [],
       "popular": false,
       "featured": false,
-      "image": "https://images.unsplash.com/photo-1560689189-65b6ed6228e7?auto=format&fit=crop&w=800&q=60",
-      "description": "Red Bull energy drink, blue edition."
+      "order": 5,
+      "image": {
+        "file": "soft-drinks-red-bull-blue.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a chilled energy drink can beside a glass of ice, professional beverage photography, straight-on angle, soft natural light, condensation on the glass, clean neutral background, vibrant, high detail"
+      }
     },
     {
       "slug": "mineral-water",
       "name": "Mineral Water",
-      "price": 40,
       "cat": "soft-drinks",
       "sub": null,
-      "tags": [
-        "VEG"
-      ],
+      "description": "Bottled mineral water.",
+      "price": 40,
+      "tags": [],
       "popular": false,
       "featured": false,
-      "image": "https://images.unsplash.com/photo-1567977701640-3b6cf5037f19?auto=format&fit=crop&w=800&q=60",
-      "description": "Bottled mineral water."
+      "order": 6,
+      "image": {
+        "file": "soft-drinks-mineral-water.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a chilled bottle of mineral water with condensation and a filled glass, professional beverage photography, straight-on angle, soft natural light, condensation on the glass, clean neutral background, vibrant, high detail"
+      }
     },
     {
       "slug": "tomato-soup",
       "name": "Tomato Soup",
-      "price": 180,
       "cat": "soups",
       "sub": null,
-      "tags": [
-        "VEG"
-      ],
+      "description": "Tomato soup.",
+      "price": 180,
+      "tags": [],
       "popular": false,
       "featured": false,
-      "image": "https://images.unsplash.com/photo-1629978444632-9f63ba0eff47?auto=format&fit=crop&w=800&q=60",
-      "description": "Classic tomato soup."
+      "order": 1,
+      "image": {
+        "file": "soups-tomato-soup.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a bowl of tomato soup, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, fresh vibrant colours, appetising, high detail"
+      }
     },
     {
       "slug": "creamy-soup",
       "name": "Creamy Soup",
-      "price": 210,
       "cat": "soups",
       "sub": null,
-      "tags": [
-        "VEG"
-      ],
+      "description": "Creamy soup.",
+      "price": 210,
+      "tags": [],
       "popular": false,
       "featured": false,
-      "image": "https://images.unsplash.com/photo-1620418025834-f4379baf1de9?auto=format&fit=crop&w=800&q=60",
-      "description": "Rich, creamy vegetable soup."
+      "order": 2,
+      "image": {
+        "file": "soups-creamy-soup.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a bowl of creamy soup, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, fresh vibrant colours, appetising, high detail"
+      }
     },
     {
       "slug": "hot-sour-soup",
       "name": "Hot & Sour Soup",
-      "price": 220,
       "cat": "soups",
       "sub": null,
-      "tags": [
-        "VEG"
-      ],
+      "description": "Hot and sour soup.",
+      "price": 220,
+      "tags": [],
       "popular": false,
       "featured": false,
-      "image": "https://images.unsplash.com/photo-1613844237701-8f3664fc2eff?auto=format&fit=crop&w=800&q=60",
-      "description": "Spicy and tangy Asian-style soup."
+      "order": 3,
+      "image": {
+        "file": "soups-hot-sour-soup.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a bowl of hot and sour soup, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, fresh vibrant colours, appetising, high detail"
+      }
     },
     {
       "slug": "mushroom-soup",
       "name": "Mushroom Soup",
-      "price": 230,
       "cat": "soups",
       "sub": null,
-      "tags": [
-        "VEG"
-      ],
+      "description": "Mushroom soup.",
+      "price": 230,
+      "tags": [],
       "popular": false,
       "featured": false,
-      "image": "https://images.unsplash.com/photo-1759689975548-2e3a06b3d816?auto=format&fit=crop&w=800&q=60",
-      "description": "Creamy mushroom soup."
+      "order": 4,
+      "image": {
+        "file": "soups-mushroom-soup.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a bowl of mushroom soup, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, fresh vibrant colours, appetising, high detail"
+      }
     },
     {
       "slug": "chicken-soup",
       "name": "Chicken Soup",
-      "price": 250,
       "cat": "soups",
       "sub": null,
+      "description": "Chicken soup.",
+      "price": 250,
       "tags": [],
       "popular": false,
       "featured": false,
-      "image": "https://images.unsplash.com/photo-1665593998976-d957f2827fe7?auto=format&fit=crop&w=800&q=60",
-      "description": "Clear chicken broth soup."
+      "order": 5,
+      "image": {
+        "file": "soups-chicken-soup.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a bowl of chicken soup, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, fresh vibrant colours, appetising, high detail"
+      }
     },
     {
       "slug": "chicken-mushroom-soup",
       "name": "Chicken Mushroom Soup",
-      "price": 280,
       "cat": "soups",
       "sub": null,
+      "description": "Chicken and mushroom soup.",
+      "price": 280,
       "tags": [],
       "popular": false,
       "featured": false,
-      "image": "https://images.unsplash.com/photo-1584972922016-912db9f3df22?auto=format&fit=crop&w=800&q=60",
-      "description": "Chicken soup with mushroom."
+      "order": 6,
+      "image": {
+        "file": "soups-chicken-mushroom-soup.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a bowl of chicken and mushroom soup, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, fresh vibrant colours, appetising, high detail"
+      }
     },
     {
       "slug": "veg-fried-rice",
       "name": "Veg Fried Rice",
-      "price": 200,
       "cat": "rice",
       "sub": null,
-      "tags": [
-        "VEG"
-      ],
+      "description": "Rice with vegetables.",
+      "price": 200,
+      "tags": [],
       "popular": false,
       "featured": false,
-      "image": "https://images.unsplash.com/photo-1584269600464-37b1b58a9fe7?auto=format&fit=crop&w=800&q=60",
-      "description": "Wok-tossed rice with seasonal vegetables."
+      "order": 1,
+      "image": {
+        "file": "rice-veg-fried-rice.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a plate of wok-tossed rice with mixed vegetables, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, fresh vibrant colours, appetising, high detail"
+      }
     },
     {
       "slug": "egg-fried-rice",
       "name": "Egg Fried Rice",
-      "price": 240,
       "cat": "rice",
       "sub": null,
+      "description": "Rice with egg.",
+      "price": 240,
       "tags": [],
       "popular": false,
       "featured": false,
-      "image": "https://images.unsplash.com/photo-1603133872878-684f208fb84b?auto=format&fit=crop&w=800&q=60",
-      "description": "Fried rice with scrambled egg."
+      "order": 2,
+      "image": {
+        "file": "rice-egg-fried-rice.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a plate of wok-tossed rice with egg, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, fresh vibrant colours, appetising, high detail"
+      }
     },
     {
       "slug": "chicken-fried-rice",
       "name": "Chicken Fried Rice",
-      "price": 300,
       "cat": "rice",
       "sub": null,
+      "description": "Rice with chicken.",
+      "price": 300,
       "tags": [],
-      "popular": true,
+      "popular": false,
       "featured": false,
-      "image": "https://images.unsplash.com/photo-1540100716001-4b432820e37f?auto=format&fit=crop&w=800&q=60",
-      "description": "Fried rice with diced chicken."
+      "order": 3,
+      "image": {
+        "file": "rice-chicken-fried-rice.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a plate of wok-tossed rice with chicken, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, fresh vibrant colours, appetising, high detail"
+      }
     },
     {
       "slug": "mix-fried-rice",
       "name": "Mix Fried Rice",
-      "price": 320,
       "cat": "rice",
       "sub": null,
-      "tags": [
-        "VEG"
-      ],
+      "description": "Mix fried rice.",
+      "price": 320,
+      "tags": [],
       "popular": false,
       "featured": false,
-      "image": "https://images.unsplash.com/photo-1705088293300-8fc8c7be90e2?auto=format&fit=crop&w=800&q=60",
-      "description": "Fried rice with chicken, egg and vegetables."
+      "order": 4,
+      "image": {
+        "file": "rice-mix-fried-rice.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a plate of wok-tossed mixed rice, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, fresh vibrant colours, appetising, high detail"
+      }
     },
     {
       "slug": "chicken-biryani",
       "name": "Chicken Biryani",
-      "price": 450,
       "cat": "biryani",
       "sub": null,
-      "tags": [
-        "SPICY"
-      ],
-      "popular": true,
-      "featured": true,
-      "image": "https://images.unsplash.com/photo-1589302168068-964664d93dc0?auto=format&fit=crop&w=800&q=60",
-      "description": "Fragrant basmati rice layered with spiced chicken."
+      "description": "Chicken biryani.",
+      "price": 450,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 1,
+      "image": {
+        "file": "biryani-chicken-biryani.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a bowl of chicken biryani, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, fresh vibrant colours, appetising, high detail"
+      }
     },
     {
       "slug": "mutton-biryani",
       "name": "Mutton Biryani",
-      "price": 570,
       "cat": "biryani",
       "sub": null,
-      "tags": [
-        "SPICY"
-      ],
+      "description": "Mutton biryani.",
+      "price": 570,
+      "tags": [],
       "popular": false,
       "featured": false,
-      "image": "https://images.unsplash.com/photo-1606843046080-45bf7a23c39f?auto=format&fit=crop&w=800&q=60",
-      "description": "Fragrant basmati rice layered with slow-cooked mutton."
+      "order": 2,
+      "image": {
+        "file": "biryani-mutton-biryani.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a bowl of mutton biryani, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, fresh vibrant colours, appetising, high detail"
+      }
     },
     {
       "slug": "veg-curry",
       "name": "Veg Curry",
-      "price": 270,
       "cat": "indian-style",
       "sub": null,
-      "tags": [
-        "VEG"
-      ],
+      "description": "Vegetable curry.",
+      "price": 270,
+      "tags": [],
       "popular": false,
       "featured": false,
-      "image": "https://images.unsplash.com/photo-1554054204-b2f70b09d031?auto=format&fit=crop&w=800&q=60",
-      "description": "Mixed vegetable curry."
+      "order": 1,
+      "image": {
+        "file": "indian-style-veg-curry.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a bowl of vegetable curry, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, fresh vibrant colours, appetising, high detail"
+      }
     },
     {
       "slug": "chicken-curry",
       "name": "Chicken Curry",
-      "price": 370,
       "cat": "indian-style",
       "sub": null,
+      "description": "Chicken curry.",
+      "price": 370,
       "tags": [],
       "popular": false,
       "featured": false,
-      "image": "https://images.unsplash.com/photo-1603894584373-5ac82b2ae398?auto=format&fit=crop&w=800&q=60",
-      "description": "Home-style chicken curry."
+      "order": 2,
+      "image": {
+        "file": "indian-style-chicken-curry.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a bowl of chicken curry, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, fresh vibrant colours, appetising, high detail"
+      }
     },
     {
       "slug": "butter-chicken",
       "name": "Butter Chicken",
-      "price": 390,
       "cat": "indian-style",
       "sub": null,
+      "description": "Butter chicken.",
+      "price": 390,
       "tags": [],
-      "popular": true,
-      "featured": true,
-      "image": "https://images.unsplash.com/photo-1603894584373-5ac82b2ae398?auto=format&fit=crop&w=800&q=60",
-      "description": "Chicken simmered in a creamy tomato-butter sauce."
+      "popular": false,
+      "featured": false,
+      "order": 3,
+      "image": {
+        "file": "indian-style-butter-chicken.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a bowl of butter chicken, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, fresh vibrant colours, appetising, high detail"
+      }
     },
     {
       "slug": "palak-paneer",
       "name": "Palak Paneer",
-      "price": 390,
       "cat": "indian-style",
       "sub": null,
-      "tags": [
-        "VEG"
-      ],
+      "description": "Paneer in spinach.",
+      "price": 390,
+      "tags": [],
       "popular": false,
       "featured": false,
-      "image": "https://images.unsplash.com/photo-1589647363585-f4a7d3877b10?auto=format&fit=crop&w=800&q=60",
-      "description": "Paneer cubes in a spiced spinach gravy."
+      "order": 4,
+      "image": {
+        "file": "indian-style-palak-paneer.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "cubes of paneer in spinach gravy in a bowl, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, fresh vibrant colours, appetising, high detail"
+      }
     },
     {
       "slug": "veg-thali",
       "name": "Veg Thali",
-      "price": 280,
       "cat": "nepali-thali",
       "sub": null,
-      "tags": [
-        "VEG"
-      ],
+      "description": "Vegetarian Nepali thali.",
+      "price": 280,
+      "tags": [],
       "popular": false,
       "featured": false,
-      "image": "https://images.unsplash.com/photo-1588644525273-f37b60d78512?auto=format&fit=crop&w=800&q=60",
-      "description": "Dal, bhat, tarkari, saag and achar."
+      "order": 1,
+      "image": {
+        "file": "nepali-thali-veg-thali.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a nepali thali, a round steel tray of rice with small bowls of vegetable curry and lentil dal, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, fresh vibrant colours, appetising, high detail"
+      }
     },
     {
       "slug": "chicken-thali",
       "name": "Chicken Thali",
-      "price": 430,
       "cat": "nepali-thali",
       "sub": null,
+      "description": "Nepali thali with chicken.",
+      "price": 430,
       "tags": [],
-      "popular": true,
+      "popular": false,
       "featured": false,
-      "image": "https://images.unsplash.com/photo-1588644525273-f37b60d78512?auto=format&fit=crop&w=800&q=60",
-      "description": "Full thali with chicken curry."
+      "order": 2,
+      "image": {
+        "file": "nepali-thali-chicken-thali.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a nepali thali, a round steel tray of rice with small bowls of chicken curry and lentil dal, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, fresh vibrant colours, appetising, high detail"
+      }
     },
     {
       "slug": "mutton-thali",
       "name": "Mutton Thali",
-      "price": 600,
       "cat": "nepali-thali",
       "sub": null,
+      "description": "Nepali thali with mutton.",
+      "price": 600,
       "tags": [],
       "popular": false,
       "featured": false,
-      "image": "https://images.unsplash.com/photo-1588644525273-f37b60d78512?auto=format&fit=crop&w=800&q=60",
-      "description": "Full thali with mutton curry."
+      "order": 3,
+      "image": {
+        "file": "nepali-thali-mutton-thali.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a nepali thali, a round steel tray of rice with small bowls of mutton curry and lentil dal, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, fresh vibrant colours, appetising, high detail"
+      }
     },
     {
       "slug": "veg-khaja-set",
       "name": "Veg Khaja Set",
-      "price": 360,
       "cat": "khaja-set",
       "sub": null,
-      "tags": [
-        "VEG"
-      ],
+      "description": "Vegetarian khaja set.",
+      "price": 360,
+      "tags": [],
       "popular": false,
       "featured": false,
-      "image": "https://images.unsplash.com/photo-1593252719532-53f183016149?auto=format&fit=crop&w=800&q=60",
-      "description": "Traditional veg khaja platter."
+      "order": 1,
+      "image": {
+        "file": "khaja-set-veg-khaja-set.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a Nepali veg khaja set platter — beaten rice, bhatmas, peanuts, aloo jeera, pickle and papad, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, fresh vibrant colours, appetising, high detail"
+      }
     },
     {
       "slug": "non-veg-khaja-set",
       "name": "Non Veg Khaja Set",
-      "price": 470,
       "cat": "khaja-set",
       "sub": null,
-      "tags": [
-        "VEG"
-      ],
+      "description": "Non-vegetarian khaja set.",
+      "price": 470,
+      "tags": [],
       "popular": false,
       "featured": false,
-      "image": "https://images.unsplash.com/photo-1593252719532-53f183016149?auto=format&fit=crop&w=800&q=60",
-      "description": "Traditional khaja platter with meat."
+      "order": 2,
+      "image": {
+        "file": "khaja-set-non-veg-khaja-set.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a nepali khaja set, a platter of beaten rice with a small bowl of meat curry, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, fresh vibrant colours, appetising, high detail"
+      }
     },
     {
       "slug": "jhol-momo-veg",
       "name": "Jhol Momo (Veg)",
-      "price": 200,
       "cat": "momo",
       "sub": null,
-      "tags": [
-        "VEG",
-        "SPICY"
-      ],
+      "description": "Veg momo in jhol soup.",
+      "price": 200,
+      "tags": [],
       "popular": false,
       "featured": false,
-      "image": "https://images.unsplash.com/photo-1694923450868-b432a8ee52aa?auto=format&fit=crop&w=800&q=60",
-      "description": "Steamed veg momo in warm sesame-timur jhol."
+      "order": 1,
+      "image": {
+        "file": "momo-jhol-momo-veg.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "steamed pleated vegetable dumplings in a bowl of spiced broth, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, fresh vibrant colours, appetising, high detail"
+      }
     },
     {
       "slug": "jhol-momo-non-veg",
       "name": "Jhol Momo (Non Veg)",
-      "price": 260,
       "cat": "momo",
       "sub": null,
-      "tags": [
-        "VEG",
-        "SPICY"
-      ],
-      "popular": true,
+      "description": "Non-veg momo in jhol soup.",
+      "price": 260,
+      "tags": [],
+      "popular": false,
       "featured": false,
-      "image": "https://images.unsplash.com/photo-1694923450868-b432a8ee52aa?auto=format&fit=crop&w=800&q=60",
-      "description": "Steamed momo swimming in warm sesame-timur jhol."
+      "order": 2,
+      "image": {
+        "file": "momo-jhol-momo-non-veg.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "steamed pleated meat dumplings in a bowl of spiced broth, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, fresh vibrant colours, appetising, high detail"
+      }
     },
     {
       "slug": "veg-momo",
       "name": "Veg Momo",
-      "price": 190,
       "cat": "momo",
       "sub": null,
-      "tags": [
-        "VEG"
-      ],
+      "description": "Vegetable momo.",
+      "price": 190,
+      "tags": [],
       "popular": false,
       "featured": false,
-      "image": "https://images.unsplash.com/photo-1518983546435-91f8b87fe561?auto=format&fit=crop&w=800&q=60",
-      "description": "Steamed vegetable momo, served with achar."
+      "order": 3,
+      "image": {
+        "file": "momo-veg-momo.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a plate of steamed pleated vegetable dumplings, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, fresh vibrant colours, appetising, high detail"
+      }
     },
     {
       "slug": "chicken-momo",
       "name": "Chicken Momo",
-      "price": 230,
       "cat": "momo",
       "sub": null,
+      "description": "Chicken momo.",
+      "price": 230,
       "tags": [],
-      "popular": true,
+      "popular": false,
       "featured": false,
-      "image": "https://images.unsplash.com/photo-1589047133481-02b4a5327d89?auto=format&fit=crop&w=800&q=60",
-      "description": "Steamed chicken momo with sesame-tomato achar."
+      "order": 4,
+      "image": {
+        "file": "momo-chicken-momo.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a plate of steamed pleated chicken dumplings, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, fresh vibrant colours, appetising, high detail"
+      }
     },
     {
       "slug": "buff-momo",
       "name": "Buff Momo",
-      "price": 260,
       "cat": "momo",
       "sub": null,
+      "description": "Buff momo.",
+      "price": 230,
       "tags": [],
       "popular": false,
       "featured": false,
-      "image": "https://images.unsplash.com/photo-1638502338747-f7f368214cce?auto=format&fit=crop&w=800&q=60",
-      "description": "Kathmandu-style minced buff momo."
+      "order": 5,
+      "image": {
+        "file": "momo-buff-momo.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a plate of steamed pleated buffalo-meat dumplings, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, fresh vibrant colours, appetising, high detail"
+      }
     },
     {
       "slug": "paneer-momo",
       "name": "Paneer Momo",
-      "price": 260,
       "cat": "momo",
       "sub": null,
-      "tags": [
-        "VEG"
-      ],
+      "description": "Paneer momo.",
+      "price": 260,
+      "tags": [],
       "popular": false,
       "featured": false,
-      "image": "https://images.unsplash.com/photo-1604632910985-5a738e3237d2?auto=format&fit=crop&w=800&q=60",
-      "description": "Soft paneer and spring-onion filling."
+      "order": 6,
+      "image": {
+        "file": "momo-paneer-momo.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a plate of steamed paneer momo, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, fresh vibrant colours, appetising, high detail"
+      }
     },
     {
       "slug": "chilly-momo",
       "name": "Chilly Momo",
-      "price": 320,
       "cat": "momo",
       "sub": null,
-      "tags": [
-        "VEG",
-        "SPICY"
-      ],
-      "popular": true,
+      "description": "Chilly momo.",
+      "price": 320,
+      "tags": [],
+      "popular": false,
       "featured": false,
-      "image": "https://images.unsplash.com/photo-1675774644393-7bcfa424dec7?auto=format&fit=crop&w=800&q=60",
-      "description": "Fried momo tossed in chilli-garlic sauce."
+      "order": 7,
+      "image": {
+        "file": "momo-chilly-momo.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "steamed pleated dumplings tossed in red chilly sauce, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, fresh vibrant colours, appetising, high detail"
+      }
     },
     {
       "slug": "momo-platter",
       "name": "Momo Platter",
-      "price": 430,
       "cat": "momo",
       "sub": null,
-      "tags": [
-        "VEG"
-      ],
+      "description": "A platter of momo.",
+      "price": 430,
+      "tags": [],
       "popular": false,
-      "featured": true,
-      "image": "https://images.unsplash.com/photo-1694850184798-320a8e10bb5e?auto=format&fit=crop&w=800&q=60",
-      "description": "Assorted momo platter for sharing."
+      "featured": false,
+      "order": 8,
+      "image": {
+        "file": "momo-momo-platter.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a large platter of steamed pleated dumplings, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, fresh vibrant colours, appetising, high detail"
+      }
     },
     {
       "slug": "paneer-pakoda",
       "name": "Paneer Pakoda",
-      "price": 400,
       "cat": "pakoda",
       "sub": null,
-      "tags": [
-        "VEG"
-      ],
+      "description": "Paneer pakoda.",
+      "price": 400,
+      "tags": [],
       "popular": false,
       "featured": false,
-      "image": "https://images.unsplash.com/photo-1613764816537-a43baeb559c1?auto=format&fit=crop&w=800&q=60",
-      "description": "Batter-fried paneer fritters."
+      "order": 1,
+      "image": {
+        "file": "pakoda-paneer-pakoda.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a plate of paneer pakoda fritters, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, fresh vibrant colours, appetising, high detail"
+      }
     },
     {
       "slug": "veg-pakoda",
       "name": "Veg Pakoda",
-      "price": 280,
       "cat": "pakoda",
       "sub": null,
-      "tags": [
-        "VEG"
-      ],
+      "description": "Vegetable pakoda.",
+      "price": 280,
+      "tags": [],
       "popular": false,
       "featured": false,
-      "image": "https://images.unsplash.com/photo-1767114915965-7abe87d7c7d8?auto=format&fit=crop&w=800&q=60",
-      "description": "Mixed vegetable fritters."
+      "order": 2,
+      "image": {
+        "file": "pakoda-veg-pakoda.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a plate of vegetable pakoda fritters, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, fresh vibrant colours, appetising, high detail"
+      }
     },
     {
       "slug": "plain-rice",
       "name": "Plain Rice",
-      "price": 140,
-      "cat": "rice-roti",
+      "cat": "rice-roti-chapati",
       "sub": null,
-      "tags": [
-        "VEG"
-      ],
+      "description": "Plain rice.",
+      "price": 140,
+      "tags": [],
       "popular": false,
       "featured": false,
-      "image": "https://images.unsplash.com/photo-1536304993881-ff6e9eefa2a6?auto=format&fit=crop&w=800&q=60",
-      "description": "Steamed white rice."
+      "order": 1,
+      "image": {
+        "file": "rice-roti-chapati-plain-rice.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a bowl of plain white rice, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, fresh vibrant colours, appetising, high detail"
+      }
     },
     {
       "slug": "jeera-rice",
       "name": "Jeera Rice",
-      "price": 180,
-      "cat": "rice-roti",
+      "cat": "rice-roti-chapati",
       "sub": null,
-      "tags": [
-        "VEG"
-      ],
+      "description": "Rice with jeera cumin.",
+      "price": 180,
+      "tags": [],
       "popular": false,
       "featured": false,
-      "image": "https://images.unsplash.com/photo-1536304993881-ff6e9eefa2a6?auto=format&fit=crop&w=800&q=60",
-      "description": "Cumin-tempered steamed rice."
+      "order": 2,
+      "image": {
+        "file": "rice-roti-chapati-jeera-rice.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a bowl of jeera rice, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, fresh vibrant colours, appetising, high detail"
+      }
     },
     {
       "slug": "roti-chapati-per-pcs",
       "name": "Roti (Chapati) per pcs",
-      "price": 40,
-      "cat": "rice-roti",
+      "cat": "rice-roti-chapati",
       "sub": null,
-      "tags": [
-        "VEG"
-      ],
+      "description": "Roti (chapati), priced per piece.",
+      "price": 40,
+      "tags": [],
       "popular": false,
       "featured": false,
-      "image": "https://images.unsplash.com/photo-1708782343717-be4ea260249a?auto=format&fit=crop&w=800&q=60",
-      "description": "Fresh-rolled chapati, per piece."
+      "order": 3,
+      "image": {
+        "file": "rice-roti-chapati-roti-chapati-per-pcs.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a stack of roti chapati on a plate, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, fresh vibrant colours, appetising, high detail"
+      }
     },
     {
       "slug": "carbonara",
       "name": "Carbonara",
-      "price": 750,
-      "cat": "pasta",
+      "cat": "pasta-spaghetti",
       "sub": null,
-      "tags": [
-        "VEG"
-      ],
+      "description": "Pasta carbonara.",
+      "price": 750,
+      "tags": [],
       "popular": false,
       "featured": false,
-      "image": "https://images.unsplash.com/photo-1546549032-9571cd6b27df?auto=format&fit=crop&w=800&q=60",
-      "description": "Creamy carbonara with bacon and parmesan."
+      "order": 1,
+      "image": {
+        "file": "pasta-spaghetti-carbonara.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a plate of spaghetti carbonara, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, fresh vibrant colours, appetising, high detail"
+      }
     },
     {
       "slug": "bolognese",
       "name": "Bolognese",
-      "price": 660,
-      "cat": "pasta",
+      "cat": "pasta-spaghetti",
       "sub": null,
-      "tags": [
-        "VEG"
-      ],
+      "description": "Pasta bolognese.",
+      "price": 660,
+      "tags": [],
       "popular": false,
       "featured": false,
-      "image": "https://images.unsplash.com/photo-1551892374-ecf8754cf8b0?auto=format&fit=crop&w=800&q=60",
-      "description": "Spaghetti with slow-cooked meat sauce."
+      "order": 2,
+      "image": {
+        "file": "pasta-spaghetti-bolognese.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a plate of spaghetti bolognese, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, fresh vibrant colours, appetising, high detail"
+      }
     },
     {
       "slug": "siciliana",
       "name": "Siciliana",
-      "price": 590,
-      "cat": "pasta",
+      "cat": "pasta-spaghetti",
       "sub": null,
-      "tags": [
-        "VEG"
-      ],
+      "description": "",
+      "price": 590,
+      "tags": [],
       "popular": false,
       "featured": false,
-      "image": "https://images.unsplash.com/photo-1608219992759-8d74ed8d76eb?auto=format&fit=crop&w=800&q=60",
-      "description": "Pasta with a rich Sicilian tomato sauce."
+      "order": 3,
+      "image": null
     },
     {
       "slug": "ivory",
       "name": "Ivory",
-      "price": 600,
-      "cat": "pasta",
+      "cat": "pasta-spaghetti",
       "sub": null,
-      "tags": [
-        "VEG"
-      ],
+      "description": "",
+      "price": 600,
+      "tags": [],
       "popular": false,
       "featured": false,
-      "image": "https://images.unsplash.com/photo-1612152328178-4a6c83d96429?auto=format&fit=crop&w=800&q=60",
-      "description": "Creamy white-sauce pasta."
+      "order": 4,
+      "image": null
     },
     {
       "slug": "chicken-chily",
       "name": "Chicken Chily",
-      "price": 400,
       "cat": "snacks",
       "sub": null,
-      "tags": [
-        "SPICY"
-      ],
-      "popular": true,
+      "description": "Chicken chilly.",
+      "price": 400,
+      "tags": [],
+      "popular": false,
       "featured": false,
-      "image": "https://images.unsplash.com/photo-1603496987351-f84a3ba5ec85?auto=format&fit=crop&w=800&q=60",
-      "description": "Wok-tossed chicken in a spicy chilli-garlic sauce."
+      "order": 1,
+      "image": {
+        "file": "snacks-chicken-chily.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a plate of chicken chilly in red sauce, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, fresh vibrant colours, appetising, high detail"
+      }
     },
     {
       "slug": "chi-lollipop",
       "name": "Chi. Lollipop",
-      "price": 390,
       "cat": "snacks",
       "sub": null,
-      "tags": [
-        "VEG"
-      ],
+      "description": "Chicken lollipop.",
+      "price": 390,
+      "tags": [],
       "popular": false,
       "featured": false,
-      "image": "https://images.unsplash.com/photo-1766589221509-61951995e435?auto=format&fit=crop&w=800&q=60",
-      "description": "Frenched chicken drumettes, deep fried and tossed."
+      "order": 2,
+      "image": {
+        "file": "snacks-chi-lollipop.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a plate of chicken lollipop drumsticks, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, fresh vibrant colours, appetising, high detail"
+      }
     },
     {
       "slug": "buffalo-wings",
       "name": "Buffalo Wings",
-      "price": 450,
       "cat": "snacks",
       "sub": null,
+      "description": "Buffalo wings.",
+      "price": 450,
       "tags": [],
       "popular": false,
       "featured": false,
-      "image": "https://images.unsplash.com/photo-1649808382945-c87ccf84bf3f?auto=format&fit=crop&w=800&q=60",
-      "description": "Crispy chicken wings in buffalo sauce."
+      "order": 3,
+      "image": {
+        "file": "snacks-buffalo-wings.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a plate of buffalo wings, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, fresh vibrant colours, appetising, high detail"
+      }
     },
     {
       "slug": "chicken-sadeko",
       "name": "Chicken Sadeko",
-      "price": 370,
       "cat": "snacks",
       "sub": null,
-      "tags": [
-        "SPICY"
-      ],
+      "description": "Sadeko-style chicken.",
+      "price": 370,
+      "tags": [],
       "popular": false,
       "featured": false,
-      "image": "https://images.unsplash.com/photo-1716535232842-d10da4eb33d5?auto=format&fit=crop&w=800&q=60",
-      "description": "Nepali-style spiced shredded chicken salad."
+      "order": 4,
+      "image": {
+        "file": "snacks-chicken-sadeko.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a bowl of nepali chicken sadeko, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, fresh vibrant colours, appetising, high detail"
+      }
     },
     {
       "slug": "mustang-alu",
       "name": "Mustang Alu",
-      "price": 290,
       "cat": "snacks",
       "sub": null,
-      "tags": [
-        "VEG"
-      ],
+      "description": "",
+      "price": 290,
+      "tags": [],
       "popular": false,
       "featured": false,
-      "image": "https://images.unsplash.com/photo-1776857215448-ebebd8ebb35e?auto=format&fit=crop&w=800&q=60",
-      "description": "Mustang-style spicy potato salad."
+      "order": 5,
+      "image": null
     },
     {
       "slug": "fried-chicken",
       "name": "Fried Chicken",
-      "price": 410,
       "cat": "snacks",
       "sub": null,
+      "description": "Chicken, crisp and golden.",
+      "price": 410,
       "tags": [],
       "popular": false,
       "featured": false,
-      "image": "https://images.unsplash.com/photo-1586793783658-261cddf883ef?auto=format&fit=crop&w=800&q=60",
-      "description": "Crispy deep-fried chicken pieces."
+      "order": 6,
+      "image": {
+        "file": "snacks-fried-chicken.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "crisp golden chicken pieces on a plate, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, fresh vibrant colours, appetising, high detail"
+      }
     },
     {
       "slug": "french-fry",
       "name": "French Fry",
+      "cat": "snacks",
+      "sub": null,
+      "description": "French fries.",
       "price": 230,
-      "cat": "snacks",
-      "sub": null,
-      "tags": [
-        "VEG"
-      ],
-      "popular": true,
-      "featured": false,
-      "image": "https://images.unsplash.com/photo-1630384060421-cb20d0e0649d?auto=format&fit=crop&w=800&q=60",
-      "description": "Golden crispy fries."
-    },
-    {
-      "slug": "cheese-ball-veg-chicken",
-      "name": "Cheese Ball (Veg/Chicken)",
-      "price": 350,
-      "cat": "snacks",
-      "sub": null,
       "tags": [],
       "popular": false,
       "featured": false,
-      "image": "https://images.unsplash.com/photo-1714256635057-2a831a5c7e8d?auto=format&fit=crop&w=800&q=60",
-      "description": "Deep-fried cheese balls, veg or chicken."
+      "order": 7,
+      "image": {
+        "file": "snacks-french-fry.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a plate of french fries, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, fresh vibrant colours, appetising, high detail"
+      }
+    },
+    {
+      "slug": "cheese-ball-veg-chicken",
+      "name": "Cheese Ball (Veg / Chicken)",
+      "cat": "snacks",
+      "sub": null,
+      "description": "Cheese balls, veg or chicken.",
+      "price": 350,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 8,
+      "image": {
+        "file": "snacks-cheese-ball-veg-chicken.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a plate of golden cheese balls, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, fresh vibrant colours, appetising, high detail"
+      }
     },
     {
       "slug": "sausage-chilly",
       "name": "Sausage (Chilly)",
-      "price": 370,
       "cat": "snacks",
       "sub": null,
-      "tags": [
-        "SPICY"
-      ],
+      "description": "Sausage in chilly sauce.",
+      "price": 370,
+      "tags": [],
       "popular": false,
       "featured": false,
-      "image": "https://images.unsplash.com/photo-1585325701165-351af916e581?auto=format&fit=crop&w=800&q=60",
-      "description": "Sausage tossed in chilli sauce."
+      "order": 9,
+      "image": {
+        "file": "snacks-sausage-chilly.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a plate of sausage in red chilly sauce, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, fresh vibrant colours, appetising, high detail"
+      }
     },
     {
       "slug": "sausage-fried",
       "name": "Sausage (Fried)",
-      "price": 340,
       "cat": "snacks",
       "sub": null,
+      "description": "Sausage, pan-cooked.",
+      "price": 340,
       "tags": [],
       "popular": false,
       "featured": false,
-      "image": "https://images.unsplash.com/photo-1585325701165-351af916e581?auto=format&fit=crop&w=800&q=60",
-      "description": "Pan-fried sausage."
+      "order": 10,
+      "image": {
+        "file": "snacks-sausage-fried.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "pan-seared sausages on a plate, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, fresh vibrant colours, appetising, high detail"
+      }
     },
     {
       "slug": "chicken-pathai",
       "name": "Chicken Pathai",
-      "price": 460,
       "cat": "snacks",
       "sub": null,
+      "description": "",
+      "price": 460,
       "tags": [],
       "popular": false,
       "featured": false,
-      "image": "https://images.unsplash.com/photo-1603496987351-f84a3ba5ec85?auto=format&fit=crop&w=800&q=60",
-      "description": "Spiced stir-fried chicken."
+      "order": 11,
+      "image": null
     },
     {
       "slug": "bhatta-chauchau-sadheko",
-      "name": "Bhatta/Chauchau Sadheko",
-      "price": 200,
+      "name": "Bhatta / Chauchau Sadheko",
       "cat": "snacks",
       "sub": null,
-      "tags": [
-        "VEG",
-        "SPICY"
-      ],
+      "description": "",
+      "price": 200,
+      "tags": [],
       "popular": false,
       "featured": false,
-      "image": "https://images.unsplash.com/photo-1565976469782-7c92daebc42e?auto=format&fit=crop&w=800&q=60",
-      "description": "Spiced soybean and instant-noodle salad."
+      "order": 12,
+      "image": null
     },
     {
       "slug": "pork-tawa",
       "name": "Pork Tawa",
-      "price": 380,
       "cat": "snacks",
       "sub": null,
+      "description": "Pork on the tawa griddle.",
+      "price": 380,
       "tags": [],
       "popular": false,
       "featured": false,
-      "image": "https://images.unsplash.com/photo-1564834724105-918b73d1b9e0?auto=format&fit=crop&w=800&q=60",
-      "description": "Pan-seared pork, tawa style."
+      "order": 13,
+      "image": {
+        "file": "snacks-pork-tawa.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "pork cooked on a tawa griddle, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, fresh vibrant colours, appetising, high detail"
+      }
     },
     {
       "slug": "timur-chicken",
       "name": "Timur Chicken",
-      "price": 350,
       "cat": "snacks",
       "sub": null,
-      "tags": [
-        "SPICY"
-      ],
+      "description": "Chicken with timur pepper.",
+      "price": 350,
+      "tags": [],
       "popular": false,
       "featured": false,
-      "image": "https://images.unsplash.com/photo-1603496987351-f84a3ba5ec85?auto=format&fit=crop&w=800&q=60",
-      "description": "Chicken tossed with Himalayan timur pepper."
+      "order": 14,
+      "image": {
+        "file": "snacks-timur-chicken.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a plate of chicken with timur pepper, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, fresh vibrant colours, appetising, high detail"
+      }
     },
     {
       "slug": "alu-fried",
       "name": "Alu Fried",
-      "price": 190,
       "cat": "snacks",
       "sub": null,
-      "tags": [
-        "VEG"
-      ],
+      "description": "Potato, crisp and golden.",
+      "price": 190,
+      "tags": [],
       "popular": false,
       "featured": false,
-      "image": "https://images.unsplash.com/photo-1630384060421-cb20d0e0649d?auto=format&fit=crop&w=800&q=60",
-      "description": "Deep-fried potato wedges."
+      "order": 15,
+      "image": {
+        "file": "snacks-alu-fried.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "crisp golden potato pieces on a plate, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, fresh vibrant colours, appetising, high detail"
+      }
     },
     {
       "slug": "alu-sadeko",
       "name": "Alu Sadeko",
+      "cat": "snacks",
+      "sub": null,
+      "description": "Sadeko-style potato.",
       "price": 230,
-      "cat": "snacks",
-      "sub": null,
-      "tags": [
-        "VEG",
-        "SPICY"
-      ],
+      "tags": [],
       "popular": false,
       "featured": false,
-      "image": "https://images.unsplash.com/photo-1593895648796-9139c6bee45c?auto=format&fit=crop&w=800&q=60",
-      "description": "Spiced potato salad with mustard oil."
+      "order": 16,
+      "image": {
+        "file": "snacks-alu-sadeko.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a bowl of nepali alu sadeko, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, fresh vibrant colours, appetising, high detail"
+      }
     },
     {
-      "slug": "nachose",
-      "name": "Nachose",
+      "slug": "nachos",
+      "name": "Nachos",
+      "cat": "snacks",
+      "sub": null,
+      "description": "Nachos.",
       "price": 210,
-      "cat": "snacks",
-      "sub": null,
-      "tags": [
-        "VEG"
-      ],
+      "tags": [],
       "popular": false,
       "featured": false,
-      "image": "https://images.unsplash.com/photo-1669624272709-c5b91f66b1b7?auto=format&fit=crop&w=800&q=60",
-      "description": "Crispy nachos with cheese and salsa."
+      "order": 17,
+      "image": {
+        "file": "snacks-nachos.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a plate of nachos, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, fresh vibrant colours, appetising, high detail"
+      }
     },
     {
-      "slug": "veg-chowmein-thukpa",
-      "name": "Veg Chowmein/Thukpa",
+      "slug": "veg-chowmin-thukpa",
+      "name": "Veg",
+      "cat": "chowmin-thukpa",
+      "sub": null,
+      "description": "",
       "price": 190,
-      "cat": "chowmin-thukpa",
-      "sub": null,
-      "tags": [
-        "VEG"
-      ],
-      "popular": false,
-      "featured": false,
-      "image": "https://images.unsplash.com/photo-1585032226651-759b368d7246?auto=format&fit=crop&w=800&q=60",
-      "description": "Vegetable noodles, chowmein or thukpa style."
-    },
-    {
-      "slug": "chicken-chowmein-thukpa",
-      "name": "Chicken Chowmein/Thukpa",
-      "price": 240,
-      "cat": "chowmin-thukpa",
-      "sub": null,
-      "tags": [],
-      "popular": true,
-      "featured": false,
-      "image": "https://images.unsplash.com/photo-1585032226651-759b368d7246?auto=format&fit=crop&w=800&q=60",
-      "description": "Chicken noodles, chowmein or thukpa style."
-    },
-    {
-      "slug": "buff-chowmein-thukpa",
-      "name": "Buff Chowmein/Thukpa",
-      "price": 240,
-      "cat": "chowmin-thukpa",
-      "sub": null,
       "tags": [],
       "popular": false,
       "featured": false,
-      "image": "https://images.unsplash.com/photo-1585032226651-759b368d7246?auto=format&fit=crop&w=800&q=60",
-      "description": "Buff noodles, chowmein or thukpa style."
+      "order": 1,
+      "image": null
     },
     {
-      "slug": "mix-chowmein-thukpa",
-      "name": "Mix Chowmein/Thukpa",
+      "slug": "chicken-chowmin-thukpa",
+      "name": "Chicken",
+      "cat": "chowmin-thukpa",
+      "sub": null,
+      "description": "",
+      "price": 240,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 2,
+      "image": null
+    },
+    {
+      "slug": "buff",
+      "name": "Buff",
+      "cat": "chowmin-thukpa",
+      "sub": null,
+      "description": "",
+      "price": 240,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 3,
+      "image": null
+    },
+    {
+      "slug": "mix",
+      "name": "Mix",
+      "cat": "chowmin-thukpa",
+      "sub": null,
+      "description": "",
       "price": 290,
-      "cat": "chowmin-thukpa",
-      "sub": null,
-      "tags": [
-        "VEG"
-      ],
+      "tags": [],
       "popular": false,
       "featured": false,
-      "image": "https://images.unsplash.com/photo-1585032226651-759b368d7246?auto=format&fit=crop&w=800&q=60",
-      "description": "Mixed noodles, chowmein or thukpa style."
+      "order": 4,
+      "image": null
     },
     {
       "slug": "veg-wrap",
       "name": "Veg Wrap",
-      "price": 300,
       "cat": "wrap",
       "sub": null,
-      "tags": [
-        "VEG"
-      ],
+      "description": "Vegetable wrap.",
+      "price": 300,
+      "tags": [],
       "popular": false,
       "featured": false,
-      "image": "https://images.unsplash.com/photo-1626700051175-6818013e1d4f?auto=format&fit=crop&w=800&q=60",
-      "description": "Grilled vegetables rolled in a soft wrap."
+      "order": 1,
+      "image": {
+        "file": "wrap-veg-wrap.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a vegetable wrap on a plate, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, fresh vibrant colours, appetising, high detail"
+      }
     },
     {
       "slug": "chicken-wrap",
       "name": "Chicken Wrap",
-      "price": 350,
       "cat": "wrap",
       "sub": null,
+      "description": "Chicken wrap.",
+      "price": 350,
       "tags": [],
       "popular": false,
       "featured": false,
-      "image": "https://images.unsplash.com/photo-1626700051175-6818013e1d4f?auto=format&fit=crop&w=800&q=60",
-      "description": "Grilled chicken rolled in a soft wrap."
+      "order": 2,
+      "image": {
+        "file": "wrap-chicken-wrap.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a chicken wrap on a plate, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, fresh vibrant colours, appetising, high detail"
+      }
     },
     {
       "slug": "mix-wrap",
       "name": "Mix Wrap",
-      "price": 390,
       "cat": "wrap",
       "sub": null,
-      "tags": [
-        "VEG"
-      ],
+      "description": "Mix wrap.",
+      "price": 390,
+      "tags": [],
       "popular": false,
       "featured": false,
-      "image": "https://images.unsplash.com/photo-1719282431723-9d0f4370d4bc?auto=format&fit=crop&w=800&q=60",
-      "description": "Mixed filling wrap."
+      "order": 3,
+      "image": {
+        "file": "wrap-mix-wrap.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a wrap cut in half on a plate, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, fresh vibrant colours, appetising, high detail"
+      }
     },
     {
       "slug": "kati-roll",
       "name": "Kati Roll",
-      "price": 430,
       "cat": "wrap",
       "sub": null,
-      "tags": [
-        "VEG"
-      ],
+      "description": "Kati roll.",
+      "price": 430,
+      "tags": [],
       "popular": false,
       "featured": false,
-      "image": "https://images.unsplash.com/photo-1719282431723-9d0f4370d4bc?auto=format&fit=crop&w=800&q=60",
-      "description": "Spiced filling rolled in a paratha."
+      "order": 4,
+      "image": {
+        "file": "wrap-kati-roll.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a kati roll on a plate, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, fresh vibrant colours, appetising, high detail"
+      }
     },
     {
       "slug": "green-salad",
       "name": "Green Salad",
-      "price": 250,
       "cat": "salad",
       "sub": null,
-      "tags": [
-        "VEG"
-      ],
+      "description": "Green salad.",
+      "price": 250,
+      "tags": [],
       "popular": false,
       "featured": false,
-      "image": "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=800&q=60",
-      "description": "Fresh mixed greens."
+      "order": 1,
+      "image": {
+        "file": "salad-green-salad.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a plate of fresh green salad — cucumber, tomato, onion rings, carrot, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, fresh vibrant colours, appetising, high detail"
+      }
     },
     {
       "slug": "greek-salad",
       "name": "Greek Salad",
-      "price": 380,
       "cat": "salad",
       "sub": null,
-      "tags": [
-        "VEG"
-      ],
+      "description": "Greek salad.",
+      "price": 380,
+      "tags": [],
       "popular": false,
       "featured": false,
-      "image": "https://images.unsplash.com/photo-1657195721656-8254f104f289?auto=format&fit=crop&w=800&q=60",
-      "description": "Tomato, cucumber, olives and feta."
+      "order": 2,
+      "image": {
+        "file": "salad-greek-salad.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a bowl of greek salad, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, fresh vibrant colours, appetising, high detail"
+      }
     },
     {
       "slug": "fruit-salad",
       "name": "Fruit Salad",
-      "price": 370,
       "cat": "salad",
       "sub": null,
-      "tags": [
-        "VEG"
-      ],
+      "description": "Fruit salad.",
+      "price": 370,
+      "tags": [],
       "popular": false,
       "featured": false,
-      "image": "https://images.unsplash.com/photo-1519996529931-28324d5a630e?auto=format&fit=crop&w=800&q=60",
-      "description": "Seasonal fresh fruit."
+      "order": 3,
+      "image": {
+        "file": "salad-fruit-salad.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a bowl of fruit salad, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, fresh vibrant colours, appetising, high detail"
+      }
     },
     {
       "slug": "roasted-veg-salad",
       "name": "Roasted Veg Salad",
-      "price": 380,
       "cat": "salad",
       "sub": null,
-      "tags": [
-        "VEG"
-      ],
+      "description": "Salad with roasted vegetables.",
+      "price": 380,
+      "tags": [],
       "popular": false,
       "featured": false,
-      "image": "https://images.unsplash.com/photo-1606791422814-b32c705e3e2f?auto=format&fit=crop&w=800&q=60",
-      "description": "Oven-roasted seasonal vegetables."
+      "order": 4,
+      "image": {
+        "file": "salad-roasted-veg-salad.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a bowl of roasted vegetable salad, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, fresh vibrant colours, appetising, high detail"
+      }
     },
     {
       "slug": "sweet-corn-salad",
       "name": "Sweet Corn Salad",
-      "price": 350,
       "cat": "salad",
       "sub": null,
-      "tags": [
-        "VEG"
-      ],
+      "description": "Sweet corn salad.",
+      "price": 350,
+      "tags": [],
       "popular": false,
       "featured": false,
-      "image": "https://images.unsplash.com/photo-1559317996-d154e05c76fb?auto=format&fit=crop&w=800&q=60",
-      "description": "Sweet corn tossed with herbs and lime."
+      "order": 5,
+      "image": {
+        "file": "salad-sweet-corn-salad.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a bowl of sweet corn salad, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, fresh vibrant colours, appetising, high detail"
+      }
     },
     {
       "slug": "russian-salad",
       "name": "Russian Salad",
-      "price": 430,
       "cat": "salad",
       "sub": null,
-      "tags": [
-        "VEG"
-      ],
+      "description": "Russian salad.",
+      "price": 430,
+      "tags": [],
       "popular": false,
       "featured": false,
-      "image": "https://images.unsplash.com/photo-1631412727237-226e759778d7?auto=format&fit=crop&w=800&q=60",
-      "description": "Creamy mayo-dressed vegetable salad."
+      "order": 6,
+      "image": {
+        "file": "salad-russian-salad.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a bowl of creamy Russian salad with diced vegetables, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, fresh vibrant colours, appetising, high detail"
+      }
     },
     {
       "slug": "rosemary-chicken",
       "name": "Rosemary Chicken",
-      "price": 890,
       "cat": "chill-zone-special",
       "sub": null,
+      "description": "Chicken with rosemary.",
+      "price": 890,
       "tags": [],
       "popular": false,
-      "featured": true,
-      "image": "https://images.unsplash.com/photo-1615557960916-5f4791effe9d?auto=format&fit=crop&w=800&q=60",
-      "description": "Rosemary-marinated roasted chicken."
+      "featured": false,
+      "order": 1,
+      "image": {
+        "file": "chill-zone-special-rosemary-chicken.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a plate of rosemary chicken, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, fresh vibrant colours, appetising, high detail"
+      }
     },
     {
       "slug": "lemon-honey-chicken",
       "name": "Lemon Honey Chicken",
-      "price": 890,
       "cat": "chill-zone-special",
       "sub": null,
+      "description": "Chicken with lemon and honey.",
+      "price": 890,
       "tags": [],
       "popular": false,
-      "featured": true,
-      "image": "https://images.unsplash.com/photo-1532550907401-a500c9a57435?auto=format&fit=crop&w=800&q=60",
-      "description": "Grilled chicken glazed with lemon and honey."
+      "featured": false,
+      "order": 2,
+      "image": {
+        "file": "chill-zone-special-lemon-honey-chicken.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a plate of lemon honey chicken, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, fresh vibrant colours, appetising, high detail"
+      }
     },
     {
       "slug": "chicken-sizzler",
       "name": "Chicken Sizzler",
-      "price": 940,
       "cat": "chill-zone-special",
       "sub": null,
+      "description": "Chicken sizzler.",
+      "price": 940,
       "tags": [],
-      "popular": true,
-      "featured": true,
-      "image": "https://images.unsplash.com/photo-1598515214211-89d3c73ae83b?auto=format&fit=crop&w=800&q=60",
-      "description": "Chicken sizzler served on a hot plate with sides."
+      "popular": false,
+      "featured": false,
+      "order": 3,
+      "image": {
+        "file": "chill-zone-special-chicken-sizzler.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a sizzling chicken platter on a hot iron plate, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, fresh vibrant colours, appetising, high detail"
+      }
     },
     {
       "slug": "grilled-chicken",
       "name": "Grilled Chicken",
-      "price": 690,
       "cat": "chill-zone-special",
       "sub": null,
+      "description": "Grilled chicken.",
+      "price": 690,
       "tags": [],
       "popular": false,
       "featured": false,
-      "image": "https://images.unsplash.com/photo-1612871689804-26a67131416e?auto=format&fit=crop&w=800&q=60",
-      "description": "Char-grilled chicken breast with sides."
+      "order": 4,
+      "image": {
+        "file": "chill-zone-special-grilled-chicken.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a plate of grilled chicken, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, fresh vibrant colours, appetising, high detail"
+      }
     },
     {
       "slug": "rolled-chicken",
       "name": "Rolled Chicken",
-      "price": 880,
       "cat": "chill-zone-special",
       "sub": null,
+      "description": "Rolled chicken.",
+      "price": 880,
       "tags": [],
       "popular": false,
       "featured": false,
-      "image": "https://images.unsplash.com/photo-1642689690500-f429a042cad1?auto=format&fit=crop&w=800&q=60",
-      "description": "Stuffed, rolled and roasted chicken."
+      "order": 5,
+      "image": {
+        "file": "chill-zone-special-rolled-chicken.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a plate of rolled chicken, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, fresh vibrant colours, appetising, high detail"
+      }
     },
     {
       "slug": "grilled-fish",
       "name": "Grilled Fish",
-      "price": 890,
       "cat": "chill-zone-special",
       "sub": null,
+      "description": "Grilled fish.",
+      "price": 890,
       "tags": [],
       "popular": false,
       "featured": false,
-      "image": "https://images.unsplash.com/photo-1737140789642-9788a3388494?auto=format&fit=crop&w=800&q=60",
-      "description": "Char-grilled fish fillet with sides."
+      "order": 6,
+      "image": {
+        "file": "chill-zone-special-grilled-fish.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a plate of grilled fish, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, fresh vibrant colours, appetising, high detail"
+      }
     },
     {
-      "slug": "watermelon-juice",
-      "name": "Watermelon Juice",
+      "slug": "watermelon",
+      "name": "Watermelon",
+      "cat": "fresh-juice",
+      "sub": null,
+      "description": "Fresh watermelon juice.",
       "price": 290,
-      "cat": "fresh-juice",
-      "sub": null,
-      "tags": [
-        "VEG"
-      ],
+      "tags": [],
       "popular": false,
       "featured": false,
-      "image": "https://images.unsplash.com/photo-1683531658992-b78c311900a3?auto=format&fit=crop&w=800&q=60",
-      "description": "Cold-pressed watermelon juice."
+      "order": 1,
+      "image": {
+        "file": "fresh-juice-watermelon.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a glass of watermelon juice, professional beverage photography, straight-on angle, soft natural light, condensation on the glass, clean neutral background, vibrant, high detail"
+      }
     },
     {
-      "slug": "orange-juice",
-      "name": "Orange Juice",
+      "slug": "orange",
+      "name": "Orange",
+      "cat": "fresh-juice",
+      "sub": null,
+      "description": "Fresh orange juice.",
       "price": 330,
-      "cat": "fresh-juice",
-      "sub": null,
-      "tags": [
-        "VEG"
-      ],
+      "tags": [],
       "popular": false,
       "featured": false,
-      "image": "https://images.unsplash.com/photo-1600271886742-f049cd451bba?auto=format&fit=crop&w=800&q=60",
-      "description": "Fresh-squeezed orange juice."
+      "order": 2,
+      "image": {
+        "file": "fresh-juice-orange.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a glass of orange juice, professional beverage photography, straight-on angle, soft natural light, condensation on the glass, clean neutral background, vibrant, high detail"
+      }
     },
     {
-      "slug": "mix-fruit-juice",
-      "name": "Mix Fruit Juice",
+      "slug": "mix-fruit",
+      "name": "Mix Fruit",
+      "cat": "fresh-juice",
+      "sub": null,
+      "description": "Fresh mixed fruit juice.",
       "price": 360,
-      "cat": "fresh-juice",
-      "sub": null,
-      "tags": [
-        "VEG"
-      ],
+      "tags": [],
       "popular": false,
       "featured": false,
-      "image": "https://images.unsplash.com/photo-1622597467821-df79dcb4f94d?auto=format&fit=crop&w=800&q=60",
-      "description": "Seasonal mixed-fruit juice."
+      "order": 3,
+      "image": {
+        "file": "fresh-juice-mix-fruit.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a glass of mixed fruit juice, professional beverage photography, straight-on angle, soft natural light, condensation on the glass, clean neutral background, vibrant, high detail"
+      }
     },
     {
-      "slug": "plain-shake",
-      "name": "Plain Shake",
+      "slug": "plain",
+      "name": "Plain",
+      "cat": "lassi-shake",
+      "sub": null,
+      "description": "",
       "price": 150,
-      "cat": "lassi-shake",
-      "sub": null,
-      "tags": [
-        "VEG"
-      ],
+      "tags": [],
       "popular": false,
       "featured": false,
-      "image": "https://images.unsplash.com/photo-1619158403521-ed9795026d47?auto=format&fit=crop&w=800&q=60",
-      "description": "Classic plain milkshake."
+      "order": 1,
+      "image": null
     },
     {
-      "slug": "banana-mango-shake",
-      "name": "Banana/Mango Shake",
-      "price": 230,
+      "slug": "banana-mango",
+      "name": "Banana / Mango",
       "cat": "lassi-shake",
       "sub": null,
-      "tags": [
-        "VEG"
-      ],
+      "description": "",
+      "price": 230,
+      "tags": [],
       "popular": false,
       "featured": false,
-      "image": "https://images.unsplash.com/photo-1568901839119-631418a3910d?auto=format&fit=crop&w=800&q=60",
-      "description": "Milkshake blended with banana or mango."
+      "order": 2,
+      "image": null
     },
     {
       "slug": "mixed-lassi",
       "name": "Mixed Lassi",
-      "price": 260,
       "cat": "lassi-shake",
       "sub": null,
-      "tags": [
-        "VEG"
-      ],
+      "description": "Mixed lassi.",
+      "price": 260,
+      "tags": [],
       "popular": false,
       "featured": false,
-      "image": "https://images.unsplash.com/photo-1623065422902-30a2d299bbe4?auto=format&fit=crop&w=800&q=60",
-      "description": "Churned yogurt lassi with mixed fruit."
+      "order": 3,
+      "image": {
+        "file": "lassi-shake-mixed-lassi.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a glass of mixed lassi, professional beverage photography, straight-on angle, soft natural light, condensation on the glass, clean neutral background, vibrant, high detail"
+      }
     },
     {
       "slug": "sweet-lassi",
       "name": "Sweet Lassi",
-      "price": 170,
       "cat": "lassi-shake",
       "sub": null,
-      "tags": [
-        "VEG"
-      ],
+      "description": "Sweet lassi.",
+      "price": 170,
+      "tags": [],
       "popular": false,
       "featured": false,
-      "image": "https://images.unsplash.com/photo-1546173159-315724a31696?auto=format&fit=crop&w=800&q=60",
-      "description": "Thick churned yogurt, lightly sweetened."
+      "order": 4,
+      "image": {
+        "file": "lassi-shake-sweet-lassi.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a glass of sweet lassi, professional beverage photography, straight-on angle, soft natural light, condensation on the glass, clean neutral background, vibrant, high detail"
+      }
     }
   ]
 }

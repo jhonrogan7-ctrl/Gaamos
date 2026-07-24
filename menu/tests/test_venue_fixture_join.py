@@ -5,7 +5,7 @@ sheet carries the names as printed on the card (typos and all). A careless join
 pairs a dish with a *different* dish's photo, which on a live menu means guests
 are served something other than the picture.
 """
-from menu.management.commands.build_tranquility_fixture import assign_images
+from menu.management.commands.build_venue_fixture import assign_images
 
 
 def _item(cat, slug, name):
@@ -132,6 +132,29 @@ def test_an_item_with_nothing_anywhere_gets_no_image():
     got = assign_images(items, generated_keys=set(), vault_files=[], sheet={})
 
     assert got["hookah-extra-coil"] is None
+
+
+def test_an_explicit_key_overrides_the_derived_one():
+    """A duplicate item name across two sections gets a uniquified item slug,
+    so the join key can no longer be derived from cat + slug — the builder
+    passes the sheet key the image was named from."""
+    items = [{"cat": "pancakes", "slug": "banana-pancakes", "name": "Banana",
+              "key": "pancakes-banana"}]
+
+    got = assign_images(items, generated_keys={"pancakes-banana"},
+                        vault_files=[], sheet={})
+
+    assert got["pancakes-banana"] == ("generated", "pancakes-banana")
+
+
+def test_name_drift_is_scoped_to_the_items_own_category():
+    """No alias table any more — the category prefix is the category slug."""
+    items = [_item("pancakes", "plain-pancake", "Plain Pancake")]
+
+    got = assign_images(items, generated_keys={"pancakes-plain"},
+                        vault_files=[], sheet={})
+
+    assert got["pancakes-plain-pancake"] == ("generated", "pancakes-plain")
 
 
 def test_one_venue_photo_is_not_handed_to_two_items():

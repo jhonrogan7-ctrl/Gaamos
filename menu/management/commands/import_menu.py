@@ -13,6 +13,19 @@ from menu.models import Company, Branch
 from menu.tenancy import set_current_company, reset_current_company
 
 
+def _read_media(media_base, filename):
+    """Fixture media bytes, from an HTTP base or a local directory.
+
+    `build_venue_fixture` writes the media to disk; requiring them to be
+    HTTP-served first added a step whose only failure mode was serving a stale
+    copy.
+    """
+    if "://" in media_base:
+        with urllib.request.urlopen(media_base.rstrip("/") + "/" + filename) as resp:
+            return resp.read()
+    return (Path(media_base) / filename).read_bytes()
+
+
 class Command(BaseCommand):
     help = ("Upsert a menu fixture (categories + items + images) into an EXISTING "
             "company. Never creates the tenant; additive/idempotent.")
@@ -101,13 +114,11 @@ class Command(BaseCommand):
                 continue
             if not media_base:
                 raise CommandError("--media-base is required when items carry images.")
-            url = media_base.rstrip("/") + "/" + img["file"]
             tmpdir = Path(settings.MEDIA_ROOT) / "_import_tmp"
             tmpdir.mkdir(parents=True, exist_ok=True)
             dest = tmpdir / f"{item.slug}.webp"
             try:
-                with urllib.request.urlopen(url) as resp:
-                    payload = resp.read()
+                payload = _read_media(media_base, img["file"])
                 Image.open(BytesIO(payload)).verify()   # reject non-images
                 dest.write_bytes(payload)
             except Exception as exc:

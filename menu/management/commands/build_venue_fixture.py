@@ -1,24 +1,28 @@
-"""Dev-only: build the Tranquility Inn seed fixture + its media directory.
+"""Build a venue's seed fixture + media directory from its prompt sheet.
 
-Same shape as `build_showcase_fixture`: take the existing preview fixture (163
-priced items across 30 categories), attach an image to every item it can, and
-emit a fixture `import_menu` can load into the tenant.
+The sheet (vault: `menius/<venue>/<venue>-items-and-image-prompts.md`) is the
+venue's single source of truth: its `## Venue` block is the tenant, its `###`
+headings are the categories, and its table rows are the priced items whose
+image prompts named the generated assets.
 
-Images come from two places — the pipeline's generated ImageAssets and the
-venue's own photos in the vault folder. Media files are written as
-`<category>-<item>.webp`, i.e. the fixture key, so a wrong pairing is visible
-from the filename alone rather than hidden behind a content hash.
+That shared origin is what makes the join safe. The generator stored each image
+under `slugify("<section> <item>")`; this command looks it up under exactly the
+same string, so the exact-key pass carries the whole set and the fuzzy passes
+only ever run for a venue that also handed us its own photographs.
+
+Media files are written as `<join key>.webp`, i.e. `<category>-<item>`, so a
+wrong pairing is visible from the filename alone rather than hidden behind a
+content hash.
 
 Example:
-  python manage.py build_tranquility_fixture --vault-listing /tmp/vaultfiles.txt \
-      --vault-dir /tmp/vault --out menu/fixtures/tranquility-inn.json
+  python manage.py build_venue_fixture \
+      --prompts /tmp/chillzone-items-and-image-prompts.md --company chillzone
 """
 import difflib
 import json
 import os
 import re
 import shutil
-import tempfile
 from pathlib import Path
 
 from django.conf import settings
@@ -28,28 +32,12 @@ from django.utils.text import slugify
 from menu.models import ImageAsset
 from menu.pipeline import images, prompt_sheet
 
-PREVIEW = Path(settings.BASE_DIR) / 'menu' / 'fixtures' / 'tranquility-inn-preview.json'
-DEFAULT_OUT = Path(settings.BASE_DIR) / 'menu' / 'fixtures' / 'tranquility-inn.json'
-DEFAULT_MEDIA = (Path(settings.BASE_DIR) / 'menu' / 'fixtures' / 'media'
-                 / 'tranquility-inn')
+FIXTURES = Path(settings.BASE_DIR) / 'menu' / 'fixtures'
 
 # Above this, two names are the same dish spelled differently ("Bread Omellete"
 # / "Bread Omelette"). Below it they are different dishes that happen to share
 # words ("Chicken Fry" / "Chicken Finger") — those must NOT be paired.
 _NAME_MATCH_CUTOFF = 0.82
-
-# The fixture's category slugs against the prompt sheet's section headings. The
-# sheet keeps the card's own wording ("Continental (with French Fries)"), the
-# fixture shortened it. Spelled out rather than fuzzy-matched: a category is
-# picked once, by hand, and a wrong guess here mis-files a whole section.
-CATEGORY_ALIASES = {
-    'continental': 'continental-with-french-fries',
-    'sandwich-and-burger': 'sandwich-and-burger-with-french-fries',
-    'hookah': 'hukka',
-    'wine': 'wine-by-bottle',
-    'soup': 'soup-with-garlic-bread',
-    'thali': 'nepali-thali-set',
-}
 
 
 def _stem_slug(filename):
@@ -57,10 +45,55 @@ def _stem_slug(filename):
     return slugify(stem)
 
 
+def _item_key(it):
+    """The join key. Explicit when the item slug had to be uniquified."""
+    return it.get('key') or f"{it['cat']}-{it['slug']}"
+
+
+def build_catalog(rows):
+    """Sheet rows -> (categories, items, unpriced keys). Pure; no I/O.
+
+    Item slugs are uniquified across the whole venue because `import_menu`
+    upserts on (company, slug): two `Banana` rows in different sections are two
+    dishes, and without this the pancake's price would overwrite the shake's.
+    The join key stays the sheet key, so uniquifying cannot break the match.
+    """
+    categories, seen_cat = [], set()
+    items, unpriced, taken = [], [], set()
+    order_in_cat = {}
+    for row in rows:
+        section = row['section']
+        cat_slug = slugify(section)
+        if cat_slug not in seen_cat:
+            seen_cat.add(cat_slug)
+            categories.append({'slug': cat_slug, 'name': section,
+                               'display_order': len(categories) + 1,
+                               'icon_key': '', 'hours_note': '',
+                               'subcategories': []})
+        if row['price'] is None:
+            unpriced.append(row['key'])
+            continue
+        slug = row['slug']
+        if slug in taken:
+            slug = f"{row['slug']}-{cat_slug}"
+        n = 2
+        while slug in taken:
+            slug = f"{row['slug']}-{cat_slug}-{n}"
+            n += 1
+        taken.add(slug)
+        order_in_cat[cat_slug] = order_in_cat.get(cat_slug, 0) + 1
+        items.append({'slug': slug, 'name': row['item'], 'cat': cat_slug,
+                      'sub': None, 'description': row['description'],
+                      'price': row['price'], 'tags': [], 'popular': False,
+                      'featured': False, 'order': order_in_cat[cat_slug],
+                      'key': row['key'], 'image': None})
+    return categories, items, unpriced
+
+
 def assign_images(items, *, generated_keys, vault_files, sheet):
     """Map each fixture item to an image, one image to one item.
 
-    Returns {fixture_key: ("generated", asset_key) | ("found", filename) | None}.
+    Returns {join key: ("generated", asset_key) | ("found", filename) | None}.
 
     Exact matches are settled first so that an item with no image of its own can
     never take the photo belonging to a similarly-named dish; only images left
@@ -68,10 +101,10 @@ def assign_images(items, *, generated_keys, vault_files, sheet):
     sheet's `*(reuse the … image)*` rows, where several spirits are meant to
     share one bottle shot.
     """
-    keys = [f"{it['cat']}-{it['slug']}" for it in items]
+    keys = [_item_key(it) for it in items]
     out = {k: None for k in keys}
 
-    # 1. Exact key match — the fixture and the sheet agree on this item.
+    # 1. Exact key match — sheet and fixture agree, which is now by construction.
     free_generated = set(generated_keys)
     for it, key in zip(items, keys):
         if key in free_generated:
@@ -101,7 +134,7 @@ def assign_images(items, *, generated_keys, vault_files, sheet):
     for it, key in zip(items, keys):
         if out[key] or not free_generated:
             continue
-        prefix = CATEGORY_ALIASES.get(it['cat'], it['cat']) + '-'
+        prefix = it['cat'] + '-'
         cands = [k for k in sorted(free_generated) if k.startswith(prefix)]
         tokens = set(it['slug'].split('-'))
         hits = [k for k in cands
@@ -127,9 +160,8 @@ def assign_images(items, *, generated_keys, vault_files, sheet):
     for it, key in zip(items, keys):
         if out[key]:
             continue
-        section_slug = CATEGORY_ALIASES.get(it['cat'], it['cat'])
         row = sheet.get(key) or _sheet_row_by_name(sheet, it['name'],
-                                                   section_slug=section_slug)
+                                                   section_slug=it['cat'])
         if row and not row['generatable'] and 'reuse' in row['prompt'].lower():
             shared = shared_image.get((row['section'], row['col2']))
             if shared:
@@ -143,8 +175,8 @@ def _tokens_nest(a, b):
 
 
 def _sheet_row_by_name(sheet, name, *, section_slug=None):
-    """The sheet keys off the printed name; the fixture corrected it —
-    `Black Level` on the card is `Black Label` in the fixture.
+    """The sheet keys off the printed name; a venue photo may be filed under a
+    corrected one — `Black Level` on the card is `Black Label` in the fixture.
 
     Narrowing to the item's own section first is what makes a loose threshold
     safe: `black-label`/`black-level` score only 0.82, but inside Hard Drinks
@@ -168,72 +200,95 @@ def _sheet_row_by_name(sheet, name, *, section_slug=None):
 
 
 class Command(BaseCommand):
-    help = ('Dev-only: build menu/fixtures/tranquility-inn.json + its media dir '
-            'from the preview fixture, generated ImageAssets and venue photos.')
+    help = ('Dev-only: build menu/fixtures/<company>.json + its media dir from '
+            'a venue prompt sheet, generated ImageAssets and venue photos.')
 
     def add_arguments(self, parser):
+        parser.add_argument('--prompts', required=True,
+                            help='Path to the venue prompt sheet (markdown).')
+        parser.add_argument('--company', required=True,
+                            help='Company slug; names the fixture and media dir.')
         parser.add_argument('--vault-listing', default=None,
-                            help='File listing the venue folder (ls > names.txt).')
+                            help='File listing the venue photo folder (ls > names.txt).')
         parser.add_argument('--vault-dir', default=None,
                             help='Readable copy of the venue photo folder.')
-        parser.add_argument('--prompts', default=None,
-                            help='Prompt sheet, for the reuse-row instructions.')
-        parser.add_argument('--out', default=str(DEFAULT_OUT))
-        parser.add_argument('--media-out', default=str(DEFAULT_MEDIA))
+        parser.add_argument('--source', default='flux',
+                            help='ImageAsset.source to draw from (default: flux).')
+        parser.add_argument('--out', default=None)
+        parser.add_argument('--media-out', default=None)
         parser.add_argument('--size', type=int, default=800)
 
     def handle(self, *args, **opts):
-        if not PREVIEW.exists():
-            raise CommandError(f'Preview fixture not found: {PREVIEW}')
-        data = json.loads(PREVIEW.read_text())
-        items = data['items']
+        sheet_path = Path(opts['prompts'])
+        if not sheet_path.exists():
+            raise CommandError(f'Prompt sheet not found: {sheet_path}')
+        text = sheet_path.read_text()
+        rows = prompt_sheet.parse(text)
+        venue = prompt_sheet.parse_venue(text)
+        company_slug = opts['company']
+        if venue['slug'] and venue['slug'] != company_slug:
+            raise CommandError(
+                f"Sheet declares slug '{venue['slug']}' but --company is "
+                f"'{company_slug}'. Fix the sheet, not the command.")
+        venue['slug'] = company_slug
 
-        assets = {a.found_for_slug: a for a in ImageAsset.objects.filter(source='flux')}
+        categories, items, unpriced = build_catalog(rows)
+        if not items:
+            raise CommandError('Sheet produced 0 priced items — check the '
+                               'Price column header and the `###` headings.')
+
+        assets = {a.found_for_slug: a
+                  for a in ImageAsset.objects.filter(source=opts['source'])}
         vault_files = []
         if opts['vault_listing']:
             vault_files = [l.strip() for l in
                            Path(opts['vault_listing']).read_text().splitlines()
                            if l.strip() and not l.strip().endswith('.webp')]
-        sheet = {}
-        if opts['prompts']:
-            sheet = {r['key']: r for r in
-                     prompt_sheet.parse(Path(opts['prompts']).read_text())}
+        sheet = {r['key']: r for r in rows}
 
         chosen = assign_images(items, generated_keys=set(assets),
                                vault_files=vault_files, sheet=sheet)
 
-        media_out = Path(opts['media_out'])
+        media_out = Path(opts['media_out'] or (FIXTURES / 'media' / company_slug))
         media_out.mkdir(parents=True, exist_ok=True)
         counts = {'generated': 0, 'found': 0, 'none': 0}
         for it in items:
-            key = f"{it['cat']}-{it['slug']}"
+            key = _item_key(it)
             pick = chosen[key]
             if not pick:
-                it['image'] = None
                 counts['none'] += 1
                 continue
             kind, ref = pick
             dest = media_out / f'{key}.webp'
             if kind == 'generated':
                 asset = assets[ref]
-                src = Path(settings.MEDIA_ROOT) / asset.file
-                shutil.copyfile(src, dest)
+                shutil.copyfile(Path(settings.MEDIA_ROOT) / asset.file, dest)
                 it['image'] = {'file': dest.name, 'source': 'generated',
                                'origin_url': None, 'prompt': asset.prompt}
             else:
                 if not opts['vault_dir']:
                     raise CommandError('--vault-dir is required for venue photos.')
-                src = Path(opts['vault_dir']) / ref
                 # Venue photos are ~1 MB JPEGs; the menu serves 800px webp.
-                images.to_thumbnail(str(src), str(dest), opts['size'])
+                images.to_thumbnail(str(Path(opts['vault_dir']) / ref),
+                                    str(dest), opts['size'])
                 it['image'] = {'file': dest.name, 'source': 'found',
                                'origin_url': None, 'prompt': None}
             counts[kind] += 1
 
-        Path(opts['out']).write_text(json.dumps(data, ensure_ascii=False, indent=2))
+        for it in items:
+            it.pop('key')                  # a build-time join key, not fixture data
+        out = Path(opts['out'] or (FIXTURES / f'{company_slug}.json'))
+        out.write_text(json.dumps({'venue': venue, 'categories': categories,
+                                   'items': items},
+                                  ensure_ascii=False, indent=2))
         self.stdout.write(self.style.SUCCESS(
-            f"{opts['out']}: {len(items)} items | generated {counts['generated']} "
-            f"| venue photo {counts['found']} | no image {counts['none']}"))
-        missing = [f"{it['cat']}-{it['slug']}" for it in items if not it['image']]
+            f"{out}: {len(items)} items in {len(categories)} categories | "
+            f"generated {counts['generated']} | venue photo {counts['found']} "
+            f"| no image {counts['none']}"))
+        if unpriced:
+            self.stdout.write(self.style.WARNING(
+                f'no price, NOT imported ({len(unpriced)}): '
+                + ', '.join(unpriced)))
+        missing = [i['slug'] for i in items if not i['image']]
         if missing:
             self.stdout.write('no image: ' + ', '.join(missing))

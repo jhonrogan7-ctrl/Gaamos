@@ -194,3 +194,130 @@ def test_the_dedup_key_is_section_qualified():
     keys = [r["key"] for r in prompt_sheet.parse(sheet) if r["item"] == "Banana"]
 
     assert keys == ["milk-shake-banana", "pancakes-banana"]
+
+
+PRICED_SHEET = """# Chill Zone — Item List + Image Generation Prompts
+
+## Venue
+
+| Field | Value |
+|---|---|
+| slug | chillzone |
+| name | Chill Zone |
+| tagline | Momo, coffee and cold beer in Thamel |
+| phone | |
+| branch.main.name | Chill Zone |
+| branch.main.address | Thamel, Kathmandu |
+| branch.main.tag | FLAGSHIP |
+
+## Card 1 — Page 1 (left)
+
+### Hot Drinks
+
+| Item | Description | Price | Image prompt |
+|---|---|---|---|
+| Black Tea | Classic black tea, brewed strong. | 40 | a glass of black tea |
+| Milk Tea | Nepali milk tea. | Rs 60 | a glass cup of milk tea |
+| Extra Cup | — | | *skip — accessory* |
+
+### Momo
+
+| Item | Description | Price | Image prompt |
+|---|---|---|---|
+| Jhol Momo (Veg) | Steamed momo in soup. | 200 | veg jhol momo in broth |
+| Jhol Momo (Non Veg) | Steamed momo in soup. | 260 | chicken jhol momo in broth |
+"""
+
+
+def test_reads_the_price_column():
+    rows = _by_item(prompt_sheet.parse(PRICED_SHEET))
+
+    assert rows["Black Tea"]["price"] == 40
+    assert rows["Jhol Momo (Non Veg)"]["price"] == 260
+
+
+def test_tolerates_a_currency_prefix_on_the_price():
+    rows = _by_item(prompt_sheet.parse(PRICED_SHEET))
+
+    assert rows["Milk Tea"]["price"] == 60
+
+
+def test_a_row_with_no_price_parses_with_price_none():
+    """Not importable, but it is still a row on the card — reported, never
+    silently dropped."""
+    rows = _by_item(prompt_sheet.parse(PRICED_SHEET))
+
+    assert rows["Extra Cup"]["price"] is None
+
+
+def test_a_sheet_without_a_price_column_still_parses():
+    """Tranquility's sheet has no Price column at all."""
+    rows = _by_item(prompt_sheet.parse(SHEET))
+
+    assert rows["Black Tea"]["price"] is None
+
+
+def test_the_prompt_column_is_found_by_header_not_by_position():
+    """With a Price column the prompt is the 4th cell, not the 3rd."""
+    rows = _by_item(prompt_sheet.parse(PRICED_SHEET))
+
+    assert rows["Black Tea"]["prompt"] == "a glass of black tea"
+    assert rows["Extra Cup"]["generatable"] is False
+
+
+def test_a_plain_description_header_is_still_a_description():
+    """Chill Zone's descriptions are ours, so the column is headed
+    `Description` rather than `Printed description`."""
+    rows = _by_item(prompt_sheet.parse(PRICED_SHEET))
+
+    assert rows["Black Tea"]["description"] == "Classic black tea, brewed strong."
+
+
+def test_the_venue_table_is_not_parsed_as_menu_items():
+    """`## Venue` is not a `###` section, so its rows are not items."""
+    items = [r["item"] for r in prompt_sheet.parse(PRICED_SHEET)]
+
+    assert "slug" not in items and "branch.main.name" not in items
+    assert items == ["Black Tea", "Milk Tea", "Extra Cup",
+                     "Jhol Momo (Veg)", "Jhol Momo (Non Veg)"]
+
+
+def test_parse_venue_reads_the_identity_block():
+    venue = prompt_sheet.parse_venue(PRICED_SHEET)
+
+    assert venue["slug"] == "chillzone"
+    assert venue["name"] == "Chill Zone"
+    assert venue["tagline"] == "Momo, coffee and cold beer in Thamel"
+    assert venue["phone"] == ""
+
+
+def test_parse_venue_collects_branches_in_appearance_order():
+    venue = prompt_sheet.parse_venue(PRICED_SHEET)
+
+    assert venue["branches"] == [{"slug": "main", "name": "Chill Zone",
+                                  "address": "Thamel, Kathmandu",
+                                  "tag": "FLAGSHIP"}]
+
+
+def test_parse_venue_defaults_every_missing_field():
+    venue = prompt_sheet.parse_venue("## Venue\n\n| Field | Value |\n|---|---|\n"
+                                     "| slug | x |\n| name | X |\n")
+
+    assert venue["email"] == "" and venue["instagram"] == ""
+    assert venue["branches"] == []
+
+
+def test_parse_venue_on_a_sheet_with_no_venue_block():
+    """Tranquility's sheet predates the block; it must not raise."""
+    venue = prompt_sheet.parse_venue(SHEET)
+
+    assert venue["slug"] == "" and venue["branches"] == []
+
+
+def test_the_section_qualified_key_still_matches_the_fixture_key():
+    """The whole join rests on these two strings being equal by construction."""
+    from django.utils.text import slugify
+
+    row = _by_item(prompt_sheet.parse(PRICED_SHEET))["Jhol Momo (Veg)"]
+
+    assert row["key"] == f"{slugify(row['section'])}-{slugify(row['item'])}"

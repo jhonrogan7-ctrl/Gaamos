@@ -170,3 +170,56 @@ def test_missing_image_strict_aborts(company, tmp_path):
         call_command("import_menu", "--company", "tranquility-inn", "--strict",
                      "--media-base", (tmp_path / "empty").as_uri(),
                      "--fixture", _write_fixture(tmp_path, data))
+
+
+def _png_bytes():
+    from io import BytesIO
+
+    from PIL import Image
+    buf = BytesIO()
+    Image.new("RGB", (12, 12), "red").save(buf, format="PNG")
+    return buf.getvalue()
+
+
+def test_media_base_can_be_a_local_directory(company, tmp_path, settings):
+    """Fixture media are already on disk — serving them over HTTP first was
+    ceremony, and a stale dev server serving an old file was a real failure."""
+    settings.MEDIA_ROOT = str(tmp_path / "media")
+    media_dir = tmp_path / "fixture-media"
+    media_dir.mkdir()
+    (media_dir / "starters-momo.webp").write_bytes(_png_bytes())
+    data = {"categories": [{"slug": "starters", "name": "Starters",
+                            "display_order": 1, "icon_key": "", "hours_note": "",
+                            "subcategories": []}],
+            "items": [{"slug": "momo", "name": "Momo", "cat": "starters",
+                       "sub": None, "description": "", "price": 200, "tags": [],
+                       "popular": False, "featured": False, "order": 1,
+                       "image": {"file": "starters-momo.webp",
+                                 "source": "generated", "origin_url": None,
+                                 "prompt": None}}]}
+
+    call_command("import_menu", "--company", "tranquility-inn",
+                 "--fixture", _write_fixture(tmp_path, data),
+                 "--media-base", str(media_dir), "--strict")
+
+    from menu.models import MenuItem
+    item = MenuItem.all_objects.get(company=company, slug="momo")
+    assert item.image_url.endswith("items/tranquility-inn/momo.webp")
+
+
+def test_a_missing_local_media_file_is_reported_like_a_failed_download(
+        company, tmp_path, settings):
+    settings.MEDIA_ROOT = str(tmp_path / "media")
+    media_dir = tmp_path / "empty"
+    media_dir.mkdir()
+    data = {"categories": [],
+            "items": [{"slug": "momo", "name": "Momo", "cat": None, "sub": None,
+                       "description": "", "price": 200, "tags": [],
+                       "popular": False, "featured": False, "order": 1,
+                       "image": {"file": "gone.webp", "source": "generated",
+                                 "origin_url": None, "prompt": None}}]}
+
+    with pytest.raises(CommandError, match="image download failed for momo"):
+        call_command("import_menu", "--company", "tranquility-inn",
+                     "--fixture", _write_fixture(tmp_path, data),
+                     "--media-base", str(media_dir), "--strict")
