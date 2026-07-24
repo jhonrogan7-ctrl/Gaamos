@@ -29,6 +29,13 @@ _DRINK_WORDS = ('drink', 'juice', 'lassi', 'shake', 'beer', 'cocktail', 'wine')
 
 _SEPARATOR = re.compile(r'^:?-+:?$')
 _NO_DESCRIPTION = ('', '-', '—', '–')
+_PRICE_CHARS = re.compile(r'[^\d]')
+
+# The venue block's scalar fields, in the order they are written out. Anything
+# else in the table is ignored rather than guessed at.
+VENUE_FIELDS = ('slug', 'name', 'tagline', 'phone', 'email',
+                'instagram', 'facebook', 'tiktok')
+BRANCH_FIELDS = ('name', 'address', 'tag')
 
 
 def _cells(line):
@@ -42,6 +49,24 @@ def _is_separator(cells):
 def is_drink(section):
     low = section.lower()
     return any(w in low for w in _DRINK_WORDS)
+
+
+def _column(header, *prefixes, default=None):
+    """Index of the first header cell starting with any prefix, else `default`.
+
+    Position is not reliable once the sheet gains a Price column: the prompt is
+    the 3rd cell on Tranquility's sheet and the 4th on Chill Zone's.
+    """
+    for i, cell in enumerate(header or []):
+        if any(cell.startswith(p) for p in prefixes):
+            return i
+    return default
+
+
+def _price(cell):
+    """`200` / `Rs 200` / `1,200` -> int. Anything with no digits -> None."""
+    digits = _PRICE_CHARS.sub('', cell or '')
+    return int(digits) if digits else None
 
 
 def parse(text):
@@ -67,16 +92,21 @@ def parse(text):
             continue
         if _is_separator(cells) or len(cells) < 3:
             continue
-        item, prompt = cells[0], cells[2]
-        # The middle column is `Spirit type` in the hard-drinks table — only a
-        # real "Printed description" header means the cell is a description.
-        described = len(header) > 1 and header[1].startswith('printed description')
-        description = cells[1] if described else ''
+        # Header-driven, not positional: a `Price` column shifts the prompt
+        # right, and `Spirit type` in the hard-drinks table is not a description.
+        prompt_i = _column(header, 'image prompt', 'prompt', default=len(cells) - 1)
+        desc_i = _column(header, 'description', 'printed description')
+        price_i = _column(header, 'price')
+        item = cells[0]
+        prompt = cells[prompt_i] if prompt_i < len(cells) else ''
+        description = cells[desc_i] if desc_i is not None and desc_i < len(cells) else ''
         if description in _NO_DESCRIPTION:
             description = ''
         rows.append({
             'card': card, 'section': section, 'item': item,
             'description': description, 'prompt': prompt,
+            'price': _price(cells[price_i]) if price_i is not None
+                     and price_i < len(cells) else None,
             # Raw, whatever the header called it: `Printed description` in most
             # tables, `Spirit type` in hard drinks — where it is the only record
             # of which shared bottle shot a reuse row belongs to.
@@ -98,3 +128,42 @@ def _is_directive(prompt):
 def full_prompt(row):
     """Subject line + the style block for the row's section."""
     return row['prompt'] + (DRINK_STYLE if row['drink'] else FOOD_STYLE)
+
+
+def parse_venue(text):
+    """Read the sheet's `## Venue` table into the venue's identity.
+
+    The block is `| Field | Value |` rows: the scalars in `VENUE_FIELDS`, plus
+    `branch.<slug>.<field>` rows that build the branch list in the order the
+    slugs first appear. A sheet without the block (Tranquility's predates it)
+    returns empty strings rather than raising — the caller reports it.
+    """
+    venue = {f: '' for f in VENUE_FIELDS}
+    branches, order = {}, []
+    inside = False
+    for line in text.splitlines():
+        stripped = line.strip()
+        if stripped.startswith('## '):
+            inside = stripped[3:].strip().lower() == 'venue'
+            continue
+        if not inside or not stripped.startswith('|'):
+            continue
+        cells = _cells(stripped)
+        if len(cells) < 2 or _is_separator(cells):
+            continue
+        field, value = cells[0].strip(), cells[1].strip()
+        if field.lower() == 'field':          # the table's own header row
+            continue
+        if field.startswith('branch.'):
+            parts = field.split('.')
+            if len(parts) != 3 or parts[2] not in BRANCH_FIELDS:
+                continue
+            _, slug, prop = parts
+            if slug not in branches:
+                branches[slug] = {'slug': slug, 'name': '', 'address': '', 'tag': ''}
+                order.append(slug)
+            branches[slug][prop] = value
+        elif field in VENUE_FIELDS:
+            venue[field] = value
+    venue['branches'] = [branches[s] for s in order]
+    return venue
