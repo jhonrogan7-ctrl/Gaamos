@@ -15,12 +15,18 @@ import re
 
 from django.utils.text import slugify
 
-FOOD_STYLE = (", professional food photography, 45-degree angle, natural window "
-              "light, shallow depth of field, dark rustic wood table, fresh "
-              "vibrant colours, appetising, high detail")
+# A style block describes CAMERA AND LIGHT ONLY. It must never describe the
+# food or the drink — that is the item's job, and the item is the only thing
+# the printed card licenses us to claim. Two phrases here once did: `fresh
+# vibrant colours, appetising` put invented garnish on every pale dish, and
+# `condensation on the glass` served all 11 Chill Zone hot drinks cold.
+FOOD_STYLE = (", professional food photography, 45-degree angle, natural "
+              "window light, shallow depth of field, dark rustic wood table, "
+              "high detail, the dish only, no garnish, no herbs, no sauce, "
+              "no side dishes, no props")
 DRINK_STYLE = (", professional beverage photography, straight-on angle, soft "
-               "natural light, condensation on the glass, clean neutral "
-               "background, vibrant, high detail")
+               "natural light, clean neutral background, high detail, "
+               "the drink only, no garnish, no props")
 
 # Section-name keywords that make a section a drink section. Matched on the
 # section, never the item: "Can Juice" sits in Soft Drinks, and "Hard Drinks"
