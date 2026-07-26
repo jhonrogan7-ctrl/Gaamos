@@ -106,3 +106,11 @@ def test_a_beverage_denotation_in_the_dish_lexicon_still_reaches_a_drink():
                               drink=True)
 
     assert 'thick yoghurt drink' in out
+
+
+def test_expand_does_not_repeat_a_denotation_shared_by_two_head_words():
+    """`roti` and `chapati` are separate head-words that denote the same
+    flatbread. Both appearing in the name must not append the phrase twice."""
+    out = dish_lexicon.expand('one roti chapati on a plate', 'Roti (Chapati) per pcs')
+
+    assert out.count('flat round unleavened flatbread') == 1

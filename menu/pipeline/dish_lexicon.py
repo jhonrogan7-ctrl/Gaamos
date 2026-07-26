@@ -78,11 +78,21 @@ def head_words(name, *, drink=False):
 
 
 def expand(prompt, name, *, drink=False):
-    """`prompt` plus the denotation of every head-word it does not already state."""
+    """`prompt` plus the denotation of every head-word it does not already state.
+
+    Two head-words can share one denotation -- `roti` and `chapati` both mean
+    "a flat round unleavened flatbread". Checked against what has already been
+    queued, not just the original prompt, so the phrase is not appended twice.
+    """
     vocabulary = _vocabulary(drink)
     low = prompt.lower()
-    extra = [vocabulary[w] for w in head_words(name, drink=drink)
-             if vocabulary[w].lower() not in low]
+    extra, seen = [], set()
+    for w in head_words(name, drink=drink):
+        denotation = vocabulary[w]
+        if denotation.lower() in low or denotation in seen:
+            continue
+        extra.append(denotation)
+        seen.add(denotation)
     return prompt + (', ' + ', '.join(extra) if extra else '')
 
 
