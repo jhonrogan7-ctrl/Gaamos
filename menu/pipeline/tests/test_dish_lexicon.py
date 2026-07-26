@@ -83,3 +83,26 @@ def test_no_lexicon_entry_asserts_a_quantity():
                              **dish_lexicon.DRINK_LEXICON}.items():
         for token in banned:
             assert token not in denotation.lower(), (word, denotation)
+
+
+def test_a_food_sense_denotation_never_applies_to_a_drink():
+    """`masala` on a plate is chopped onion, chilli and coriander. Asserted of
+    masala tea it puts onion in the glass — and the card does not print what
+    spices the chai holds, so nothing replaces it."""
+    assert 'masala' not in dish_lexicon.head_words('Masala Tea', drink=True)
+    assert dish_lexicon.expand('a glass of masala tea', 'Masala Tea',
+                               drink=True) == 'a glass of masala tea'
+
+
+def test_the_same_word_still_carries_its_denotation_on_a_plate():
+    assert 'chopped onion' in dish_lexicon.expand('a masala omelette',
+                                                  'Masala Omelette')
+
+
+def test_a_beverage_denotation_in_the_dish_lexicon_still_reaches_a_drink():
+    """`lassi` lives in LEXICON but already denotes a drink, so a drink section
+    must keep it — the food-only exclusion is not a blanket one."""
+    out = dish_lexicon.expand('a glass of sweet lassi', 'Sweet Lassi',
+                              drink=True)
+
+    assert 'thick yoghurt drink' in out

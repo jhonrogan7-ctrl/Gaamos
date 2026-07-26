@@ -52,8 +52,20 @@ DRINK_LEXICON = {
 }
 
 
+# Head-words whose denotation describes a PLATED DISH, so it must not be
+# asserted of a beverage: `masala` on a plate is chopped onion, chilli and
+# coriander, and applied to Masala Tea that puts onion in the glass. The card
+# does not print which spices the chai holds, so nothing replaces it — the row
+# keeps its bare subject. Not a blanket exclusion: `lassi` also lives in
+# LEXICON and already denotes a drink, so a drink section keeps it.
+_FOOD_ONLY = frozenset({'masala'})
+
+
 def _vocabulary(drink):
-    return {**LEXICON, **(DRINK_LEXICON if drink else {})}
+    if not drink:
+        return LEXICON
+    return {**{w: d for w, d in LEXICON.items() if w not in _FOOD_ONLY},
+            **DRINK_LEXICON}
 
 
 def head_words(name, *, drink=False):
