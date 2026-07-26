@@ -1358,3 +1358,14 @@ def push_unsubscribe(request):
     PushSubscription.all_objects.filter(
         endpoint=endpoint, user=request.user, company=request.company).delete()
     return JsonResponse({'ok': True})
+
+
+@require_membership
+def push_key(request):
+    """Current VAPID public key, for the service worker.
+
+    The SW has no template context, so it cannot be handed the key at render
+    time — it fetches it here when the browser rotates a subscription behind
+    our back (`pushsubscriptionchange`).
+    """
+    return JsonResponse({'key': django_settings.VAPID_PUBLIC_KEY})
