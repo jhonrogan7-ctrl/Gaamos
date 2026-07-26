@@ -1,0 +1,2298 @@
+{
+  "venue": {
+    "slug": "kailash-parbat",
+    "name": "Kailash Parbat Cafe",
+    "tagline": "Food, Music, Drinks — a jamming place",
+    "phone": "9816602240",
+    "email": "",
+    "instagram": "",
+    "facebook": "",
+    "tiktok": "",
+    "branches": [
+      {
+        "slug": "main",
+        "name": "Kailash Parbat Cafe",
+        "address": "",
+        "tag": "FLAGSHIP"
+      }
+    ]
+  },
+  "categories": [
+    {
+      "slug": "milk-shake-lassi",
+      "name": "Milk Shake / Lassi",
+      "display_order": 1,
+      "icon_key": "",
+      "hours_note": "",
+      "subcategories": []
+    },
+    {
+      "slug": "juice",
+      "name": "Juice",
+      "display_order": 2,
+      "icon_key": "",
+      "hours_note": "",
+      "subcategories": []
+    },
+    {
+      "slug": "iced-coffee-tea",
+      "name": "Iced Coffee & Tea",
+      "display_order": 3,
+      "icon_key": "",
+      "hours_note": "",
+      "subcategories": []
+    },
+    {
+      "slug": "beer",
+      "name": "Beer",
+      "display_order": 4,
+      "icon_key": "",
+      "hours_note": "",
+      "subcategories": []
+    },
+    {
+      "slug": "hard-drinks",
+      "name": "Hard Drinks",
+      "display_order": 5,
+      "icon_key": "",
+      "hours_note": "",
+      "subcategories": []
+    },
+    {
+      "slug": "after-wake-up",
+      "name": "After Wake-Up",
+      "display_order": 6,
+      "icon_key": "",
+      "hours_note": "",
+      "subcategories": []
+    },
+    {
+      "slug": "breakfast",
+      "name": "Breakfast",
+      "display_order": 7,
+      "icon_key": "",
+      "hours_note": "",
+      "subcategories": []
+    },
+    {
+      "slug": "toast",
+      "name": "Toast",
+      "display_order": 8,
+      "icon_key": "",
+      "hours_note": "",
+      "subcategories": []
+    },
+    {
+      "slug": "muesli-porridge-corn-flakes",
+      "name": "Muesli, Porridge, Corn Flakes",
+      "display_order": 9,
+      "icon_key": "",
+      "hours_note": "",
+      "subcategories": []
+    },
+    {
+      "slug": "sandwich",
+      "name": "Sandwich",
+      "display_order": 10,
+      "icon_key": "",
+      "hours_note": "",
+      "subcategories": []
+    },
+    {
+      "slug": "burger",
+      "name": "Burger",
+      "display_order": 11,
+      "icon_key": "",
+      "hours_note": "",
+      "subcategories": []
+    },
+    {
+      "slug": "dinner-lunch",
+      "name": "Dinner / Lunch",
+      "display_order": 12,
+      "icon_key": "",
+      "hours_note": "",
+      "subcategories": []
+    },
+    {
+      "slug": "rice",
+      "name": "Rice",
+      "display_order": 13,
+      "icon_key": "",
+      "hours_note": "",
+      "subcategories": []
+    },
+    {
+      "slug": "pasta",
+      "name": "Pasta",
+      "display_order": 14,
+      "icon_key": "",
+      "hours_note": "",
+      "subcategories": []
+    },
+    {
+      "slug": "momo",
+      "name": "Mo:Mo",
+      "display_order": 15,
+      "icon_key": "",
+      "hours_note": "",
+      "subcategories": []
+    },
+    {
+      "slug": "chowmein",
+      "name": "Chowmein",
+      "display_order": 16,
+      "icon_key": "",
+      "hours_note": "",
+      "subcategories": []
+    },
+    {
+      "slug": "thukpa",
+      "name": "Thukpa",
+      "display_order": 17,
+      "icon_key": "",
+      "hours_note": "",
+      "subcategories": []
+    },
+    {
+      "slug": "soup",
+      "name": "Soup",
+      "display_order": 18,
+      "icon_key": "",
+      "hours_note": "",
+      "subcategories": []
+    },
+    {
+      "slug": "salad",
+      "name": "Salad",
+      "display_order": 19,
+      "icon_key": "",
+      "hours_note": "",
+      "subcategories": []
+    },
+    {
+      "slug": "kailash-touch",
+      "name": "Kailash Touch",
+      "display_order": 20,
+      "icon_key": "",
+      "hours_note": "",
+      "subcategories": []
+    },
+    {
+      "slug": "pancake",
+      "name": "Pancake",
+      "display_order": 21,
+      "icon_key": "",
+      "hours_note": "",
+      "subcategories": []
+    },
+    {
+      "slug": "soft-drinks",
+      "name": "Soft Drinks",
+      "display_order": 22,
+      "icon_key": "",
+      "hours_note": "",
+      "subcategories": []
+    }
+  ],
+  "items": [
+    {
+      "slug": "plain",
+      "name": "Plain",
+      "cat": "milk-shake-lassi",
+      "sub": null,
+      "description": "",
+      "price": 150,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 1,
+      "image": {
+        "file": "milk-shake-lassi-plain.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a plain chilled yogurt-style drink in a glass ⚠, professional beverage photography, straight-on angle, soft natural light, clean neutral background, high detail, the drink only, no garnish, no props"
+      }
+    },
+    {
+      "slug": "sweet",
+      "name": "Sweet",
+      "cat": "milk-shake-lassi",
+      "sub": null,
+      "description": "",
+      "price": 180,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 2,
+      "image": {
+        "file": "milk-shake-lassi-sweet.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a lightly sweetened chilled drink in a glass ⚠, professional beverage photography, straight-on angle, soft natural light, clean neutral background, high detail, the drink only, no garnish, no props"
+      }
+    },
+    {
+      "slug": "banana",
+      "name": "Banana",
+      "cat": "milk-shake-lassi",
+      "sub": null,
+      "description": "",
+      "price": 200,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 3,
+      "image": {
+        "file": "milk-shake-lassi-banana.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a banana-flavoured chilled drink in a glass ⚠, professional beverage photography, straight-on angle, soft natural light, clean neutral background, high detail, the drink only, no garnish, no props"
+      }
+    },
+    {
+      "slug": "apple",
+      "name": "Apple",
+      "cat": "milk-shake-lassi",
+      "sub": null,
+      "description": "",
+      "price": 250,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 4,
+      "image": {
+        "file": "milk-shake-lassi-apple.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "an apple-flavoured chilled drink in a glass ⚠, professional beverage photography, straight-on angle, soft natural light, clean neutral background, high detail, the drink only, no garnish, no props"
+      }
+    },
+    {
+      "slug": "chocolate",
+      "name": "Chocolate",
+      "cat": "milk-shake-lassi",
+      "sub": null,
+      "description": "",
+      "price": 300,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 5,
+      "image": {
+        "file": "milk-shake-lassi-chocolate.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a chocolate chilled drink in a glass ⚠, professional beverage photography, straight-on angle, soft natural light, clean neutral background, high detail, the drink only, no garnish, no props"
+      }
+    },
+    {
+      "slug": "papaya",
+      "name": "Papaya",
+      "cat": "milk-shake-lassi",
+      "sub": null,
+      "description": "",
+      "price": 250,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 6,
+      "image": {
+        "file": "milk-shake-lassi-papaya.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a papaya-flavoured chilled drink in a glass ⚠, professional beverage photography, straight-on angle, soft natural light, clean neutral background, high detail, the drink only, no garnish, no props"
+      }
+    },
+    {
+      "slug": "avocado",
+      "name": "Avocado",
+      "cat": "milk-shake-lassi",
+      "sub": null,
+      "description": "",
+      "price": 400,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 7,
+      "image": null
+    },
+    {
+      "slug": "mango",
+      "name": "Mango",
+      "cat": "milk-shake-lassi",
+      "sub": null,
+      "description": "",
+      "price": 300,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 8,
+      "image": {
+        "file": "milk-shake-lassi-mango.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a mango-flavoured chilled drink in a glass ⚠, professional beverage photography, straight-on angle, soft natural light, clean neutral background, high detail, the drink only, no garnish, no props"
+      }
+    },
+    {
+      "slug": "apple-juice",
+      "name": "Apple",
+      "cat": "juice",
+      "sub": null,
+      "description": "",
+      "price": 250,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 1,
+      "image": {
+        "file": "juice-apple.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a glass of apple juice, professional beverage photography, straight-on angle, soft natural light, clean neutral background, high detail, the drink only, no garnish, no props"
+      }
+    },
+    {
+      "slug": "orange",
+      "name": "Orange",
+      "cat": "juice",
+      "sub": null,
+      "description": "",
+      "price": 300,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 2,
+      "image": {
+        "file": "juice-orange.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a glass of orange juice, professional beverage photography, straight-on angle, soft natural light, clean neutral background, high detail, the drink only, no garnish, no props"
+      }
+    },
+    {
+      "slug": "papaya-juice",
+      "name": "Papaya",
+      "cat": "juice",
+      "sub": null,
+      "description": "",
+      "price": 250,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 3,
+      "image": {
+        "file": "juice-papaya.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a glass of papaya juice, professional beverage photography, straight-on angle, soft natural light, clean neutral background, high detail, the drink only, no garnish, no props"
+      }
+    },
+    {
+      "slug": "lemonade",
+      "name": "Lemonade",
+      "cat": "juice",
+      "sub": null,
+      "description": "",
+      "price": 350,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 4,
+      "image": {
+        "file": "juice-lemonade.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a glass of lemonade, professional beverage photography, straight-on angle, soft natural light, clean neutral background, high detail, the drink only, no garnish, no props"
+      }
+    },
+    {
+      "slug": "pineapple",
+      "name": "Pineapple",
+      "cat": "juice",
+      "sub": null,
+      "description": "",
+      "price": 300,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 5,
+      "image": {
+        "file": "juice-pineapple.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a glass of pineapple juice, professional beverage photography, straight-on angle, soft natural light, clean neutral background, high detail, the drink only, no garnish, no props"
+      }
+    },
+    {
+      "slug": "watermelon",
+      "name": "Watermelon",
+      "cat": "juice",
+      "sub": null,
+      "description": "",
+      "price": 250,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 6,
+      "image": {
+        "file": "juice-watermelon.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a glass of watermelon juice, professional beverage photography, straight-on angle, soft natural light, clean neutral background, high detail, the drink only, no garnish, no props"
+      }
+    },
+    {
+      "slug": "abc",
+      "name": "ABC",
+      "cat": "juice",
+      "sub": null,
+      "description": "",
+      "price": 350,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 7,
+      "image": null
+    },
+    {
+      "slug": "mixed",
+      "name": "Mixed",
+      "cat": "juice",
+      "sub": null,
+      "description": "",
+      "price": 300,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 8,
+      "image": null
+    },
+    {
+      "slug": "iced-coffee",
+      "name": "Iced Coffee",
+      "cat": "iced-coffee-tea",
+      "sub": null,
+      "description": "",
+      "price": 250,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 1,
+      "image": {
+        "file": "iced-coffee-tea-iced-coffee.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a glass of iced coffee, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, high detail, the dish only, no garnish, no herbs, no sauce, no side dishes, no props"
+      }
+    },
+    {
+      "slug": "iced-tea",
+      "name": "Iced Tea",
+      "cat": "iced-coffee-tea",
+      "sub": null,
+      "description": "",
+      "price": 150,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 2,
+      "image": {
+        "file": "iced-coffee-tea-iced-tea.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a glass of iced tea, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, high detail, the dish only, no garnish, no herbs, no sauce, no side dishes, no props"
+      }
+    },
+    {
+      "slug": "barahshinghe-330ml",
+      "name": "Barahshinghe 330ml",
+      "cat": "beer",
+      "sub": null,
+      "description": "",
+      "price": 350,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 1,
+      "image": {
+        "file": "beer-barahshinghe-330ml.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a bottle of beer, professional beverage photography, straight-on angle, soft natural light, clean neutral background, high detail, the drink only, no garnish, no props"
+      }
+    },
+    {
+      "slug": "gorkha-330ml",
+      "name": "Gorkha 330ml",
+      "cat": "beer",
+      "sub": null,
+      "description": "",
+      "price": 300,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 2,
+      "image": {
+        "file": "beer-gorkha-330ml.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a bottle of beer, professional beverage photography, straight-on angle, soft natural light, clean neutral background, high detail, the drink only, no garnish, no props"
+      }
+    },
+    {
+      "slug": "tuborg-330ml",
+      "name": "Tuborg 330ml",
+      "cat": "beer",
+      "sub": null,
+      "description": "",
+      "price": 350,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 3,
+      "image": {
+        "file": "beer-tuborg-330ml.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a bottle of beer, professional beverage photography, straight-on angle, soft natural light, clean neutral background, high detail, the drink only, no garnish, no props"
+      }
+    },
+    {
+      "slug": "ruslan-vodka-60ml",
+      "name": "Ruslan Vodka (60ml)",
+      "cat": "hard-drinks",
+      "sub": null,
+      "description": "",
+      "price": 300,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 1,
+      "image": {
+        "file": "hard-drinks-ruslan-vodka-60ml.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a shot glass of vodka, professional beverage photography, straight-on angle, soft natural light, clean neutral background, high detail, the drink only, no garnish, no props"
+      }
+    },
+    {
+      "slug": "ruslan-vodka-qtr",
+      "name": "Ruslan Vodka (Qtr)",
+      "cat": "hard-drinks",
+      "sub": null,
+      "description": "",
+      "price": 850,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 2,
+      "image": {
+        "file": "hard-drinks-ruslan-vodka-qtr.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a quarter bottle of vodka, professional beverage photography, straight-on angle, soft natural light, clean neutral background, high detail, the drink only, no garnish, no props"
+      }
+    },
+    {
+      "slug": "8848-vodka-60ml",
+      "name": "8848 Vodka (60ml)",
+      "cat": "hard-drinks",
+      "sub": null,
+      "description": "",
+      "price": 300,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 3,
+      "image": {
+        "file": "hard-drinks-8848-vodka-60ml.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a shot glass of vodka, professional beverage photography, straight-on angle, soft natural light, clean neutral background, high detail, the drink only, no garnish, no props"
+      }
+    },
+    {
+      "slug": "8848-vodka-qtr",
+      "name": "8848 Vodka (Qtr)",
+      "cat": "hard-drinks",
+      "sub": null,
+      "description": "",
+      "price": 850,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 4,
+      "image": {
+        "file": "hard-drinks-8848-vodka-qtr.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a quarter bottle of vodka, professional beverage photography, straight-on angle, soft natural light, clean neutral background, high detail, the drink only, no garnish, no props"
+      }
+    },
+    {
+      "slug": "khukuri-rum-60ml",
+      "name": "Khukuri Rum (60ml)",
+      "cat": "hard-drinks",
+      "sub": null,
+      "description": "",
+      "price": 300,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 5,
+      "image": {
+        "file": "hard-drinks-khukuri-rum-60ml.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a shot glass of rum, professional beverage photography, straight-on angle, soft natural light, clean neutral background, high detail, the drink only, no garnish, no props"
+      }
+    },
+    {
+      "slug": "khukuri-rum-qtr",
+      "name": "Khukuri Rum (Qtr)",
+      "cat": "hard-drinks",
+      "sub": null,
+      "description": "",
+      "price": 850,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 6,
+      "image": {
+        "file": "hard-drinks-khukuri-rum-qtr.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a quarter bottle of rum, professional beverage photography, straight-on angle, soft natural light, clean neutral background, high detail, the drink only, no garnish, no props"
+      }
+    },
+    {
+      "slug": "signature-60ml",
+      "name": "Signature (60ml)",
+      "cat": "hard-drinks",
+      "sub": null,
+      "description": "",
+      "price": 350,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 7,
+      "image": null
+    },
+    {
+      "slug": "signature-qtr",
+      "name": "Signature (Qtr)",
+      "cat": "hard-drinks",
+      "sub": null,
+      "description": "",
+      "price": 1000,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 8,
+      "image": null
+    },
+    {
+      "slug": "old-durbar-60ml",
+      "name": "Old Durbar (60ml)",
+      "cat": "hard-drinks",
+      "sub": null,
+      "description": "",
+      "price": 400,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 9,
+      "image": null
+    },
+    {
+      "slug": "old-durbar-qtr",
+      "name": "Old Durbar (Qtr)",
+      "cat": "hard-drinks",
+      "sub": null,
+      "description": "",
+      "price": 1100,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 10,
+      "image": null
+    },
+    {
+      "slug": "old-durbar-black-60ml",
+      "name": "Old Durbar Black (60ml)",
+      "cat": "hard-drinks",
+      "sub": null,
+      "description": "",
+      "price": 450,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 11,
+      "image": null
+    },
+    {
+      "slug": "old-durbar-black-qtr",
+      "name": "Old Durbar Black (Qtr)",
+      "cat": "hard-drinks",
+      "sub": null,
+      "description": "",
+      "price": 1250,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 12,
+      "image": null
+    },
+    {
+      "slug": "black-tea",
+      "name": "Black Tea",
+      "cat": "after-wake-up",
+      "sub": null,
+      "description": "",
+      "price": 60,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 1,
+      "image": {
+        "file": "after-wake-up-black-tea.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a cup of black tea, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, high detail, the dish only, no garnish, no herbs, no sauce, no side dishes, no props"
+      }
+    },
+    {
+      "slug": "black-coffee",
+      "name": "Black Coffee",
+      "cat": "after-wake-up",
+      "sub": null,
+      "description": "",
+      "price": 80,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 2,
+      "image": {
+        "file": "after-wake-up-black-coffee.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a cup of black coffee, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, high detail, the dish only, no garnish, no herbs, no sauce, no side dishes, no props"
+      }
+    },
+    {
+      "slug": "lemon-teahot-mint",
+      "name": "Lemon Tea/Hot Mint",
+      "cat": "after-wake-up",
+      "sub": null,
+      "description": "",
+      "price": 70,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 3,
+      "image": null
+    },
+    {
+      "slug": "masalamilk-tea",
+      "name": "Masala/Milk Tea",
+      "cat": "after-wake-up",
+      "sub": null,
+      "description": "",
+      "price": 70,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 4,
+      "image": null
+    },
+    {
+      "slug": "tulsi-tea",
+      "name": "Tulsi Tea",
+      "cat": "after-wake-up",
+      "sub": null,
+      "description": "",
+      "price": 70,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 5,
+      "image": {
+        "file": "after-wake-up-tulsi-tea.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a cup of tulsi tea, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, high detail, the dish only, no garnish, no herbs, no sauce, no side dishes, no props"
+      }
+    },
+    {
+      "slug": "milk-coffee",
+      "name": "Milk Coffee",
+      "cat": "after-wake-up",
+      "sub": null,
+      "description": "",
+      "price": 100,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 6,
+      "image": {
+        "file": "after-wake-up-milk-coffee.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a cup of milk coffee, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, high detail, the dish only, no garnish, no herbs, no sauce, no side dishes, no props"
+      }
+    },
+    {
+      "slug": "hot-chocolate",
+      "name": "Hot Chocolate",
+      "cat": "after-wake-up",
+      "sub": null,
+      "description": "",
+      "price": 200,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 7,
+      "image": {
+        "file": "after-wake-up-hot-chocolate.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a cup of hot chocolate, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, high detail, the dish only, no garnish, no herbs, no sauce, no side dishes, no props"
+      }
+    },
+    {
+      "slug": "ginger-lemon-honey",
+      "name": "Ginger Lemon Honey",
+      "cat": "after-wake-up",
+      "sub": null,
+      "description": "",
+      "price": 200,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 8,
+      "image": {
+        "file": "after-wake-up-ginger-lemon-honey.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a cup of ginger lemon honey tea, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, high detail, the dish only, no garnish, no herbs, no sauce, no side dishes, no props"
+      }
+    },
+    {
+      "slug": "cumin-turmeric-tea",
+      "name": "Cumin-Turmeric Tea",
+      "cat": "after-wake-up",
+      "sub": null,
+      "description": "",
+      "price": 100,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 9,
+      "image": {
+        "file": "after-wake-up-cumin-turmeric-tea.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a cup of cumin turmeric tea, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, high detail, the dish only, no garnish, no herbs, no sauce, no side dishes, no props"
+      }
+    },
+    {
+      "slug": "organic-coffee",
+      "name": "Organic Coffee",
+      "cat": "after-wake-up",
+      "sub": null,
+      "description": "",
+      "price": 120,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 10,
+      "image": {
+        "file": "after-wake-up-organic-coffee.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a cup of organic coffee, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, high detail, the dish only, no garnish, no herbs, no sauce, no side dishes, no props"
+      }
+    },
+    {
+      "slug": "farmers-breakfast",
+      "name": "Farmers Breakfast",
+      "cat": "breakfast",
+      "sub": null,
+      "description": "Kodo ko roti (millet bread), saag, hempseed pickle, fresh milk",
+      "price": 300,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 1,
+      "image": {
+        "file": "breakfast-farmers-breakfast.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "millet bread with sautéed greens, pickle and a glass of milk, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, high detail, the dish only, no garnish, no herbs, no sauce, no side dishes, no props"
+      }
+    },
+    {
+      "slug": "simple-breakfast",
+      "name": "Simple Breakfast",
+      "cat": "breakfast",
+      "sub": null,
+      "description": "Hash brown potatoes, 2 eggs any style, toast, butter/jam and tea or coffee",
+      "price": 300,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 2,
+      "image": {
+        "file": "breakfast-simple-breakfast.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "hash brown potatoes, two eggs, toast and a hot drink, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, high detail, the dish only, no garnish, no herbs, no sauce, no side dishes, no props"
+      }
+    },
+    {
+      "slug": "american-breakfast",
+      "name": "American Breakfast",
+      "cat": "breakfast",
+      "sub": null,
+      "description": "Hash brown potato, 2 eggs any style, sausage, ham or bacon, cheese, toast, butter/jam and tea, coffee or juice",
+      "price": 600,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 3,
+      "image": {
+        "file": "breakfast-american-breakfast.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "hash brown potatoes, two eggs, sausage, toast and cheese on a breakfast plate ⚠, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, high detail, the dish only, no garnish, no herbs, no sauce, no side dishes, no props"
+      }
+    },
+    {
+      "slug": "plain-toast",
+      "name": "Plain Toast",
+      "cat": "toast",
+      "sub": null,
+      "description": "",
+      "price": 150,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 1,
+      "image": {
+        "file": "toast-plain-toast.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "toasted bread slices, golden brown and crisp, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, high detail, the dish only, no garnish, no herbs, no sauce, no side dishes, no props"
+      }
+    },
+    {
+      "slug": "butterjam-toast",
+      "name": "Butter/Jam Toast",
+      "cat": "toast",
+      "sub": null,
+      "description": "",
+      "price": 200,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 2,
+      "image": {
+        "file": "toast-butterjam-toast.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "buttered toast ⚠, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, high detail, the dish only, no garnish, no herbs, no sauce, no side dishes, no props"
+      }
+    },
+    {
+      "slug": "french-toast-slice-bread",
+      "name": "French Toast (Slice Bread)",
+      "cat": "toast",
+      "sub": null,
+      "description": "",
+      "price": 200,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 3,
+      "image": {
+        "file": "toast-french-toast-slice-bread.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "crisp golden French toast, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, high detail, the dish only, no garnish, no herbs, no sauce, no side dishes, no props"
+      }
+    },
+    {
+      "slug": "honey-toast",
+      "name": "Honey Toast",
+      "cat": "toast",
+      "sub": null,
+      "description": "",
+      "price": 200,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 4,
+      "image": {
+        "file": "toast-honey-toast.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "toast drizzled with honey, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, high detail, the dish only, no garnish, no herbs, no sauce, no side dishes, no props"
+      }
+    },
+    {
+      "slug": "banana-muesli-porridge-corn-flakes",
+      "name": "Banana",
+      "cat": "muesli-porridge-corn-flakes",
+      "sub": null,
+      "description": "",
+      "price": 200,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 1,
+      "image": {
+        "file": "muesli-porridge-corn-flakes-banana.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a bowl of muesli with sliced banana ⚠, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, high detail, the dish only, no garnish, no herbs, no sauce, no side dishes, no props"
+      }
+    },
+    {
+      "slug": "apple-muesli-porridge-corn-flakes",
+      "name": "Apple",
+      "cat": "muesli-porridge-corn-flakes",
+      "sub": null,
+      "description": "",
+      "price": 250,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 2,
+      "image": {
+        "file": "muesli-porridge-corn-flakes-apple.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a bowl of muesli with sliced apple ⚠, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, high detail, the dish only, no garnish, no herbs, no sauce, no side dishes, no props"
+      }
+    },
+    {
+      "slug": "mixed-fruits",
+      "name": "Mixed Fruits",
+      "cat": "muesli-porridge-corn-flakes",
+      "sub": null,
+      "description": "",
+      "price": 300,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 3,
+      "image": {
+        "file": "muesli-porridge-corn-flakes-mixed-fruits.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a bowl of muesli with mixed fruits ⚠, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, high detail, the dish only, no garnish, no herbs, no sauce, no side dishes, no props"
+      }
+    },
+    {
+      "slug": "plain-curd-muesli",
+      "name": "Plain Curd & Muesli",
+      "cat": "muesli-porridge-corn-flakes",
+      "sub": null,
+      "description": "",
+      "price": 180,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 4,
+      "image": {
+        "file": "muesli-porridge-corn-flakes-plain-curd-muesli.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a bowl of plain curd with muesli, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, high detail, the dish only, no garnish, no herbs, no sauce, no side dishes, no props"
+      }
+    },
+    {
+      "slug": "plain-curd-honey-muesli",
+      "name": "Plain Curd, Honey & Muesli",
+      "cat": "muesli-porridge-corn-flakes",
+      "sub": null,
+      "description": "",
+      "price": 300,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 5,
+      "image": {
+        "file": "muesli-porridge-corn-flakes-plain-curd-honey-muesli.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a bowl of plain curd with honey and muesli, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, high detail, the dish only, no garnish, no herbs, no sauce, no side dishes, no props"
+      }
+    },
+    {
+      "slug": "vegetable-sandwich",
+      "name": "Vegetable Sandwich",
+      "cat": "sandwich",
+      "sub": null,
+      "description": "",
+      "price": 300,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 1,
+      "image": {
+        "file": "sandwich-vegetable-sandwich.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a vegetable sandwich, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, high detail, the dish only, no garnish, no herbs, no sauce, no side dishes, no props"
+      }
+    },
+    {
+      "slug": "cheese-sandwich",
+      "name": "Cheese Sandwich",
+      "cat": "sandwich",
+      "sub": null,
+      "description": "",
+      "price": 350,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 2,
+      "image": {
+        "file": "sandwich-cheese-sandwich.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a cheese sandwich, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, high detail, the dish only, no garnish, no herbs, no sauce, no side dishes, no props"
+      }
+    },
+    {
+      "slug": "tuna-sandwich",
+      "name": "Tuna Sandwich",
+      "cat": "sandwich",
+      "sub": null,
+      "description": "",
+      "price": 450,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 3,
+      "image": {
+        "file": "sandwich-tuna-sandwich.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a tuna sandwich, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, high detail, the dish only, no garnish, no herbs, no sauce, no side dishes, no props"
+      }
+    },
+    {
+      "slug": "bacon-or-ham-sandwich",
+      "name": "Bacon or Ham Sandwich",
+      "cat": "sandwich",
+      "sub": null,
+      "description": "",
+      "price": 500,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 4,
+      "image": null
+    },
+    {
+      "slug": "vegetable-burger",
+      "name": "Vegetable Burger",
+      "cat": "burger",
+      "sub": null,
+      "description": "",
+      "price": 300,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 1,
+      "image": {
+        "file": "burger-vegetable-burger.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a vegetable burger, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, high detail, the dish only, no garnish, no herbs, no sauce, no side dishes, no props"
+      }
+    },
+    {
+      "slug": "cheese-burger",
+      "name": "Cheese Burger",
+      "cat": "burger",
+      "sub": null,
+      "description": "",
+      "price": 350,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 2,
+      "image": {
+        "file": "burger-cheese-burger.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a cheese burger, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, high detail, the dish only, no garnish, no herbs, no sauce, no side dishes, no props"
+      }
+    },
+    {
+      "slug": "chicken-burger",
+      "name": "Chicken Burger",
+      "cat": "burger",
+      "sub": null,
+      "description": "",
+      "price": 400,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 3,
+      "image": {
+        "file": "burger-chicken-burger.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a chicken burger, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, high detail, the dish only, no garnish, no herbs, no sauce, no side dishes, no props"
+      }
+    },
+    {
+      "slug": "dhindo-veg-set",
+      "name": "Dhindo (Veg. Set)",
+      "cat": "dinner-lunch",
+      "sub": null,
+      "description": "Dhindo, daal, vegetable curry, pickle, salad",
+      "price": 450,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 1,
+      "image": {
+        "file": "dinner-lunch-dhindo-veg-set.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a Nepali thali with dhindo, lentil soup, vegetable curry, pickle and salad, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, high detail, the dish only, no garnish, no herbs, no sauce, no side dishes, no props"
+      }
+    },
+    {
+      "slug": "dhindo-non-veg-set",
+      "name": "Dhindo (Non Veg Set)",
+      "cat": "dinner-lunch",
+      "sub": null,
+      "description": "Dhindo, daal, vegetable curry, chicken curry, pickle, salad",
+      "price": 550,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 2,
+      "image": {
+        "file": "dinner-lunch-dhindo-non-veg-set.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a Nepali thali with dhindo, lentil soup, vegetable curry, chicken curry, pickle and salad, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, high detail, the dish only, no garnish, no herbs, no sauce, no side dishes, no props"
+      }
+    },
+    {
+      "slug": "daal-bhat-tarkari-veg-set",
+      "name": "Daal Bhat Tarkari (Veg. Set)",
+      "cat": "dinner-lunch",
+      "sub": null,
+      "description": "Daal, bhat, vegetable curry, pickle, salad",
+      "price": 400,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 3,
+      "image": {
+        "file": "dinner-lunch-daal-bhat-tarkari-veg-set.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a Nepali thali with rice, lentil soup, vegetable curry, pickle and salad, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, high detail, the dish only, no garnish, no herbs, no sauce, no side dishes, no props"
+      }
+    },
+    {
+      "slug": "daal-bhat-tarkari-non-veg-set",
+      "name": "Daal Bhat Tarkari (Non Veg Set)",
+      "cat": "dinner-lunch",
+      "sub": null,
+      "description": "Daal, bhat, vegetable curry, chicken curry or fish curry, pickle, salad",
+      "price": 550,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 4,
+      "image": {
+        "file": "dinner-lunch-daal-bhat-tarkari-non-veg-set.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a Nepali thali with rice, lentil soup, vegetable curry, chicken curry, pickle and salad ⚠, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, high detail, the dish only, no garnish, no herbs, no sauce, no side dishes, no props"
+      }
+    },
+    {
+      "slug": "veg-curry-wrice-or-chapati",
+      "name": "Veg. Curry w/Rice or Chapati",
+      "cat": "dinner-lunch",
+      "sub": null,
+      "description": "",
+      "price": 300,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 5,
+      "image": {
+        "file": "dinner-lunch-veg-curry-wrice-or-chapati.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "vegetable curry with steamed rice ⚠, a flat round unleavened flatbread, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, high detail, the dish only, no garnish, no herbs, no sauce, no side dishes, no props"
+      }
+    },
+    {
+      "slug": "chicken-curry-wrice-or-chapati",
+      "name": "Chicken Curry w/Rice or Chapati",
+      "cat": "dinner-lunch",
+      "sub": null,
+      "description": "",
+      "price": 400,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 6,
+      "image": {
+        "file": "dinner-lunch-chicken-curry-wrice-or-chapati.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "chicken curry with steamed rice ⚠, a flat round unleavened flatbread, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, high detail, the dish only, no garnish, no herbs, no sauce, no side dishes, no props"
+      }
+    },
+    {
+      "slug": "plain-rice",
+      "name": "Plain Rice",
+      "cat": "rice",
+      "sub": null,
+      "description": "",
+      "price": 150,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 1,
+      "image": {
+        "file": "rice-plain-rice.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a bowl of steamed rice, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, high detail, the dish only, no garnish, no herbs, no sauce, no side dishes, no props"
+      }
+    },
+    {
+      "slug": "jeera-rice",
+      "name": "Jeera Rice",
+      "cat": "rice",
+      "sub": null,
+      "description": "",
+      "price": 200,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 2,
+      "image": {
+        "file": "rice-jeera-rice.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "cumin-seasoned rice, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, high detail, the dish only, no garnish, no herbs, no sauce, no side dishes, no props"
+      }
+    },
+    {
+      "slug": "veg-fried-rice",
+      "name": "Veg. Fried Rice",
+      "cat": "rice",
+      "sub": null,
+      "description": "",
+      "price": 250,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 3,
+      "image": {
+        "file": "rice-veg-fried-rice.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a plate of wok-tossed rice with mixed vegetables, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, high detail, the dish only, no garnish, no herbs, no sauce, no side dishes, no props"
+      }
+    },
+    {
+      "slug": "egg-fried-rice",
+      "name": "Egg Fried Rice",
+      "cat": "rice",
+      "sub": null,
+      "description": "",
+      "price": 300,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 4,
+      "image": {
+        "file": "rice-egg-fried-rice.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "wok-tossed rice with scrambled egg mixed through, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, high detail, the dish only, no garnish, no herbs, no sauce, no side dishes, no props"
+      }
+    },
+    {
+      "slug": "chicken-fried-rice",
+      "name": "Chicken Fried Rice",
+      "cat": "rice",
+      "sub": null,
+      "description": "",
+      "price": 350,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 5,
+      "image": {
+        "file": "rice-chicken-fried-rice.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a plate of wok-tossed rice with chicken, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, high detail, the dish only, no garnish, no herbs, no sauce, no side dishes, no props"
+      }
+    },
+    {
+      "slug": "simple-tomato-speghetti-or-panne",
+      "name": "Simple Tomato (Speghetti or Panne)",
+      "cat": "pasta",
+      "sub": null,
+      "description": "",
+      "price": 350,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 1,
+      "image": {
+        "file": "pasta-simple-tomato-speghetti-or-panne.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "spaghetti in tomato sauce ⚠, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, high detail, the dish only, no garnish, no herbs, no sauce, no side dishes, no props"
+      }
+    },
+    {
+      "slug": "bologness-speghetti-or-panne",
+      "name": "Bologness (Speghetti or Panne)",
+      "cat": "pasta",
+      "sub": null,
+      "description": "",
+      "price": 450,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 2,
+      "image": {
+        "file": "pasta-bologness-speghetti-or-panne.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "spaghetti in bolognese meat sauce ⚠, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, high detail, the dish only, no garnish, no herbs, no sauce, no side dishes, no props"
+      }
+    },
+    {
+      "slug": "veg-momo",
+      "name": "Veg. Mo:Mo",
+      "cat": "momo",
+      "sub": null,
+      "description": "",
+      "price": 250,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 1,
+      "image": {
+        "file": "momo-veg-momo.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a plate of steamed pleated vegetable dumplings, steamed pleated dumplings, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, high detail, the dish only, no garnish, no herbs, no sauce, no side dishes, no props"
+      }
+    },
+    {
+      "slug": "buff-momo",
+      "name": "Buff Mo:Mo",
+      "cat": "momo",
+      "sub": null,
+      "description": "",
+      "price": 250,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 2,
+      "image": {
+        "file": "momo-buff-momo.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a plate of steamed pleated buffalo-meat dumplings, steamed pleated dumplings, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, high detail, the dish only, no garnish, no herbs, no sauce, no side dishes, no props"
+      }
+    },
+    {
+      "slug": "chicken-momo",
+      "name": "Chicken Mo:Mo",
+      "cat": "momo",
+      "sub": null,
+      "description": "",
+      "price": 250,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 3,
+      "image": {
+        "file": "momo-chicken-momo.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a plate of steamed pleated chicken dumplings, steamed pleated dumplings, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, high detail, the dish only, no garnish, no herbs, no sauce, no side dishes, no props"
+      }
+    },
+    {
+      "slug": "veg-chowmein",
+      "name": "Veg. Chowmein",
+      "cat": "chowmein",
+      "sub": null,
+      "description": "",
+      "price": 200,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 1,
+      "image": {
+        "file": "chowmein-veg-chowmein.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "veg chowmein, stir-fried noodles, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, high detail, the dish only, no garnish, no herbs, no sauce, no side dishes, no props"
+      }
+    },
+    {
+      "slug": "egg-chowmein",
+      "name": "Egg Chowmein",
+      "cat": "chowmein",
+      "sub": null,
+      "description": "",
+      "price": 250,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 2,
+      "image": {
+        "file": "chowmein-egg-chowmein.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "egg chowmein, stir-fried noodles, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, high detail, the dish only, no garnish, no herbs, no sauce, no side dishes, no props"
+      }
+    },
+    {
+      "slug": "buff-chowmein",
+      "name": "Buff Chowmein",
+      "cat": "chowmein",
+      "sub": null,
+      "description": "",
+      "price": 250,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 3,
+      "image": {
+        "file": "chowmein-buff-chowmein.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "buff chowmein, stir-fried noodles, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, high detail, the dish only, no garnish, no herbs, no sauce, no side dishes, no props"
+      }
+    },
+    {
+      "slug": "chicken-chowmein",
+      "name": "Chicken Chowmein",
+      "cat": "chowmein",
+      "sub": null,
+      "description": "",
+      "price": 250,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 4,
+      "image": {
+        "file": "chowmein-chicken-chowmein.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "chicken chowmein, stir-fried noodles, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, high detail, the dish only, no garnish, no herbs, no sauce, no side dishes, no props"
+      }
+    },
+    {
+      "slug": "mixed-chowmein",
+      "name": "Mixed Chowmein",
+      "cat": "chowmein",
+      "sub": null,
+      "description": "",
+      "price": 350,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 5,
+      "image": {
+        "file": "chowmein-mixed-chowmein.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "mixed chowmein, stir-fried noodles, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, high detail, the dish only, no garnish, no herbs, no sauce, no side dishes, no props"
+      }
+    },
+    {
+      "slug": "veg-thukpa",
+      "name": "Veg. Thukpa",
+      "cat": "thukpa",
+      "sub": null,
+      "description": "",
+      "price": 200,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 1,
+      "image": {
+        "file": "thukpa-veg-thukpa.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "veg thukpa, noodles in a clear broth, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, high detail, the dish only, no garnish, no herbs, no sauce, no side dishes, no props"
+      }
+    },
+    {
+      "slug": "egg-thukpa",
+      "name": "Egg Thukpa",
+      "cat": "thukpa",
+      "sub": null,
+      "description": "",
+      "price": 250,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 2,
+      "image": {
+        "file": "thukpa-egg-thukpa.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "egg thukpa, noodles in a clear broth, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, high detail, the dish only, no garnish, no herbs, no sauce, no side dishes, no props"
+      }
+    },
+    {
+      "slug": "buff-thukpa",
+      "name": "Buff Thukpa",
+      "cat": "thukpa",
+      "sub": null,
+      "description": "",
+      "price": 250,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 3,
+      "image": {
+        "file": "thukpa-buff-thukpa.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "buff thukpa, noodles in a clear broth, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, high detail, the dish only, no garnish, no herbs, no sauce, no side dishes, no props"
+      }
+    },
+    {
+      "slug": "chicken-thukpa",
+      "name": "Chicken Thukpa",
+      "cat": "thukpa",
+      "sub": null,
+      "description": "",
+      "price": 250,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 4,
+      "image": {
+        "file": "thukpa-chicken-thukpa.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "chicken thukpa, noodles in a clear broth, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, high detail, the dish only, no garnish, no herbs, no sauce, no side dishes, no props"
+      }
+    },
+    {
+      "slug": "mixed-thukpa",
+      "name": "Mixed Thukpa",
+      "cat": "thukpa",
+      "sub": null,
+      "description": "",
+      "price": 350,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 5,
+      "image": {
+        "file": "thukpa-mixed-thukpa.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "mixed thukpa, noodles in a clear broth, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, high detail, the dish only, no garnish, no herbs, no sauce, no side dishes, no props"
+      }
+    },
+    {
+      "slug": "tomato-soup",
+      "name": "Tomato Soup",
+      "cat": "soup",
+      "sub": null,
+      "description": "",
+      "price": 250,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 1,
+      "image": {
+        "file": "soup-tomato-soup.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "tomato soup, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, high detail, the dish only, no garnish, no herbs, no sauce, no side dishes, no props"
+      }
+    },
+    {
+      "slug": "veg-soup",
+      "name": "Veg. Soup",
+      "cat": "soup",
+      "sub": null,
+      "description": "",
+      "price": 250,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 2,
+      "image": {
+        "file": "soup-veg-soup.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "vegetable soup, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, high detail, the dish only, no garnish, no herbs, no sauce, no side dishes, no props"
+      }
+    },
+    {
+      "slug": "garlic-soup",
+      "name": "Garlic Soup",
+      "cat": "soup",
+      "sub": null,
+      "description": "",
+      "price": 250,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 3,
+      "image": null
+    },
+    {
+      "slug": "noodles-soup",
+      "name": "Noodles Soup",
+      "cat": "soup",
+      "sub": null,
+      "description": "",
+      "price": 150,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 4,
+      "image": {
+        "file": "soup-noodles-soup.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "noodle soup, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, high detail, the dish only, no garnish, no herbs, no sauce, no side dishes, no props"
+      }
+    },
+    {
+      "slug": "mushroom-soup",
+      "name": "Mushroom Soup",
+      "cat": "soup",
+      "sub": null,
+      "description": "",
+      "price": 250,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 5,
+      "image": {
+        "file": "soup-mushroom-soup.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "mushroom soup, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, high detail, the dish only, no garnish, no herbs, no sauce, no side dishes, no props"
+      }
+    },
+    {
+      "slug": "chicken-soup",
+      "name": "Chicken Soup",
+      "cat": "soup",
+      "sub": null,
+      "description": "",
+      "price": 300,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 6,
+      "image": {
+        "file": "soup-chicken-soup.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "chicken soup, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, high detail, the dish only, no garnish, no herbs, no sauce, no side dishes, no props"
+      }
+    },
+    {
+      "slug": "green-salad",
+      "name": "Green Salad",
+      "cat": "salad",
+      "sub": null,
+      "description": "",
+      "price": 250,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 1,
+      "image": {
+        "file": "salad-green-salad.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a bowl of green salad, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, high detail, the dish only, no garnish, no herbs, no sauce, no side dishes, no props"
+      }
+    },
+    {
+      "slug": "potato-salad",
+      "name": "Potato Salad",
+      "cat": "salad",
+      "sub": null,
+      "description": "",
+      "price": 300,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 2,
+      "image": {
+        "file": "salad-potato-salad.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a potato salad, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, high detail, the dish only, no garnish, no herbs, no sauce, no side dishes, no props"
+      }
+    },
+    {
+      "slug": "potato-egg-salad",
+      "name": "Potato Egg Salad",
+      "cat": "salad",
+      "sub": null,
+      "description": "",
+      "price": 400,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 3,
+      "image": null
+    },
+    {
+      "slug": "fruit-salad",
+      "name": "Fruit Salad",
+      "cat": "salad",
+      "sub": null,
+      "description": "",
+      "price": 400,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 4,
+      "image": {
+        "file": "salad-fruit-salad.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a bowl of fruit salad, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, high detail, the dish only, no garnish, no herbs, no sauce, no side dishes, no props"
+      }
+    },
+    {
+      "slug": "finger-chips",
+      "name": "Finger Chips",
+      "cat": "kailash-touch",
+      "sub": null,
+      "description": "",
+      "price": 250,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 1,
+      "image": {
+        "file": "kailash-touch-finger-chips.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "crisp golden potato finger chips, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, high detail, the dish only, no garnish, no herbs, no sauce, no side dishes, no props"
+      }
+    },
+    {
+      "slug": "chips-chilly",
+      "name": "Chips Chilly",
+      "cat": "kailash-touch",
+      "sub": null,
+      "description": "",
+      "price": 350,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 2,
+      "image": {
+        "file": "kailash-touch-chips-chilly.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "potato chips tossed with chilli, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, high detail, the dish only, no garnish, no herbs, no sauce, no side dishes, no props"
+      }
+    },
+    {
+      "slug": "veg-pakauda",
+      "name": "Veg. Pakauda",
+      "cat": "kailash-touch",
+      "sub": null,
+      "description": "",
+      "price": 250,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 3,
+      "image": {
+        "file": "kailash-touch-veg-pakauda.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "crisp golden vegetable pakauda, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, high detail, the dish only, no garnish, no herbs, no sauce, no side dishes, no props"
+      }
+    },
+    {
+      "slug": "peanut-sandeko",
+      "name": "Peanut Sandeko",
+      "cat": "kailash-touch",
+      "sub": null,
+      "description": "",
+      "price": 150,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 4,
+      "image": {
+        "file": "kailash-touch-peanut-sandeko.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "peanuts tossed in Nepali spiced dressing, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, high detail, the dish only, no garnish, no herbs, no sauce, no side dishes, no props"
+      }
+    },
+    {
+      "slug": "noodle-sandeko",
+      "name": "Noodle Sandeko",
+      "cat": "kailash-touch",
+      "sub": null,
+      "description": "",
+      "price": 150,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 5,
+      "image": {
+        "file": "kailash-touch-noodle-sandeko.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "noodles tossed in Nepali spiced dressing, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, high detail, the dish only, no garnish, no herbs, no sauce, no side dishes, no props"
+      }
+    },
+    {
+      "slug": "chicken-chilly",
+      "name": "Chicken Chilly",
+      "cat": "kailash-touch",
+      "sub": null,
+      "description": "",
+      "price": 450,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 6,
+      "image": {
+        "file": "kailash-touch-chicken-chilly.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "chicken tossed with chilli, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, high detail, the dish only, no garnish, no herbs, no sauce, no side dishes, no props"
+      }
+    },
+    {
+      "slug": "chicken-fried",
+      "name": "Chicken Fried",
+      "cat": "kailash-touch",
+      "sub": null,
+      "description": "",
+      "price": 400,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 7,
+      "image": {
+        "file": "kailash-touch-chicken-fried.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "crisp golden chicken, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, high detail, the dish only, no garnish, no herbs, no sauce, no side dishes, no props"
+      }
+    },
+    {
+      "slug": "buff-sausage",
+      "name": "Buff Sausage",
+      "cat": "kailash-touch",
+      "sub": null,
+      "description": "",
+      "price": 350,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 8,
+      "image": {
+        "file": "kailash-touch-buff-sausage.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "buff sausage, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, high detail, the dish only, no garnish, no herbs, no sauce, no side dishes, no props"
+      }
+    },
+    {
+      "slug": "chicken-sausage",
+      "name": "Chicken Sausage",
+      "cat": "kailash-touch",
+      "sub": null,
+      "description": "",
+      "price": 450,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 9,
+      "image": {
+        "file": "kailash-touch-chicken-sausage.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "chicken sausage, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, high detail, the dish only, no garnish, no herbs, no sauce, no side dishes, no props"
+      }
+    },
+    {
+      "slug": "chicken-boiled",
+      "name": "Chicken Boiled",
+      "cat": "kailash-touch",
+      "sub": null,
+      "description": "",
+      "price": 400,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 10,
+      "image": {
+        "file": "kailash-touch-chicken-boiled.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "boiled chicken, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, high detail, the dish only, no garnish, no herbs, no sauce, no side dishes, no props"
+      }
+    },
+    {
+      "slug": "chicken-sandeko",
+      "name": "Chicken Sandeko",
+      "cat": "kailash-touch",
+      "sub": null,
+      "description": "",
+      "price": 450,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 11,
+      "image": {
+        "file": "kailash-touch-chicken-sandeko.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "chicken tossed in Nepali spiced dressing, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, high detail, the dish only, no garnish, no herbs, no sauce, no side dishes, no props"
+      }
+    },
+    {
+      "slug": "aalu-sandeko",
+      "name": "Aalu Sandeko",
+      "cat": "kailash-touch",
+      "sub": null,
+      "description": "",
+      "price": 200,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 12,
+      "image": {
+        "file": "kailash-touch-aalu-sandeko.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "potato tossed in Nepali spiced dressing, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, high detail, the dish only, no garnish, no herbs, no sauce, no side dishes, no props"
+      }
+    },
+    {
+      "slug": "fish-fry",
+      "name": "Fish Fry",
+      "cat": "kailash-touch",
+      "sub": null,
+      "description": "",
+      "price": 400,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 13,
+      "image": {
+        "file": "kailash-touch-fish-fry.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "crisp golden fish, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, high detail, the dish only, no garnish, no herbs, no sauce, no side dishes, no props"
+      }
+    },
+    {
+      "slug": "pork-fry",
+      "name": "Pork Fry",
+      "cat": "kailash-touch",
+      "sub": null,
+      "description": "",
+      "price": 400,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 14,
+      "image": {
+        "file": "kailash-touch-pork-fry.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "crisp golden pork, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, high detail, the dish only, no garnish, no herbs, no sauce, no side dishes, no props"
+      }
+    },
+    {
+      "slug": "pork-tawachilly",
+      "name": "Pork Tawa/Chilly",
+      "cat": "kailash-touch",
+      "sub": null,
+      "description": "",
+      "price": 550,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 15,
+      "image": null
+    },
+    {
+      "slug": "millet-pancake-with-honey",
+      "name": "Millet Pancake with Honey",
+      "cat": "pancake",
+      "sub": null,
+      "description": "",
+      "price": 250,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 1,
+      "image": {
+        "file": "pancake-millet-pancake-with-honey.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "millet pancake drizzled with honey, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, high detail, the dish only, no garnish, no herbs, no sauce, no side dishes, no props"
+      }
+    },
+    {
+      "slug": "wheat-pancake-with-honey",
+      "name": "Wheat Pancake with Honey",
+      "cat": "pancake",
+      "sub": null,
+      "description": "",
+      "price": 200,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 2,
+      "image": {
+        "file": "pancake-wheat-pancake-with-honey.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "wheat pancake drizzled with honey, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, high detail, the dish only, no garnish, no herbs, no sauce, no side dishes, no props"
+      }
+    },
+    {
+      "slug": "choco-banana-pancake",
+      "name": "Choco-Banana Pancake",
+      "cat": "pancake",
+      "sub": null,
+      "description": "",
+      "price": 300,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 3,
+      "image": {
+        "file": "pancake-choco-banana-pancake.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "pancake with chocolate and banana, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, high detail, the dish only, no garnish, no herbs, no sauce, no side dishes, no props"
+      }
+    },
+    {
+      "slug": "lemon-sugar-pancake",
+      "name": "Lemon Sugar Pancake",
+      "cat": "pancake",
+      "sub": null,
+      "description": "",
+      "price": 200,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 4,
+      "image": {
+        "file": "pancake-lemon-sugar-pancake.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "pancake with lemon and sugar, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, high detail, the dish only, no garnish, no herbs, no sauce, no side dishes, no props"
+      }
+    },
+    {
+      "slug": "pancake-wfried-eggscheese",
+      "name": "Pancake w/Fried Eggs/Cheese",
+      "cat": "pancake",
+      "sub": null,
+      "description": "",
+      "price": 400,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 5,
+      "image": null
+    },
+    {
+      "slug": "cokefantaspritedewslice",
+      "name": "Coke/Fanta/Sprite/Dew/Slice",
+      "cat": "soft-drinks",
+      "sub": null,
+      "description": "",
+      "price": 100,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 1,
+      "image": {
+        "file": "soft-drinks-cokefantaspritedewslice.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a chilled can of soft drink ⚠, professional beverage photography, straight-on angle, soft natural light, clean neutral background, high detail, the drink only, no garnish, no props"
+      }
+    },
+    {
+      "slug": "lemon-soda",
+      "name": "Lemon Soda",
+      "cat": "soft-drinks",
+      "sub": null,
+      "description": "",
+      "price": 120,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 2,
+      "image": {
+        "file": "soft-drinks-lemon-soda.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a glass of lemon soda, professional beverage photography, straight-on angle, soft natural light, clean neutral background, high detail, the drink only, no garnish, no props"
+      }
+    },
+    {
+      "slug": "mineral-water",
+      "name": "Mineral Water",
+      "cat": "soft-drinks",
+      "sub": null,
+      "description": "",
+      "price": 50,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 3,
+      "image": {
+        "file": "soft-drinks-mineral-water.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a bottle of mineral water, professional beverage photography, straight-on angle, soft natural light, clean neutral background, high detail, the drink only, no garnish, no props"
+      }
+    }
+  ]
+}
