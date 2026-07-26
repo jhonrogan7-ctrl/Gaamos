@@ -13,6 +13,23 @@
     return Uint8Array.from([...raw].map((c) => c.charCodeAt(0)));
   }
 
+  function bufToBase64Url(buf) {
+    const bytes = new Uint8Array(buf);
+    let s = "";
+    for (const b of bytes) s += String.fromCharCode(b);
+    return btoa(s).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+  }
+
+  // True when this subscription was created against a different server key than
+  // the one we now serve — i.e. the keypair was rotated. Such a subscription can
+  // never receive again (the push service 403s our signature), so it must be
+  // replaced rather than reused.
+  function isStale(sub, vapidKey) {
+    const key = sub.options && sub.options.applicationServerKey;
+    if (!key) return false; // browser won't tell us; leave it alone
+    return bufToBase64Url(key) !== vapidKey;
+  }
+
   function post(url, body) {
     const m = document.cookie.match("(^|;)\\s*csrftoken\\s*=\\s*([^;]+)");
     return fetch(url, {
@@ -47,6 +64,21 @@
         }
         const reg = await navigator.serviceWorker.ready;
         const sub = await reg.pushManager.getSubscription();
+        if (sub && isStale(sub, vapidKey)) {
+          // Keys were rotated server-side. Re-register silently so the operator
+          // never has to know it happened; without this the device stays
+          // subscribed to a key nobody signs with any more and goes quiet
+          // forever.
+          console.info("push: server key changed, re-registering");
+          this.state = "busy";
+          try {
+            await post("/dashboard/push/unsubscribe/", { endpoint: sub.endpoint });
+            await sub.unsubscribe();
+          } catch (e) {
+            console.warn("push: could not clear stale subscription", e);
+          }
+          return this.enable();
+        }
         this.state = sub ? "on" : "off";
       },
 
@@ -74,10 +106,16 @@
             return;
           }
           const reg = await navigator.serviceWorker.ready;
-          // Existing subscription is reused — resubscribing the same browser
-          // would otherwise churn the endpoint on every toggle.
+          // Reuse an existing subscription — resubscribing the same browser
+          // would otherwise churn the endpoint on every toggle. But only if it
+          // was made against the key we still sign with.
+          let existing = await reg.pushManager.getSubscription();
+          if (existing && isStale(existing, vapidKey)) {
+            await existing.unsubscribe();
+            existing = null;
+          }
           const sub =
-            (await reg.pushManager.getSubscription()) ||
+            existing ||
             (await reg.pushManager.subscribe({
               userVisibleOnly: true,
               applicationServerKey: urlBase64ToUint8Array(vapidKey),

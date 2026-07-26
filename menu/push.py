@@ -17,9 +17,17 @@ from django.conf import settings
 
 logger = logging.getLogger(__name__)
 
-# Push services expire endpoints silently; these two codes are the documented
-# "this registration is dead, stop using it" signal.
+# Push services expire endpoints silently; 404/410 is the documented "this
+# registration is gone, stop using it" signal.
+#
+# 401/403 mean the push service rejected our VAPID signature — in practice, the
+# subscription was created against a *different* public key than we are now
+# signing with (keys rotated, or prod was reconfigured). Those subscriptions can
+# never succeed again, so they are dropped too: the browser re-registers against
+# the current key next time the operator opens the dashboard, which turns a key
+# rotation into a self-healing event instead of a permanent silent outage.
 _DEAD_STATUSES = (404, 410)
+_STALE_KEY_STATUSES = (401, 403)
 
 
 def push_enabled():
@@ -95,6 +103,13 @@ def send_to_subscription(sub, payload):
         status = getattr(getattr(exc, 'response', None), 'status_code', None)
         if status in _DEAD_STATUSES:
             logger.info('push: dropping expired subscription %s (%s)', sub.pk, status)
+            return DEAD
+        if status in _STALE_KEY_STATUSES:
+            logger.warning(
+                'push: subscription %s was made against a different VAPID key '
+                '(%s) — dropping so the browser re-registers. If this is every '
+                'subscription, VAPID_PRIVATE_KEY does not match the public key '
+                'being served.', sub.pk, status)
             return DEAD
         # Transient (push service down, timeout, malformed key): must not
         # delete a subscription that may well work next time.

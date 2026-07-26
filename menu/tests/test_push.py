@@ -311,3 +311,68 @@ class SendOrderPushTaskTest(TenantTestCase):
     def test_task_on_a_deleted_order_is_a_noop(self):
         from menu.tasks import send_order_push
         self.assertEqual(send_order_push(999999), 'gone')
+
+
+@override_settings(**VAPID)
+class VapidKeyRotationTest(TenantTestCase):
+    """Rotating the VAPID keypair must self-heal, not silently orphan devices.
+
+    A subscription made against an old public key can never receive again — the
+    push service rejects our signature with 401/403. If we treated that as a
+    transient error we would retry it forever and the staff member's phone would
+    stay quiet with no route back.
+    """
+
+    def setUp(self):
+        super().setUp()
+        self.branch = Branch.objects.create(company=self.company, name='A', slug='a')
+        self.owner = User.objects.create_user('owner', password='pass')
+        self.make_owner(self.owner)
+        self.sub = PushSubscription.objects.create(
+            company=self.company, user=self.owner,
+            endpoint='https://push.example.com/old-key', p256dh='k', auth='a')
+        self.order = Order.objects.create(branch=self.branch, total=100)
+
+    def _fail_with(self, status):
+        from pywebpush import WebPushException
+        exc = WebPushException('rejected')
+        exc.response = _Resp(status)
+        with patch('pywebpush.webpush', side_effect=exc):
+            return push.notify_new_order(self.order)
+
+    def test_403_drops_the_subscription_so_the_browser_re_registers(self):
+        tally = self._fail_with(403)
+        self.assertEqual(tally, {'sent': 0, 'failed': 0, 'dropped': 1})
+        self.assertFalse(PushSubscription.all_objects.filter(pk=self.sub.pk).exists())
+
+    def test_401_is_treated_the_same(self):
+        self._fail_with(401)
+        self.assertFalse(PushSubscription.all_objects.filter(pk=self.sub.pk).exists())
+
+    def test_a_real_outage_is_still_not_treated_as_a_key_problem(self):
+        # 503 must keep the subscription — otherwise one bad afternoon at the
+        # push service would unsubscribe every venue.
+        tally = self._fail_with(503)
+        self.assertEqual(tally, {'sent': 0, 'failed': 1, 'dropped': 0})
+        self.assertTrue(PushSubscription.all_objects.filter(pk=self.sub.pk).exists())
+
+
+@override_settings(**VAPID)
+class PushKeyEndpointTest(TenantTestCase):
+    """The service worker fetches the current key here when the browser rotates
+    a subscription on its own."""
+
+    def setUp(self):
+        super().setUp()
+        self.user = User.objects.create_user('boss', password='pass')
+        self.make_owner(self.user)
+
+    def test_serves_the_current_public_key(self):
+        self.login_as(self.user)
+        r = self.client.get('/dashboard/push/key/')
+        self.assertEqual(r.status_code, 200)
+        self.assertEqual(r.json()['key'], 'test-public-key')
+
+    def test_requires_membership(self):
+        r = self.client.get('/dashboard/push/key/')
+        self.assertIn(r.status_code, (302, 403))

@@ -9,7 +9,7 @@
  *   GET /static/ -> stale-while-revalidate (ignoreSearch tolerates ?v=)
  *   anything else (POSTs, /media/, SSE streams, cross-origin) -> untouched
  */
-const VERSION = "v4";
+const VERSION = "v5";
 const CACHE = `gaamos-shell-${VERSION}`;
 
 const PRECACHE = [
@@ -112,5 +112,38 @@ self.addEventListener("notificationclick", (e) => {
       }
       return clients.openWindow(target);
     })
+  );
+});
+
+/* The browser may rotate a push subscription on its own (storage pressure, a
+ * key change, browser policy). When it does, the old endpoint stops working and
+ * the only notice we get is this event — without handling it the device goes
+ * permanently quiet with nothing in the UI to say so.
+ */
+self.addEventListener("pushsubscriptionchange", (e) => {
+  e.waitUntil(
+    (async () => {
+      try {
+        const r = await fetch("/dashboard/push/key/", { credentials: "same-origin" });
+        if (!r.ok) return;
+        const { key } = await r.json();
+        if (!key) return;
+        const padding = "=".repeat((4 - (key.length % 4)) % 4);
+        const raw = atob((key + padding).replace(/-/g, "+").replace(/_/g, "/"));
+        const sub = await self.registration.pushManager.subscribe({
+          userVisibleOnly: true,
+          applicationServerKey: Uint8Array.from([...raw].map((c) => c.charCodeAt(0))),
+        });
+        await fetch("/dashboard/push/subscribe/", {
+          method: "POST",
+          credentials: "same-origin",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(sub.toJSON()),
+        });
+      } catch (err) {
+        // Nothing useful to do here; the page-side check re-registers on the
+        // operator's next visit.
+      }
+    })()
   );
 });
