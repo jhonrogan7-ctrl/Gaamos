@@ -51,9 +51,10 @@ class QrHelpersTest(TenantTestCase):
         super().setUp()
         self.branch = Branch.objects.create(company=self.company, name='Lake', slug='lake')
 
-    def test_render_qr_png_returns_png_bytes(self):
-        from menu.dashboard.utils import render_qr_png
-        data = render_qr_png('https://example.com/?branch=lake&t=abc123', 'Table 7')
+    def test_render_table_poster_png_returns_png_bytes(self):
+        from menu.dashboard.utils import render_table_poster_png
+        t = Table.objects.create(branch=self.branch, label='7', code='abc123')
+        data = render_table_poster_png('https://example.com', self.branch, t)
         self.assertTrue(data.startswith(b'\x89PNG'))
 
     def test_table_qr_url_uses_provided_base_not_donor_host(self):
@@ -144,7 +145,11 @@ class TableQrEndpointTest(TenantTestCase):
         self.login_as(self.owner)
 
     def test_table_qr_png(self):
-        r = self.client.get(f'/dashboard/branch/{self.branch.slug}/table/{self.table.code}/qr/')
+        # ?format=png is the image itself. The bare URL is now the preview page
+        # (see TableQrPreviewPageTest) — returning a raw image there left the
+        # operator stranded with no way back into the dashboard.
+        r = self.client.get(
+            f'/dashboard/branch/{self.branch.slug}/table/{self.table.code}/qr/?format=png')
         self.assertEqual(r.status_code, 200)
         self.assertEqual(r['Content-Type'], 'image/png')
         self.assertTrue(r.content.startswith(b'\x89PNG'))
@@ -232,23 +237,34 @@ class GlobalQrCountTest(TenantTestCase):
 
 
 class QrNoLogoTest(TenantTestCase):
-    """Branch/table QRs must be plain scannable codes — no embedded logo.
-    The donor-era juicery logo was hardcoded into every tenant's QR."""
+    """The QR modules themselves must stay pristine — no logo overlaid on the
+    code. The donor-era juicery logo was hardcoded into the centre of every
+    tenant's QR. The poster puts the tenant logo *above* the code, never on it,
+    and this test is what holds that line."""
 
     def test_qr_region_is_pristine_no_logo_overlay(self):
-        import io
-        import qrcode as qrlib
-        from qrcode.constants import ERROR_CORRECT_M
         from PIL import Image
-        from menu.dashboard.utils import render_qr_png
+        from menu.dashboard import poster
+
         url = 'https://example.com/?branch=lake&t=abc123'
-        rendered = Image.open(io.BytesIO(render_qr_png(url, 'Table 7'))).convert('RGB')
-        ref_qr = qrlib.QRCode(version=None, error_correction=ERROR_CORRECT_M,
-                              box_size=10, border=4)
-        ref_qr.add_data(url)
-        ref_qr.make(fit=True)
-        ref = ref_qr.make_image(fill_color='#1a1a2e', back_color='white').convert('RGB')
-        # QR sits at the top-left of the captioned canvas; it must equal the
-        # pristine reference bitmap pixel-for-pixel (any logo box would differ).
-        region = rendered.crop((0, 0, ref.size[0], ref.size[1]))
-        self.assertEqual(region.tobytes(), ref.tobytes())
+        company = self.company
+        company.logo_url = '/media/logos/does-not-matter.png'
+        sheet = poster.render_poster(url, 'Lake Cafe', '7', company=company)
+
+        W, H = sheet.size
+        side = round(0.470 * W)
+        left, top = round(W / 2 - side / 2), round(0.397 * H)
+        region = sheet.crop((left, top, left + side, top + side))
+
+        # Byte-identical to a freshly rendered code of the same size: anything
+        # painted over the modules — a logo, a caption, a gradient — differs.
+        self.assertEqual(region.tobytes(),
+                         poster._qr_image(url, side).convert('RGB').tobytes())
+
+    def test_qr_uses_only_the_two_qr_colours(self):
+        # A second, independent guard: the code area may contain the navy and
+        # the white and nothing else.
+        from menu.dashboard import poster
+        url = 'https://example.com/?branch=lake&t=abc123'
+        img = poster._qr_image(url, 600).convert('RGB')
+        self.assertEqual(set(img.getdata()), {(26, 26, 46), (255, 255, 255)})

@@ -1,4 +1,5 @@
 {% extends 'dashboard/base.html' %}
+{% load static %}
 
 {% block page_title %}Orders{% endblock %}
 {% block subtitle %}All branches · live order queue{% endblock %}
@@ -6,6 +7,8 @@
 {% block content %}
 <div class="sec-h">
   <h3>Live order queue <span class="mini">All branches · updates in real time</span></h3>
+  <div class="sp"></div>
+  {% include 'dashboard/_push_toggle.html' %}
 </div>
 
 <div class="panel"
@@ -14,4 +17,8 @@
     {% include 'dashboard/_orders_queue.html' %}
   </div>
 </div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script src="{% static 'js/push.js' %}?v={{ asset_v }}"></script>
 {% endblock %}

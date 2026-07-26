@@ -3,6 +3,7 @@ import json
 import logging
 import os
 import time
+from datetime import timedelta
 
 from asgiref.sync import sync_to_async
 from django.shortcuts import render, redirect, get_object_or_404
@@ -10,12 +11,15 @@ from django.contrib.auth import authenticate, login, logout
 from django.http import Http404, JsonResponse, StreamingHttpResponse
 from django.views.decorators.http import require_POST
 from django.conf import settings as django_settings
+from django.utils import timezone
 
 from django.db import models
+from django.db.models import Count, Sum
+from django.db.models.functions import TruncDate
 from menu.models import (
     Company, Branch, Category, SubCategory, MenuItem, BranchMenuItem,
     BranchCategory, BranchSubCategory, BranchItemPlacement, Membership, Table, Order,
-    BranchAd,
+    BranchAd, BranchVisit, OrderItem,
 )
 from menu.permissions import (
     require_membership, require_owner, ensure_can_manage_branch, forbidden,
@@ -149,9 +153,123 @@ def impersonate_exit(request):
                     f'/platform/tenants')
 
 
+def _delta(today_val, yesterday_val):
+    """Percent change today vs yesterday for a stat tile, as
+    ``{'pct': int|None, 'dir': 'up'|'down'|'flat'}``. ``pct`` is None whenever
+    no percentage can honestly be stated — both days zero (nothing happened) or
+    yesterday zero (nothing to divide by) — and the template writes words
+    instead. ``dir`` picks the arrow and colour."""
+    if today_val == 0 and yesterday_val == 0:
+        return {'pct': None, 'dir': 'flat'}
+    if yesterday_val == 0:
+        return {'pct': None, 'dir': 'up'}
+    pct = round((today_val - yesterday_val) / yesterday_val * 100)
+    if pct > 0:
+        return {'pct': abs(pct), 'dir': 'up'}
+    if pct < 0:
+        return {'pct': abs(pct), 'dir': 'down'}
+    return {'pct': 0, 'dir': 'flat'}
+
+
 @require_membership
 def overview(request):
-    return render(request, 'dashboard/overview.html', {'active_tab': 'overview'})
+    branches = list(visible_branches(request))
+    today = timezone.localdate()
+    yesterday = today - timedelta(days=1)
+
+    visits = BranchVisit.objects.filter(branch__in=branches)
+    scans_today = visits.filter(created_at__date=today).count()
+    scans_yesterday = visits.filter(created_at__date=yesterday).count()
+
+    orders_qs = Order.objects.filter(branch__in=branches)
+    orders_today_qs = orders_qs.filter(created_at__date=today)
+    orders_yesterday_qs = orders_qs.filter(created_at__date=yesterday)
+    orders_today = orders_today_qs.count()
+    orders_yesterday = orders_yesterday_qs.count()
+    revenue_today = orders_today_qs.aggregate(s=Sum('total'))['s'] or 0
+    revenue_yesterday = orders_yesterday_qs.aggregate(s=Sum('total'))['s'] or 0
+
+    total_items = MenuItem.objects.count()
+    active_items = (BranchItemPlacement.objects
+                    .filter(branch__in=branches)
+                    .values('menu_item').distinct().count())
+
+    week_start = today - timedelta(days=6)
+    daily_counts = {
+        row['day']: row['n']
+        for row in (visits.filter(created_at__date__gte=week_start)
+                    .annotate(day=TruncDate('created_at'))
+                    .values('day').annotate(n=Count('id')))
+    }
+    peak = max(daily_counts.values(), default=0)
+    chart_days = []
+    for i in range(6, -1, -1):
+        day = today - timedelta(days=i)
+        count = daily_counts.get(day, 0)
+        chart_days.append({
+            'label': day.strftime('%a'),
+            'count': count,
+            'pct': round(count / peak * 100) if peak else 0,
+            'is_peak': peak > 0 and count == peak,
+        })
+    if len(branches) == 1:
+        chart_branch_label = branches[0].name
+    elif branches:
+        chart_branch_label = 'All branches'
+    else:
+        chart_branch_label = ''
+
+    # Ranked from the order lines themselves, not MenuItem.order_count: that
+    # counter is company-wide, so a branch-scoped manager would be ranking by
+    # orders placed at branches they cannot see.
+    top_counts = {
+        row['menu_item']: row['n']
+        for row in (OrderItem.objects
+                    .filter(order__branch__in=branches, menu_item__isnull=False)
+                    .values('menu_item').annotate(n=Sum('qty'))
+                    .order_by('-n')[:3])
+    }
+    top_items_data = []
+    if top_counts:
+        visible_placements = (BranchItemPlacement.objects
+                              .filter(branch__in=branches)
+                              .select_related('category'))
+        items_by_id = {
+            item.pk: item
+            for item in MenuItem.objects.filter(pk__in=top_counts).prefetch_related(
+                models.Prefetch('placements', queryset=visible_placements))
+        }
+        for item_id, count in sorted(top_counts.items(), key=lambda kv: -kv[1]):
+            item = items_by_id.get(item_id)
+            if item is None:      # deleted since it was ordered
+                continue
+            placement = next(iter(item.placements.all()), None)
+            top_items_data.append({
+                'name': item.name,
+                'category': placement.category.name if placement else '',
+                'count': count,
+            })
+
+    live_orders = list(orders_qs.select_related('branch', 'table')
+                       .prefetch_related('items')[:4])
+    active_orders = orders_qs.filter(status=Order.STATUS_NEW).count()
+
+    return render(request, 'dashboard/overview.html', {
+        'active_tab': 'overview',
+        'scans_today': scans_today,
+        'scans_delta': _delta(scans_today, scans_yesterday),
+        'orders_today': orders_today,
+        'orders_delta': _delta(orders_today, orders_yesterday),
+        'revenue_today': revenue_today,
+        'revenue_delta': _delta(revenue_today, revenue_yesterday),
+        'items_live': active_items,
+        'items_hidden': total_items - active_items,
+        'chart_days': chart_days,
+        'chart_branch_label': chart_branch_label,
+        'top_items': top_items_data,
+        'live_orders': live_orders,
+        'active_orders': active_orders,
+    })
 
 
 @require_membership
@@ -161,6 +279,8 @@ def orders(request):
         'active_tab': 'orders',
         'orders': _orders_for(Order.objects.filter(branch__in=visible_branches(request)), status),
         'show_branch': True, 'status_filter': status,
+        # Empty when push isn't configured — the toggle then renders nothing.
+        'vapid_public_key': django_settings.VAPID_PUBLIC_KEY,
     })
 
 
@@ -458,26 +578,29 @@ def qr_generate(request, branch_id):
 @require_membership
 def qr_download(request, branch_id):
     from django.http import HttpResponse
-    from .utils import generate_qr_pdf
+    from .utils import (render_branch_poster_pdf, render_branch_poster_png,
+                        request_base_url)
     branch = get_object_or_404(Branch, pk=branch_id)
     if not ensure_can_manage_branch(request, branch):
         return forbidden(request)
     if not branch.qr_image:
         return HttpResponse('QR not yet generated for this branch', status=404)
+    # Rendered fresh, never served from `branch.qr_image`. The stored file is
+    # only the dashboard thumbnail and is written at Generate time, so serving
+    # it handed back whatever design was current *then* — every branch created
+    # before the poster existed kept downloading the old plain QR until someone
+    # happened to press Regenerate.
+    base_url = request_base_url(request)
     fmt = request.GET.get('format', 'png')
     if fmt == 'pdf':
-        pdf_bytes = generate_qr_pdf(branch)
-        response = HttpResponse(pdf_bytes, content_type='application/pdf')
+        response = HttpResponse(render_branch_poster_pdf(base_url, branch),
+                                content_type='application/pdf')
         response['Content-Disposition'] = f'attachment; filename="qr-{branch.slug}.pdf"'
-        return response
     else:
-        import os
-        from django.conf import settings as django_settings
-        path = os.path.join(django_settings.MEDIA_ROOT, branch.qr_image)
-        with open(path, 'rb') as f:
-            response = HttpResponse(f.read(), content_type='image/png')
+        response = HttpResponse(render_branch_poster_png(base_url, branch),
+                                content_type='image/png')
         response['Content-Disposition'] = f'attachment; filename="qr-{branch.slug}.png"'
-        return response
+    return response
 
 
 def _render_settings(request, **extra):
@@ -966,19 +1089,36 @@ def table_delete(request, slug, code):
 @require_membership
 def table_qr(request, slug, code):
     from django.http import HttpResponse
-    from .utils import render_qr_png, table_qr_url, render_table_qr_pdf, request_base_url
+    from .utils import (render_table_poster_png, render_table_qr_pdf,
+                        request_base_url, table_qr_url)
     branch = get_object_or_404(Branch, slug=slug)
     if not ensure_can_manage_branch(request, branch):
         return forbidden(request)
     table = get_object_or_404(Table, code=code, branch=branch)
     base_url = request_base_url(request)
-    if request.GET.get('format') == 'pdf':
+    fmt = request.GET.get('format', '')
+    if fmt == 'pdf':
         pdf = render_table_qr_pdf(base_url, branch, [table])
         resp = HttpResponse(pdf, content_type='application/pdf')
         resp['Content-Disposition'] = f'attachment; filename="qr-{branch.slug}-table-{table.code}.pdf"'
         return resp
-    png = render_qr_png(table_qr_url(base_url, branch, table), f"{branch.name} — {table.label}")
-    return HttpResponse(png, content_type='image/png')
+    if fmt == 'png':
+        png = render_table_poster_png(base_url, branch, table)
+        resp = HttpResponse(png, content_type='image/png')
+        resp['Content-Disposition'] = f'attachment; filename="qr-{branch.slug}-table-{table.code}.png"'
+        return resp
+    # No format: a real page with dashboard chrome. Returning the bare image
+    # here replaced the whole dashboard with an untitled picture and left the
+    # operator with nothing but the browser back button.
+    return render(request, 'dashboard/qr/preview.html', {
+        'active_tab': 'branches', 'branch_tab': 'qr', 'branch': branch,
+        'table': table,
+        'title': table.label,
+        'image_url': f"{request.path}?format=png",
+        'png_url': f"{request.path}?format=png",
+        'pdf_url': f"{request.path}?format=pdf",
+        'menu_url': table_qr_url(base_url, branch, table),
+    })
 
 
 @require_membership
@@ -1176,3 +1316,45 @@ def branch_item_price(request, slug, pk):
         bmi.price_override = None
     bmi.save(update_fields=['price_override'])
     return JsonResponse({'price_override': bmi.price_override})
+
+
+# --- Web Push subscription management -------------------------------------
+# Opt-in is per device: each browser registers its own endpoint, so enabling
+# notifications on a phone does not enable them on the till.
+
+@require_membership
+@require_POST
+def push_subscribe(request):
+    from menu.models import PushSubscription
+    try:
+        body = json.loads(request.body or '{}')
+        endpoint = body['endpoint']
+        keys = body['keys']
+        p256dh, auth = keys['p256dh'], keys['auth']
+    except (json.JSONDecodeError, KeyError, TypeError):
+        return JsonResponse({'error': 'invalid subscription'}, status=400)
+
+    # The endpoint is globally unique, so re-subscribing the same browser must
+    # update the existing row — otherwise a user who toggles off and on again
+    # collects duplicate rows and gets notified twice per order.
+    PushSubscription.all_objects.update_or_create(
+        endpoint=endpoint,
+        defaults={'company': request.company, 'user': request.user,
+                  'p256dh': p256dh, 'auth': auth},
+    )
+    return JsonResponse({'ok': True})
+
+
+@require_membership
+@require_POST
+def push_unsubscribe(request):
+    from menu.models import PushSubscription
+    try:
+        endpoint = json.loads(request.body or '{}')['endpoint']
+    except (json.JSONDecodeError, KeyError, TypeError):
+        return JsonResponse({'error': 'invalid subscription'}, status=400)
+    # Scoped to the caller: an endpoint is unguessable, but a subscription is
+    # still only ever the owning user's to remove.
+    PushSubscription.all_objects.filter(
+        endpoint=endpoint, user=request.user, company=request.company).delete()
+    return JsonResponse({'ok': True})
