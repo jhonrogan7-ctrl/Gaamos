@@ -120,9 +120,10 @@ class Command(BaseCommand):
                             help='Re-roll attempt number; advances the seed so '
                                  'a regenerated item cannot reproduce the image '
                                  'it is replacing (default: 0).')
-        parser.add_argument('--steps', type=int, default=8,
-                            help='Sampling steps (default: 8). Lower is faster '
-                                 'and adheres less to the "no garnish" clauses.')
+        parser.add_argument('--steps', type=int, default=4,
+                            help='Sampling steps (default: 4, which is also the '
+                                 'endpoint maximum for the distilled klein '
+                                 'model — a higher value is refused 422).')
 
     def _generate(self, prompt, opts, seed):
         """One image, retrying on failure. Two failure modes, two budgets: a 429

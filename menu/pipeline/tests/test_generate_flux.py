@@ -134,9 +134,11 @@ def test_seed_stays_in_signed_32_bit_range():
             assert 0 <= seed < 2 ** 31
 
 
-def test_steps_default_to_eight():
-    """4 steps on a distilled 4B model ignored the negative clauses the
-    truthfulness rules now lean on."""
+def test_steps_default_to_the_endpoint_maximum():
+    """`flux.2-klein-4b` is a distilled 4-step model and the endpoint enforces
+    it: `steps: 8` is refused 422 `Input should be less than or equal to 4`.
+    Raising this to buy better adherence to the "no garnish" clauses is not an
+    option on this model — that job belongs to the lexicon and style blocks."""
     captured = {}
     payload = {"artifacts": [{"base64": base64.b64encode(b"x").decode(),
                               "finishReason": "SUCCESS"}]}
@@ -144,7 +146,7 @@ def test_steps_default_to_eight():
     generate_image("a bowl of dhido", api_key="KEY", model="m",
                    opener=_opener(payload, captured))
 
-    assert captured["body"]["steps"] == 8
+    assert captured["body"]["steps"] == 4
 
 
 def test_seed_is_sent_verbatim():

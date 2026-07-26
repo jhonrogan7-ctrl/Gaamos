@@ -39,7 +39,7 @@ def seed_for(key, attempt=0):
 
 
 def generate_image(prompt, *, api_key=None, model=None, width=1024, height=1024,
-                   seed=0, steps=8, opener=urllib.request.urlopen):
+                   seed=0, steps=4, opener=urllib.request.urlopen):
     """Generate an image from `prompt` via NVIDIA FLUX; return raw image bytes."""
     if api_key is None or model is None:
         from django.conf import settings
