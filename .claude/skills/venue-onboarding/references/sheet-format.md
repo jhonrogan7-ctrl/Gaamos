@@ -89,7 +89,17 @@ the generator:
 
 **Style blocks** are appended automatically by `prompt_sheet.full_prompt`; a
 drink block is used when the *section* name contains drink/juice/lassi/shake/
-beer/cocktail/wine. Do not paste style text into the prompt column.
+beer/cocktail/wine. Do not paste style text into the prompt column. A style
+block describes camera and light only — never the food or the drink.
+
+**The dish lexicon** (`menu/pipeline/dish_lexicon.py`) expands the subject
+before the style block is appended: a prompt of `veg momo` becomes
+`veg momo, steamed pleated dumplings, …`. Keep the prompt column short and let
+the lexicon carry the dish vocabulary — that way `momo` is defined once for
+every venue instead of being re-derived per sheet. Temperature words (`hot`,
+`ice`) apply in drink sections only, so `Hot & Sour Soup` is not steamed like a
+beverage. A split serving on the card (`Organic Americano (Hot/Ice)`) becomes
+two rows, exactly like a split price.
 
 ## Keys
 

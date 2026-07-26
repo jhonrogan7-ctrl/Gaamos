@@ -103,3 +103,58 @@ def test_response_without_artifact_raises():
     with pytest.raises(ValueError, match="no image artifact"):
         generate_image("p", api_key="K", model="m",
                        opener=_opener({"artifacts": []}, captured))
+
+
+# --- seed derivation --------------------------------------------------------
+
+def test_seed_for_is_deterministic():
+    assert generate_flux_module.seed_for("egg-2eggs-boiled-egg") == \
+        generate_flux_module.seed_for("egg-2eggs-boiled-egg")
+
+
+def test_neighbouring_items_do_not_share_a_seed():
+    """Seed 0 for all 103 images is why a section came back as one photo."""
+    keys = ["egg-2eggs-boiled-egg", "egg-2eggs-fried-egg",
+            "egg-2eggs-plain-omelette", "egg-2eggs-cheese-omelette"]
+
+    assert len({generate_flux_module.seed_for(k) for k in keys}) == len(keys)
+
+
+def test_an_attempt_moves_the_seed():
+    """A re-roll of the same key must not reproduce the same image."""
+    key = "egg-2eggs-boiled-egg"
+
+    assert generate_flux_module.seed_for(key, 1) != generate_flux_module.seed_for(key)
+
+
+def test_seed_stays_in_signed_32_bit_range():
+    for key in ("a", "egg-2eggs-boiled-egg", "x" * 200):
+        for attempt in (0, 1, 99):
+            seed = generate_flux_module.seed_for(key, attempt)
+            assert 0 <= seed < 2 ** 31
+
+
+def test_steps_default_to_the_endpoint_maximum():
+    """`flux.2-klein-4b` is a distilled 4-step model and the endpoint enforces
+    it: `steps: 8` is refused 422 `Input should be less than or equal to 4`.
+    Raising this to buy better adherence to the "no garnish" clauses is not an
+    option on this model — that job belongs to the lexicon and style blocks."""
+    captured = {}
+    payload = {"artifacts": [{"base64": base64.b64encode(b"x").decode(),
+                              "finishReason": "SUCCESS"}]}
+
+    generate_image("a bowl of dhido", api_key="KEY", model="m",
+                   opener=_opener(payload, captured))
+
+    assert captured["body"]["steps"] == 4
+
+
+def test_seed_is_sent_verbatim():
+    captured = {}
+    payload = {"artifacts": [{"base64": base64.b64encode(b"x").decode(),
+                              "finishReason": "SUCCESS"}]}
+
+    generate_image("a bowl of dhido", api_key="KEY", model="m", seed=12345,
+                   opener=_opener(payload, captured))
+
+    assert captured["body"]["seed"] == 12345

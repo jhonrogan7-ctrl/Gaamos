@@ -15,12 +15,20 @@ import re
 
 from django.utils.text import slugify
 
-FOOD_STYLE = (", professional food photography, 45-degree angle, natural window "
-              "light, shallow depth of field, dark rustic wood table, fresh "
-              "vibrant colours, appetising, high detail")
+from menu.pipeline import dish_lexicon
+
+# A style block describes CAMERA AND LIGHT ONLY. It must never describe the
+# food or the drink — that is the item's job, and the item is the only thing
+# the printed card licenses us to claim. Two phrases here once did: `fresh
+# vibrant colours, appetising` put invented garnish on every pale dish, and
+# `condensation on the glass` served all 11 Chill Zone hot drinks cold.
+FOOD_STYLE = (", professional food photography, 45-degree angle, natural "
+              "window light, shallow depth of field, dark rustic wood table, "
+              "high detail, the dish only, no garnish, no herbs, no sauce, "
+              "no side dishes, no props")
 DRINK_STYLE = (", professional beverage photography, straight-on angle, soft "
-               "natural light, condensation on the glass, clean neutral "
-               "background, vibrant, high detail")
+               "natural light, clean neutral background, high detail, "
+               "the drink only, no garnish, no props")
 
 # Section-name keywords that make a section a drink section. Matched on the
 # section, never the item: "Can Juice" sits in Soft Drinks, and "Hard Drinks"
@@ -126,8 +134,14 @@ def _is_directive(prompt):
 
 
 def full_prompt(row):
-    """Subject line + the style block for the row's section."""
-    return row['prompt'] + (DRINK_STYLE if row['drink'] else FOOD_STYLE)
+    """Subject line, expanded through the dish lexicon, then the style block.
+
+    The lexicon goes in the middle deliberately: the style block must stay last
+    so its negative clauses ("no garnish", "no props") are the final thing the
+    model reads.
+    """
+    subject = dish_lexicon.expand(row['prompt'], row['item'], drink=row['drink'])
+    return subject + (DRINK_STYLE if row['drink'] else FOOD_STYLE)
 
 
 def parse_venue(text):

@@ -375,3 +375,88 @@ def test_normalises_output_to_a_webp_thumbnail(sheet, monkeypatch, settings,
     with Image.open(stored) as im:
         assert im.format == "WEBP"
         assert max(im.size) <= 800
+
+
+# --- the review gate's teeth ------------------------------------------------
+
+@pytest.mark.django_db
+def test_a_rejected_key_is_regenerated_not_skipped(sheet, fake_flux, settings,
+                                                   tmp_path):
+    """Without this, rejecting an image is a no-op: its key still counts as
+    done, the re-roll skips it, and the gate never bites."""
+    settings.MEDIA_ROOT = str(tmp_path / "media")
+    call_command("generate_item_images", "--prompts", sheet)
+    asset = ImageAsset.objects.get(found_for_slug="hot-drinks-black-tea")
+    asset.status = "rejected"
+    asset.save()
+    before = len(fake_flux)
+
+    call_command("generate_item_images", "--prompts", sheet, "--reroll", "1")
+
+    assert "a clear glass cup of strong black tea" in fake_flux[before]
+
+
+@pytest.mark.django_db
+def test_a_verified_key_is_still_skipped(sheet, fake_flux, settings, tmp_path):
+    settings.MEDIA_ROOT = str(tmp_path / "media")
+    call_command("generate_item_images", "--prompts", sheet)
+    ImageAsset.objects.update(status="verified")
+    before = len(fake_flux)
+
+    call_command("generate_item_images", "--prompts", sheet)
+
+    assert len(fake_flux) == before
+
+
+@pytest.mark.django_db
+def test_each_item_is_generated_at_its_own_seed(sheet, settings, tmp_path,
+                                                monkeypatch):
+    settings.MEDIA_ROOT = str(tmp_path / "media")
+    seeds = []
+
+    def fake(prompt, **kwargs):
+        seeds.append(kwargs["seed"])
+        return _png((len(seeds) * 20 % 255, 40, 40))
+
+    monkeypatch.setattr(generate_flux, "generate_image", fake)
+
+    call_command("generate_item_images", "--prompts", sheet)
+
+    assert len(set(seeds)) == len(seeds) == 3
+
+
+@pytest.mark.django_db
+def test_reroll_advances_the_seed(sheet, settings, tmp_path, monkeypatch):
+    settings.MEDIA_ROOT = str(tmp_path / "media")
+    seeds = []
+
+    def fake(prompt, **kwargs):
+        seeds.append(kwargs["seed"])
+        return _png((len(seeds) * 20 % 255, 40, 40))
+
+    monkeypatch.setattr(generate_flux, "generate_image", fake)
+
+    call_command("generate_item_images", "--prompts", sheet)
+    first_black_tea = seeds[0]          # sheet order: Black Tea is generated first
+    ImageAsset.objects.update(status="rejected")
+    seeds.clear()
+    call_command("generate_item_images", "--prompts", sheet, "--reroll", "1")
+
+    assert seeds[0] != first_black_tea
+
+
+@pytest.mark.django_db
+def test_an_undefined_head_word_is_reported(fake_flux, settings, tmp_path,
+                                            capsys):
+    """`Siciliana` has no printed description and no definable word — the run
+    must say so rather than quietly drawing whatever the model imagines."""
+    settings.MEDIA_ROOT = str(tmp_path / "media")
+    path = tmp_path / "s.md"
+    path.write_text("### Pizza\n\n"
+                    "| Item | Description | Price | Image prompt |\n"
+                    "|---|---|---|---|\n"
+                    "| Siciliana | — | 590 | a plate of siciliana |\n")
+
+    call_command("generate_item_images", "--prompts", str(path))
+
+    assert "Siciliana" in capsys.readouterr().out

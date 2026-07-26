@@ -214,6 +214,9 @@ class Command(BaseCommand):
                             help='Readable copy of the venue photo folder.')
         parser.add_argument('--source', default='flux',
                             help='ImageAsset.source to draw from (default: flux).')
+        parser.add_argument('--require-verified', action='store_true',
+                            help='Refuse to build if any chosen image is still '
+                                 'pending review.')
         parser.add_argument('--out', default=None)
         parser.add_argument('--media-out', default=None)
         parser.add_argument('--size', type=int, default=800)
@@ -237,8 +240,14 @@ class Command(BaseCommand):
             raise CommandError('Sheet produced 0 priced items — check the '
                                'Price column header and the `###` headings.')
 
+        # The newest NON-REJECTED asset per key. Both clauses matter: a re-roll
+        # adds a row rather than replacing the old one, so a re-rolled key has
+        # two assets sharing `found_for_slug`, and the model's default ordering
+        # (`-created_at`) would hand the lookup to the oldest — the very image
+        # the reviewer rejected.
         assets = {a.found_for_slug: a
-                  for a in ImageAsset.objects.filter(source=opts['source'])}
+                  for a in ImageAsset.objects.filter(source=opts['source'])
+                  .exclude(status='rejected').order_by('created_at')}
         vault_files = []
         if opts['vault_listing']:
             vault_files = [l.strip() for l in
@@ -248,6 +257,29 @@ class Command(BaseCommand):
 
         chosen = assign_images(items, generated_keys=set(assets),
                                vault_files=vault_files, sheet=sheet)
+
+        if opts['require_verified']:
+            # Only the images this fixture would actually ship — an unreviewed
+            # asset elsewhere in the shared pool is not this venue's problem.
+            unreviewed = {
+                ref for pick in chosen.values()
+                if pick and pick[0] == 'generated'
+                for ref in [pick[1]]
+                if assets[ref].status != 'verified'}
+            # A key whose every asset is rejected was excluded from `assets`
+            # above, so it is not in `chosen` either — it would ship imageless
+            # without a word. Name it too rather than let it pass quietly.
+            only_rejected = set(
+                ImageAsset.objects.filter(source=opts['source'],
+                                          status='rejected',
+                                          found_for_slug__in=set(chosen))
+                .values_list('found_for_slug', flat=True)) - set(assets)
+            blocked = sorted(unreviewed | only_rejected)
+            if blocked:
+                raise CommandError(
+                    f'{len(blocked)} image(s) not verified — review them '
+                    f'first (`review_images` then `verify_images`): '
+                    + ', '.join(blocked))
 
         media_out = Path(opts['media_out'] or (FIXTURES / 'media' / company_slug))
         media_out.mkdir(parents=True, exist_ok=True)
