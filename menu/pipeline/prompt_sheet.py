@@ -15,6 +15,8 @@ import re
 
 from django.utils.text import slugify
 
+from menu.pipeline import dish_lexicon
+
 # A style block describes CAMERA AND LIGHT ONLY. It must never describe the
 # food or the drink — that is the item's job, and the item is the only thing
 # the printed card licenses us to claim. Two phrases here once did: `fresh
@@ -132,8 +134,14 @@ def _is_directive(prompt):
 
 
 def full_prompt(row):
-    """Subject line + the style block for the row's section."""
-    return row['prompt'] + (DRINK_STYLE if row['drink'] else FOOD_STYLE)
+    """Subject line, expanded through the dish lexicon, then the style block.
+
+    The lexicon goes in the middle deliberately: the style block must stay last
+    so its negative clauses ("no garnish", "no props") are the final thing the
+    model reads.
+    """
+    subject = dish_lexicon.expand(row['prompt'], row['item'], drink=row['drink'])
+    return subject + (DRINK_STYLE if row['drink'] else FOOD_STYLE)
 
 
 def parse_venue(text):

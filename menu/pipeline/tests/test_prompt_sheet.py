@@ -371,3 +371,44 @@ def test_the_guard_would_catch_the_two_phrases_that_caused_this():
     """The guard is only worth having if it fails on the real regression."""
     assert 'vibrant' in _asserted_words(", fresh vibrant colours, appetising")
     assert 'condensation' in _asserted_words(", condensation on the glass")
+
+
+# --- the lexicon expands the subject before the style block is appended ------
+
+def _row(item, prompt, section='Momo'):
+    rows = prompt_sheet.parse(
+        f"### {section}\n\n"
+        "| Item | Description | Price | Image prompt |\n"
+        "|---|---|---|---|\n"
+        f"| {item} | — | 200 | {prompt} |\n")
+    return rows[0]
+
+
+def test_full_prompt_expands_head_words_before_the_style_block():
+    out = prompt_sheet.full_prompt(_row('Veg Momo', 'veg momo'))
+
+    assert 'steamed pleated dumplings' in out
+    assert out.index('steamed pleated dumplings') < out.index('professional')
+    assert out.endswith(prompt_sheet.FOOD_STYLE)
+
+
+def test_full_prompt_leaves_an_undefined_name_as_the_bare_subject():
+    out = prompt_sheet.full_prompt(_row('Siciliana', 'a plate of siciliana',
+                                        section='Pizza'))
+
+    assert out == 'a plate of siciliana' + prompt_sheet.FOOD_STYLE
+
+
+def test_a_hot_drink_gets_its_temperature_from_the_item_not_the_style_block():
+    out = prompt_sheet.full_prompt(
+        _row('Hot Chocolate', 'a mug of hot chocolate', section='Hot Drinks'))
+
+    assert 'steam rising' in out
+    assert out.endswith(prompt_sheet.DRINK_STYLE)
+
+
+def test_a_food_section_never_gets_a_serving_temperature():
+    out = prompt_sheet.full_prompt(
+        _row('Hot & Sour Soup', 'a bowl of hot and sour soup', section='Soups'))
+
+    assert 'steam rising' not in out
