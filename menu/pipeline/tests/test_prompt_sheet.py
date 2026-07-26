@@ -1,6 +1,8 @@
 """The prompt sheet is a hand-written markdown worksheet (vault:
 menius/<venue>/…-items-and-image-prompts.md), not a generated file — so the
 parser has to tolerate the things a human does to a markdown table."""
+import re
+
 from menu.pipeline import prompt_sheet
 
 SHEET = """# Venue — Item List + Image Generation Prompts
@@ -321,3 +323,92 @@ def test_the_section_qualified_key_still_matches_the_fixture_key():
     row = _by_item(prompt_sheet.parse(PRICED_SHEET))["Jhol Momo (Veg)"]
 
     assert row["key"] == f"{slugify(row['section'])}-{slugify(row['item'])}"
+
+
+# --- style blocks describe camera and light, never food or drink -------------
+
+def _asserted_words(block):
+    """The words a style block ASSERTS: whole words, with its `no <x>`
+    exclusions removed first.
+
+    Two traps make naive substring matching useless here. The block must be
+    allowed to SAY `no garnish` while never ASSERTING `garnish`, so the
+    exclusions come out before the check. And `photography` contains `hot`, so
+    the check has to be on whole words or every block fails forever.
+    """
+    positive = re.sub(r'\bno [a-z ]+?(?=,|$)', '', block)
+    return set(re.findall(r'[a-z]+', positive.lower()))
+
+
+def test_style_blocks_assert_no_food_or_drink_content():
+    """The guard for spec D2. `fresh vibrant colours` invented garnish on every
+    pale dish; `condensation on the glass` served every hot drink cold. A style
+    block may describe camera and light and nothing else."""
+    banned = {'vibrant', 'appetising', 'appetizing', 'condensation', 'fresh',
+              'delicious', 'colourful', 'colorful', 'steaming', 'garnish',
+              'crispy', 'juicy', 'hot', 'ice', 'iced', 'cold'}
+    for block in (prompt_sheet.FOOD_STYLE, prompt_sheet.DRINK_STYLE):
+        assert not (_asserted_words(block) & banned), block
+
+
+def test_style_blocks_exclude_what_the_card_did_not_print():
+    for block in (prompt_sheet.FOOD_STYLE, prompt_sheet.DRINK_STYLE):
+        assert 'no garnish' in block
+        assert 'no props' in block
+
+
+def test_hot_drinks_take_the_drink_style_but_it_asserts_no_temperature():
+    """`_DRINK_WORDS` contains 'drink', so the section `Hot Drinks` matches.
+    That must pick a STYLE, never a serving temperature — temperature comes
+    from the item, through the drink lexicon."""
+    assert prompt_sheet.is_drink('Hot Drinks') is True
+    asserted = _asserted_words(prompt_sheet.DRINK_STYLE)
+    assert 'ice' not in asserted
+    assert 'hot' not in asserted
+
+
+def test_the_guard_would_catch_the_two_phrases_that_caused_this():
+    """The guard is only worth having if it fails on the real regression."""
+    assert 'vibrant' in _asserted_words(", fresh vibrant colours, appetising")
+    assert 'condensation' in _asserted_words(", condensation on the glass")
+
+
+# --- the lexicon expands the subject before the style block is appended ------
+
+def _row(item, prompt, section='Momo'):
+    rows = prompt_sheet.parse(
+        f"### {section}\n\n"
+        "| Item | Description | Price | Image prompt |\n"
+        "|---|---|---|---|\n"
+        f"| {item} | — | 200 | {prompt} |\n")
+    return rows[0]
+
+
+def test_full_prompt_expands_head_words_before_the_style_block():
+    out = prompt_sheet.full_prompt(_row('Veg Momo', 'veg momo'))
+
+    assert 'steamed pleated dumplings' in out
+    assert out.index('steamed pleated dumplings') < out.index('professional')
+    assert out.endswith(prompt_sheet.FOOD_STYLE)
+
+
+def test_full_prompt_leaves_an_undefined_name_as_the_bare_subject():
+    out = prompt_sheet.full_prompt(_row('Siciliana', 'a plate of siciliana',
+                                        section='Pizza'))
+
+    assert out == 'a plate of siciliana' + prompt_sheet.FOOD_STYLE
+
+
+def test_a_hot_drink_gets_its_temperature_from_the_item_not_the_style_block():
+    out = prompt_sheet.full_prompt(
+        _row('Hot Chocolate', 'a mug of hot chocolate', section='Hot Drinks'))
+
+    assert 'steam rising' in out
+    assert out.endswith(prompt_sheet.DRINK_STYLE)
+
+
+def test_a_food_section_never_gets_a_serving_temperature():
+    out = prompt_sheet.full_prompt(
+        _row('Hot & Sour Soup', 'a bowl of hot and sour soup', section='Soups'))
+
+    assert 'steam rising' not in out
