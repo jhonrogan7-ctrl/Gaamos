@@ -1,5 +1,6 @@
 import json
 
+from django.conf import settings
 from django.test import Client, override_settings
 from django.contrib.auth import get_user_model
 
@@ -9,7 +10,9 @@ from menu.models import (
 from menu.tests.base import TenantTestCase
 
 
-@override_settings(ALLOWED_HOSTS=['.zxyn.online', 'testserver'])
+# Tracks BASE_DOMAIN: TenantTestCase builds self.host from it, so a hardcoded
+# domain here silently excludes the very host these tests request.
+@override_settings(ALLOWED_HOSTS=[f'.{settings.BASE_DOMAIN}', 'testserver'])
 class CsrfEnforcementTest(TenantTestCase):
     """CsrfViewMiddleware is installed: unsafe requests without a valid token are
     rejected (403), while the intended double-submit flows are accepted — the
