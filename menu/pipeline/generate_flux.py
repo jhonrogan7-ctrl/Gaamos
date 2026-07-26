@@ -10,6 +10,7 @@ string, and the response carries base64 under `artifacts[]`.
 import base64
 import json
 import urllib.request
+import zlib
 
 _ENDPOINT = "https://ai.api.nvidia.com/v1/genai/{model}"
 
@@ -20,8 +21,25 @@ class ContentFiltered(ValueError):
     refused at every seed — so callers should move on rather than retry."""
 
 
+# NVIDIA rejects a seed outside signed 32-bit range.
+_SEED_MODULUS = 2 ** 31
+
+
+def seed_for(key, attempt=0):
+    """A stable per-item seed.
+
+    The seed was hardcoded to 0 for every image in a venue, so a section came
+    back as the same plate on the same table under the same window — which at
+    menu-thumbnail size reads as one photo repeated. Deriving it from the item
+    key keeps runs reproducible while giving each item its own composition;
+    `attempt` is what a re-roll advances so it cannot reproduce the image it is
+    replacing.
+    """
+    return (zlib.crc32(key.encode()) + attempt) % _SEED_MODULUS
+
+
 def generate_image(prompt, *, api_key=None, model=None, width=1024, height=1024,
-                   seed=0, steps=4, opener=urllib.request.urlopen):
+                   seed=0, steps=8, opener=urllib.request.urlopen):
     """Generate an image from `prompt` via NVIDIA FLUX; return raw image bytes."""
     if api_key is None or model is None:
         from django.conf import settings
