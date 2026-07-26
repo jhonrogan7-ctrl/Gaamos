@@ -30,7 +30,7 @@ from django.utils.text import slugify
 
 from menu.models import ImageAsset
 # Imported as modules, not names, so tests can patch the collaborators.
-from menu.pipeline import generate_flux, images, intake, prompt_sheet
+from menu.pipeline import dish_lexicon, generate_flux, images, intake, prompt_sheet
 
 
 def _tags(row):
@@ -116,8 +116,15 @@ class Command(BaseCommand):
         parser.add_argument('--error-backoff', type=float, default=5.0,
                             help='First backoff for non-rate-limit failures '
                                  '(default: 5).')
+        parser.add_argument('--reroll', type=int, default=0,
+                            help='Re-roll attempt number; advances the seed so '
+                                 'a regenerated item cannot reproduce the image '
+                                 'it is replacing (default: 0).')
+        parser.add_argument('--steps', type=int, default=8,
+                            help='Sampling steps (default: 8). Lower is faster '
+                                 'and adheres less to the "no garnish" clauses.')
 
-    def _generate(self, prompt, opts):
+    def _generate(self, prompt, opts, seed):
         """One image, retrying on failure. Two failure modes, two budgets: a 429
         is the endpoint asking us to slow down and deserves a long wait, while a
         declined prompt ("no image artifact") is a 200 that will not improve —
@@ -125,7 +132,8 @@ class Command(BaseCommand):
         limited_used = error_used = 0
         while True:
             try:
-                return generate_flux.generate_image(prompt)
+                return generate_flux.generate_image(prompt, seed=seed,
+                                                    steps=opts['steps'])
             except generate_flux.ContentFiltered:
                 raise                                 # a verdict, not a failure
             except Exception as exc:                  # noqa: BLE001
@@ -154,7 +162,11 @@ class Command(BaseCommand):
         embedder = None if opts['embed'] else (lambda text: None)
 
         todo = [r for r in rows if r['generatable']]
+        # `rejected` must NOT count as done. A rejected asset is a reviewer
+        # saying "this is not the dish"; if its key blocked regeneration the
+        # review gate would be decorative.
         done_keys = set(ImageAsset.objects.filter(source=source)
+                        .exclude(status='rejected')
                         .values_list('found_for_slug', flat=True))
         covered = covered_slugs(opts['skip_names']) if opts['skip_names'] else set()
         include, skip_keys = set(opts['include_key']), set(opts['skip_key'])
@@ -181,7 +193,8 @@ class Command(BaseCommand):
                 time.sleep(delay)                     # pace the hosted endpoint
             waited = True
             try:
-                raw = self._generate(prompt, opts)
+                seed = generate_flux.seed_for(row['key'], opts['reroll'])
+                raw = self._generate(prompt, opts, seed)
                 webp = _to_webp(raw, opts['size'])
             except generate_flux.ContentFiltered:
                 # Not retryable at any seed. Report it so the prompt can be
@@ -206,12 +219,20 @@ class Command(BaseCommand):
             generated += 1
             self.stdout.write(f"  ✓ {row['key']} → {asset.file}")
 
+        undefined = [r['item'] for r in todo if dish_lexicon.needs_definition(r)]
+
         verb = 'would generate' if opts['dry_run'] else 'generated'
         self.stdout.write(self.style.SUCCESS(
             f"{verb} {generated} | skipped (already done) {skipped} | "
             f"skipped (shot elsewhere) {elsewhere} | failed {failed} | "
             f"content-filtered {len(filtered)} | rejected-dedup {deduped} | "
             f"generatable rows in sheet {len(todo)} of {len(rows)}"))
+        if undefined:
+            self.stdout.write(self.style.WARNING(
+                f'undefined head-word, drawn from the name alone '
+                f'({len(undefined)}): ' + ', '.join(undefined)))
+            self.stdout.write('  → add a dish_lexicon entry (founder sign-off) '
+                              'or make the row *skip — ask the venue*')
         if filtered:
             self.stdout.write("content-filtered (reword the prompt by hand): "
                               + ', '.join(filtered))
