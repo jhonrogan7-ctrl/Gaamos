@@ -8,7 +8,7 @@
       "slug": "hot-drinks",
       "name": "Hot Drinks",
       "display_order": 1,
-      "icon_key": "",
+      "icon_key": "coffee",
       "hours_note": "",
       "subcategories": []
     },
@@ -16,7 +16,7 @@
       "slug": "breakfast",
       "name": "Breakfast",
       "display_order": 2,
-      "icon_key": "",
+      "icon_key": "brunch",
       "hours_note": "",
       "subcategories": []
     },
@@ -24,7 +24,7 @@
       "slug": "fresh-fruit-juice",
       "name": "Fresh Fruit Juice",
       "display_order": 3,
-      "icon_key": "",
+      "icon_key": "juice",
       "hours_note": "",
       "subcategories": []
     },
@@ -32,7 +32,7 @@
       "slug": "milk-shake-lassi",
       "name": "Milk Shake / Lassi",
       "display_order": 4,
-      "icon_key": "",
+      "icon_key": "smoothie",
       "hours_note": "",
       "subcategories": []
     },
@@ -40,7 +40,7 @@
       "slug": "special-cold-drinks",
       "name": "Special Cold Drinks",
       "display_order": 5,
-      "icon_key": "",
+      "icon_key": "subMocktail",
       "hours_note": "",
       "subcategories": []
     },
@@ -48,7 +48,7 @@
       "slug": "a-la-carte-breakfast",
       "name": "A La Carte Breakfast",
       "display_order": 6,
-      "icon_key": "",
+      "icon_key": "subEggs",
       "hours_note": "",
       "subcategories": []
     },
@@ -56,7 +56,7 @@
       "slug": "salad",
       "name": "Salad",
       "display_order": 7,
-      "icon_key": "",
+      "icon_key": "subSalad",
       "hours_note": "",
       "subcategories": []
     },
@@ -64,7 +64,7 @@
       "slug": "snacks",
       "name": "Snacks",
       "display_order": 8,
-      "icon_key": "",
+      "icon_key": "snack",
       "hours_note": "",
       "subcategories": []
     },
@@ -72,7 +72,7 @@
       "slug": "non-veg-snacks",
       "name": "Non-Veg Snacks",
       "display_order": 9,
-      "icon_key": "",
+      "icon_key": "subBucket",
       "hours_note": "",
       "subcategories": []
     },
@@ -80,7 +80,7 @@
       "slug": "buff-snacks",
       "name": "Buff Snacks",
       "display_order": 10,
-      "icon_key": "",
+      "icon_key": "subMains",
       "hours_note": "",
       "subcategories": []
     },
@@ -88,7 +88,7 @@
       "slug": "pork-snacks",
       "name": "Pork Snacks",
       "display_order": 11,
-      "icon_key": "",
+      "icon_key": "subEntree",
       "hours_note": "",
       "subcategories": []
     },
@@ -96,7 +96,7 @@
       "slug": "fish-item",
       "name": "Fish Item",
       "display_order": 12,
-      "icon_key": "",
+      "icon_key": "subPoke",
       "hours_note": "",
       "subcategories": []
     },
@@ -104,7 +104,7 @@
       "slug": "soup-with-garlic-bread",
       "name": "Soup with Garlic Bread",
       "display_order": 13,
-      "icon_key": "",
+      "icon_key": "subSoup",
       "hours_note": "",
       "subcategories": []
     },
@@ -112,7 +112,7 @@
       "slug": "pancakes",
       "name": "Pancakes",
       "display_order": 14,
-      "icon_key": "",
+      "icon_key": "subToast",
       "hours_note": "",
       "subcategories": []
     },
@@ -120,7 +120,7 @@
       "slug": "sandwich-and-burger",
       "name": "Sandwich and Burger",
       "display_order": 15,
-      "icon_key": "",
+      "icon_key": "subBurger",
       "hours_note": "",
       "subcategories": []
     },
@@ -128,7 +128,7 @@
       "slug": "continental",
       "name": "Continental",
       "display_order": 16,
-      "icon_key": "",
+      "icon_key": "dinner",
       "hours_note": "",
       "subcategories": []
     },
@@ -136,7 +136,7 @@
       "slug": "italian-spaghetti-penne",
       "name": "Italian (Spaghetti / Penne)",
       "display_order": 17,
-      "icon_key": "",
+      "icon_key": "subPasta",
       "hours_note": "",
       "subcategories": []
     },
@@ -144,7 +144,7 @@
       "slug": "pizza",
       "name": "Pizza",
       "display_order": 18,
-      "icon_key": "",
+      "icon_key": "pizza",
       "hours_note": "",
       "subcategories": []
     },
@@ -152,7 +152,7 @@
       "slug": "nepali-thali-set",
       "name": "Nepali Thali Set",
       "display_order": 19,
-      "icon_key": "",
+      "icon_key": "rice",
       "hours_note": "",
       "subcategories": []
     },
@@ -160,7 +160,7 @@
       "slug": "tranquility-special-wrap",
       "name": "Tranquility Special Wrap",
       "display_order": 20,
-      "icon_key": "",
+      "icon_key": "special",
       "hours_note": "",
       "subcategories": []
     },
@@ -168,7 +168,7 @@
       "slug": "khaja-set",
       "name": "Khaja Set",
       "display_order": 21,
-      "icon_key": "",
+      "icon_key": "bowl",
       "hours_note": "",
       "subcategories": []
     },
@@ -176,7 +176,7 @@
       "slug": "spring-roll",
       "name": "Spring Roll",
       "display_order": 22,
-      "icon_key": "",
+      "icon_key": "subWrap",
       "hours_note": "",
       "subcategories": []
     },
@@ -184,7 +184,7 @@
       "slug": "dessert",
       "name": "Dessert",
       "display_order": 23,
-      "icon_key": "",
+      "icon_key": "dessert",
       "hours_note": "",
       "subcategories": []
     },
@@ -192,7 +192,7 @@
       "slug": "soft-drinks",
       "name": "Soft Drinks",
       "display_order": 24,
-      "icon_key": "",
+      "icon_key": "subSoda",
       "hours_note": "",
       "subcategories": []
     },
@@ -200,7 +200,7 @@
       "slug": "bbq",
       "name": "BBQ",
       "display_order": 25,
-      "icon_key": "",
+      "icon_key": "meat",
       "hours_note": "",
       "subcategories": []
     },
@@ -208,7 +208,7 @@
       "slug": "hookah",
       "name": "Hookah",
       "display_order": 26,
-      "icon_key": "",
+      "icon_key": "hookah",
       "hours_note": "",
       "subcategories": []
     },
@@ -216,7 +216,7 @@
       "slug": "beer",
       "name": "Beer",
       "display_order": 27,
-      "icon_key": "",
+      "icon_key": "subBeer",
       "hours_note": "",
       "subcategories": []
     },
@@ -224,7 +224,7 @@
       "slug": "cocktail",
       "name": "Cocktail",
       "display_order": 28,
-      "icon_key": "",
+      "icon_key": "subCocktail",
       "hours_note": "",
       "subcategories": []
     },
@@ -232,7 +232,7 @@
       "slug": "wine",
       "name": "Wine",
       "display_order": 29,
-      "icon_key": "",
+      "icon_key": "subWine",
       "hours_note": "",
       "subcategories": []
     },
@@ -240,7 +240,7 @@
       "slug": "hard-drinks",
       "name": "Hard Drinks",
       "display_order": 30,
-      "icon_key": "",
+      "icon_key": "subSpirits",
       "hours_note": "",
       "subcategories": []
     }
