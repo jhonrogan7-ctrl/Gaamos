@@ -74,5 +74,8 @@ urlpatterns = [
     path('branch/<slug:slug>/reorder/', views.branch_reorder, name='branch_reorder'),
     path('branch/<slug:slug>/clone/', views.branch_clone, name='branch_clone'),
 
+    path('push/subscribe/', views.push_subscribe, name='push_subscribe'),
+    path('push/unsubscribe/', views.push_unsubscribe, name='push_unsubscribe'),
+
     path('api/subcategories/', views.api_subcategories, name='api_subcategories'),
 ]

@@ -17,9 +17,9 @@
       <div class="qn">{{ branch.name }}</div>
       <div class="qu">/?branch={{ branch.slug }}</div>
       <div style="display:flex;gap:6px;width:100%;margin-top:4px;">
-        <a href="{% url 'dashboard:qr_download' branch.pk %}?format=png" class="btn btn-primary" style="flex:1;justify-content:center;">Download</a>
-        <a href="{% url 'dashboard:qr_download' branch.pk %}?format=pdf" class="btn btn-ghost">PDF</a>
-        <a href="/?branch={{ branch.slug }}" target="_blank" class="btn btn-ghost">Preview</a>
+        <a href="{% url 'dashboard:qr_download' branch.pk %}?format=png" class="btn btn-primary" style="flex:1;justify-content:center;" download>Download</a>
+        <a href="{% url 'dashboard:qr_download' branch.pk %}?format=pdf" class="btn btn-ghost" download>PDF</a>
+        <a href="/?branch={{ branch.slug }}" target="_blank" rel="noopener" class="btn btn-ghost">Preview</a>
       </div>
       <form method="post" action="{% url 'dashboard:qr_generate' branch.pk %}" style="width:100%;margin-top:4px;">
         {% csrf_token %}
@@ -42,7 +42,7 @@
 <div class="sec-h" style="margin-top:24px;">
   <h3>Table QRs</h3><span class="mini">One QR per table — scans open this branch's menu tagged by table</span>
   <div class="sp"></div>
-  {% if tables %}<a href="{% url 'dashboard:tables_qr_pdf' branch.slug %}" class="btn ghost">Download all (PDF)</a>{% endif %}
+  {% if tables %}<a href="{% url 'dashboard:tables_qr_pdf' branch.slug %}" class="btn ghost" download>Download all (PDF)</a>{% endif %}
 </div>
 
 <div class="panel" style="margin-bottom:16px;padding:14px;display:flex;gap:18px;flex-wrap:wrap;align-items:flex-end;">
@@ -82,8 +82,8 @@
         </td>
         <td class="ono">{{ t.code }}</td>
         <td>
-          <a href="{% url 'dashboard:table_qr' branch.slug t.code %}" target="_blank" class="btn ghost" style="padding:4px 8px;">Preview</a>
-          <a href="{% url 'dashboard:table_qr' branch.slug t.code %}?format=pdf" class="btn ghost" style="padding:4px 8px;">PDF</a>
+          <a href="{% url 'dashboard:table_qr' branch.slug t.code %}" class="btn ghost" style="padding:4px 8px;">Preview</a>
+          <a href="{% url 'dashboard:table_qr' branch.slug t.code %}?format=pdf" class="btn ghost" style="padding:4px 8px;" download>PDF</a>
         </td>
         <td style="text-align:right;">
           <form method="post" action="{% url 'dashboard:table_delete' branch.slug t.code %}" style="display:inline;">

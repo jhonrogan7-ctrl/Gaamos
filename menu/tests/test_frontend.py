@@ -63,13 +63,15 @@ class DashboardShellTest(TenantTestCase):
 
 
 class OverviewStubTest(DashboardShellTest):
-    def test_overview_renders_sample(self):
+    def test_overview_renders_live_empty_state(self):
         self.login_as(self.owner)
         r = self.client.get('/dashboard/overview/')
         self.assertEqual(r.status_code, 200)
         body = r.content.decode()
         self.assertIn('class="stat"', body)
-        self.assertIn('Sample data', body)   # explicit sample marker
+        self.assertNotIn('Sample data', body)   # no more canned marker
+        self.assertIn('>0<', body)              # a brand-new tenant has zero of everything
+        self.assertIn('No orders yet.', body)
 
 
 class OrdersStubTest(DashboardShellTest):

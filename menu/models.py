@@ -256,6 +256,21 @@ class BranchAd(TenantScopedModel):
         return f"{self.branch.name} ad"
 
 
+class BranchVisit(TenantScopedModel):
+    """One row per guest menu page load. Backs the QR-scan analytics on the
+    dashboard overview; a 'scan' is a guest hitting the menu, not a distinct
+    physical QR code read (a table refresh counts too)."""
+    company = models.ForeignKey(Company, on_delete=models.CASCADE, related_name='branch_visits')
+    branch = models.ForeignKey(Branch, on_delete=models.CASCADE, related_name='visits')
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta(TenantScopedModel.Meta):
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return f"{self.branch.name} @ {self.created_at:%Y-%m-%d %H:%M}"
+
+
 class Order(TenantScopedModel):
     STATUS_NEW = 'new'
     STATUS_SERVED = 'served'
@@ -310,6 +325,38 @@ class OrderItem(models.Model):
 
     def __str__(self):
         return f"{self.name} ×{self.qty}"
+
+
+class PushSubscription(TenantScopedModel):
+    """One browser's Web Push registration for one dashboard user.
+
+    Opt-in **per device**: a manager who enables notifications on their phone
+    does not thereby enable them on the till. The endpoint is the browser's
+    own push-service URL and is globally unique, so it is the natural key —
+    re-subscribing the same browser updates the row rather than duplicating it.
+
+    Rows are disposable. Push services expire endpoints without warning, and a
+    404/410 on send is the documented signal to delete the subscription.
+    """
+    company = models.ForeignKey(Company, on_delete=models.CASCADE,
+                                related_name='push_subscriptions')
+    user = models.ForeignKey('auth.User', on_delete=models.CASCADE,
+                             related_name='push_subscriptions')
+    endpoint = models.TextField(unique=True)
+    p256dh = models.CharField(max_length=255)   # client public key
+    auth = models.CharField(max_length=255)     # client auth secret
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta(TenantScopedModel.Meta):
+        ordering = ['-created_at']
+
+    def as_subscription_info(self):
+        """The dict shape pywebpush expects."""
+        return {'endpoint': self.endpoint,
+                'keys': {'p256dh': self.p256dh, 'auth': self.auth}}
+
+    def __str__(self):
+        return f"push<{self.user.username}@{self.company.slug}>"
 
 
 class Membership(models.Model):

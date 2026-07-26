@@ -9,7 +9,7 @@
  *   GET /static/ -> stale-while-revalidate (ignoreSearch tolerates ?v=)
  *   anything else (POSTs, /media/, SSE streams, cross-origin) -> untouched
  */
-const VERSION = "v3";
+const VERSION = "v4";
 const CACHE = `gaamos-shell-${VERSION}`;
 
 const PRECACHE = [
@@ -68,4 +68,49 @@ self.addEventListener("fetch", (e) => {
     return;
   }
   // everything else: no respondWith — browser handles it normally
+});
+
+/* --- Web Push: new dashboard orders ------------------------------------- *
+ * The server sends a JSON payload; showNotification is mandatory — a push
+ * handler that resolves without showing one makes the browser display its own
+ * "site updated in background" notice, and repeated offences cost the origin
+ * its push permission.
+ */
+self.addEventListener("push", (e) => {
+  let d = {};
+  try {
+    d = e.data ? e.data.json() : {};
+  } catch (_) {
+    d = {};
+  }
+  const title = d.title || "New order";
+  e.waitUntil(
+    self.registration.showNotification(title, {
+      body: d.body || "",
+      // Same tag per order => a re-send replaces rather than stacks.
+      tag: d.tag || "order",
+      renotify: true,
+      icon: "/static/pwa/icon-192.png",
+      badge: "/static/pwa/icon-192.png",
+      data: { url: d.url || "/dashboard/orders/" },
+      requireInteraction: false,
+    })
+  );
+});
+
+self.addEventListener("notificationclick", (e) => {
+  e.notification.close();
+  const target = (e.notification.data && e.notification.data.url) || "/dashboard/orders/";
+  e.waitUntil(
+    clients.matchAll({ type: "window", includeUncontrolled: true }).then((wins) => {
+      // Reuse an already-open dashboard tab instead of piling up new ones.
+      for (const w of wins) {
+        if (w.url.includes("/dashboard/") && "focus" in w) {
+          w.navigate(target);
+          return w.focus();
+        }
+      }
+      return clients.openWindow(target);
+    })
+  );
 });

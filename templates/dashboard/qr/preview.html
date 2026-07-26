@@ -1,0 +1,43 @@
+{% extends "dashboard/base.html" %}
+{% block title %}{{ branch.name }} — {{ title }} QR{% endblock %}
+{% block page_title %}{{ title }}<small>{{ branch.name }} · QR sheet</small>{% endblock %}
+{% block header_action %}
+  <a href="{% url 'dashboard:branch_qr' branch.slug %}"
+     style="color:rgba(255,255,255,.7);text-decoration:none;font-size:13px;">← QR &amp; Tables</a>
+{% endblock %}
+
+{% block content %}
+<div class="qr-preview">
+  <div class="qr-preview__sheet">
+    <img src="{{ image_url }}" alt="QR sheet for {{ title }}">
+  </div>
+
+  <div class="qr-preview__side">
+    <div class="panel" style="padding:16px;">
+      <h3 style="margin:0 0 4px;font-size:14px;">Print this sheet</h3>
+      <p class="mini" style="margin:0 0 14px;">
+        A5 at print resolution. The PDF is what to send a print shop; the PNG is
+        for sharing on WhatsApp or Viber.
+      </p>
+      <div style="display:flex;flex-direction:column;gap:8px;">
+        <a class="btn primary" href="{{ pdf_url }}" style="justify-content:center;">
+          Download PDF
+        </a>
+        <a class="btn ghost" href="{{ png_url }}" style="justify-content:center;">
+          Download image
+        </a>
+        <a class="btn ghost" href="{{ menu_url }}" target="_blank" rel="noopener"
+           style="justify-content:center;">Open the menu this opens ↗</a>
+      </div>
+    </div>
+
+    <div class="panel" style="padding:16px;margin-top:12px;">
+      <h3 style="margin:0 0 6px;font-size:14px;">Scans to</h3>
+      <code class="qr-preview__url">{{ menu_url }}</code>
+    </div>
+
+    <a class="btn ghost" href="{% url 'dashboard:branch_qr' branch.slug %}"
+       style="width:100%;justify-content:center;margin-top:12px;">← Back to QR &amp; Tables</a>
+  </div>
+</div>
+{% endblock %}

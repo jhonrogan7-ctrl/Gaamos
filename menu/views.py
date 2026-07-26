@@ -1,12 +1,15 @@
 import json
+import logging
 
 from django.db.models import F
 from django.http import JsonResponse
 from django.shortcuts import redirect, render
 from django.views.decorators.csrf import ensure_csrf_cookie
 from django.views.decorators.http import require_POST
-from .models import Branch, BranchAd, Category, BranchItemPlacement, BranchMenuItem, MenuItem, Table, Order, OrderItem, Company
+from .models import Branch, BranchAd, BranchVisit, Category, BranchItemPlacement, BranchMenuItem, MenuItem, Table, Order, OrderItem, Company
 from .themes import DEFAULT_THEME, THEMES
+
+logger = logging.getLogger(__name__)
 
 
 @ensure_csrf_cookie
@@ -122,8 +125,25 @@ def menu(request):
         'dishes': dishes,
         'layout': layout,
     }
+    if branch is not None:
+        BranchVisit.objects.create(branch=branch)
+
     return render(request, 'menu/index.html',
                   {'payload': payload, 'ad': ad, 'theme': theme})
+
+
+def _queue_order_push(order_id):
+    """Hand the new order to the worker for push delivery.
+
+    Swallows everything. The broker being down, or Celery not running at all,
+    must never turn a guest's successful order into an error — the order is
+    already committed and the dashboard queue still shows it.
+    """
+    try:
+        from .tasks import send_order_push
+        send_order_push.delay(order_id)
+    except Exception:                                    # noqa: BLE001
+        logger.exception('could not queue order push for order=%s', order_id)
 
 
 @require_POST
@@ -180,6 +200,7 @@ def place_order(request):
                                  name=item.name, unit_price=item.price, qty=qty)
         MenuItem.objects.filter(pk=item.pk).update(order_count=F('order_count') + qty)
 
+    _queue_order_push(order.pk)
     return JsonResponse({'ok': True, 'number': order.number})
 
 

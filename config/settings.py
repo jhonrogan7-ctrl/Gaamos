@@ -119,6 +119,13 @@ PEXELS_API_KEY = os.environ.get("PEXELS_API_KEY", "")
 OPENVERSE_CLIENT_ID = os.environ.get("OPENVERSE_CLIENT_ID", "")
 OPENVERSE_CLIENT_SECRET = os.environ.get("OPENVERSE_CLIENT_SECRET", "")
 
+# Web Push (VAPID) — new-order notifications to dashboard staff. Absent keys
+# disable push entirely rather than erroring: a venue must still be able to take
+# orders on a deployment where push was never configured.
+VAPID_PUBLIC_KEY = os.environ.get("VAPID_PUBLIC_KEY", "")
+VAPID_PRIVATE_KEY = os.environ.get("VAPID_PRIVATE_KEY", "")
+VAPID_ADMIN_EMAIL = os.environ.get("VAPID_ADMIN_EMAIL", "admin@gaamos.io")
+
 # Celery + Redis — background-job foundation.
 CELERY_BROKER_URL = os.environ.get("CELERY_BROKER_URL", "redis://redis:6379/0")
 CELERY_RESULT_BACKEND = os.environ.get("CELERY_RESULT_BACKEND", "redis://redis:6379/1")

@@ -95,3 +95,24 @@ def find_images_for_scan(scan_id):
             continue          # rejected tombstone — never re-ingest a bad source
         item.image_asset = asset
         item.save(update_fields=['image_asset'])
+
+
+@shared_task
+def send_order_push(order_id):
+    """Notify dashboard staff that a new order landed.
+
+    Runs off the request: delivery makes a network call per subscription to an
+    external push service, and the guest pressing "place order" must not wait
+    on it. An order that has since been deleted is a no-op, not an error.
+    """
+    from menu.models import Order
+    from menu.push import notify_new_order
+
+    order = (Order.all_objects
+             .filter(pk=order_id)
+             .prefetch_related('items')
+             .first())
+    if order is None:
+        return 'gone'
+    t = notify_new_order(order)
+    return f"sent={t['sent']} failed={t['failed']} dropped={t['dropped']}"

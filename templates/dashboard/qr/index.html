@@ -27,12 +27,12 @@
       <div class="qn">{{ branch.name }}</div>
       <div class="qu">/?branch={{ branch.slug }}</div>
       <div style="display:flex;gap:6px;width:100%;margin-top:4px;">
-        <a href="{% url 'dashboard:qr_download' branch.pk %}?format=png" class="btn btn-primary" style="flex:1;justify-content:center;">
+        <a href="{% url 'dashboard:qr_download' branch.pk %}?format=png" class="btn btn-primary" style="flex:1;justify-content:center;" download>
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
           Download
         </a>
-        <a href="{% url 'dashboard:qr_download' branch.pk %}?format=pdf" class="btn btn-ghost">PDF</a>
-        <a href="/?branch={{ branch.slug }}" target="_blank" class="btn btn-ghost">Preview</a>
+        <a href="{% url 'dashboard:qr_download' branch.pk %}?format=pdf" class="btn btn-ghost" download>PDF</a>
+        <a href="/?branch={{ branch.slug }}" target="_blank" rel="noopener" class="btn btn-ghost">Preview</a>
       </div>
       <form method="post" action="{% url 'dashboard:qr_generate' branch.pk %}" style="width:100%;margin-top:4px;">
         {% csrf_token %}
