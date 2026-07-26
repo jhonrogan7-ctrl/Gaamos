@@ -9,8 +9,20 @@ from django.db import transaction
 from PIL import Image
 
 from menu import publish
-from menu.models import Company, Branch
+from menu.models import BranchCategory, Category, Company, Branch
 from menu.tenancy import set_current_company, reset_current_company
+
+
+def _parse_aliases(values):
+    """`--category-alias FIXTURE=LIVE` pairs -> {fixture_slug: live_slug}."""
+    out = {}
+    for raw in values or []:
+        fixture, sep, live = raw.partition("=")
+        fixture, live = fixture.strip(), live.strip()
+        if not (sep and fixture and live):
+            raise CommandError(f"--category-alias wants FIXTURE=LIVE, got {raw!r}")
+        out[fixture] = live
+    return out
 
 
 def _read_media(media_base, filename):
@@ -37,6 +49,18 @@ class Command(BaseCommand):
         parser.add_argument("--media-base", dest="media_base", default=None)
         parser.add_argument("--strict", action="store_true")
         parser.add_argument("--dry-run", action="store_true")
+        parser.add_argument("--category-alias", action="append",
+                            dest="category_aliases", default=None,
+                            metavar="FIXTURE=LIVE",
+                            help="Route a fixture section into a category the "
+                                 "tenant already has under a different slug "
+                                 "(repeatable).")
+        parser.add_argument("--keep-categories", action="store_true",
+                            help="Never create or rewrite a category: resolve "
+                                 "every fixture section to one the tenant "
+                                 "already has and leave its name, icon and "
+                                 "order alone. Fails closed, naming anything "
+                                 "that does not resolve.")
 
     def handle(self, *args, **opts):
         slug = opts["company"]
@@ -50,6 +74,14 @@ class Command(BaseCommand):
         if not fixture_path.exists():
             raise CommandError(f"Fixture not found: {fixture_path}")
         data = json.loads(fixture_path.read_text())
+
+        self._aliases = _parse_aliases(opts.get("category_aliases"))
+        # A typo in an alias source would silently fall through to the fixture's
+        # own slug and create the duplicate section the alias existed to avoid.
+        stray = set(self._aliases) - {c["slug"] for c in data.get("categories", [])}
+        if stray:
+            raise CommandError("--category-alias source not a section in this "
+                               "fixture: " + ", ".join(sorted(stray)))
 
         if opts["branches"]:
             branches = list(Branch.all_objects.filter(company=company,
@@ -76,12 +108,24 @@ class Command(BaseCommand):
     def _upsert_catalog(self, company, branches, data, opts):
         from menu.models import SubCategory, BranchSubCategory
         self._cat_by_slug, self._sub_by_key = {}, {}
+        unresolved = []
         for cd in data.get("categories", []):
-            cat, _ = publish.ensure_category(
-                company, branches, name=cd["name"], slug=cd["slug"],
-                display_order=cd.get("display_order", 0),
-                icon_key=cd.get("icon_key", ""), hours_note=cd.get("hours_note", ""),
-                update=True)   # the fixture is the source of truth for an import
+            if opts.get("keep_categories"):
+                # `--keep-categories` is for a tenant that built its own sections
+                # in the dashboard before the fixture existed. There the fixture
+                # is the source of truth for the CATALOG only: the sections are
+                # the venue's, so they are looked up, never written.
+                cat = self._existing_category(company, branches, cd)
+                if cat is None:
+                    unresolved.append(cd["slug"])
+                    continue
+            else:
+                cat, _ = publish.ensure_category(
+                    company, branches, name=cd["name"], slug=cd["slug"],
+                    display_order=cd.get("display_order", 0),
+                    icon_key=cd.get("icon_key", ""),
+                    hours_note=cd.get("hours_note", ""),
+                    update=True)   # the fixture is the source of truth
             self._cat_by_slug[cd["slug"]] = cat
             for sd in cd.get("subcategories", []):
                 sub, _ = SubCategory.all_objects.update_or_create(
@@ -94,6 +138,13 @@ class Command(BaseCommand):
                         branch=b, sub_category=sub,
                         defaults={"display_order": sd.get("display_order", 0)})
 
+        if unresolved:
+            raise CommandError(
+                f"--keep-categories: {len(unresolved)} fixture section(s) have "
+                f"no category in '{company.slug}': " + ", ".join(unresolved)
+                + " — add --category-alias <fixture>=<existing> for each, or "
+                  "drop --keep-categories to let the fixture create them.")
+
         self._items = []
         for it in data.get("items", []):
             cat = self._cat_by_slug[it["cat"]] if it.get("cat") else None
@@ -105,6 +156,23 @@ class Command(BaseCommand):
                 category=cat, sub_category=sub, display_order=it.get("order", 0),
                 popular=it.get("popular", False), featured=it.get("featured", False))
             self._items.append((item, it))
+
+    def _existing_category(self, company, branches, cd):
+        """The tenant's own category for a fixture section, or None.
+
+        Only the branch link is written: an unlinked category is invisible on the
+        guest menu, so importing items into one would file them where nobody can
+        see them.
+        """
+        slug = self._aliases.get(cd["slug"], cd["slug"])
+        cat = Category.all_objects.filter(company=company, slug=slug).first()
+        if cat is None:
+            return None
+        for b in branches:
+            BranchCategory.objects.get_or_create(
+                branch=b, category=cat,
+                defaults={"display_order": cat.display_order})
+        return cat
 
     def _apply_images(self, company, opts):
         media_base = opts.get("media_base")

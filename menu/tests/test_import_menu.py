@@ -223,3 +223,126 @@ def test_a_missing_local_media_file_is_reported_like_a_failed_download(
         call_command("import_menu", "--company", "tranquility-inn",
                      "--fixture", _write_fixture(tmp_path, data),
                      "--media-base", str(media_dir), "--strict")
+
+
+# --- --keep-categories / --category-alias -----------------------------------
+#
+# A venue that built its own sections in the dashboard before the fixture
+# existed: Chill Zone Restaurant & Bar had 35 hand-named sections with chosen
+# icons, and 7 of them differ from the fixture's slug only by a typo or a plural
+# (`pokoda`/`pakoda`, `salads`/`salad`). A plain import created a duplicate
+# beside each and blanked the icon on every section it did match.
+
+def _sections(slug="starters", name="Starters", **kw):
+    base = {"slug": slug, "name": name, "display_order": 1, "icon_key": "",
+            "hours_note": "", "subcategories": []}
+    base.update(kw)
+    return [base]
+
+
+def _one_item(cat="starters"):
+    return [{"slug": "momo", "name": "Momo", "cat": cat, "sub": None,
+             "description": "", "price": 200, "tags": [], "popular": False,
+             "featured": False, "order": 1}]
+
+
+def test_keep_categories_leaves_the_venues_own_name_icon_and_order(company, tmp_path):
+    from menu.models import Category, BranchItemPlacement
+    existing = Category.all_objects.create(
+        company=company, slug="starters", name="STARTERS (ours)",
+        display_order=9, icon_key="subMains")
+    data = {"categories": _sections(name="Starters", icon_key="", display_order=1),
+            "items": _one_item()}
+
+    call_command("import_menu", "--company", "tranquility-inn",
+                 "--fixture", _write_fixture(tmp_path, data), "--keep-categories")
+
+    existing.refresh_from_db()
+    assert existing.name == "STARTERS (ours)"
+    assert existing.icon_key == "subMains"
+    assert existing.display_order == 9
+    assert Category.all_objects.filter(company=company).count() == 1
+    # the item still landed in it
+    assert BranchItemPlacement.objects.filter(category=existing).count() == 1
+
+
+def test_keep_categories_fails_closed_naming_every_unresolved_section(company, tmp_path):
+    from menu.models import Category, MenuItem
+    data = {"categories": _sections() + [
+        {"slug": "puddings", "name": "Puddings", "display_order": 2,
+         "icon_key": "", "hours_note": "", "subcategories": []}],
+            "items": _one_item()}
+
+    with pytest.raises(CommandError, match="starters, puddings"):
+        call_command("import_menu", "--company", "tranquility-inn",
+                     "--fixture", _write_fixture(tmp_path, data),
+                     "--keep-categories")
+    # nothing half-written
+    assert Category.all_objects.filter(company=company).count() == 0
+    assert MenuItem.all_objects.filter(company=company).count() == 0
+
+
+def test_category_alias_routes_into_a_differently_slugged_category(company, tmp_path):
+    from menu.models import Category, BranchItemPlacement
+    theirs = Category.all_objects.create(
+        company=company, slug="salads", name="SALADS", display_order=3,
+        icon_key="noodles")
+    data = {"categories": _sections(slug="salad", name="Salad"),
+            "items": _one_item(cat="salad")}
+
+    call_command("import_menu", "--company", "tranquility-inn",
+                 "--fixture", _write_fixture(tmp_path, data),
+                 "--keep-categories", "--category-alias", "salad=salads")
+
+    assert Category.all_objects.filter(company=company).count() == 1
+    assert BranchItemPlacement.objects.filter(category=theirs).count() == 1
+    theirs.refresh_from_db()
+    assert (theirs.name, theirs.icon_key) == ("SALADS", "noodles")
+
+
+def test_keep_categories_links_the_category_to_the_branch(company, tmp_path):
+    """An unlinked category is invisible on the guest menu, so an item imported
+    into one would be filed where no guest can reach it."""
+    from menu.models import Category, BranchCategory
+    cat = Category.all_objects.create(company=company, slug="starters",
+                                      name="Starters", display_order=1)
+    assert not BranchCategory.objects.filter(category=cat).exists()
+
+    call_command("import_menu", "--company", "tranquility-inn",
+                 "--fixture", _write_fixture(tmp_path, {
+                     "categories": _sections(), "items": _one_item()}),
+                 "--keep-categories")
+
+    assert BranchCategory.objects.filter(category=cat).count() == 1
+
+
+def test_a_malformed_alias_is_rejected(company, tmp_path):
+    with pytest.raises(CommandError, match="wants FIXTURE=LIVE"):
+        call_command("import_menu", "--company", "tranquility-inn",
+                     "--fixture", _write_fixture(tmp_path, {
+                         "categories": _sections(), "items": []}),
+                     "--category-alias", "salad")
+
+
+def test_an_alias_for_a_section_not_in_the_fixture_is_rejected(company, tmp_path):
+    """The failure this guards is silent: a mistyped source falls through to the
+    fixture's own slug and creates the duplicate the alias existed to prevent."""
+    with pytest.raises(CommandError, match="not a section in this fixture: sallad"):
+        call_command("import_menu", "--company", "tranquility-inn",
+                     "--fixture", _write_fixture(tmp_path, {
+                         "categories": _sections(slug="salad"), "items": []}),
+                     "--category-alias", "sallad=salads")
+
+
+def test_without_keep_categories_the_fixture_still_wins(company, tmp_path):
+    """The default must not change: `import_menu` on a fixture-built tenant is
+    still authoritative over names, icons and order."""
+    from menu.models import Category
+    Category.all_objects.create(company=company, slug="starters",
+                                name="OURS", display_order=9, icon_key="subMains")
+    call_command("import_menu", "--company", "tranquility-inn",
+                 "--fixture", _write_fixture(tmp_path, {
+                     "categories": _sections(name="Starters", icon_key="star"),
+                     "items": []}))
+    cat = Category.all_objects.get(company=company, slug="starters")
+    assert (cat.name, cat.icon_key, cat.display_order) == ("Starters", "star", 1)
