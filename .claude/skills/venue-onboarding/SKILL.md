@@ -96,52 +96,60 @@ They are listed at the end of the run under `content-filtered`.
 
 Do NOT pass `--embed` — Gemini embeddings are billing-blocked.
 
-### 4. Audit — look at every image before it ships
+### 4. Review — the gate every image passes
 
-Counts do not tell you whether a photo is the dish. Build contact sheets and
-read them:
+Counts do not tell you whether a photo is the dish, and neither does a 200px
+contact sheet: herbs on a "plain" omelette are invisible at that size, and all
+11 Chill Zone hot drinks shipped cold before anyone noticed. Review at readable
+size, with the prompt beside the picture — half of these defects are only
+visible as a *mismatch* between the two.
 
-    docker compose exec -T web python -c "
-    from PIL import Image, ImageDraw
-    import pathlib
-    files = sorted(pathlib.Path('menu/fixtures/media/<slug>').glob('*.webp'))
-    per, cols, cell = 24, 6, 200
-    for s in range((len(files) + per - 1) // per):
-        chunk = files[s*per:(s+1)*per]
-        rows = (len(chunk) + cols - 1) // cols
-        sheet = Image.new('RGB', (cols*cell, rows*cell), 'white')
-        d = ImageDraw.Draw(sheet)
-        for i, f in enumerate(chunk):
-            im = Image.open(f).convert('RGB').resize((cell, cell))
-            x, y = (i % cols)*cell, (i // cols)*cell
-            sheet.paste(im, (x, y)); d.text((x+3, y+3), f.stem[:26], fill='yellow')
-        sheet.save(f'/tmp/audit{s}.png')"
+    docker compose exec -T web python manage.py review_images \
+        --prompts /tmp/<venue>-sheet.md --company <slug> \
+        --out /tmp/<slug>-review.html
 
-**The generator does not know Nepali dish words.** On the Chill Zone run it
-rendered 7 of 8 momo as meatballs or vegetable blobs — one jhol momo came back
-with a cartoon panda in the bowl — and every thali as a plate of fried meat.
-Counts, `no image` and the Unsplash check were all green while a third of the
-signature dishes were wrong.
+Open the page. For every image ask:
 
-The fix is to name **the form the word already denotes**, which stays inside the
-no-invented-claims rule: momo → "steamed pleated dumplings", thali → "a round
-steel tray of rice with small bowls of curry and lentil dal", pakoda →
-"fritters", palak paneer → "cubes of paneer in spinach gravy". Reword in the
-sheet, delete those `ImageAsset` rows (the run skips keys that already exist),
-and re-run:
+- Is it the dish the name names?
+- Does the count match the card? (`Egg (2Eggs)` came back with three halves.
+  No sampler setting fixes counting — this check is the only thing that does.)
+- Is there anything on the plate the card never printed?
 
-    docker compose exec -T web python manage.py shell -c "
-    from menu.models import ImageAsset
-    ImageAsset.objects.filter(source='flux', found_for_slug__in=[...]).delete()"
+Tick the failures, copy the key list, and record the verdict:
+
+    docker compose exec -T web python manage.py verify_images \
+        --prompts /tmp/<venue>-sheet.md --company <slug> \
+        --reject <pasted keys>
+
+Everything not rejected becomes `verified`. Rejected keys are re-rolled at a
+new seed — a rejected asset no longer counts as done, and its bytes are
+tombstoned so the same image can never come back:
+
+    docker compose exec -T web python manage.py generate_item_images \
+        --prompts /tmp/<venue>-sheet.md --reroll 1
+
+Repeat until the page is clean.
+
+**When the generator draws the wrong thing, fix the lexicon, not the row.**
+`menu/pipeline/dish_lexicon.py` maps a menu head-word to the form the word
+already denotes — `momo` → "steamed pleated dumplings", `masala` → "speckled
+with chopped onion, chilli and coriander". A new entry needs founder sign-off,
+because deciding what a word denotes is exactly where an invented claim would
+enter. An item the run reports under `undefined head-word` either gains an
+entry or becomes `*skip — ask the venue*`.
 
 ### 5. Build — sheet + assets become the fixture
 
     docker compose exec -T web python manage.py build_venue_fixture \
-        --prompts /tmp/<venue>-sheet.md --company <slug>
+        --prompts /tmp/<venue>-sheet.md --company <slug> --require-verified
 
 Writes `menu/fixtures/<slug>.json` and `menu/fixtures/media/<slug>/`. Read the
 summary line: `generated` should be close to the item count, and `no image`
 should only list items you know have no prompt.
+
+`--require-verified` refuses to build while any image this fixture would ship is
+still `pending` — it names the keys, and they go back through phase 4. Drop the
+flag only for a venue whose set is knowingly unreviewed (Tranquility's is).
 
 The asset pool is **global and reuse across venues is intentional** — a second
 venue's "black tea" adopts the first venue's image by exact key. If a venue
@@ -176,6 +184,11 @@ images render.
 | "succeeded" with 0 items | Wrong sheet path, or no `###` sections | Check counts at every phase |
 | Every count green but photos are the wrong dish | The generator does not know `momo`, `thali`, `pakoda` | Name the form the word denotes; re-roll (phase 4) |
 | `/platform/` route 404s under curl | Apex-only; wrong Host header, or port 8000 not 8005 | `-H "Host: zxyn.online" http://localhost:8005/…` |
+| Every pale dish has a garnish nobody ordered | A style block asserting food content (`fresh vibrant colours, appetising`) | Style blocks describe camera and light only — guarded by a test |
+| Hot drinks are served cold | `_DRINK_WORDS` contains `drink`, so `Hot Drinks` takes `DRINK_STYLE` | Temperature comes from the item via `DRINK_LEXICON`, never the style block |
+| A whole section looks like one photo | Seed was the same for every item | `generate_flux.seed_for(key)` — one seed per item |
+| Rejecting an image changes nothing | `done_keys` counted rejected as done | Fixed; re-roll with `--reroll N` |
+| A venue went live on unreviewed images | `build_venue_fixture` ignored `status` | Build with `--require-verified` |
 
 ## Tests
 
