@@ -227,7 +227,7 @@
         "file": "hot-drinks-black-tea.webp",
         "source": "generated",
         "origin_url": null,
-        "prompt": "a clear glass cup of strong black tea, no milk, professional beverage photography, straight-on angle, soft natural light, condensation on the glass, clean neutral background, vibrant, high detail"
+        "prompt": "a glass of black tea, professional beverage photography, straight-on angle, soft natural light, clean neutral background, high detail, the drink only, no garnish, no props"
       }
     },
     {
@@ -245,7 +245,7 @@
         "file": "hot-drinks-milk-tea.webp",
         "source": "generated",
         "origin_url": null,
-        "prompt": "a glass cup of Nepali milk tea, creamy tan colour, professional beverage photography, straight-on angle, soft natural light, condensation on the glass, clean neutral background, vibrant, high detail"
+        "prompt": "a glass of milk tea, professional beverage photography, straight-on angle, soft natural light, clean neutral background, high detail, the drink only, no garnish, no props"
       }
     },
     {
@@ -263,7 +263,7 @@
         "file": "hot-drinks-masala-tea.webp",
         "source": "generated",
         "origin_url": null,
-        "prompt": "a cup of spiced masala chai with cardamom pods and cinnamon beside it, professional beverage photography, straight-on angle, soft natural light, condensation on the glass, clean neutral background, vibrant, high detail"
+        "prompt": "a glass of masala tea, professional beverage photography, straight-on angle, soft natural light, clean neutral background, high detail, the drink only, no garnish, no props"
       }
     },
     {
@@ -281,7 +281,7 @@
         "file": "hot-drinks-lemon-tea.webp",
         "source": "generated",
         "origin_url": null,
-        "prompt": "a clear glass of amber lemon tea with a floating lemon slice, professional beverage photography, straight-on angle, soft natural light, condensation on the glass, clean neutral background, vibrant, high detail"
+        "prompt": "a glass of lemon tea, professional beverage photography, straight-on angle, soft natural light, clean neutral background, high detail, the drink only, no garnish, no props"
       }
     },
     {
@@ -299,7 +299,7 @@
         "file": "hot-drinks-ginger-lemon-honey.webp",
         "source": "generated",
         "origin_url": null,
-        "prompt": "a glass mug of ginger lemon honey tea, honey drizzling in, ginger slices, professional beverage photography, straight-on angle, soft natural light, condensation on the glass, clean neutral background, vibrant, high detail"
+        "prompt": "a mug of hot ginger lemon honey drink, professional beverage photography, straight-on angle, soft natural light, clean neutral background, high detail, the drink only, no garnish, no props"
       }
     },
     {
@@ -317,7 +317,7 @@
         "file": "hot-drinks-milk-coffee.webp",
         "source": "generated",
         "origin_url": null,
-        "prompt": "a white cup of milk coffee with light crema, professional beverage photography, straight-on angle, soft natural light, condensation on the glass, clean neutral background, vibrant, high detail"
+        "prompt": "a cup of light brown coffee with milk, professional beverage photography, straight-on angle, soft natural light, clean neutral background, high detail, the drink only, no garnish, no props"
       }
     },
     {
@@ -335,7 +335,7 @@
         "file": "hot-drinks-black-coffee.webp",
         "source": "generated",
         "origin_url": null,
-        "prompt": "a small white cup of black coffee, dark and glossy, professional beverage photography, straight-on angle, soft natural light, condensation on the glass, clean neutral background, vibrant, high detail"
+        "prompt": "a cup of black coffee, professional beverage photography, straight-on angle, soft natural light, clean neutral background, high detail, the drink only, no garnish, no props"
       }
     },
     {
@@ -353,43 +353,79 @@
         "file": "hot-drinks-hot-chocolate.webp",
         "source": "generated",
         "origin_url": null,
-        "prompt": "a mug of hot chocolate, professional beverage photography, straight-on angle, soft natural light, condensation on the glass, clean neutral background, vibrant, high detail"
+        "prompt": "hot chocolate in a clear glass mug, served hot, steam rising, professional beverage photography, straight-on angle, soft natural light, clean neutral background, high detail, the drink only, no garnish, no props"
       }
     },
     {
-      "slug": "organic-americano-hot-ice",
-      "name": "Organic Americano (Hot / Ice)",
+      "slug": "organic-americano-hot",
+      "name": "Organic Americano (Hot)",
       "cat": "hot-drinks",
       "sub": null,
-      "description": "Americano from organic beans, hot or iced.",
+      "description": "Americano from organic beans, served hot.",
       "price": 130,
       "tags": [],
       "popular": false,
       "featured": false,
       "order": 9,
       "image": {
-        "file": "hot-drinks-organic-americano-hot-ice.webp",
+        "file": "hot-drinks-organic-americano-hot.webp",
         "source": "generated",
         "origin_url": null,
-        "prompt": "a cup of americano coffee, professional beverage photography, straight-on angle, soft natural light, condensation on the glass, clean neutral background, vibrant, high detail"
+        "prompt": "a cup of americano coffee, served hot, steam rising, professional beverage photography, straight-on angle, soft natural light, clean neutral background, high detail, the drink only, no garnish, no props"
       }
     },
     {
-      "slug": "organic-espresso-hot-ice",
-      "name": "Organic Espresso (Hot / Ice)",
+      "slug": "organic-americano-ice",
+      "name": "Organic Americano (Ice)",
       "cat": "hot-drinks",
       "sub": null,
-      "description": "Espresso from organic beans, hot or iced.",
-      "price": 110,
+      "description": "Americano from organic beans, served iced.",
+      "price": 130,
       "tags": [],
       "popular": false,
       "featured": false,
       "order": 10,
       "image": {
-        "file": "hot-drinks-organic-espresso-hot-ice.webp",
+        "file": "hot-drinks-organic-americano-ice.webp",
         "source": "generated",
         "origin_url": null,
-        "prompt": "a small cup of espresso, professional beverage photography, straight-on angle, soft natural light, condensation on the glass, clean neutral background, vibrant, high detail"
+        "prompt": "a glass of americano coffee, served over ice in a tall glass, professional beverage photography, straight-on angle, soft natural light, clean neutral background, high detail, the drink only, no garnish, no props"
+      }
+    },
+    {
+      "slug": "organic-espresso-hot",
+      "name": "Organic Espresso (Hot)",
+      "cat": "hot-drinks",
+      "sub": null,
+      "description": "Espresso from organic beans, served hot.",
+      "price": 110,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 11,
+      "image": {
+        "file": "hot-drinks-organic-espresso-hot.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a small cup of espresso, served hot, steam rising, professional beverage photography, straight-on angle, soft natural light, clean neutral background, high detail, the drink only, no garnish, no props"
+      }
+    },
+    {
+      "slug": "organic-espresso-ice",
+      "name": "Organic Espresso (Ice)",
+      "cat": "hot-drinks",
+      "sub": null,
+      "description": "Espresso from organic beans, served iced.",
+      "price": 110,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 12,
+      "image": {
+        "file": "hot-drinks-organic-espresso-ice.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a glass of espresso, served over ice in a tall glass, professional beverage photography, straight-on angle, soft natural light, clean neutral background, high detail, the drink only, no garnish, no props"
       }
     },
     {
@@ -446,7 +482,7 @@
         "file": "toast-plain-toast.webp",
         "source": "generated",
         "origin_url": null,
-        "prompt": "slices of plain toast on a plate, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, fresh vibrant colours, appetising, high detail"
+        "prompt": "toasted bread slices, golden brown and crisp, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, high detail, the dish only, no garnish, no herbs, no sauce, no side dishes, no props"
       }
     },
     {
@@ -464,7 +500,7 @@
         "file": "toast-cheese-toast.webp",
         "source": "generated",
         "origin_url": null,
-        "prompt": "cheese toast on a plate, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, fresh vibrant colours, appetising, high detail"
+        "prompt": "cheese toast on a plate, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, high detail, the dish only, no garnish, no herbs, no sauce, no side dishes, no props"
       }
     },
     {
@@ -482,7 +518,7 @@
         "file": "toast-cheese-tomato-toast.webp",
         "source": "generated",
         "origin_url": null,
-        "prompt": "cheese and tomato toast on a plate, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, fresh vibrant colours, appetising, high detail"
+        "prompt": "cheese and tomato toast on a plate, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, high detail, the dish only, no garnish, no herbs, no sauce, no side dishes, no props"
       }
     },
     {
@@ -500,7 +536,7 @@
         "file": "toast-french-toast.webp",
         "source": "generated",
         "origin_url": null,
-        "prompt": "golden egg-dipped french toast slices on a plate, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, fresh vibrant colours, appetising, high detail"
+        "prompt": "golden egg-dipped french toast slices on a plate, no whole egg, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, high detail, the dish only, no garnish, no herbs, no sauce, no side dishes, no props"
       }
     },
     {
@@ -518,7 +554,7 @@
         "file": "egg-2eggs-boiled-egg.webp",
         "source": "generated",
         "origin_url": null,
-        "prompt": "two boiled eggs on a plate, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, fresh vibrant colours, appetising, high detail"
+        "prompt": "two whole peeled boiled eggs on a white plate, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, high detail, the dish only, no garnish, no herbs, no sauce, no side dishes, no props"
       }
     },
     {
@@ -536,7 +572,7 @@
         "file": "egg-2eggs-fried-egg.webp",
         "source": "generated",
         "origin_url": null,
-        "prompt": "two sunny-side-up eggs on a plate, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, fresh vibrant colours, appetising, high detail"
+        "prompt": "two sunny-side-up eggs on a white plate, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, high detail, the dish only, no garnish, no herbs, no sauce, no side dishes, no props"
       }
     },
     {
@@ -554,7 +590,7 @@
         "file": "egg-2eggs-scrambled-egg.webp",
         "source": "generated",
         "origin_url": null,
-        "prompt": "scrambled eggs on a plate, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, fresh vibrant colours, appetising, high detail"
+        "prompt": "scrambled eggs on a white plate, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, high detail, the dish only, no garnish, no herbs, no sauce, no side dishes, no props"
       }
     },
     {
@@ -572,7 +608,7 @@
         "file": "egg-2eggs-masala-omelette.webp",
         "source": "generated",
         "origin_url": null,
-        "prompt": "a masala omelette on a plate, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, fresh vibrant colours, appetising, high detail"
+        "prompt": "a folded omelette, speckled with chopped onion, chilli and coriander, a folded flat cooked-egg omelette, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, high detail, the dish only, no garnish, no herbs, no sauce, no side dishes, no props"
       }
     },
     {
@@ -590,7 +626,7 @@
         "file": "egg-2eggs-cheese-omelette.webp",
         "source": "generated",
         "origin_url": null,
-        "prompt": "a cheese omelette on a plate, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, fresh vibrant colours, appetising, high detail"
+        "prompt": "a folded omelette with melted cheese, a folded flat cooked-egg omelette, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, high detail, the dish only, no garnish, no herbs, no sauce, no side dishes, no props"
       }
     },
     {
@@ -608,7 +644,7 @@
         "file": "egg-2eggs-plain-omelette.webp",
         "source": "generated",
         "origin_url": null,
-        "prompt": "a plain omelette on a plate, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, fresh vibrant colours, appetising, high detail"
+        "prompt": "a plain yellow folded omelette, a folded flat cooked-egg omelette, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, high detail, the dish only, no garnish, no herbs, no sauce, no side dishes, no props"
       }
     },
     {
@@ -626,7 +662,7 @@
         "file": "muesli-porridge-plain-muesli-with-curd-or-milk.webp",
         "source": "generated",
         "origin_url": null,
-        "prompt": "a bowl of muesli with curd, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, fresh vibrant colours, appetising, high detail"
+        "prompt": "a bowl of muesli with curd, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, high detail, the dish only, no garnish, no herbs, no sauce, no side dishes, no props"
       }
     },
     {
@@ -644,7 +680,7 @@
         "file": "muesli-porridge-mix-fruit-muesli-with-curd.webp",
         "source": "generated",
         "origin_url": null,
-        "prompt": "a bowl of muesli with mixed fruit and curd, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, fresh vibrant colours, appetising, high detail"
+        "prompt": "a bowl of muesli with mixed fruit and curd, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, high detail, the dish only, no garnish, no herbs, no sauce, no side dishes, no props"
       }
     },
     {
@@ -662,7 +698,7 @@
         "file": "muesli-porridge-porridge-plain.webp",
         "source": "generated",
         "origin_url": null,
-        "prompt": "a bowl of creamy plain porridge, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, fresh vibrant colours, appetising, high detail"
+        "prompt": "a bowl of creamy plain porridge, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, high detail, the dish only, no garnish, no herbs, no sauce, no side dishes, no props"
       }
     },
     {
@@ -680,7 +716,7 @@
         "file": "muesli-porridge-porridge-banana.webp",
         "source": "generated",
         "origin_url": null,
-        "prompt": "a bowl of porridge with banana, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, fresh vibrant colours, appetising, high detail"
+        "prompt": "a bowl of porridge with banana, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, high detail, the dish only, no garnish, no herbs, no sauce, no side dishes, no props"
       }
     },
     {
@@ -698,7 +734,7 @@
         "file": "muesli-porridge-pancake-plain.webp",
         "source": "generated",
         "origin_url": null,
-        "prompt": "pancakes on a plate, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, fresh vibrant colours, appetising, high detail"
+        "prompt": "pancakes on a plate, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, high detail, the dish only, no garnish, no herbs, no sauce, no side dishes, no props"
       }
     },
     {
@@ -716,7 +752,7 @@
         "file": "muesli-porridge-pancake-honey-banana.webp",
         "source": "generated",
         "origin_url": null,
-        "prompt": "pancakes with honey and banana, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, fresh vibrant colours, appetising, high detail"
+        "prompt": "pancakes with honey and banana, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, high detail, the dish only, no garnish, no herbs, no sauce, no side dishes, no props"
       }
     },
     {
@@ -786,7 +822,7 @@
         "file": "sandwich-burger-club-sandwich.webp",
         "source": "generated",
         "origin_url": null,
-        "prompt": "a club sandwich cut into triangles on a plate, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, fresh vibrant colours, appetising, high detail"
+        "prompt": "a club sandwich cut into triangles on a plate, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, high detail, the dish only, no garnish, no herbs, no sauce, no side dishes, no props"
       }
     },
     {
@@ -817,7 +853,7 @@
         "file": "soft-drinks-coke-fanta-sprite.webp",
         "source": "generated",
         "origin_url": null,
-        "prompt": "three chilled soft drink glasses — cola, orange and lemon-lime — over ice, professional beverage photography, straight-on angle, soft natural light, condensation on the glass, clean neutral background, vibrant, high detail"
+        "prompt": "three plain glasses of soda side by side: one dark cola-coloured, one orange, one pale lemon-lime, no cans, no bottles, no logos or brand markings, professional beverage photography, straight-on angle, soft natural light, clean neutral background, high detail, the drink only, no garnish, no props"
       }
     },
     {
@@ -835,7 +871,7 @@
         "file": "soft-drinks-fresh-lemon-soda.webp",
         "source": "generated",
         "origin_url": null,
-        "prompt": "a glass of lemon soda with ice, professional beverage photography, straight-on angle, soft natural light, condensation on the glass, clean neutral background, vibrant, high detail"
+        "prompt": "a glass of lemon soda with ice, professional beverage photography, straight-on angle, soft natural light, clean neutral background, high detail, the drink only, no garnish, no props"
       }
     },
     {
@@ -853,7 +889,7 @@
         "file": "soft-drinks-mint-lemonade.webp",
         "source": "generated",
         "origin_url": null,
-        "prompt": "a glass of mint lemonade, professional beverage photography, straight-on angle, soft natural light, condensation on the glass, clean neutral background, vibrant, high detail"
+        "prompt": "a glass of mint lemonade, professional beverage photography, straight-on angle, soft natural light, clean neutral background, high detail, the drink only, no garnish, no props"
       }
     },
     {
@@ -884,7 +920,7 @@
         "file": "soft-drinks-red-bull-blue.webp",
         "source": "generated",
         "origin_url": null,
-        "prompt": "a chilled energy drink can beside a glass of ice, professional beverage photography, straight-on angle, soft natural light, condensation on the glass, clean neutral background, vibrant, high detail"
+        "prompt": "a plain glass of bright blue energy drink with ice, no can, no bottle, no logos or brand markings, professional beverage photography, straight-on angle, soft natural light, clean neutral background, high detail, the drink only, no garnish, no props"
       }
     },
     {
@@ -902,7 +938,7 @@
         "file": "soft-drinks-mineral-water.webp",
         "source": "generated",
         "origin_url": null,
-        "prompt": "a chilled bottle of mineral water with condensation and a filled glass, professional beverage photography, straight-on angle, soft natural light, condensation on the glass, clean neutral background, vibrant, high detail"
+        "prompt": "a bottle of mineral water, professional beverage photography, straight-on angle, soft natural light, clean neutral background, high detail, the drink only, no garnish, no props"
       }
     },
     {
@@ -920,7 +956,7 @@
         "file": "soups-tomato-soup.webp",
         "source": "generated",
         "origin_url": null,
-        "prompt": "a bowl of tomato soup, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, fresh vibrant colours, appetising, high detail"
+        "prompt": "a bowl of tomato soup, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, high detail, the dish only, no garnish, no herbs, no sauce, no side dishes, no props"
       }
     },
     {
@@ -938,7 +974,7 @@
         "file": "soups-creamy-soup.webp",
         "source": "generated",
         "origin_url": null,
-        "prompt": "a bowl of creamy soup, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, fresh vibrant colours, appetising, high detail"
+        "prompt": "a bowl of creamy soup, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, high detail, the dish only, no garnish, no herbs, no sauce, no side dishes, no props"
       }
     },
     {
@@ -956,7 +992,7 @@
         "file": "soups-hot-sour-soup.webp",
         "source": "generated",
         "origin_url": null,
-        "prompt": "a bowl of hot and sour soup, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, fresh vibrant colours, appetising, high detail"
+        "prompt": "a bowl of hot and sour soup, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, high detail, the dish only, no garnish, no herbs, no sauce, no side dishes, no props"
       }
     },
     {
@@ -974,7 +1010,7 @@
         "file": "soups-mushroom-soup.webp",
         "source": "generated",
         "origin_url": null,
-        "prompt": "a bowl of mushroom soup, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, fresh vibrant colours, appetising, high detail"
+        "prompt": "a bowl of mushroom soup, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, high detail, the dish only, no garnish, no herbs, no sauce, no side dishes, no props"
       }
     },
     {
@@ -992,7 +1028,7 @@
         "file": "soups-chicken-soup.webp",
         "source": "generated",
         "origin_url": null,
-        "prompt": "a bowl of chicken soup, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, fresh vibrant colours, appetising, high detail"
+        "prompt": "a bowl of chicken soup, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, high detail, the dish only, no garnish, no herbs, no sauce, no side dishes, no props"
       }
     },
     {
@@ -1010,7 +1046,7 @@
         "file": "soups-chicken-mushroom-soup.webp",
         "source": "generated",
         "origin_url": null,
-        "prompt": "a bowl of chicken and mushroom soup, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, fresh vibrant colours, appetising, high detail"
+        "prompt": "a bowl of chicken and mushroom soup, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, high detail, the dish only, no garnish, no herbs, no sauce, no side dishes, no props"
       }
     },
     {
@@ -1028,7 +1064,7 @@
         "file": "rice-veg-fried-rice.webp",
         "source": "generated",
         "origin_url": null,
-        "prompt": "a plate of wok-tossed rice with mixed vegetables, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, fresh vibrant colours, appetising, high detail"
+        "prompt": "a plate of wok-tossed rice with mixed vegetables, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, high detail, the dish only, no garnish, no herbs, no sauce, no side dishes, no props"
       }
     },
     {
@@ -1046,7 +1082,7 @@
         "file": "rice-egg-fried-rice.webp",
         "source": "generated",
         "origin_url": null,
-        "prompt": "a plate of wok-tossed rice with egg, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, fresh vibrant colours, appetising, high detail"
+        "prompt": "wok-tossed rice with scrambled egg mixed through, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, high detail, the dish only, no garnish, no herbs, no sauce, no side dishes, no props"
       }
     },
     {
@@ -1064,7 +1100,7 @@
         "file": "rice-chicken-fried-rice.webp",
         "source": "generated",
         "origin_url": null,
-        "prompt": "a plate of wok-tossed rice with chicken, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, fresh vibrant colours, appetising, high detail"
+        "prompt": "a plate of wok-tossed rice with chicken, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, high detail, the dish only, no garnish, no herbs, no sauce, no side dishes, no props"
       }
     },
     {
@@ -1082,7 +1118,7 @@
         "file": "rice-mix-fried-rice.webp",
         "source": "generated",
         "origin_url": null,
-        "prompt": "a plate of wok-tossed mixed rice, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, fresh vibrant colours, appetising, high detail"
+        "prompt": "a plate of wok-tossed mixed rice, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, high detail, the dish only, no garnish, no herbs, no sauce, no side dishes, no props"
       }
     },
     {
@@ -1100,7 +1136,7 @@
         "file": "biryani-chicken-biryani.webp",
         "source": "generated",
         "origin_url": null,
-        "prompt": "a bowl of chicken biryani, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, fresh vibrant colours, appetising, high detail"
+        "prompt": "a bowl of chicken biryani, spiced long-grain rice, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, high detail, the dish only, no garnish, no herbs, no sauce, no side dishes, no props"
       }
     },
     {
@@ -1118,7 +1154,7 @@
         "file": "biryani-mutton-biryani.webp",
         "source": "generated",
         "origin_url": null,
-        "prompt": "a bowl of mutton biryani, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, fresh vibrant colours, appetising, high detail"
+        "prompt": "a bowl of mutton biryani, spiced long-grain rice, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, high detail, the dish only, no garnish, no herbs, no sauce, no side dishes, no props"
       }
     },
     {
@@ -1136,7 +1172,7 @@
         "file": "indian-style-veg-curry.webp",
         "source": "generated",
         "origin_url": null,
-        "prompt": "a bowl of vegetable curry, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, fresh vibrant colours, appetising, high detail"
+        "prompt": "a bowl of vegetable curry, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, high detail, the dish only, no garnish, no herbs, no sauce, no side dishes, no props"
       }
     },
     {
@@ -1154,7 +1190,7 @@
         "file": "indian-style-chicken-curry.webp",
         "source": "generated",
         "origin_url": null,
-        "prompt": "a bowl of chicken curry, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, fresh vibrant colours, appetising, high detail"
+        "prompt": "a bowl of chicken curry, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, high detail, the dish only, no garnish, no herbs, no sauce, no side dishes, no props"
       }
     },
     {
@@ -1172,7 +1208,7 @@
         "file": "indian-style-butter-chicken.webp",
         "source": "generated",
         "origin_url": null,
-        "prompt": "a bowl of butter chicken, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, fresh vibrant colours, appetising, high detail"
+        "prompt": "chicken pieces in a creamy tomato gravy, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, high detail, the dish only, no garnish, no herbs, no sauce, no side dishes, no props"
       }
     },
     {
@@ -1190,7 +1226,7 @@
         "file": "indian-style-palak-paneer.webp",
         "source": "generated",
         "origin_url": null,
-        "prompt": "cubes of paneer in spinach gravy in a bowl, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, fresh vibrant colours, appetising, high detail"
+        "prompt": "cubes of paneer in spinach gravy in a bowl, cubes of white paneer cheese, in a green spinach gravy, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, high detail, the dish only, no garnish, no herbs, no sauce, no side dishes, no props"
       }
     },
     {
@@ -1208,7 +1244,7 @@
         "file": "nepali-thali-veg-thali.webp",
         "source": "generated",
         "origin_url": null,
-        "prompt": "a nepali thali, a round steel tray of rice with small bowls of vegetable curry and lentil dal, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, fresh vibrant colours, appetising, high detail"
+        "prompt": "a nepali thali, a round steel tray of rice with small bowls of vegetable curry and lentil dal, a round steel tray of rice with small bowls of curry and dal, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, high detail, the dish only, no garnish, no herbs, no sauce, no side dishes, no props"
       }
     },
     {
@@ -1226,7 +1262,7 @@
         "file": "nepali-thali-chicken-thali.webp",
         "source": "generated",
         "origin_url": null,
-        "prompt": "a nepali thali, a round steel tray of rice with small bowls of chicken curry and lentil dal, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, fresh vibrant colours, appetising, high detail"
+        "prompt": "a nepali thali, a round steel tray of rice with small bowls of chicken curry and lentil dal, a round steel tray of rice with small bowls of curry and dal, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, high detail, the dish only, no garnish, no herbs, no sauce, no side dishes, no props"
       }
     },
     {
@@ -1244,7 +1280,7 @@
         "file": "nepali-thali-mutton-thali.webp",
         "source": "generated",
         "origin_url": null,
-        "prompt": "a nepali thali, a round steel tray of rice with small bowls of mutton curry and lentil dal, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, fresh vibrant colours, appetising, high detail"
+        "prompt": "a nepali thali, a round steel tray of rice with small bowls of mutton curry and lentil dal, a round steel tray of rice with small bowls of curry and dal, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, high detail, the dish only, no garnish, no herbs, no sauce, no side dishes, no props"
       }
     },
     {
@@ -1262,7 +1298,7 @@
         "file": "khaja-set-veg-khaja-set.webp",
         "source": "generated",
         "origin_url": null,
-        "prompt": "a Nepali veg khaja set platter — beaten rice, bhatmas, peanuts, aloo jeera, pickle and papad, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, fresh vibrant colours, appetising, high detail"
+        "prompt": "a nepali veg khaja set platter, a steel plate of beaten rice with small side portions, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, high detail, the dish only, no garnish, no herbs, no sauce, no side dishes, no props"
       }
     },
     {
@@ -1280,7 +1316,7 @@
         "file": "khaja-set-non-veg-khaja-set.webp",
         "source": "generated",
         "origin_url": null,
-        "prompt": "a nepali khaja set, a platter of beaten rice with a small bowl of meat curry, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, fresh vibrant colours, appetising, high detail"
+        "prompt": "a nepali khaja set, a platter of beaten rice with a small bowl of meat curry, a steel plate of beaten rice with small side portions, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, high detail, the dish only, no garnish, no herbs, no sauce, no side dishes, no props"
       }
     },
     {
@@ -1298,7 +1334,7 @@
         "file": "momo-jhol-momo-veg.webp",
         "source": "generated",
         "origin_url": null,
-        "prompt": "steamed pleated vegetable dumplings in a bowl of spiced broth, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, fresh vibrant colours, appetising, high detail"
+        "prompt": "steamed pleated vegetable dumplings in a bowl of spiced broth, steamed pleated dumplings, in a thin spiced soup, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, high detail, the dish only, no garnish, no herbs, no sauce, no side dishes, no props"
       }
     },
     {
@@ -1316,7 +1352,7 @@
         "file": "momo-jhol-momo-non-veg.webp",
         "source": "generated",
         "origin_url": null,
-        "prompt": "steamed pleated meat dumplings in a bowl of spiced broth, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, fresh vibrant colours, appetising, high detail"
+        "prompt": "steamed pleated meat dumplings in a bowl of spiced broth, steamed pleated dumplings, in a thin spiced soup, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, high detail, the dish only, no garnish, no herbs, no sauce, no side dishes, no props"
       }
     },
     {
@@ -1334,7 +1370,7 @@
         "file": "momo-veg-momo.webp",
         "source": "generated",
         "origin_url": null,
-        "prompt": "a plate of steamed pleated vegetable dumplings, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, fresh vibrant colours, appetising, high detail"
+        "prompt": "a plate of steamed pleated vegetable dumplings, steamed pleated dumplings, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, high detail, the dish only, no garnish, no herbs, no sauce, no side dishes, no props"
       }
     },
     {
@@ -1352,7 +1388,7 @@
         "file": "momo-chicken-momo.webp",
         "source": "generated",
         "origin_url": null,
-        "prompt": "a plate of steamed pleated chicken dumplings, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, fresh vibrant colours, appetising, high detail"
+        "prompt": "a plate of steamed pleated chicken dumplings, steamed pleated dumplings, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, high detail, the dish only, no garnish, no herbs, no sauce, no side dishes, no props"
       }
     },
     {
@@ -1370,7 +1406,7 @@
         "file": "momo-buff-momo.webp",
         "source": "generated",
         "origin_url": null,
-        "prompt": "a plate of steamed pleated buffalo-meat dumplings, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, fresh vibrant colours, appetising, high detail"
+        "prompt": "a plate of steamed pleated buffalo-meat dumplings, steamed pleated dumplings, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, high detail, the dish only, no garnish, no herbs, no sauce, no side dishes, no props"
       }
     },
     {
@@ -1384,12 +1420,7 @@
       "popular": false,
       "featured": false,
       "order": 6,
-      "image": {
-        "file": "momo-paneer-momo.webp",
-        "source": "generated",
-        "origin_url": null,
-        "prompt": "a plate of steamed paneer momo, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, fresh vibrant colours, appetising, high detail"
-      }
+      "image": null
     },
     {
       "slug": "chilly-momo",
@@ -1406,7 +1437,7 @@
         "file": "momo-chilly-momo.webp",
         "source": "generated",
         "origin_url": null,
-        "prompt": "steamed pleated dumplings tossed in red chilly sauce, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, fresh vibrant colours, appetising, high detail"
+        "prompt": "steamed pleated dumplings tossed in red chilly sauce, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, high detail, the dish only, no garnish, no herbs, no sauce, no side dishes, no props"
       }
     },
     {
@@ -1424,7 +1455,7 @@
         "file": "momo-momo-platter.webp",
         "source": "generated",
         "origin_url": null,
-        "prompt": "a large platter of steamed pleated dumplings, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, fresh vibrant colours, appetising, high detail"
+        "prompt": "a large platter of steamed pleated dumplings, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, high detail, the dish only, no garnish, no herbs, no sauce, no side dishes, no props"
       }
     },
     {
@@ -1442,7 +1473,7 @@
         "file": "pakoda-paneer-pakoda.webp",
         "source": "generated",
         "origin_url": null,
-        "prompt": "a plate of paneer pakoda fritters, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, fresh vibrant colours, appetising, high detail"
+        "prompt": "a plate of paneer pakoda fritters, battered fritters, cubes of white paneer cheese, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, high detail, the dish only, no garnish, no herbs, no sauce, no side dishes, no props"
       }
     },
     {
@@ -1460,7 +1491,7 @@
         "file": "pakoda-veg-pakoda.webp",
         "source": "generated",
         "origin_url": null,
-        "prompt": "a plate of vegetable pakoda fritters, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, fresh vibrant colours, appetising, high detail"
+        "prompt": "a plate of vegetable pakoda fritters, battered fritters, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, high detail, the dish only, no garnish, no herbs, no sauce, no side dishes, no props"
       }
     },
     {
@@ -1478,7 +1509,7 @@
         "file": "rice-roti-chapati-plain-rice.webp",
         "source": "generated",
         "origin_url": null,
-        "prompt": "a bowl of plain white rice, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, fresh vibrant colours, appetising, high detail"
+        "prompt": "a bowl of plain white rice, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, high detail, the dish only, no garnish, no herbs, no sauce, no side dishes, no props"
       }
     },
     {
@@ -1496,7 +1527,7 @@
         "file": "rice-roti-chapati-jeera-rice.webp",
         "source": "generated",
         "origin_url": null,
-        "prompt": "a bowl of jeera rice, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, fresh vibrant colours, appetising, high detail"
+        "prompt": "a bowl of jeera rice, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, high detail, the dish only, no garnish, no herbs, no sauce, no side dishes, no props"
       }
     },
     {
@@ -1514,7 +1545,7 @@
         "file": "rice-roti-chapati-roti-chapati-per-pcs.webp",
         "source": "generated",
         "origin_url": null,
-        "prompt": "a stack of roti chapati on a plate, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, fresh vibrant colours, appetising, high detail"
+        "prompt": "one roti chapati on a plate, a flat round unleavened flatbread, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, high detail, the dish only, no garnish, no herbs, no sauce, no side dishes, no props"
       }
     },
     {
@@ -1532,7 +1563,7 @@
         "file": "pasta-spaghetti-carbonara.webp",
         "source": "generated",
         "origin_url": null,
-        "prompt": "a plate of spaghetti carbonara, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, fresh vibrant colours, appetising, high detail"
+        "prompt": "a plate of spaghetti carbonara, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, high detail, the dish only, no garnish, no herbs, no sauce, no side dishes, no props"
       }
     },
     {
@@ -1550,7 +1581,7 @@
         "file": "pasta-spaghetti-bolognese.webp",
         "source": "generated",
         "origin_url": null,
-        "prompt": "a plate of spaghetti bolognese, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, fresh vibrant colours, appetising, high detail"
+        "prompt": "a plate of spaghetti bolognese, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, high detail, the dish only, no garnish, no herbs, no sauce, no side dishes, no props"
       }
     },
     {
@@ -1594,7 +1625,7 @@
         "file": "snacks-chicken-chily.webp",
         "source": "generated",
         "origin_url": null,
-        "prompt": "a plate of chicken chilly in red sauce, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, fresh vibrant colours, appetising, high detail"
+        "prompt": "a plate of chicken chilly in red sauce, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, high detail, the dish only, no garnish, no herbs, no sauce, no side dishes, no props"
       }
     },
     {
@@ -1612,7 +1643,7 @@
         "file": "snacks-chi-lollipop.webp",
         "source": "generated",
         "origin_url": null,
-        "prompt": "a plate of chicken lollipop drumsticks, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, fresh vibrant colours, appetising, high detail"
+        "prompt": "chicken lollipops, each a frenched winglet with the meat gathered into a ball around a protruding bone handle, battered and deep-fried, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, high detail, the dish only, no garnish, no herbs, no sauce, no side dishes, no props"
       }
     },
     {
@@ -1630,7 +1661,7 @@
         "file": "snacks-buffalo-wings.webp",
         "source": "generated",
         "origin_url": null,
-        "prompt": "a plate of buffalo wings, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, fresh vibrant colours, appetising, high detail"
+        "prompt": "a plate of buffalo wings, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, high detail, the dish only, no garnish, no herbs, no sauce, no side dishes, no props"
       }
     },
     {
@@ -1648,7 +1679,7 @@
         "file": "snacks-chicken-sadeko.webp",
         "source": "generated",
         "origin_url": null,
-        "prompt": "a bowl of nepali chicken sadeko, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, fresh vibrant colours, appetising, high detail"
+        "prompt": "a bowl of nepali chicken sadeko, a cold tossed spiced salad-style dish, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, high detail, the dish only, no garnish, no herbs, no sauce, no side dishes, no props"
       }
     },
     {
@@ -1679,7 +1710,7 @@
         "file": "snacks-fried-chicken.webp",
         "source": "generated",
         "origin_url": null,
-        "prompt": "crisp golden chicken pieces on a plate, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, fresh vibrant colours, appetising, high detail"
+        "prompt": "crisp golden chicken pieces on a plate, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, high detail, the dish only, no garnish, no herbs, no sauce, no side dishes, no props"
       }
     },
     {
@@ -1697,7 +1728,7 @@
         "file": "snacks-french-fry.webp",
         "source": "generated",
         "origin_url": null,
-        "prompt": "a plate of french fries, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, fresh vibrant colours, appetising, high detail"
+        "prompt": "a plate of french fries, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, high detail, the dish only, no garnish, no herbs, no sauce, no side dishes, no props"
       }
     },
     {
@@ -1715,7 +1746,7 @@
         "file": "snacks-cheese-ball-veg-chicken.webp",
         "source": "generated",
         "origin_url": null,
-        "prompt": "a plate of golden cheese balls, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, fresh vibrant colours, appetising, high detail"
+        "prompt": "deep-fried breaded cheese balls with a crisp golden crumb coating, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, high detail, the dish only, no garnish, no herbs, no sauce, no side dishes, no props"
       }
     },
     {
@@ -1733,7 +1764,7 @@
         "file": "snacks-sausage-chilly.webp",
         "source": "generated",
         "origin_url": null,
-        "prompt": "a plate of sausage in red chilly sauce, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, fresh vibrant colours, appetising, high detail"
+        "prompt": "sausage pieces tossed in a glossy red chilli sauce, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, high detail, the dish only, no garnish, no herbs, no sauce, no side dishes, no props"
       }
     },
     {
@@ -1751,7 +1782,7 @@
         "file": "snacks-sausage-fried.webp",
         "source": "generated",
         "origin_url": null,
-        "prompt": "pan-seared sausages on a plate, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, fresh vibrant colours, appetising, high detail"
+        "prompt": "pan-seared sausages on a plate, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, high detail, the dish only, no garnish, no herbs, no sauce, no side dishes, no props"
       }
     },
     {
@@ -1795,7 +1826,7 @@
         "file": "snacks-pork-tawa.webp",
         "source": "generated",
         "origin_url": null,
-        "prompt": "pork cooked on a tawa griddle, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, fresh vibrant colours, appetising, high detail"
+        "prompt": "pork cooked on a tawa griddle, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, high detail, the dish only, no garnish, no herbs, no sauce, no side dishes, no props"
       }
     },
     {
@@ -1813,7 +1844,7 @@
         "file": "snacks-timur-chicken.webp",
         "source": "generated",
         "origin_url": null,
-        "prompt": "a plate of chicken with timur pepper, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, fresh vibrant colours, appetising, high detail"
+        "prompt": "a plate of chicken with timur pepper, speckled with Sichuan-pepper, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, high detail, the dish only, no garnish, no herbs, no sauce, no side dishes, no props"
       }
     },
     {
@@ -1831,7 +1862,7 @@
         "file": "snacks-alu-fried.webp",
         "source": "generated",
         "origin_url": null,
-        "prompt": "crisp golden potato pieces on a plate, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, fresh vibrant colours, appetising, high detail"
+        "prompt": "crisp golden potato pieces on a plate, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, high detail, the dish only, no garnish, no herbs, no sauce, no side dishes, no props"
       }
     },
     {
@@ -1849,7 +1880,7 @@
         "file": "snacks-alu-sadeko.webp",
         "source": "generated",
         "origin_url": null,
-        "prompt": "a bowl of nepali alu sadeko, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, fresh vibrant colours, appetising, high detail"
+        "prompt": "a bowl of nepali alu sadeko, a cold tossed spiced salad-style dish, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, high detail, the dish only, no garnish, no herbs, no sauce, no side dishes, no props"
       }
     },
     {
@@ -1867,7 +1898,7 @@
         "file": "snacks-nachos.webp",
         "source": "generated",
         "origin_url": null,
-        "prompt": "a plate of nachos, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, fresh vibrant colours, appetising, high detail"
+        "prompt": "a plate of nachos, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, high detail, the dish only, no garnish, no herbs, no sauce, no side dishes, no props"
       }
     },
     {
@@ -1937,7 +1968,7 @@
         "file": "wrap-veg-wrap.webp",
         "source": "generated",
         "origin_url": null,
-        "prompt": "a vegetable wrap on a plate, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, fresh vibrant colours, appetising, high detail"
+        "prompt": "a vegetable wrap on a plate, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, high detail, the dish only, no garnish, no herbs, no sauce, no side dishes, no props"
       }
     },
     {
@@ -1955,7 +1986,7 @@
         "file": "wrap-chicken-wrap.webp",
         "source": "generated",
         "origin_url": null,
-        "prompt": "a chicken wrap on a plate, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, fresh vibrant colours, appetising, high detail"
+        "prompt": "a chicken wrap on a plate, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, high detail, the dish only, no garnish, no herbs, no sauce, no side dishes, no props"
       }
     },
     {
@@ -1973,7 +2004,7 @@
         "file": "wrap-mix-wrap.webp",
         "source": "generated",
         "origin_url": null,
-        "prompt": "a wrap cut in half on a plate, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, fresh vibrant colours, appetising, high detail"
+        "prompt": "a wrap cut in half on a plate, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, high detail, the dish only, no garnish, no herbs, no sauce, no side dishes, no props"
       }
     },
     {
@@ -1991,7 +2022,7 @@
         "file": "wrap-kati-roll.webp",
         "source": "generated",
         "origin_url": null,
-        "prompt": "a kati roll on a plate, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, fresh vibrant colours, appetising, high detail"
+        "prompt": "a kati roll on a plate, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, high detail, the dish only, no garnish, no herbs, no sauce, no side dishes, no props"
       }
     },
     {
@@ -2009,7 +2040,7 @@
         "file": "salad-green-salad.webp",
         "source": "generated",
         "origin_url": null,
-        "prompt": "a plate of fresh green salad — cucumber, tomato, onion rings, carrot, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, fresh vibrant colours, appetising, high detail"
+        "prompt": "a bowl of green salad, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, high detail, the dish only, no garnish, no herbs, no sauce, no side dishes, no props"
       }
     },
     {
@@ -2027,7 +2058,7 @@
         "file": "salad-greek-salad.webp",
         "source": "generated",
         "origin_url": null,
-        "prompt": "a bowl of greek salad, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, fresh vibrant colours, appetising, high detail"
+        "prompt": "a bowl of greek salad, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, high detail, the dish only, no garnish, no herbs, no sauce, no side dishes, no props"
       }
     },
     {
@@ -2045,7 +2076,7 @@
         "file": "salad-fruit-salad.webp",
         "source": "generated",
         "origin_url": null,
-        "prompt": "a bowl of fruit salad, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, fresh vibrant colours, appetising, high detail"
+        "prompt": "a bowl of fruit salad, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, high detail, the dish only, no garnish, no herbs, no sauce, no side dishes, no props"
       }
     },
     {
@@ -2063,7 +2094,7 @@
         "file": "salad-roasted-veg-salad.webp",
         "source": "generated",
         "origin_url": null,
-        "prompt": "a bowl of roasted vegetable salad, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, fresh vibrant colours, appetising, high detail"
+        "prompt": "a bowl of roasted vegetable salad, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, high detail, the dish only, no garnish, no herbs, no sauce, no side dishes, no props"
       }
     },
     {
@@ -2081,7 +2112,7 @@
         "file": "salad-sweet-corn-salad.webp",
         "source": "generated",
         "origin_url": null,
-        "prompt": "a bowl of sweet corn salad, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, fresh vibrant colours, appetising, high detail"
+        "prompt": "a bowl of sweet corn salad, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, high detail, the dish only, no garnish, no herbs, no sauce, no side dishes, no props"
       }
     },
     {
@@ -2099,7 +2130,7 @@
         "file": "salad-russian-salad.webp",
         "source": "generated",
         "origin_url": null,
-        "prompt": "a bowl of creamy Russian salad with diced vegetables, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, fresh vibrant colours, appetising, high detail"
+        "prompt": "diced potato, carrot and peas in a creamy mayonnaise dressing, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, high detail, the dish only, no garnish, no herbs, no sauce, no side dishes, no props"
       }
     },
     {
@@ -2117,7 +2148,7 @@
         "file": "chill-zone-special-rosemary-chicken.webp",
         "source": "generated",
         "origin_url": null,
-        "prompt": "a plate of rosemary chicken, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, fresh vibrant colours, appetising, high detail"
+        "prompt": "a plate of rosemary chicken, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, high detail, the dish only, no garnish, no herbs, no sauce, no side dishes, no props"
       }
     },
     {
@@ -2135,7 +2166,7 @@
         "file": "chill-zone-special-lemon-honey-chicken.webp",
         "source": "generated",
         "origin_url": null,
-        "prompt": "a plate of lemon honey chicken, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, fresh vibrant colours, appetising, high detail"
+        "prompt": "a plate of lemon honey chicken, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, high detail, the dish only, no garnish, no herbs, no sauce, no side dishes, no props"
       }
     },
     {
@@ -2153,7 +2184,7 @@
         "file": "chill-zone-special-chicken-sizzler.webp",
         "source": "generated",
         "origin_url": null,
-        "prompt": "a sizzling chicken platter on a hot iron plate, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, fresh vibrant colours, appetising, high detail"
+        "prompt": "a sizzling chicken platter on a hot iron plate, served on a cast-iron platter, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, high detail, the dish only, no garnish, no herbs, no sauce, no side dishes, no props"
       }
     },
     {
@@ -2171,7 +2202,7 @@
         "file": "chill-zone-special-grilled-chicken.webp",
         "source": "generated",
         "origin_url": null,
-        "prompt": "a plate of grilled chicken, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, fresh vibrant colours, appetising, high detail"
+        "prompt": "a plate of grilled chicken, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, high detail, the dish only, no garnish, no herbs, no sauce, no side dishes, no props"
       }
     },
     {
@@ -2189,7 +2220,7 @@
         "file": "chill-zone-special-rolled-chicken.webp",
         "source": "generated",
         "origin_url": null,
-        "prompt": "a plate of rolled chicken, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, fresh vibrant colours, appetising, high detail"
+        "prompt": "a plate of rolled chicken, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, high detail, the dish only, no garnish, no herbs, no sauce, no side dishes, no props"
       }
     },
     {
@@ -2207,7 +2238,7 @@
         "file": "chill-zone-special-grilled-fish.webp",
         "source": "generated",
         "origin_url": null,
-        "prompt": "a plate of grilled fish, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, fresh vibrant colours, appetising, high detail"
+        "prompt": "a plate of grilled fish, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, high detail, the dish only, no garnish, no herbs, no sauce, no side dishes, no props"
       }
     },
     {
@@ -2225,7 +2256,7 @@
         "file": "fresh-juice-watermelon.webp",
         "source": "generated",
         "origin_url": null,
-        "prompt": "a glass of watermelon juice, professional beverage photography, straight-on angle, soft natural light, condensation on the glass, clean neutral background, vibrant, high detail"
+        "prompt": "a glass of watermelon juice, professional beverage photography, straight-on angle, soft natural light, clean neutral background, high detail, the drink only, no garnish, no props"
       }
     },
     {
@@ -2243,7 +2274,7 @@
         "file": "fresh-juice-orange.webp",
         "source": "generated",
         "origin_url": null,
-        "prompt": "a glass of orange juice, professional beverage photography, straight-on angle, soft natural light, condensation on the glass, clean neutral background, vibrant, high detail"
+        "prompt": "a glass of orange juice, professional beverage photography, straight-on angle, soft natural light, clean neutral background, high detail, the drink only, no garnish, no props"
       }
     },
     {
@@ -2261,7 +2292,7 @@
         "file": "fresh-juice-mix-fruit.webp",
         "source": "generated",
         "origin_url": null,
-        "prompt": "a glass of mixed fruit juice, professional beverage photography, straight-on angle, soft natural light, condensation on the glass, clean neutral background, vibrant, high detail"
+        "prompt": "a glass of mixed fruit juice, professional beverage photography, straight-on angle, soft natural light, clean neutral background, high detail, the drink only, no garnish, no props"
       }
     },
     {
@@ -2305,7 +2336,7 @@
         "file": "lassi-shake-mixed-lassi.webp",
         "source": "generated",
         "origin_url": null,
-        "prompt": "a glass of mixed lassi, professional beverage photography, straight-on angle, soft natural light, condensation on the glass, clean neutral background, vibrant, high detail"
+        "prompt": "a glass of mixed lassi, a thick yoghurt drink in a tall glass, professional beverage photography, straight-on angle, soft natural light, clean neutral background, high detail, the drink only, no garnish, no props"
       }
     },
     {
@@ -2323,7 +2354,7 @@
         "file": "lassi-shake-sweet-lassi.webp",
         "source": "generated",
         "origin_url": null,
-        "prompt": "a glass of sweet lassi, professional beverage photography, straight-on angle, soft natural light, condensation on the glass, clean neutral background, vibrant, high detail"
+        "prompt": "a glass of sweet lassi, a thick yoghurt drink in a tall glass, professional beverage photography, straight-on angle, soft natural light, clean neutral background, high detail, the drink only, no garnish, no props"
       }
     }
   ]
