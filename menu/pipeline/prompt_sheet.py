@@ -33,7 +33,13 @@ DRINK_STYLE = (", professional beverage photography, straight-on angle, soft "
 # Section-name keywords that make a section a drink section. Matched on the
 # section, never the item: "Can Juice" sits in Soft Drinks, and "Hard Drinks"
 # must land on the drink block too.
-_DRINK_WORDS = ('drink', 'juice', 'lassi', 'shake', 'beer', 'cocktail', 'wine')
+_DRINK_WORDS = ('drink', 'juice', 'lassi', 'shake', 'beer', 'cocktail', 'wine',
+                'whisky', 'whiskey', 'vodka', 'brandy')
+
+# Spirits whose name is a substring of a food's: `rum` sits inside `Rumali
+# Roti` and `gin` inside `Ginger Chicken`. A bar card names these as the whole
+# section, so they are matched on the section slug exactly.
+_DRINK_SECTIONS = frozenset({'rum', 'gin'})
 
 _SEPARATOR = re.compile(r'^:?-+:?$')
 _NO_DESCRIPTION = ('', '-', '—', '–')
@@ -56,7 +62,8 @@ def _is_separator(cells):
 
 def is_drink(section):
     low = section.lower()
-    return any(w in low for w in _DRINK_WORDS)
+    return slugify(section) in _DRINK_SECTIONS \
+        or any(w in low for w in _DRINK_WORDS)
 
 
 def _column(header, *prefixes, default=None):

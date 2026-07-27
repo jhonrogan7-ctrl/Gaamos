@@ -104,6 +104,16 @@ def assign_images(items, *, generated_keys, vault_files, sheet):
     keys = [_item_key(it) for it in items]
     out = {k: None for k in keys}
 
+    # 0. `*skip — ask the venue*` rows are withheld on purpose and take no
+    #    image from any pass. The asset pool is global and keyed on section +
+    #    item, so another venue's `Breakfast / American Breakfast` is an exact
+    #    match for this one — and a withheld row has no prompt precisely because
+    #    the printed name does not determine the dish. Adopting the other
+    #    venue's photo would put its sausage and cheese on this card.
+    withheld = {k for k in keys if _is_withheld(sheet, k)}
+    items = [it for it, key in zip(items, keys) if key not in withheld]
+    keys = [k for k in keys if k not in withheld]
+
     # 1. Exact key match — sheet and fixture agree, which is now by construction.
     free_generated = set(generated_keys)
     for it, key in zip(items, keys):
@@ -167,6 +177,21 @@ def assign_images(items, *, generated_keys, vault_files, sheet):
             if shared:
                 out[key] = ('generated', shared)
     return out
+
+
+def _is_withheld(sheet, key):
+    """A `*skip — ask the venue*` row, as opposed to a `*(reuse …)*` one.
+
+    Both are italic directives rather than prompts, but they mean opposite
+    things: reuse says "this item shares that image", skip says "nothing may be
+    drawn for this item at all".
+    """
+    row = sheet.get(key)
+    if row is None or row.get('generatable'):
+        return False
+    prompt = (row.get('prompt') or '').strip()
+    return (prompt.startswith('*') and prompt.endswith('*')
+            and 'reuse' not in prompt.lower())
 
 
 def _tokens_nest(a, b):
