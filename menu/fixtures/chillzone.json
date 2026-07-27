@@ -209,6 +209,86 @@
       "icon_key": "",
       "hours_note": "",
       "subcategories": []
+    },
+    {
+      "slug": "beers",
+      "name": "Beers",
+      "display_order": 25,
+      "icon_key": "",
+      "hours_note": "",
+      "subcategories": []
+    },
+    {
+      "slug": "brandy",
+      "name": "Brandy",
+      "display_order": 26,
+      "icon_key": "",
+      "hours_note": "",
+      "subcategories": []
+    },
+    {
+      "slug": "rum",
+      "name": "Rum",
+      "display_order": 27,
+      "icon_key": "",
+      "hours_note": "",
+      "subcategories": []
+    },
+    {
+      "slug": "vodka",
+      "name": "Vodka",
+      "display_order": 28,
+      "icon_key": "",
+      "hours_note": "",
+      "subcategories": []
+    },
+    {
+      "slug": "gin",
+      "name": "Gin",
+      "display_order": 29,
+      "icon_key": "",
+      "hours_note": "",
+      "subcategories": []
+    },
+    {
+      "slug": "whisky",
+      "name": "Whisky",
+      "display_order": 30,
+      "icon_key": "",
+      "hours_note": "",
+      "subcategories": []
+    },
+    {
+      "slug": "wine",
+      "name": "Wine",
+      "display_order": 31,
+      "icon_key": "",
+      "hours_note": "",
+      "subcategories": []
+    },
+    {
+      "slug": "cocktail",
+      "name": "Cocktail",
+      "display_order": 32,
+      "icon_key": "",
+      "hours_note": "",
+      "subcategories": []
+    },
+    {
+      "slug": "shisa-hukka",
+      "name": "Shisa (Hukka)",
+      "display_order": 33,
+      "icon_key": "",
+      "hours_note": "",
+      "subcategories": []
+    },
+    {
+      "slug": "cigarette",
+      "name": "Cigarette",
+      "display_order": 34,
+      "icon_key": "",
+      "hours_note": "",
+      "subcategories": []
     }
   ],
   "items": [
@@ -2356,6 +2436,1444 @@
         "origin_url": null,
         "prompt": "a glass of sweet lassi, a thick yoghurt drink in a tall glass, professional beverage photography, straight-on angle, soft natural light, clean neutral background, high detail, the drink only, no garnish, no props"
       }
+    },
+    {
+      "slug": "gorkha-strong-330-ml",
+      "name": "Gorkha Strong (330 ml)",
+      "cat": "beers",
+      "sub": null,
+      "description": "",
+      "price": 300,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 1,
+      "image": {
+        "file": "beers-gorkha-strong-330-ml.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a plain glass of beer with a white head, no bottle, no can, no logos or brand markings, professional beverage photography, straight-on angle, soft natural light, clean neutral background, high detail, the drink only, no garnish, no props"
+      }
+    },
+    {
+      "slug": "gorkha-strong-650-ml",
+      "name": "Gorkha Strong (650 ml)",
+      "cat": "beers",
+      "sub": null,
+      "description": "",
+      "price": 550,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 2,
+      "image": {
+        "file": "beers-gorkha-strong-650-ml.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a plain glass of beer with a white head, no bottle, no can, no logos or brand markings, professional beverage photography, straight-on angle, soft natural light, clean neutral background, high detail, the drink only, no garnish, no props"
+      }
+    },
+    {
+      "slug": "gorkha-pilsner-650-ml",
+      "name": "Gorkha Pilsner (650 ml)",
+      "cat": "beers",
+      "sub": null,
+      "description": "",
+      "price": 600,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 3,
+      "image": {
+        "file": "beers-gorkha-pilsner-650-ml.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a plain glass of beer with a white head, no bottle, no can, no logos or brand markings, professional beverage photography, straight-on angle, soft natural light, clean neutral background, high detail, the drink only, no garnish, no props"
+      }
+    },
+    {
+      "slug": "tuborg-330-ml",
+      "name": "Tuborg (330 ml)",
+      "cat": "beers",
+      "sub": null,
+      "description": "",
+      "price": 350,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 4,
+      "image": {
+        "file": "beers-tuborg-330-ml.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a plain glass of beer with a white head, no bottle, no can, no logos or brand markings, professional beverage photography, straight-on angle, soft natural light, clean neutral background, high detail, the drink only, no garnish, no props"
+      }
+    },
+    {
+      "slug": "tuborg-650-ml",
+      "name": "Tuborg (650 ml)",
+      "cat": "beers",
+      "sub": null,
+      "description": "",
+      "price": 650,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 5,
+      "image": {
+        "file": "beers-tuborg-650-ml.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a plain glass of beer with a white head, no bottle, no can, no logos or brand markings, professional beverage photography, straight-on angle, soft natural light, clean neutral background, high detail, the drink only, no garnish, no props"
+      }
+    },
+    {
+      "slug": "carlsborg-650-ml",
+      "name": "Carlsborg (650 ml)",
+      "cat": "beers",
+      "sub": null,
+      "description": "",
+      "price": 690,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 6,
+      "image": {
+        "file": "beers-carlsborg-650-ml.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a plain glass of beer with a white head, no bottle, no can, no logos or brand markings, professional beverage photography, straight-on angle, soft natural light, clean neutral background, high detail, the drink only, no garnish, no props"
+      }
+    },
+    {
+      "slug": "barahsinghe-330-ml",
+      "name": "Barahsinghe (330 ml)",
+      "cat": "beers",
+      "sub": null,
+      "description": "",
+      "price": 340,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 7,
+      "image": {
+        "file": "beers-barahsinghe-330-ml.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a plain glass of beer with a white head, no bottle, no can, no logos or brand markings, professional beverage photography, straight-on angle, soft natural light, clean neutral background, high detail, the drink only, no garnish, no props"
+      }
+    },
+    {
+      "slug": "barahsinghe-650-ml",
+      "name": "Barahsinghe (650 ml)",
+      "cat": "beers",
+      "sub": null,
+      "description": "",
+      "price": 640,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 8,
+      "image": {
+        "file": "beers-barahsinghe-650-ml.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a plain glass of beer with a white head, no bottle, no can, no logos or brand markings, professional beverage photography, straight-on angle, soft natural light, clean neutral background, high detail, the drink only, no garnish, no props"
+      }
+    },
+    {
+      "slug": "arna-strong-380-ml",
+      "name": "Arna Strong (380 ml)",
+      "cat": "beers",
+      "sub": null,
+      "description": "",
+      "price": 280,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 9,
+      "image": {
+        "file": "beers-arna-strong-380-ml.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a plain glass of beer with a white head, no bottle, no can, no logos or brand markings, professional beverage photography, straight-on angle, soft natural light, clean neutral background, high detail, the drink only, no garnish, no props"
+      }
+    },
+    {
+      "slug": "arna-strong-650-ml",
+      "name": "Arna Strong (650 ml)",
+      "cat": "beers",
+      "sub": null,
+      "description": "",
+      "price": 490,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 10,
+      "image": {
+        "file": "beers-arna-strong-650-ml.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a plain glass of beer with a white head, no bottle, no can, no logos or brand markings, professional beverage photography, straight-on angle, soft natural light, clean neutral background, high detail, the drink only, no garnish, no props"
+      }
+    },
+    {
+      "slug": "marpha-brandy-60-ml",
+      "name": "Marpha Brandy (60 ml)",
+      "cat": "brandy",
+      "sub": null,
+      "description": "",
+      "price": 200,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 1,
+      "image": {
+        "file": "brandy-marpha-brandy-60-ml.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a plain short glass of amber brandy, no bottle, no logos or brand markings, professional beverage photography, straight-on angle, soft natural light, clean neutral background, high detail, the drink only, no garnish, no props"
+      }
+    },
+    {
+      "slug": "khukuri-60-ml",
+      "name": "Khukuri (60 ml)",
+      "cat": "rum",
+      "sub": null,
+      "description": "",
+      "price": 330,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 1,
+      "image": {
+        "file": "rum-khukuri-60-ml.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a plain short glass of rum, no bottle, no logos or brand markings, professional beverage photography, straight-on angle, soft natural light, clean neutral background, high detail, the drink only, no garnish, no props"
+      }
+    },
+    {
+      "slug": "khukuri-180-ml",
+      "name": "Khukuri (180 ml)",
+      "cat": "rum",
+      "sub": null,
+      "description": "",
+      "price": 940,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 2,
+      "image": {
+        "file": "rum-khukuri-180-ml.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a plain short glass of rum, no bottle, no logos or brand markings, professional beverage photography, straight-on angle, soft natural light, clean neutral background, high detail, the drink only, no garnish, no props"
+      }
+    },
+    {
+      "slug": "khukuri-750-ml",
+      "name": "Khukuri (750 ml)",
+      "cat": "rum",
+      "sub": null,
+      "description": "",
+      "price": 3600,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 3,
+      "image": {
+        "file": "rum-khukuri-750-ml.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a plain short glass of rum, no bottle, no logos or brand markings, professional beverage photography, straight-on angle, soft natural light, clean neutral background, high detail, the drink only, no garnish, no props"
+      }
+    },
+    {
+      "slug": "old-monk-60-ml",
+      "name": "Old Monk (60 ml)",
+      "cat": "rum",
+      "sub": null,
+      "description": "",
+      "price": 380,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 4,
+      "image": {
+        "file": "rum-old-monk-60-ml.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a plain short glass of rum, no bottle, no logos or brand markings, professional beverage photography, straight-on angle, soft natural light, clean neutral background, high detail, the drink only, no garnish, no props"
+      }
+    },
+    {
+      "slug": "old-monk-180-ml",
+      "name": "Old Monk (180 ml)",
+      "cat": "rum",
+      "sub": null,
+      "description": "",
+      "price": 910,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 5,
+      "image": {
+        "file": "rum-old-monk-180-ml.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a plain short glass of rum, no bottle, no logos or brand markings, professional beverage photography, straight-on angle, soft natural light, clean neutral background, high detail, the drink only, no garnish, no props"
+      }
+    },
+    {
+      "slug": "old-monk-750-ml",
+      "name": "Old Monk (750 ml)",
+      "cat": "rum",
+      "sub": null,
+      "description": "",
+      "price": 3500,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 6,
+      "image": {
+        "file": "rum-old-monk-750-ml.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a plain short glass of rum, no bottle, no logos or brand markings, professional beverage photography, straight-on angle, soft natural light, clean neutral background, high detail, the drink only, no garnish, no props"
+      }
+    },
+    {
+      "slug": "malibu-60-ml",
+      "name": "Malibu (60 ml)",
+      "cat": "rum",
+      "sub": null,
+      "description": "",
+      "price": 950,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 7,
+      "image": {
+        "file": "rum-malibu-60-ml.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a plain short glass of rum, no bottle, no logos or brand markings, professional beverage photography, straight-on angle, soft natural light, clean neutral background, high detail, the drink only, no garnish, no props"
+      }
+    },
+    {
+      "slug": "malibu-180-ml",
+      "name": "Malibu (180 ml)",
+      "cat": "rum",
+      "sub": null,
+      "description": "",
+      "price": 2680,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 8,
+      "image": {
+        "file": "rum-malibu-180-ml.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a plain short glass of rum, no bottle, no logos or brand markings, professional beverage photography, straight-on angle, soft natural light, clean neutral background, high detail, the drink only, no garnish, no props"
+      }
+    },
+    {
+      "slug": "malibu-750-ml",
+      "name": "Malibu (750 ml)",
+      "cat": "rum",
+      "sub": null,
+      "description": "",
+      "price": 10700,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 9,
+      "image": {
+        "file": "rum-malibu-750-ml.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a plain short glass of rum, no bottle, no logos or brand markings, professional beverage photography, straight-on angle, soft natural light, clean neutral background, high detail, the drink only, no garnish, no props"
+      }
+    },
+    {
+      "slug": "ruslan-60-ml",
+      "name": "Ruslan (60 ml)",
+      "cat": "vodka",
+      "sub": null,
+      "description": "",
+      "price": 350,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 1,
+      "image": {
+        "file": "vodka-ruslan-60-ml.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a plain shot glass of clear vodka, no bottle, no logos or brand markings, professional beverage photography, straight-on angle, soft natural light, clean neutral background, high detail, the drink only, no garnish, no props"
+      }
+    },
+    {
+      "slug": "ruslan-180-ml",
+      "name": "Ruslan (180 ml)",
+      "cat": "vodka",
+      "sub": null,
+      "description": "",
+      "price": 990,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 2,
+      "image": {
+        "file": "vodka-ruslan-180-ml.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a plain shot glass of clear vodka, no bottle, no logos or brand markings, professional beverage photography, straight-on angle, soft natural light, clean neutral background, high detail, the drink only, no garnish, no props"
+      }
+    },
+    {
+      "slug": "ruslan-750-ml",
+      "name": "Ruslan (750 ml)",
+      "cat": "vodka",
+      "sub": null,
+      "description": "",
+      "price": 3800,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 3,
+      "image": {
+        "file": "vodka-ruslan-750-ml.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a plain shot glass of clear vodka, no bottle, no logos or brand markings, professional beverage photography, straight-on angle, soft natural light, clean neutral background, high detail, the drink only, no garnish, no props"
+      }
+    },
+    {
+      "slug": "8848-60-ml",
+      "name": "8848 (60 ml)",
+      "cat": "vodka",
+      "sub": null,
+      "description": "",
+      "price": 360,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 4,
+      "image": {
+        "file": "vodka-8848-60-ml.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a plain shot glass of clear vodka, no bottle, no logos or brand markings, professional beverage photography, straight-on angle, soft natural light, clean neutral background, high detail, the drink only, no garnish, no props"
+      }
+    },
+    {
+      "slug": "8848-180-ml",
+      "name": "8848 (180 ml)",
+      "cat": "vodka",
+      "sub": null,
+      "description": "",
+      "price": 1050,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 5,
+      "image": {
+        "file": "vodka-8848-180-ml.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a plain shot glass of clear vodka, no bottle, no logos or brand markings, professional beverage photography, straight-on angle, soft natural light, clean neutral background, high detail, the drink only, no garnish, no props"
+      }
+    },
+    {
+      "slug": "8848-750-ml",
+      "name": "8848 (750 ml)",
+      "cat": "vodka",
+      "sub": null,
+      "description": "",
+      "price": 3900,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 6,
+      "image": {
+        "file": "vodka-8848-750-ml.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a plain shot glass of clear vodka, no bottle, no logos or brand markings, professional beverage photography, straight-on angle, soft natural light, clean neutral background, high detail, the drink only, no garnish, no props"
+      }
+    },
+    {
+      "slug": "absolut-60-ml",
+      "name": "Absolut (60 ml)",
+      "cat": "vodka",
+      "sub": null,
+      "description": "",
+      "price": 680,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 7,
+      "image": {
+        "file": "vodka-absolut-60-ml.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a plain shot glass of clear vodka, no bottle, no logos or brand markings, professional beverage photography, straight-on angle, soft natural light, clean neutral background, high detail, the drink only, no garnish, no props"
+      }
+    },
+    {
+      "slug": "absolut-180-ml",
+      "name": "Absolut (180 ml)",
+      "cat": "vodka",
+      "sub": null,
+      "description": "",
+      "price": 2000,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 8,
+      "image": {
+        "file": "vodka-absolut-180-ml.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a plain shot glass of clear vodka, no bottle, no logos or brand markings, professional beverage photography, straight-on angle, soft natural light, clean neutral background, high detail, the drink only, no garnish, no props"
+      }
+    },
+    {
+      "slug": "absolut-750-ml",
+      "name": "Absolut (750 ml)",
+      "cat": "vodka",
+      "sub": null,
+      "description": "",
+      "price": 7850,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 9,
+      "image": {
+        "file": "vodka-absolut-750-ml.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a plain shot glass of clear vodka, no bottle, no logos or brand markings, professional beverage photography, straight-on angle, soft natural light, clean neutral background, high detail, the drink only, no garnish, no props"
+      }
+    },
+    {
+      "slug": "seto-baag-60-ml",
+      "name": "Seto Baag (60 ml)",
+      "cat": "vodka",
+      "sub": null,
+      "description": "",
+      "price": 300,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 10,
+      "image": {
+        "file": "vodka-seto-baag-60-ml.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a plain shot glass of clear vodka, no bottle, no logos or brand markings, professional beverage photography, straight-on angle, soft natural light, clean neutral background, high detail, the drink only, no garnish, no props"
+      }
+    },
+    {
+      "slug": "seto-baag-180-ml",
+      "name": "Seto Baag (180 ml)",
+      "cat": "vodka",
+      "sub": null,
+      "description": "",
+      "price": 880,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 11,
+      "image": {
+        "file": "vodka-seto-baag-180-ml.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a plain shot glass of clear vodka, no bottle, no logos or brand markings, professional beverage photography, straight-on angle, soft natural light, clean neutral background, high detail, the drink only, no garnish, no props"
+      }
+    },
+    {
+      "slug": "seto-baag-750-ml",
+      "name": "Seto Baag (750 ml)",
+      "cat": "vodka",
+      "sub": null,
+      "description": "",
+      "price": 3300,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 12,
+      "image": {
+        "file": "vodka-seto-baag-750-ml.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a plain shot glass of clear vodka, no bottle, no logos or brand markings, professional beverage photography, straight-on angle, soft natural light, clean neutral background, high detail, the drink only, no garnish, no props"
+      }
+    },
+    {
+      "slug": "snowman-60-ml",
+      "name": "Snowman (60 ml)",
+      "cat": "gin",
+      "sub": null,
+      "description": "",
+      "price": 350,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 1,
+      "image": {
+        "file": "gin-snowman-60-ml.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a plain glass of clear colourless gin, no bottle, no logos or brand markings, professional beverage photography, straight-on angle, soft natural light, clean neutral background, high detail, the drink only, no garnish, no props"
+      }
+    },
+    {
+      "slug": "snowman-180-ml",
+      "name": "Snowman (180 ml)",
+      "cat": "gin",
+      "sub": null,
+      "description": "",
+      "price": 1050,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 2,
+      "image": {
+        "file": "gin-snowman-180-ml.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a plain glass of clear colourless gin, no bottle, no logos or brand markings, professional beverage photography, straight-on angle, soft natural light, clean neutral background, high detail, the drink only, no garnish, no props"
+      }
+    },
+    {
+      "slug": "snowman-750-ml",
+      "name": "Snowman (750 ml)",
+      "cat": "gin",
+      "sub": null,
+      "description": "",
+      "price": 3900,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 3,
+      "image": {
+        "file": "gin-snowman-750-ml.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a plain glass of clear colourless gin, no bottle, no logos or brand markings, professional beverage photography, straight-on angle, soft natural light, clean neutral background, high detail, the drink only, no garnish, no props"
+      }
+    },
+    {
+      "slug": "blue-diamond-60-ml",
+      "name": "Blue Diamond (60 ml)",
+      "cat": "gin",
+      "sub": null,
+      "description": "",
+      "price": 220,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 4,
+      "image": {
+        "file": "gin-blue-diamond-60-ml.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a plain glass of clear colourless gin, no bottle, no logos or brand markings, professional beverage photography, straight-on angle, soft natural light, clean neutral background, high detail, the drink only, no garnish, no props"
+      }
+    },
+    {
+      "slug": "blue-diamond-180-ml",
+      "name": "Blue Diamond (180 ml)",
+      "cat": "gin",
+      "sub": null,
+      "description": "",
+      "price": 500,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 5,
+      "image": {
+        "file": "gin-blue-diamond-180-ml.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a plain glass of clear colourless gin, no bottle, no logos or brand markings, professional beverage photography, straight-on angle, soft natural light, clean neutral background, high detail, the drink only, no garnish, no props"
+      }
+    },
+    {
+      "slug": "blue-diamond-750-ml",
+      "name": "Blue Diamond (750 ml)",
+      "cat": "gin",
+      "sub": null,
+      "description": "",
+      "price": 1950,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 6,
+      "image": {
+        "file": "gin-blue-diamond-750-ml.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a plain glass of clear colourless gin, no bottle, no logos or brand markings, professional beverage photography, straight-on angle, soft natural light, clean neutral background, high detail, the drink only, no garnish, no props"
+      }
+    },
+    {
+      "slug": "old-durbar-60-ml",
+      "name": "Old Durbar (60 ml)",
+      "cat": "whisky",
+      "sub": null,
+      "description": "",
+      "price": 400,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 1,
+      "image": {
+        "file": "whisky-old-durbar-60-ml.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a plain short glass of whisky, no bottle, no logos or brand markings, professional beverage photography, straight-on angle, soft natural light, clean neutral background, high detail, the drink only, no garnish, no props"
+      }
+    },
+    {
+      "slug": "old-durbar-180-ml",
+      "name": "Old Durbar (180 ml)",
+      "cat": "whisky",
+      "sub": null,
+      "description": "",
+      "price": 1180,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 2,
+      "image": {
+        "file": "whisky-old-durbar-180-ml.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a plain short glass of whisky, no bottle, no logos or brand markings, professional beverage photography, straight-on angle, soft natural light, clean neutral background, high detail, the drink only, no garnish, no props"
+      }
+    },
+    {
+      "slug": "old-durbar-750-ml",
+      "name": "Old Durbar (750 ml)",
+      "cat": "whisky",
+      "sub": null,
+      "description": "",
+      "price": 4500,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 3,
+      "image": {
+        "file": "whisky-old-durbar-750-ml.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a plain short glass of whisky, no bottle, no logos or brand markings, professional beverage photography, straight-on angle, soft natural light, clean neutral background, high detail, the drink only, no garnish, no props"
+      }
+    },
+    {
+      "slug": "old-durbar-black-60-ml",
+      "name": "Old Durbar Black (60 ml)",
+      "cat": "whisky",
+      "sub": null,
+      "description": "",
+      "price": 340,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 4,
+      "image": {
+        "file": "whisky-old-durbar-black-60-ml.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a plain short glass of whisky, no bottle, no logos or brand markings, professional beverage photography, straight-on angle, soft natural light, clean neutral background, high detail, the drink only, no garnish, no props"
+      }
+    },
+    {
+      "slug": "old-durbar-black-180-ml",
+      "name": "Old Durbar Black (180 ml)",
+      "cat": "whisky",
+      "sub": null,
+      "description": "",
+      "price": 1500,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 5,
+      "image": {
+        "file": "whisky-old-durbar-black-180-ml.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a plain short glass of whisky, no bottle, no logos or brand markings, professional beverage photography, straight-on angle, soft natural light, clean neutral background, high detail, the drink only, no garnish, no props"
+      }
+    },
+    {
+      "slug": "old-durbar-black-750-ml",
+      "name": "Old Durbar Black (750 ml)",
+      "cat": "whisky",
+      "sub": null,
+      "description": "",
+      "price": 5800,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 6,
+      "image": {
+        "file": "whisky-old-durbar-black-750-ml.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a plain short glass of whisky, no bottle, no logos or brand markings, professional beverage photography, straight-on angle, soft natural light, clean neutral background, high detail, the drink only, no garnish, no props"
+      }
+    },
+    {
+      "slug": "gurkha-guns-60-ml",
+      "name": "Gurkha & Guns (60 ml)",
+      "cat": "whisky",
+      "sub": null,
+      "description": "",
+      "price": 430,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 7,
+      "image": {
+        "file": "whisky-gurkha-guns-60-ml.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a plain short glass of whisky, no bottle, no logos or brand markings, professional beverage photography, straight-on angle, soft natural light, clean neutral background, high detail, the drink only, no garnish, no props"
+      }
+    },
+    {
+      "slug": "gurkha-guns-180-ml",
+      "name": "Gurkha & Guns (180 ml)",
+      "cat": "whisky",
+      "sub": null,
+      "description": "",
+      "price": 1250,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 8,
+      "image": {
+        "file": "whisky-gurkha-guns-180-ml.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a plain short glass of whisky, no bottle, no logos or brand markings, professional beverage photography, straight-on angle, soft natural light, clean neutral background, high detail, the drink only, no garnish, no props"
+      }
+    },
+    {
+      "slug": "gurkha-guns-750-ml",
+      "name": "Gurkha & Guns (750 ml)",
+      "cat": "whisky",
+      "sub": null,
+      "description": "",
+      "price": 4800,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 9,
+      "image": {
+        "file": "whisky-gurkha-guns-750-ml.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a plain short glass of whisky, no bottle, no logos or brand markings, professional beverage photography, straight-on angle, soft natural light, clean neutral background, high detail, the drink only, no garnish, no props"
+      }
+    },
+    {
+      "slug": "signature-red-60-ml",
+      "name": "Signature Red (60 ml)",
+      "cat": "whisky",
+      "sub": null,
+      "description": "",
+      "price": 390,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 10,
+      "image": {
+        "file": "whisky-signature-red-60-ml.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a plain short glass of whisky, no bottle, no logos or brand markings, professional beverage photography, straight-on angle, soft natural light, clean neutral background, high detail, the drink only, no garnish, no props"
+      }
+    },
+    {
+      "slug": "signature-red-180-ml",
+      "name": "Signature Red (180 ml)",
+      "cat": "whisky",
+      "sub": null,
+      "description": "",
+      "price": 1140,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 11,
+      "image": {
+        "file": "whisky-signature-red-180-ml.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a plain short glass of whisky, no bottle, no logos or brand markings, professional beverage photography, straight-on angle, soft natural light, clean neutral background, high detail, the drink only, no garnish, no props"
+      }
+    },
+    {
+      "slug": "signature-green-60-ml",
+      "name": "Signature Green (60 ml)",
+      "cat": "whisky",
+      "sub": null,
+      "description": "",
+      "price": 360,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 12,
+      "image": {
+        "file": "whisky-signature-green-60-ml.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a plain short glass of whisky, no bottle, no logos or brand markings, professional beverage photography, straight-on angle, soft natural light, clean neutral background, high detail, the drink only, no garnish, no props"
+      }
+    },
+    {
+      "slug": "signature-green-180-ml",
+      "name": "Signature Green (180 ml)",
+      "cat": "whisky",
+      "sub": null,
+      "description": "",
+      "price": 1050,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 13,
+      "image": {
+        "file": "whisky-signature-green-180-ml.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a plain short glass of whisky, no bottle, no logos or brand markings, professional beverage photography, straight-on angle, soft natural light, clean neutral background, high detail, the drink only, no garnish, no props"
+      }
+    },
+    {
+      "slug": "signature-green-750-ml",
+      "name": "Signature Green (750 ml)",
+      "cat": "whisky",
+      "sub": null,
+      "description": "",
+      "price": 4000,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 14,
+      "image": {
+        "file": "whisky-signature-green-750-ml.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a plain short glass of whisky, no bottle, no logos or brand markings, professional beverage photography, straight-on angle, soft natural light, clean neutral background, high detail, the drink only, no garnish, no props"
+      }
+    },
+    {
+      "slug": "red-label-60-ml",
+      "name": "Red Label (60 ml)",
+      "cat": "whisky",
+      "sub": null,
+      "description": "",
+      "price": 760,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 15,
+      "image": {
+        "file": "whisky-red-label-60-ml.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a plain short glass of whisky, no bottle, no logos or brand markings, professional beverage photography, straight-on angle, soft natural light, clean neutral background, high detail, the drink only, no garnish, no props"
+      }
+    },
+    {
+      "slug": "red-label-180-ml",
+      "name": "Red Label (180 ml)",
+      "cat": "whisky",
+      "sub": null,
+      "description": "",
+      "price": 2050,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 16,
+      "image": {
+        "file": "whisky-red-label-180-ml.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a plain short glass of whisky, no bottle, no logos or brand markings, professional beverage photography, straight-on angle, soft natural light, clean neutral background, high detail, the drink only, no garnish, no props"
+      }
+    },
+    {
+      "slug": "red-label-750-ml",
+      "name": "Red Label (750 ml)",
+      "cat": "whisky",
+      "sub": null,
+      "description": "",
+      "price": 8000,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 17,
+      "image": {
+        "file": "whisky-red-label-750-ml.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a plain short glass of whisky, no bottle, no logos or brand markings, professional beverage photography, straight-on angle, soft natural light, clean neutral background, high detail, the drink only, no garnish, no props"
+      }
+    },
+    {
+      "slug": "black-label-60-ml",
+      "name": "Black Label (60 ml)",
+      "cat": "whisky",
+      "sub": null,
+      "description": "",
+      "price": 880,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 18,
+      "image": {
+        "file": "whisky-black-label-60-ml.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a plain short glass of whisky, no bottle, no logos or brand markings, professional beverage photography, straight-on angle, soft natural light, clean neutral background, high detail, the drink only, no garnish, no props"
+      }
+    },
+    {
+      "slug": "black-label-180-ml",
+      "name": "Black Label (180 ml)",
+      "cat": "whisky",
+      "sub": null,
+      "description": "",
+      "price": 2600,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 19,
+      "image": {
+        "file": "whisky-black-label-180-ml.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a plain short glass of whisky, no bottle, no logos or brand markings, professional beverage photography, straight-on angle, soft natural light, clean neutral background, high detail, the drink only, no garnish, no props"
+      }
+    },
+    {
+      "slug": "black-label-750-ml",
+      "name": "Black Label (750 ml)",
+      "cat": "whisky",
+      "sub": null,
+      "description": "",
+      "price": 10400,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 20,
+      "image": {
+        "file": "whisky-black-label-750-ml.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a plain short glass of whisky, no bottle, no logos or brand markings, professional beverage photography, straight-on angle, soft natural light, clean neutral background, high detail, the drink only, no garnish, no props"
+      }
+    },
+    {
+      "slug": "double-black-60-ml",
+      "name": "Double Black (60 ml)",
+      "cat": "whisky",
+      "sub": null,
+      "description": "",
+      "price": 980,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 21,
+      "image": {
+        "file": "whisky-double-black-60-ml.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a plain short glass of whisky, no bottle, no logos or brand markings, professional beverage photography, straight-on angle, soft natural light, clean neutral background, high detail, the drink only, no garnish, no props"
+      }
+    },
+    {
+      "slug": "double-black-180-ml",
+      "name": "Double Black (180 ml)",
+      "cat": "whisky",
+      "sub": null,
+      "description": "",
+      "price": 2800,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 22,
+      "image": {
+        "file": "whisky-double-black-180-ml.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a plain short glass of whisky, no bottle, no logos or brand markings, professional beverage photography, straight-on angle, soft natural light, clean neutral background, high detail, the drink only, no garnish, no props"
+      }
+    },
+    {
+      "slug": "double-black-750-ml",
+      "name": "Double Black (750 ml)",
+      "cat": "whisky",
+      "sub": null,
+      "description": "",
+      "price": 11150,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 23,
+      "image": {
+        "file": "whisky-double-black-750-ml.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a plain short glass of whisky, no bottle, no logos or brand markings, professional beverage photography, straight-on angle, soft natural light, clean neutral background, high detail, the drink only, no garnish, no props"
+      }
+    },
+    {
+      "slug": "jameson-irish-60-ml",
+      "name": "Jameson Irish (60 ml)",
+      "cat": "whisky",
+      "sub": null,
+      "description": "",
+      "price": 800,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 24,
+      "image": {
+        "file": "whisky-jameson-irish-60-ml.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a plain short glass of whisky, no bottle, no logos or brand markings, professional beverage photography, straight-on angle, soft natural light, clean neutral background, high detail, the drink only, no garnish, no props"
+      }
+    },
+    {
+      "slug": "jameson-irish-180-ml",
+      "name": "Jameson Irish (180 ml)",
+      "cat": "whisky",
+      "sub": null,
+      "description": "",
+      "price": 2300,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 25,
+      "image": {
+        "file": "whisky-jameson-irish-180-ml.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a plain short glass of whisky, no bottle, no logos or brand markings, professional beverage photography, straight-on angle, soft natural light, clean neutral background, high detail, the drink only, no garnish, no props"
+      }
+    },
+    {
+      "slug": "jameson-irish-750-ml",
+      "name": "Jameson Irish (750 ml)",
+      "cat": "whisky",
+      "sub": null,
+      "description": "",
+      "price": 9000,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 26,
+      "image": {
+        "file": "whisky-jameson-irish-750-ml.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a plain short glass of whisky, no bottle, no logos or brand markings, professional beverage photography, straight-on angle, soft natural light, clean neutral background, high detail, the drink only, no garnish, no props"
+      }
+    },
+    {
+      "slug": "jack-daniels-jd-60-ml",
+      "name": "Jack Daniels (JD) (60 ml)",
+      "cat": "whisky",
+      "sub": null,
+      "description": "",
+      "price": 850,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 27,
+      "image": {
+        "file": "whisky-jack-daniels-jd-60-ml.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a plain short glass of whisky, no bottle, no logos or brand markings, professional beverage photography, straight-on angle, soft natural light, clean neutral background, high detail, the drink only, no garnish, no props"
+      }
+    },
+    {
+      "slug": "jack-daniels-jd-180-ml",
+      "name": "Jack Daniels (JD) (180 ml)",
+      "cat": "whisky",
+      "sub": null,
+      "description": "",
+      "price": 2400,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 28,
+      "image": {
+        "file": "whisky-jack-daniels-jd-180-ml.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a plain short glass of whisky, no bottle, no logos or brand markings, professional beverage photography, straight-on angle, soft natural light, clean neutral background, high detail, the drink only, no garnish, no props"
+      }
+    },
+    {
+      "slug": "jack-daniels-jd-750-ml",
+      "name": "Jack Daniels (JD) (750 ml)",
+      "cat": "whisky",
+      "sub": null,
+      "description": "",
+      "price": 9200,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 29,
+      "image": {
+        "file": "whisky-jack-daniels-jd-750-ml.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a plain short glass of whisky, no bottle, no logos or brand markings, professional beverage photography, straight-on angle, soft natural light, clean neutral background, high detail, the drink only, no garnish, no props"
+      }
+    },
+    {
+      "slug": "jagermeister-60-ml",
+      "name": "Jagermeister (60 ml)",
+      "cat": "whisky",
+      "sub": null,
+      "description": "",
+      "price": 850,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 30,
+      "image": {
+        "file": "whisky-jagermeister-60-ml.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a plain short glass of whisky, no bottle, no logos or brand markings, professional beverage photography, straight-on angle, soft natural light, clean neutral background, high detail, the drink only, no garnish, no props"
+      }
+    },
+    {
+      "slug": "jagermeister-180-ml",
+      "name": "Jagermeister (180 ml)",
+      "cat": "whisky",
+      "sub": null,
+      "description": "",
+      "price": 2400,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 31,
+      "image": {
+        "file": "whisky-jagermeister-180-ml.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a plain short glass of whisky, no bottle, no logos or brand markings, professional beverage photography, straight-on angle, soft natural light, clean neutral background, high detail, the drink only, no garnish, no props"
+      }
+    },
+    {
+      "slug": "jagermeister-750-ml",
+      "name": "Jagermeister (750 ml)",
+      "cat": "whisky",
+      "sub": null,
+      "description": "",
+      "price": 9200,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 32,
+      "image": {
+        "file": "whisky-jagermeister-750-ml.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a plain short glass of whisky, no bottle, no logos or brand markings, professional beverage photography, straight-on angle, soft natural light, clean neutral background, high detail, the drink only, no garnish, no props"
+      }
+    },
+    {
+      "slug": "nepali-wine-per-glass",
+      "name": "Nepali Wine per Glass",
+      "cat": "wine",
+      "sub": null,
+      "description": "",
+      "price": 550,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 1,
+      "image": null
+    },
+    {
+      "slug": "imported-wine-jacobs",
+      "name": "Imported Wine Jacob's",
+      "cat": "wine",
+      "sub": null,
+      "description": "",
+      "price": 850,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 2,
+      "image": null
+    },
+    {
+      "slug": "margarita",
+      "name": "Margarita",
+      "cat": "cocktail",
+      "sub": null,
+      "description": "",
+      "price": 800,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 1,
+      "image": {
+        "file": "cocktail-margarita.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a pale lime-green margarita cocktail in a stemmed glass, no fruit, no garnish, professional beverage photography, straight-on angle, soft natural light, clean neutral background, high detail, the drink only, no garnish, no props"
+      }
+    },
+    {
+      "slug": "sex-on-the-beach",
+      "name": "Sex on the Beach",
+      "cat": "cocktail",
+      "sub": null,
+      "description": "",
+      "price": 750,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 2,
+      "image": {
+        "file": "cocktail-sex-on-the-beach.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a sex on the beach cocktail in a tall glass, bright orange at the top graduating to deep red at the bottom, no foam, no fruit slice, no garnish, professional beverage photography, straight-on angle, soft natural light, clean neutral background, high detail, the drink only, no garnish, no props"
+      }
+    },
+    {
+      "slug": "mojito",
+      "name": "Mojito",
+      "cat": "cocktail",
+      "sub": null,
+      "description": "",
+      "price": 750,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 3,
+      "image": {
+        "file": "cocktail-mojito.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a classic mojito in a tall glass with crushed mint, lime wedges and crushed ice, professional beverage photography, straight-on angle, soft natural light, condensation on the glass, clean neutral background, vibrant, high detail"
+      }
+    },
+    {
+      "slug": "tequila-shots-per-shot",
+      "name": "Tequila Shots (Per Shot)",
+      "cat": "cocktail",
+      "sub": null,
+      "description": "",
+      "price": 350,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 4,
+      "image": {
+        "file": "cocktail-tequila-shots-per-shot.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "one small narrow shot glass filled to the brim with tequila, a shot glass only, plain smooth undecorated glass, nothing floating in the liquid, professional beverage photography, straight-on angle, soft natural light, clean neutral background, high detail, the drink only, no garnish, no props"
+      }
+    },
+    {
+      "slug": "baileys-per-glass",
+      "name": "Baileys (Per Glass)",
+      "cat": "cocktail",
+      "sub": null,
+      "description": "",
+      "price": 1300,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 5,
+      "image": {
+        "file": "cocktail-baileys-per-glass.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a plain glass of pale brown cream liqueur, no bottle, no logos or brand markings, professional beverage photography, straight-on angle, soft natural light, clean neutral background, high detail, the drink only, no garnish, no props"
+      }
+    },
+    {
+      "slug": "cloud-hukka-any-flavour",
+      "name": "Cloud Hukka Any Flavour",
+      "cat": "shisa-hukka",
+      "sub": null,
+      "description": "",
+      "price": 650,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 1,
+      "image": {
+        "file": "shisa-hukka-cloud-hukka-any-flavour.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a hookah water pipe with a hose, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, high detail, the dish only, no garnish, no herbs, no sauce, no side dishes, no props"
+      }
+    },
+    {
+      "slug": "cloud-hukka-lady-killer",
+      "name": "Cloud Hukka Lady Killer",
+      "cat": "shisa-hukka",
+      "sub": null,
+      "description": "",
+      "price": 750,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 2,
+      "image": {
+        "file": "shisa-hukka-cloud-hukka-lady-killer.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a hookah water pipe with a hose, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, high detail, the dish only, no garnish, no herbs, no sauce, no side dishes, no props"
+      }
+    },
+    {
+      "slug": "surya-per-pcs",
+      "name": "Surya (Per Pcs.)",
+      "cat": "cigarette",
+      "sub": null,
+      "description": "",
+      "price": 30,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 1,
+      "image": null
+    },
+    {
+      "slug": "shikhar-per-pcs",
+      "name": "Shikhar (Per Pcs.)",
+      "cat": "cigarette",
+      "sub": null,
+      "description": "",
+      "price": 25,
+      "tags": [],
+      "popular": false,
+      "featured": false,
+      "order": 2,
+      "image": null
     }
   ]
 }
