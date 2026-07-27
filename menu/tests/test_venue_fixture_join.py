@@ -126,6 +126,59 @@ def test_a_whisky_does_not_inherit_the_rum_photo():
     assert got["hard-drinks-jack-daniel-s"] == ("generated", "hard-drinks-golden-oak")
 
 
+def _withheld(item, section, prompt="*skip — set contents not printed; ask the venue*"):
+    return {"item": item, "section": section, "col2": "—",
+            "prompt": prompt, "generatable": False}
+
+
+def test_a_withheld_row_never_adopts_an_image_from_the_global_pool():
+    """The asset pool is shared across venues and keyed on section + item, so
+    another venue's `Breakfast / American Breakfast` is an exact key match for
+    this one. A `*skip — ask the venue*` row has no prompt precisely because the
+    printed name does not say what is in the set — adopting a photo of someone
+    else's set is the invented claim the row was written to avoid."""
+    items = [_item("breakfast", "american-breakfast", "American Breakfast")]
+    sheet = {"breakfast-american-breakfast": _withheld("American Breakfast",
+                                                       "Breakfast")}
+
+    got = assign_images(items, generated_keys={"breakfast-american-breakfast"},
+                        vault_files=[], sheet=sheet)
+
+    assert got["breakfast-american-breakfast"] is None
+
+
+def test_a_withheld_row_does_not_take_a_venue_photograph_either():
+    items = [_item("breakfast", "american-breakfast", "American Breakfast")]
+    sheet = {"breakfast-american-breakfast": _withheld("American Breakfast",
+                                                       "Breakfast")}
+
+    got = assign_images(items, generated_keys=set(),
+                        vault_files=["American Breakfast.jpg"], sheet=sheet)
+
+    assert got["breakfast-american-breakfast"] is None
+
+
+def test_withholding_one_row_does_not_withhold_its_neighbours():
+    """The guard is per row: `Plain Toast` still gets its own image."""
+    items = [_item("breakfast", "american-breakfast", "American Breakfast"),
+             _item("toast", "plain-toast", "Plain Toast")]
+    sheet = {
+        "breakfast-american-breakfast": _withheld("American Breakfast",
+                                                  "Breakfast"),
+        "toast-plain-toast": {"item": "Plain Toast", "section": "Toast",
+                              "col2": "Toasted bread.",
+                              "prompt": "toasted bread slices",
+                              "generatable": True},
+    }
+
+    got = assign_images(items, generated_keys={"breakfast-american-breakfast",
+                                               "toast-plain-toast"},
+                        vault_files=[], sheet=sheet)
+
+    assert got["breakfast-american-breakfast"] is None
+    assert got["toast-plain-toast"] == ("generated", "toast-plain-toast")
+
+
 def test_an_item_with_nothing_anywhere_gets_no_image():
     items = [_item("hookah", "extra-coil", "Extra Coil")]
 

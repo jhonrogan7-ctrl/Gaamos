@@ -367,6 +367,21 @@ def test_hot_drinks_take_the_drink_style_but_it_asserts_no_temperature():
     assert 'hot' not in asserted
 
 
+def test_a_spirit_section_is_a_drink_section():
+    """Chill Zone's bar card names the spirit, never the word "drink": a glass
+    of whisky photographed on the food block's rustic wood table is a plated
+    dish, not a pour."""
+    for section in ('Whisky', 'Rum', 'Vodka', 'Gin', 'Brandy'):
+        assert prompt_sheet.is_drink(section) is True, section
+
+
+def test_a_short_spirit_name_inside_a_food_name_is_not_a_drink_section():
+    """`rum` sits inside `Rumali Roti` and `gin` inside `Ginger`, so those two
+    match the section slug exactly rather than as a substring."""
+    for section in ('Rumali Roti', 'Ginger Chicken'):
+        assert prompt_sheet.is_drink(section) is False, section
+
+
 def test_the_guard_would_catch_the_two_phrases_that_caused_this():
     """The guard is only worth having if it fails on the real regression."""
     assert 'vibrant' in _asserted_words(", fresh vibrant colours, appetising")
