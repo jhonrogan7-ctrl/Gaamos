@@ -58,13 +58,27 @@ def ensure_category(company, branches, *, name, slug=None, display_order=0,
     That is right for `import_menu`, whose fixture IS the source of truth, and
     wrong for a scan re-publish: under B5 renaming and reordering is the
     dashboard's job, so publishing twice must not undo a venue's own edit.
+
+    A blank `icon_key` is treated as "no opinion" rather than "clear it", so a
+    fixture with no icons cannot wipe icons the venue set in the dashboard.
     """
     fields = {'name': name, 'display_order': display_order,
-              'icon_key': icon_key, 'hours_note': hours_note}
-    upsert = (Category.all_objects.update_or_create if update
-              else Category.all_objects.get_or_create)
-    cat, created = upsert(company=company, slug=slug or slugify(name)[:50],
-                          defaults=fields)
+              'hours_note': hours_note}
+    # A blank icon_key means "no opinion", not "clear it". Every fixture
+    # generated before category_icons existed carries `icon_key: ""`, and
+    # re-importing a live venue is routine — without this, adding a second
+    # card to a tenant would wipe every icon its owner had chosen.
+    if icon_key:
+        fields['icon_key'] = icon_key
+    create_fields = {**fields, 'icon_key': icon_key}
+    if update:
+        cat, created = Category.all_objects.update_or_create(
+            company=company, slug=slug or slugify(name)[:50],
+            defaults=fields, create_defaults=create_fields)
+    else:
+        cat, created = Category.all_objects.get_or_create(
+            company=company, slug=slug or slugify(name)[:50],
+            defaults=create_fields)
     for b in branches:
         BranchCategory.objects.get_or_create(
             branch=b, category=cat, defaults={'display_order': display_order})
