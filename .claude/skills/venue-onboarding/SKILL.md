@@ -187,6 +187,8 @@ images render.
 | Every pale dish has a garnish nobody ordered | A style block asserting food content (`fresh vibrant colours, appetising`) | Style blocks describe camera and light only — guarded by a test |
 | Hot drinks are served cold | `_DRINK_WORDS` contains `drink`, so `Hot Drinks` takes `DRINK_STYLE` | Temperature comes from the item via `DRINK_LEXICON`, never the style block |
 | A whole section looks like one photo | Seed was the same for every item | `generate_flux.seed_for(key)` — one seed per item |
+| An ingredient you told it to leave out is in the picture | A negative (`no meat`, `no ham`) does not exclude FOOD — it is ignored, and naming the thing can even summon it | State positively what is on the plate **and nothing else**: `the clear broth holding only noodles, a halved boiled egg and chopped green onion`. Negatives still work for camera and props (`no logos`, `no props`) |
+| A bare product name draws exactly ONE of the thing | `veg momo` → a single giant dumpling; `buff momo` → a bao-sized bun | Say `a plate of …`. A lexicon phrase that is already plural ("steamed pleated dumplings") immunises the rows that carry it |
 | Rejecting an image changes nothing | `done_keys` counted rejected as done | Fixed; re-roll with `--reroll N` |
 | A venue went live on unreviewed images | `build_venue_fixture` ignored `status` | Build with `--require-verified` |
 
