@@ -38,6 +38,8 @@ PAGE_SIZES_MM = {
 }
 DEFAULT_PAGE = 'a5'
 PRINT_DPI = 300
+PREVIEW_DPI = 150       # on-screen sheet: half the print size, still crisp on
+                        # a retina dashboard, and half the bytes over the wire
 
 # --- fonts ------------------------------------------------------------------
 # Installed via the Dockerfile (fonts-crosextra-caladea, fonts-liberation,
@@ -253,9 +255,10 @@ def render_poster(url, venue_name, label='', company=None,
     return canvas
 
 
-def poster_png(url, venue_name, label='', company=None, page=DEFAULT_PAGE):
+def poster_png(url, venue_name, label='', company=None, page=DEFAULT_PAGE,
+               dpi=PRINT_DPI):
     out = io.BytesIO()
-    render_poster(url, venue_name, label, company, page).save(out, format='PNG')
+    render_poster(url, venue_name, label, company, page, dpi).save(out, format='PNG')
     return out.getvalue()
 
 

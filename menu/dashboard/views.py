@@ -563,16 +563,27 @@ def qr_index(request):
 
 
 @require_membership
-@require_POST
-def qr_generate(request, branch_id):
-    from .utils import generate_qr_for_branch, request_base_url
+def qr_preview_image(request, branch_id):
+    """The branch sheet as shown on the QR screens — rendered per request.
+
+    Deliberately not ``/media/<branch.qr_image>``: that file was only rewritten
+    when someone pressed Generate, so a renamed branch (or a change to the
+    poster itself) left the screen showing one sheet while the Download button
+    handed back another. A venue printed the stale one. Rendering here costs
+    ~30ms, which is why the Generate/Regenerate step could go entirely — every
+    branch now has a sheet from the moment it exists.
+    """
+    from django.http import HttpResponse
+    from .utils import render_branch_poster_preview_png, request_base_url
     branch = get_object_or_404(Branch, pk=branch_id)
     if not ensure_can_manage_branch(request, branch):
         return forbidden(request)
-    generate_qr_for_branch(branch, request_base_url(request))
-    if request.POST.get('next') == 'branch':
-        return redirect('dashboard:branch_qr', slug=branch.slug)
-    return redirect('dashboard:qr')
+    png = render_branch_poster_preview_png(request_base_url(request), branch)
+    response = HttpResponse(png, content_type='image/png')
+    # Inline, and never cached: the whole point is that it can't go stale.
+    response['Content-Disposition'] = f'inline; filename="qr-{branch.slug}.png"'
+    response['Cache-Control'] = 'no-store, private'
+    return response
 
 
 @require_membership
@@ -583,13 +594,10 @@ def qr_download(request, branch_id):
     branch = get_object_or_404(Branch, pk=branch_id)
     if not ensure_can_manage_branch(request, branch):
         return forbidden(request)
-    if not branch.qr_image:
-        return HttpResponse('QR not yet generated for this branch', status=404)
-    # Rendered fresh, never served from `branch.qr_image`. The stored file is
-    # only the dashboard thumbnail and is written at Generate time, so serving
-    # it handed back whatever design was current *then* — every branch created
-    # before the poster existed kept downloading the old plain QR until someone
-    # happened to press Regenerate.
+    # Rendered fresh, never served from a stored file: serving one handed back
+    # whatever design was current when it was written, so every branch created
+    # before the poster existed kept downloading the old plain QR. There is no
+    # longer any "not generated yet" state to refuse — a branch is enough.
     base_url = request_base_url(request)
     fmt = request.GET.get('format', 'png')
     if fmt == 'pdf':
