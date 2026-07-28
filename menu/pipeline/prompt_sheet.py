@@ -45,6 +45,13 @@ _SEPARATOR = re.compile(r'^:?-+:?$')
 _NO_DESCRIPTION = ('', '-', '—', '–')
 _PRICE_CHARS = re.compile(r'[^\d]')
 
+# A row asserting more than a literal reading of the printed name carries a
+# trailing `⚠` so the venue's review is a short list. It is an annotation on
+# the sheet and nothing more — left in place it reaches the guest menu as part
+# of the description, and one venue's prompt went to the image model reading
+# "…toast and cheese ⚠".
+_REVIEW_MARKER = re.compile(r'\s*⚠\s*$')
+
 # The venue block's scalar fields, in the order they are written out. Anything
 # else in the table is ignored rather than guessed at.
 VENUE_FIELDS = ('slug', 'name', 'tagline', 'phone', 'email',
@@ -115,6 +122,8 @@ def parse(text):
         item = cells[0]
         prompt = cells[prompt_i] if prompt_i < len(cells) else ''
         description = cells[desc_i] if desc_i is not None and desc_i < len(cells) else ''
+        prompt = _REVIEW_MARKER.sub('', prompt)
+        description = _REVIEW_MARKER.sub('', description)
         if description in _NO_DESCRIPTION:
             description = ''
         rows.append({

@@ -1500,7 +1500,12 @@
       "popular": false,
       "featured": false,
       "order": 6,
-      "image": null
+      "image": {
+        "file": "momo-paneer-momo.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "a plate of steamed pleated dumplings, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, high detail, the dish only, no garnish, no herbs, no sauce, no side dishes, no props"
+      }
     },
     {
       "slug": "chilly-momo",
@@ -1767,13 +1772,18 @@
       "name": "Mustang Alu",
       "cat": "snacks",
       "sub": null,
-      "description": "",
+      "description": "Potato tossed with timur pepper and dried chilli.",
       "price": 290,
       "tags": [],
       "popular": false,
       "featured": false,
       "order": 5,
-      "image": null
+      "image": {
+        "file": "snacks-mustang-alu.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "cubes of crisp golden potato tossed with timur pepper and dried red chilli, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, high detail, the dish only, no garnish, no herbs, no sauce, no side dishes, no props"
+      }
     },
     {
       "slug": "fried-chicken",
@@ -1870,26 +1880,36 @@
       "name": "Chicken Pathai",
       "cat": "snacks",
       "sub": null,
-      "description": "",
+      "description": "Stir-fried noodles with chicken.",
       "price": 460,
       "tags": [],
       "popular": false,
       "featured": false,
       "order": 11,
-      "image": null
+      "image": {
+        "file": "snacks-chicken-pathai.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "stir-fried flat rice noodles with pieces of chicken, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, high detail, the dish only, no garnish, no herbs, no sauce, no side dishes, no props"
+      }
     },
     {
       "slug": "bhatta-chauchau-sadheko",
       "name": "Bhatta / Chauchau Sadheko",
       "cat": "snacks",
       "sub": null,
-      "description": "",
+      "description": "Noodles tossed cold with onion and coriander.",
       "price": 200,
       "tags": [],
       "popular": false,
       "featured": false,
       "order": 12,
-      "image": null
+      "image": {
+        "file": "snacks-bhatta-chauchau-sadheko.webp",
+        "source": "generated",
+        "origin_url": null,
+        "prompt": "crushed instant noodles tossed with chopped onion and coriander, professional food photography, 45-degree angle, natural window light, shallow depth of field, dark rustic wood table, high detail, the dish only, no garnish, no herbs, no sauce, no side dishes, no props"
+      }
     },
     {
       "slug": "pork-tawa",
