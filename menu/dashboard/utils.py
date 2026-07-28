@@ -1,6 +1,5 @@
 import io
 import os
-import re
 
 from django.conf import settings
 
@@ -23,67 +22,35 @@ def table_qr_url(base_url, branch, table):
     return f"{base_url}/?branch={branch.slug}&t={table.code}"
 
 
-# Punctuation an operator puts between a venue name and its locality, e.g.
-# "Kaisha Restro - Thamel". Trimmed off whatever survives the repeat check so
-# the second line never starts on a lone dash or bracket.
-_EDGE_PUNCT = ' \t-–—_,;:|/\\·•&()[]{}।'
-
-# Words are "runs of anything that isn't a separator" rather than \w+: \w
-# excludes Devanagari combining vowel signs, so \w+ chops रेस्ट्रो in two and
-# leaves a stray matra behind on the poster.
-_TOKEN_RE = re.compile(r'[^\s' + re.escape(_EDGE_PUNCT + '.!?\'"“”‘’«»…॥') + r']+')
-
-
-def _words(text):
-    """Word spans of ``text``, Unicode-aware so Devanagari names split too."""
-    return list(_TOKEN_RE.finditer(text))
-
-
-def _strip_repeated_venue(venue, name):
-    """``name`` with a leading or trailing repeat of ``venue`` removed.
-
-    Compared word-by-word, casefolded and ignoring punctuation, because the
-    repeat is retyped by hand: "Kaisha Restro Thamel", "Kaisha Restro -
-    Lakeside" and "KAISHA  RESTRO" are all the venue name said twice. Only a
-    whole-name repeat at one end counts — a branch that merely shares a word
-    ("Kaisha Bakery") keeps its name intact.
-    """
-    v = [m.group().casefold() for m in _words(venue)]
-    marks = _words(name)
-    b = [m.group().casefold() for m in marks]
-    if not v or not b:
-        return name
-    if b[:len(v)] == v:
-        rest = name[marks[len(v) - 1].end():] if len(b) > len(v) else ''
-    elif len(b) > len(v) and b[-len(v):] == v:
-        rest = name[:marks[-len(v)].start()]
-    else:
-        return name
-    return rest.strip(_EDGE_PUNCT)
-
-
 def branch_poster_lines(branch):
-    """Poster headings for a branch's general QR: the company name, then the
-    branch name underneath.
+    """Poster headings for a branch's general QR: the **branch name, alone**.
 
-    The branch line is suppressed when it only repeats the venue name, so a
-    venue doesn't print its own name twice on one sheet. The ops signup form
-    asks for the venue name and the first branch name separately, and operators
-    routinely answer both with the restaurant's name — sometimes verbatim,
-    sometimes with the locality appended — which is how a printed poster ended
-    up with two titles.
+    The sheet used to print the company name as the big line and the branch
+    name under it. That gave every venue two titles, because the ops signup
+    form asks for the venue name and the first branch name separately and
+    operators answer both with the restaurant's name — "Tranquility Inn" over
+    "Tranquility Inn Restaurant".
+
+    Suppressing the *overlap* was the wrong fix: it still left two headings,
+    and it printed a fragment ("Restaurant") that is not the name of anything.
+    A guest scans one branch, so one name is the true heading, and it is the
+    branch's — hence the empty second line, kept so callers and the poster
+    renderer's ``label`` argument keep their shape.
     """
-    venue = branch.company.name.strip()
-    label = _strip_repeated_venue(venue, branch.name.strip())
-    return venue, label
+    return branch.name.strip(), ''
 
 
 def table_poster_lines(branch, table):
-    """Poster headings for a table QR. The label prints **verbatim** — there is
-    no "Table"/"Room" prefix, because nothing in the data model distinguishes a
-    restaurant's tables from a hotel's rooms. A venue that wants "Room 101"
-    types exactly that as the label."""
-    return branch.company.name, table.label
+    """Poster headings for a table QR: the branch name, then the table label.
+
+    Headed by the branch and not the company for the same reason as
+    ``branch_poster_lines`` — a venue hangs both sheets in one room, so they
+    must agree. The label prints **verbatim**: there is no "Table"/"Room"
+    prefix, because nothing in the data model distinguishes a restaurant's
+    tables from a hotel's rooms. A venue that wants "Room 101" types exactly
+    that as the label.
+    """
+    return branch.name.strip(), table.label
 
 
 def render_branch_poster_png(base_url, branch, page=poster.DEFAULT_PAGE):

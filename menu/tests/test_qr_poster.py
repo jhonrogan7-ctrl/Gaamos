@@ -112,7 +112,7 @@ class PosterTextTest(TenantTestCase):
         # so the poster must not invent the noun.
         t = Table.objects.create(branch=self.branch, label='101', code='abc123')
         venue, label = table_poster_lines(self.branch, t)
-        self.assertEqual(venue, self.company.name)
+        self.assertEqual(venue, self.branch.name)
         self.assertEqual(label, '101')
         self.assertNotIn('Table', label)
         self.assertNotIn('Room', label)
@@ -121,61 +121,59 @@ class PosterTextTest(TenantTestCase):
         t = Table.objects.create(branch=self.branch, label='Room 101', code='def456')
         self.assertEqual(table_poster_lines(self.branch, t)[1], 'Room 101')
 
-    def test_branch_label_suppressed_when_same_as_company(self):
-        self.branch.name = self.company.name
-        self.assertEqual(branch_poster_lines(self.branch)[1], '')
-
-    def test_branch_label_suppressed_when_only_case_or_spacing_differs(self):
-        """Operators retype the venue name into the branch field; a stray
-        capital or double space is not a second venue."""
-        for name in [self.company.name.upper(), self.company.name.lower(),
-                     f'  {self.company.name}  ',
-                     self.company.name.replace(' ', '  ')]:
-            self.branch.name = name
-            self.assertEqual(branch_poster_lines(self.branch)[1], '',
-                             msg=f'{name!r} should not print a second title')
-
-    def test_branch_label_drops_the_repeated_venue_name_and_keeps_the_locality(self):
-        """The commonest real shape: the venue name typed again with the
-        locality appended. Printing it whole gives the sheet two titles."""
-        self.company.name = 'Kaisha Restro'
-        self.branch.name = 'Kaisha Restro Thamel'
-        self.assertEqual(branch_poster_lines(self.branch), ('Kaisha Restro', 'Thamel'))
-
-    def test_repeated_venue_name_is_dropped_with_a_separator_too(self):
+    def test_table_sheet_is_headed_by_the_same_name_as_the_branch_sheet(self):
+        """A venue prints both sheets and hangs them in one room. If the table
+        tent said the company name and the general sheet said the branch name,
+        the two would disagree for any venue whose names differ."""
         self.company.name = 'Tranquility Inn'
-        for name in ['Tranquility Inn - Lakeside', 'Tranquility Inn — Lakeside',
-                     'Tranquility Inn, Lakeside', 'Tranquility Inn (Lakeside)']:
-            self.branch.name = name
-            self.assertEqual(branch_poster_lines(self.branch)[1], 'Lakeside',
-                             msg=f'{name!r} kept the repeated venue name')
+        self.branch.name = 'Tranquility Inn Restaurant'
+        t = Table.objects.create(branch=self.branch, label='5', code='ghi789')
+        self.assertEqual(table_poster_lines(self.branch, t)[0],
+                         branch_poster_lines(self.branch)[0])
+        self.assertEqual(table_poster_lines(self.branch, t),
+                         ('Tranquility Inn Restaurant', '5'))
 
-    def test_repeated_venue_name_is_dropped_when_it_trails_the_branch(self):
-        self.company.name = 'Kaisha Restro'
-        self.branch.name = 'Thamel Kaisha Restro'
-        self.assertEqual(branch_poster_lines(self.branch)[1], 'Thamel')
-
-    def test_a_genuinely_different_branch_name_still_prints_in_full(self):
+    def test_the_branch_sheet_prints_one_title_and_it_is_the_branch_name(self):
+        """Founder's rule: the general QR sheet carries the branch name, and
+        nothing else. The company name is not a second heading."""
         self.company.name = 'The Juicery Cafe'
         self.branch.name = 'Lake Center'
-        self.assertEqual(branch_poster_lines(self.branch)[1], 'Lake Center')
+        self.assertEqual(branch_poster_lines(self.branch), ('Lake Center', ''))
 
-    def test_devanagari_venue_name_repeat_is_also_suppressed(self):
+    def test_branch_name_is_never_truncated_against_the_company_name(self):
+        """The prod regression. The venue really is called "Tranquility Inn
+        Restaurant"; the sheet printed "Tranquility Inn" over "Restaurant" —
+        two headings, and the second one is not the name of anything."""
+        self.company.name = 'Tranquility Inn'
+        self.branch.name = 'Tranquility Inn Restaurant'
+        self.assertEqual(branch_poster_lines(self.branch),
+                         ('Tranquility Inn Restaurant', ''))
+
+    def test_branch_named_exactly_after_its_company_prints_once(self):
+        self.company.name = 'Pokhara Metro Eco Hotel'
+        self.branch.name = 'Pokhara Metro Eco Hotel'
+        self.assertEqual(branch_poster_lines(self.branch),
+                         ('Pokhara Metro Eco Hotel', ''))
+
+    def test_the_second_line_is_always_empty_whatever_the_two_names_are(self):
+        self.company.name = 'Kaisha Restro'
+        for name in ['Kaisha Restro Thamel', 'Thamel Kaisha Restro',
+                     'Kaisha Restro - Lakeside', 'Kaisha Bakery', 'Lake Center']:
+            self.branch.name = name
+            self.assertEqual(branch_poster_lines(self.branch)[1], '',
+                             msg=f'{name!r} still drew a second heading')
+
+    def test_devanagari_branch_name_survives_whole(self):
+        """The old word-splitter existed to strip a repeat safely. Nothing is
+        stripped now, so the name must come through untouched."""
         self.company.name = 'कैशा रेस्ट्रो'
         self.branch.name = 'कैशा रेस्ट्रो ठमेल'
-        self.assertEqual(branch_poster_lines(self.branch)[1], 'ठमेल')
+        self.assertEqual(branch_poster_lines(self.branch),
+                         ('कैशा रेस्ट्रो ठमेल', ''))
 
-    def test_branch_named_only_of_the_venue_words_leaves_no_orphan_line(self):
-        # Nothing left after the repeat is stripped => no second line at all,
-        # not a lone hyphen.
-        self.company.name = 'Kaisha Restro'
-        self.branch.name = 'Kaisha Restro -'
-        self.assertEqual(branch_poster_lines(self.branch)[1], '')
-
-    def test_branch_name_that_merely_shares_a_word_is_untouched(self):
-        self.company.name = 'Kaisha Restro'
-        self.branch.name = 'Kaisha Bakery'
-        self.assertEqual(branch_poster_lines(self.branch)[1], 'Kaisha Bakery')
+    def test_surrounding_whitespace_is_trimmed(self):
+        self.branch.name = '  Lake Center  '
+        self.assertEqual(branch_poster_lines(self.branch)[0], 'Lake Center')
 
     def test_footer_is_the_product_brand(self):
         self.assertEqual(poster.BRAND, 'gaamos.io')

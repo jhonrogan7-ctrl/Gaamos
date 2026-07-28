@@ -36,17 +36,19 @@ class QrTenantIsolationTest(TenantTestCase):
         with open(p1, 'rb') as f1, open(p2, 'rb') as f2:
             self.assertNotEqual(f1.read(), f2.read())
 
-    def test_branch_poster_headline_is_company_name(self):
+    def test_branch_poster_headline_is_the_branch_name(self):
         b = self._branch(self.company)
         b.name = 'Lakeside'
         venue, label = branch_poster_lines(b)
-        self.assertEqual(venue, self.company.name)
-        self.assertEqual(label, 'Lakeside')
-
-    def test_branch_poster_omits_label_when_branch_named_like_company(self):
-        # A single-branch venue must not print its own name twice.
-        b = self._branch(self.company)
-        b.name = self.company.name
-        venue, label = branch_poster_lines(b)
-        self.assertEqual(venue, self.company.name)
+        self.assertEqual(venue, 'Lakeside')
         self.assertEqual(label, '')
+
+    def test_branch_poster_never_carries_the_company_name_as_a_heading(self):
+        # The sheet is for one branch, so it prints one name. A venue must not
+        # get two titles, whether or not the two names overlap.
+        b = self._branch(self.company)
+        for name in ['Lakeside', self.company.name,
+                     f'{self.company.name} Restaurant']:
+            b.name = name
+            self.assertEqual(branch_poster_lines(b), (name, ''),
+                             msg=f'{name!r} did not print as the sole heading')
