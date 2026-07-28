@@ -427,3 +427,29 @@ def test_a_food_section_never_gets_a_serving_temperature():
         _row('Hot & Sour Soup', 'a bowl of hot and sour soup', section='Soups'))
 
     assert 'steam rising' not in out
+
+
+def test_the_review_marker_is_a_sheet_annotation_not_menu_copy():
+    """A row asserting more than a literal reading carries a trailing `⚠` for
+    the venue's review. Nothing stripped it, so it reached the guest menu as
+    part of the description — and one venue's prompt went to the image model
+    reading "…toast and cheese ⚠"."""
+    rows = prompt_sheet.parse(
+        "### Snacks\n\n"
+        "| Item | Description | Price | Image prompt |\n"
+        "|---|---|---|---|\n"
+        "| Mustang Alu | Potato with timur. ⚠ | 290 | potato cubes with timur ⚠ |\n")
+
+    assert rows[0]['description'] == 'Potato with timur.'
+    assert rows[0]['prompt'] == 'potato cubes with timur'
+    assert '⚠' not in prompt_sheet.full_prompt(rows[0])
+
+
+def test_a_row_that_is_only_the_marker_reads_as_no_description():
+    rows = prompt_sheet.parse(
+        "### Snacks\n\n"
+        "| Item | Description | Price | Image prompt |\n"
+        "|---|---|---|---|\n"
+        "| Mystery | ⚠ | 100 | a plate |\n")
+
+    assert rows[0]['description'] == ''

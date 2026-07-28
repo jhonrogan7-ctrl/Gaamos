@@ -30,7 +30,7 @@ from django.core.management.base import BaseCommand, CommandError
 from django.utils.text import slugify
 
 from menu.models import ImageAsset
-from menu.pipeline import images, prompt_sheet
+from menu.pipeline import category_icons, images, prompt_sheet
 
 FIXTURES = Path(settings.BASE_DIR) / 'menu' / 'fixtures'
 
@@ -68,7 +68,7 @@ def build_catalog(rows):
             seen_cat.add(cat_slug)
             categories.append({'slug': cat_slug, 'name': section,
                                'display_order': len(categories) + 1,
-                               'icon_key': '', 'hours_note': '',
+                               'icon_key': category_icons.for_section(section), 'hours_note': '',
                                'subcategories': []})
         if row['price'] is None:
             unpriced.append(row['key'])

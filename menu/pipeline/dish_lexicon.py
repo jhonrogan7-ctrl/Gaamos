@@ -17,12 +17,18 @@ from django.utils.text import slugify
 # Dish head-words. Applied in every section.
 LEXICON = {
     'momo':      'steamed pleated dumplings',
+    # Pan-fried, worded around the generator's content filter: `fried` is
+    # declined deterministically, and this phrase reaches three rows.
+    'kothe':     'pleated dumplings seared golden and crisp on one side',
     'jhol':      'in a thin spiced soup',
+    'chilli':    'tossed in a glossy red chilli sauce with onion and capsicum',
+    'chilly':    'tossed in a glossy red chilli sauce with onion and capsicum',
+    'shakshuka': 'eggs poached in a spiced tomato and pepper sauce, served in the pan',
     'thali':     'a round steel tray of rice with small bowls of curry and dal',
     'khaja':     'a steel plate of beaten rice with small side portions',
     'pakoda':    'battered fritters',
     'sadeko':    'a cold tossed spiced salad-style dish',
-    'chowmein':  'stir-fried noodles',
+    'chowmein':  'wok-tossed noodles',
     'thukpa':    'noodles in a clear broth',
     'masala':    'speckled with chopped onion, chilli and coriander',
     'omelette':  'a folded flat cooked-egg omelette',
@@ -61,6 +67,27 @@ DRINK_LEXICON = {
 _FOOD_ONLY = frozenset({'masala'})
 
 
+# Head-words whose form ENCLOSES what is in it, and the filling words they
+# hide. A paneer momo's cheese is inside the pleated wrapper, so appending
+# `paneer`'s denotation plates loose cubes beside the dumpling — which is why
+# Paneer Momo shipped imageless while Chicken Momo did not, `chicken` simply
+# not being a lexicon word. The card commits to no more of one than the other.
+#
+# Scoped to the enclosing dish, never to the word: `paneer` still denotes
+# itself in Palak Paneer, where it is on the plate in plain sight.
+_ENCLOSES_ITS_FILLING = frozenset({'momo'})
+_FILLINGS = frozenset({'paneer'})
+
+
+# Cooking-style words that RESTATE the form of the dish they qualify instead of
+# adding to it. A kothe momo is pan-fried, so `momo`'s "steamed" contradicts the
+# very word the guest read — and contradiction is what a generator resolves by
+# drawing the commoner of the two. The style word therefore carries the whole
+# form, dumpling included, and supersedes the word it restates. A plain Steam
+# Momo is untouched: this is scoped to the style word, never to momo.
+_RESTATES = {'kothe': frozenset({'momo'})}
+
+
 def _vocabulary(drink):
     if not drink:
         return LEXICON
@@ -74,7 +101,12 @@ def head_words(name, *, drink=False):
     Token matching, not substring: `Pomodoro` must not read as `momo`.
     """
     tokens = set(slugify(name).split('-'))
-    return [w for w in _vocabulary(drink) if w in tokens]
+    found = [w for w in _vocabulary(drink) if w in tokens]
+    if any(w in _ENCLOSES_ITS_FILLING for w in found):
+        found = [w for w in found if w not in _FILLINGS]
+    superseded = set().union(*(_RESTATES.get(w, frozenset()) for w in found)) \
+        if found else set()
+    return [w for w in found if w not in superseded]
 
 
 def expand(prompt, name, *, drink=False):

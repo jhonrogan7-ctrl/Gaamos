@@ -5,6 +5,7 @@ import pytest
 from django.core.management import call_command
 from django.core.management.base import CommandError
 
+from menu import publish
 from menu.models import Company, Branch
 from menu.tenancy import set_current_company, reset_current_company
 
@@ -346,3 +347,42 @@ def test_without_keep_categories_the_fixture_still_wins(company, tmp_path):
                      "items": []}))
     cat = Category.all_objects.get(company=company, slug="starters")
     assert (cat.name, cat.icon_key, cat.display_order) == ("Starters", "star", 1)
+
+
+# --- category icons ---------------------------------------------------------
+
+def _cat(company, icon_key, *, slug='momo', update=True):
+    cat, created = publish.ensure_category(
+        company, [], name='Momo', slug=slug, icon_key=icon_key, update=update)
+    return cat, created
+
+
+def test_a_blank_icon_key_does_not_clear_an_existing_one(company):
+    """A venue's own icon, chosen in the dashboard, must survive a re-import of
+    a fixture that has no opinion about icons.
+
+    Every fixture generated before category_icons existed carries
+    `icon_key: ""`, and re-importing a live venue is routine — adding a second
+    card to a tenant does exactly that.
+    """
+    _cat(company, 'momo')
+    cat, _ = _cat(company, '')
+    assert cat.icon_key == 'momo'
+
+
+def test_a_real_icon_key_still_overwrites(company):
+    """The fixture stays authoritative about anything it actually states."""
+    _cat(company, 'momo')
+    cat, _ = _cat(company, 'thali')
+    assert cat.icon_key == 'thali'
+
+
+def test_a_new_category_still_receives_a_blank(company):
+    cat, created = _cat(company, '', slug='soups')
+    assert created and cat.icon_key == ''
+
+
+def test_the_no_update_path_is_unaffected(company):
+    _cat(company, 'momo')
+    cat, created = _cat(company, 'thali', update=False)
+    assert not created and cat.icon_key == 'momo'

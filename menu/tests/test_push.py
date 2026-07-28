@@ -376,3 +376,45 @@ class PushKeyEndpointTest(TenantTestCase):
     def test_requires_membership(self):
         r = self.client.get('/dashboard/push/key/')
         self.assertIn(r.status_code, (302, 403))
+
+
+class VapidDeploymentCheckTest(TenantTestCase):
+    """The deployment check is what stops production silently shipping without
+    push. It runs on every manage.py command, including the migrate the
+    container executes at boot."""
+
+    def _run(self):
+        from menu.checks import vapid_keys_configured
+        return vapid_keys_configured(None)
+
+    @override_settings(VAPID_PUBLIC_KEY='', VAPID_PRIVATE_KEY='', DEBUG=False)
+    def test_warns_in_production_when_keys_are_missing(self):
+        ids = [w.id for w in self._run()]
+        self.assertIn('menu.W001', ids)
+
+    @override_settings(VAPID_PUBLIC_KEY='', VAPID_PRIVATE_KEY='', DEBUG=True)
+    def test_quiet_on_a_dev_box(self):
+        # A developer without push configured shouldn't be nagged.
+        self.assertEqual(self._run(), [])
+
+    @override_settings(VAPID_PUBLIC_KEY='pub', VAPID_PRIVATE_KEY='', DEBUG=True)
+    def test_half_configured_warns_even_in_debug(self):
+        # One key without the other is broken everywhere, not just in prod:
+        # subscribing would succeed and every send would then fail 403.
+        ids = [w.id for w in self._run()]
+        self.assertIn('menu.W002', ids)
+
+    @override_settings(VAPID_PUBLIC_KEY='', VAPID_PRIVATE_KEY='priv', DEBUG=True)
+    def test_private_without_public_also_warns(self):
+        self.assertIn('menu.W002', [w.id for w in self._run()])
+
+    @override_settings(**VAPID)
+    def test_silent_when_properly_configured(self):
+        self.assertEqual(self._run(), [])
+
+    def test_never_blocks_boot(self):
+        # Warnings, never Errors — a deployment that deliberately doesn't use
+        # push must still start.
+        from django.core.checks import Warning as CheckWarning
+        with self.settings(VAPID_PUBLIC_KEY='', VAPID_PRIVATE_KEY='', DEBUG=False):
+            self.assertTrue(all(isinstance(w, CheckWarning) for w in self._run()))

@@ -456,6 +456,29 @@ def item_image_upload(request, pk):
     return JsonResponse({'url': url, 'focal_x': item.focal_x, 'focal_y': item.focal_y})
 
 
+# The dashboard icon picker's options. Every key here must exist in
+# `static/js/icons.js` — a key with no SVG renders as its own literal text.
+# Guarded by menu/tests/test_icons_js.py.
+CATEGORY_ICON_CHOICES = [
+    'brunch', 'bowl', 'special', 'juice', 'dinner', 'bar', 'hookah', 'dessert',
+    'coffee', 'smoothie', 'snack', 'pizza', 'noodles', 'cake', 'meat', 'rice',
+    'momo', 'thali', 'cereal', 'paneer', 'potato',
+]
+
+SUB_ICON_CHOICES = [
+    # food
+    'subAll', 'subEggs', 'subToast', 'subPoke', 'subSalad', 'subBurger',
+    'subSandwich', 'subWrap', 'subPasta', 'subPizza', 'subSoup', 'subMains',
+    'subNoodle', 'subEntree',
+    # drinks
+    'subCoffee', 'subTea', 'subKombucha', 'subSmoothie', 'subJuice', 'subBucket',
+    'subFrappe', 'subBubbleTea', 'subMocktail', 'subSoda', 'subShot',
+    # bar
+    'subCocktail', 'subWarm', 'subBeer', 'subTapBeer', 'subSpirits', 'subWine',
+    'subSparkle',
+]
+
+
 @require_owner
 def categories_index(request):
     categories = Category.objects.prefetch_related('subcategories').order_by('display_order')
@@ -466,20 +489,7 @@ def categories_index(request):
     return render(request, 'dashboard/categories/index.html', {
         'active_tab': 'categories',
         'cats_data': cats_data,
-        'icon_choices': [
-            # Category-level
-            'brunch', 'bowl', 'special', 'juice', 'dinner', 'bar', 'hookah', 'dessert',
-            'coffee', 'smoothie', 'snack', 'pizza', 'noodles', 'cake', 'meat', 'rice',
-            # Subcategory — food
-            'subAll', 'subEggs', 'subToast', 'subPoke', 'subSalad', 'subBurger',
-            'subSandwich', 'subWrap', 'subPasta', 'subPizza', 'subSoup', 'subMains',
-            'subNoodle', 'subEntree',
-            # Subcategory — drinks
-            'subCoffee', 'subTea', 'subKombucha', 'subSmoothie', 'subJuice', 'subBucket',
-            'subFrappe', 'subBubbleTea', 'subMocktail', 'subSoda', 'subShot',
-            # Subcategory — bar
-            'subCocktail', 'subWarm', 'subBeer', 'subTapBeer', 'subSpirits', 'subWine', 'subSparkle',
-        ],
+        'icon_choices': CATEGORY_ICON_CHOICES + SUB_ICON_CHOICES,
     })
 
 
