@@ -58,8 +58,16 @@ def test_sections_become_categories_in_appearance_order():
 def test_a_category_carries_the_keys_import_menu_reads():
     categories, _, _ = _built()
 
-    assert categories[0]["icon_key"] == "" and categories[0]["hours_note"] == ""
+    assert categories[0]["hours_note"] == ""
     assert categories[0]["subcategories"] == []
+
+
+def test_a_category_gets_an_icon_derived_from_its_section_name():
+    """A blank icon renders an empty circle in the guest rail. `Hot Drinks`
+    must be coffee rather than the generic juice bare `Drinks` would get."""
+    categories, _, _ = _built()
+
+    assert [c["icon_key"] for c in categories] == ["coffee", "smoothie", "cake"]
 
 
 def test_items_carry_name_description_price_and_category():
