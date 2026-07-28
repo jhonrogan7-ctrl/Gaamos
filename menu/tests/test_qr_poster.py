@@ -125,6 +125,58 @@ class PosterTextTest(TenantTestCase):
         self.branch.name = self.company.name
         self.assertEqual(branch_poster_lines(self.branch)[1], '')
 
+    def test_branch_label_suppressed_when_only_case_or_spacing_differs(self):
+        """Operators retype the venue name into the branch field; a stray
+        capital or double space is not a second venue."""
+        for name in [self.company.name.upper(), self.company.name.lower(),
+                     f'  {self.company.name}  ',
+                     self.company.name.replace(' ', '  ')]:
+            self.branch.name = name
+            self.assertEqual(branch_poster_lines(self.branch)[1], '',
+                             msg=f'{name!r} should not print a second title')
+
+    def test_branch_label_drops_the_repeated_venue_name_and_keeps_the_locality(self):
+        """The commonest real shape: the venue name typed again with the
+        locality appended. Printing it whole gives the sheet two titles."""
+        self.company.name = 'Kaisha Restro'
+        self.branch.name = 'Kaisha Restro Thamel'
+        self.assertEqual(branch_poster_lines(self.branch), ('Kaisha Restro', 'Thamel'))
+
+    def test_repeated_venue_name_is_dropped_with_a_separator_too(self):
+        self.company.name = 'Tranquility Inn'
+        for name in ['Tranquility Inn - Lakeside', 'Tranquility Inn — Lakeside',
+                     'Tranquility Inn, Lakeside', 'Tranquility Inn (Lakeside)']:
+            self.branch.name = name
+            self.assertEqual(branch_poster_lines(self.branch)[1], 'Lakeside',
+                             msg=f'{name!r} kept the repeated venue name')
+
+    def test_repeated_venue_name_is_dropped_when_it_trails_the_branch(self):
+        self.company.name = 'Kaisha Restro'
+        self.branch.name = 'Thamel Kaisha Restro'
+        self.assertEqual(branch_poster_lines(self.branch)[1], 'Thamel')
+
+    def test_a_genuinely_different_branch_name_still_prints_in_full(self):
+        self.company.name = 'The Juicery Cafe'
+        self.branch.name = 'Lake Center'
+        self.assertEqual(branch_poster_lines(self.branch)[1], 'Lake Center')
+
+    def test_devanagari_venue_name_repeat_is_also_suppressed(self):
+        self.company.name = 'कैशा रेस्ट्रो'
+        self.branch.name = 'कैशा रेस्ट्रो ठमेल'
+        self.assertEqual(branch_poster_lines(self.branch)[1], 'ठमेल')
+
+    def test_branch_named_only_of_the_venue_words_leaves_no_orphan_line(self):
+        # Nothing left after the repeat is stripped => no second line at all,
+        # not a lone hyphen.
+        self.company.name = 'Kaisha Restro'
+        self.branch.name = 'Kaisha Restro -'
+        self.assertEqual(branch_poster_lines(self.branch)[1], '')
+
+    def test_branch_name_that_merely_shares_a_word_is_untouched(self):
+        self.company.name = 'Kaisha Restro'
+        self.branch.name = 'Kaisha Bakery'
+        self.assertEqual(branch_poster_lines(self.branch)[1], 'Kaisha Bakery')
+
     def test_footer_is_the_product_brand(self):
         self.assertEqual(poster.BRAND, 'gaamos.io')
 
@@ -278,3 +330,84 @@ class TableQrPreviewPageTest(TenantTestCase):
         r = self.client.get(self.url + '?format=pdf')
         self.assertEqual(r['Content-Type'], 'application/pdf')
         self.assertTrue(r.content.startswith(b'%PDF'))
+
+
+class BranchQrPreviewImageTest(TenantTestCase):
+    """The image shown on the QR screens must be the sheet that would print.
+
+    It used to be the file written at Generate time, so a venue that renamed a
+    branch — or any change to the poster design itself — kept looking at an old
+    sheet while the download handed back a correct, different one.
+    """
+    def setUp(self):
+        super().setUp()
+        from django.contrib.auth.models import User
+        self.branch = Branch.objects.create(company=self.company, name='Lakeside',
+                                            slug='lakeside')
+        self.user = User.objects.create_user(username='qrowner', password='pass')
+        self.make_owner(self.user)
+        self.login_as(self.user)
+
+    def _url(self):
+        from django.urls import reverse
+        return reverse('dashboard:qr_preview_image', args=[self.branch.pk])
+
+    def test_preview_is_an_inline_png(self):
+        resp = self.client.get(self._url())
+        self.assertEqual(resp.status_code, 200)
+        self.assertEqual(resp['Content-Type'], 'image/png')
+        self.assertNotIn('attachment', resp.get('Content-Disposition', ''))
+        self.assertTrue(resp.content.startswith(b'\x89PNG'))
+
+    def test_preview_follows_a_rename_without_pressing_generate(self):
+        before = self.client.get(self._url()).content
+        self.branch.name = 'Lakeside Pokhara'
+        self.branch.save(update_fields=['name'])
+        self.assertNotEqual(self.client.get(self._url()).content, before)
+
+    def test_preview_never_prints_the_venue_name_twice(self):
+        """The regression that reached print: branch named after the company."""
+        self.branch.name = self.company.name
+        self.branch.save(update_fields=['name'])
+        img = Image.open(io.BytesIO(self.client.get(self._url()).content))
+        W, H = img.size
+        # The second title line's band must be empty page.
+        band = img.convert('RGB').crop((round(0.10 * W), round(0.345 * H),
+                                        round(0.90 * W), round(0.375 * H)))
+        self.assertEqual(set(band.getdata()), {(13, 13, 13)})
+
+    def test_preview_is_not_served_from_the_stored_file(self):
+        """Stale bytes on disk must not be what the operator sees."""
+        from menu.dashboard.utils import generate_qr_for_branch
+        generate_qr_for_branch(self.branch, 'https://testco.zxyn.online')
+        stored = os.path.join(settings.MEDIA_ROOT, self.branch.qr_image)
+        with open(stored, 'wb') as f:
+            f.write(b'\x89PNG stale')
+        self.assertNotEqual(self.client.get(self._url()).content, b'\x89PNG stale')
+
+    def test_preview_is_not_cached_by_the_browser(self):
+        resp = self.client.get(self._url())
+        self.assertIn('no-store', resp['Cache-Control'])
+
+    def test_qr_screens_point_at_the_live_sheet_not_the_stored_file(self):
+        from django.urls import reverse
+        from menu.dashboard.utils import generate_qr_for_branch
+        generate_qr_for_branch(self.branch, 'https://testco.zxyn.online')
+        for url in [reverse('dashboard:qr'),
+                    reverse('dashboard:branch_qr', args=[self.branch.slug])]:
+            html = self.client.get(url).content.decode()
+            self.assertIn(self._url(), html, msg=url)
+            self.assertNotIn('/media/qr/', html, msg=url)
+
+    def test_another_tenants_branch_is_not_previewable(self):
+        from menu.models import Company
+        from menu.tenancy import reset_current_company, set_current_company
+        from django.urls import reverse
+        other = Company.objects.create(name='Other Co', slug='otherco')
+        token = set_current_company(other)
+        try:
+            foreign = Branch.objects.create(company=other, name='Theirs', slug='theirs')
+        finally:
+            reset_current_company(token)
+        resp = self.client.get(reverse('dashboard:qr_preview_image', args=[foreign.pk]))
+        self.assertIn(resp.status_code, (403, 404))

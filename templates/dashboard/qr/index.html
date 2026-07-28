@@ -22,7 +22,7 @@
   <div class="qcard">
     {% if branch.qr_image %}
       <div class="qframe">
-        <img src="/media/{{ branch.qr_image }}" alt="QR for {{ branch.name }}" style="width:100%;height:100%;object-fit:contain;">
+        <img src="{% url 'dashboard:qr_preview_image' branch.pk %}" alt="QR for {{ branch.name }}" style="width:100%;height:100%;object-fit:contain;" loading="lazy">
       </div>
       <div class="qn">{{ branch.name }}</div>
       <div class="qu">/?branch={{ branch.slug }}</div>

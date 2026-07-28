@@ -33,6 +33,7 @@ urlpatterns = [
     path('qr/', views.qr_index, name='qr'),
     path('qr/<int:branch_id>/generate/', views.qr_generate, name='qr_generate'),
     path('qr/<int:branch_id>/download/', views.qr_download, name='qr_download'),
+    path('qr/<int:branch_id>/preview.png', views.qr_preview_image, name='qr_preview_image'),
 
     path('settings/', views.settings_index, name='settings'),
     path('settings/restaurant/', views.settings_restaurant, name='settings_restaurant'),

@@ -576,6 +576,28 @@ def qr_generate(request, branch_id):
 
 
 @require_membership
+def qr_preview_image(request, branch_id):
+    """The branch sheet as shown on the QR screens — rendered per request.
+
+    Deliberately not ``/media/<branch.qr_image>``: that file is only rewritten
+    when someone presses Generate, so a renamed branch (or a change to the
+    poster itself) left the screen showing one sheet while the Download button
+    handed back another. A venue printed the stale one.
+    """
+    from django.http import HttpResponse
+    from .utils import render_branch_poster_preview_png, request_base_url
+    branch = get_object_or_404(Branch, pk=branch_id)
+    if not ensure_can_manage_branch(request, branch):
+        return forbidden(request)
+    png = render_branch_poster_preview_png(request_base_url(request), branch)
+    response = HttpResponse(png, content_type='image/png')
+    # Inline, and never cached: the whole point is that it can't go stale.
+    response['Content-Disposition'] = f'inline; filename="qr-{branch.slug}.png"'
+    response['Cache-Control'] = 'no-store, private'
+    return response
+
+
+@require_membership
 def qr_download(request, branch_id):
     from django.http import HttpResponse
     from .utils import (render_branch_poster_pdf, render_branch_poster_png,
