@@ -103,8 +103,10 @@ class BranchQrTabContentTest(IaTestBase):
 
     def test_qr_tab_has_branch_qr_and_tables_stub(self):
         body = self.client.get(f'/dashboard/branch/{self.b.slug}/qr/').content.decode()
-        # Menu/general QR management for THIS branch.
-        self.assertIn('Generate QR', body)
+        # Menu/general QR for THIS branch: the sheet itself, always present —
+        # the Generate step is gone, the image is rendered per request.
+        self.assertIn(f'/dashboard/qr/{self.b.pk}/preview.png', body)
+        self.assertIn(f'/dashboard/qr/{self.b.pk}/download/?format=pdf', body)
         self.assertIn(f'/?branch={self.b.slug}', body)
         # Table QRs section is real as of Spec 2.
         self.assertIn('Table QRs', body)

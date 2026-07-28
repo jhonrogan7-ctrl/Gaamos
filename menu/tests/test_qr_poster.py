@@ -411,3 +411,68 @@ class BranchQrPreviewImageTest(TenantTestCase):
             reset_current_company(token)
         resp = self.client.get(reverse('dashboard:qr_preview_image', args=[foreign.pk]))
         self.assertIn(resp.status_code, (403, 404))
+
+
+class QrScreensNeedNoGenerateStepTest(TenantTestCase):
+    """Every branch has a sheet the moment it exists.
+
+    Generate/Regenerate existed only to write the preview file the screens used
+    to read. The screens render live now, so the step bought nothing and left
+    new branches sitting behind a "No QR yet" placeholder.
+    """
+    def setUp(self):
+        super().setUp()
+        from django.contrib.auth.models import User
+        # Never generated: qr_image is empty, as it is for a brand-new branch.
+        self.branch = Branch.objects.create(company=self.company, name='Lakeside',
+                                            slug='lakeside')
+        self.user = User.objects.create_user(username='qrowner2', password='pass')
+        self.make_owner(self.user)
+        self.login_as(self.user)
+
+    def _screens(self):
+        from django.urls import reverse
+        return [reverse('dashboard:qr'),
+                reverse('dashboard:branch_qr', args=[self.branch.slug])]
+
+    def test_screens_show_the_sheet_for_a_never_generated_branch(self):
+        from django.urls import reverse
+        self.assertEqual(self.branch.qr_image, '')
+        preview = reverse('dashboard:qr_preview_image', args=[self.branch.pk])
+        for url in self._screens():
+            html = self.client.get(url).content.decode()
+            self.assertIn(preview, html, msg=url)
+            self.assertNotIn('No QR yet', html, msg=url)
+
+    def test_screens_offer_the_downloads_without_generating_first(self):
+        from django.urls import reverse
+        download = reverse('dashboard:qr_download', args=[self.branch.pk])
+        for url in self._screens():
+            html = self.client.get(url).content.decode()
+            self.assertIn(f'{download}?format=png', html, msg=url)
+            self.assertIn(f'{download}?format=pdf', html, msg=url)
+
+    def test_no_generate_or_regenerate_control_is_left_on_the_screens(self):
+        # Matched on the endpoint, not the word: the QR index also carries an
+        # unrelated "Generate tables" stub for a feature that isn't built yet.
+        for url in self._screens():
+            html = self.client.get(url).content.decode()
+            self.assertNotIn(f'/dashboard/qr/{self.branch.pk}/generate/', html, msg=url)
+            self.assertNotIn('Regenerate', html, msg=url)
+
+    def test_downloads_work_for_a_never_generated_branch(self):
+        from django.urls import reverse
+        url = reverse('dashboard:qr_download', args=[self.branch.pk])
+        png = self.client.get(url, {'format': 'png'})
+        self.assertEqual(png.status_code, 200)
+        self.assertTrue(png.content.startswith(b'\x89PNG'))
+        pdf = self.client.get(url, {'format': 'pdf'})
+        self.assertEqual(pdf.status_code, 200)
+        self.assertTrue(pdf.content.startswith(b'%PDF'))
+
+    def test_the_generate_endpoint_is_gone(self):
+        from django.urls import NoReverseMatch, reverse
+        with self.assertRaises(NoReverseMatch):
+            reverse('dashboard:qr_generate', args=[self.branch.pk])
+        resp = self.client.post(f'/dashboard/qr/{self.branch.pk}/generate/')
+        self.assertEqual(resp.status_code, 404)

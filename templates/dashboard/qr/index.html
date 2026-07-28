@@ -20,34 +20,21 @@
 <div class="qgrid">
   {% for branch in branches %}
   <div class="qcard">
-    {% if branch.qr_image %}
-      <div class="qframe">
-        <img src="{% url 'dashboard:qr_preview_image' branch.pk %}" alt="QR for {{ branch.name }}" style="width:100%;height:100%;object-fit:contain;" loading="lazy">
-      </div>
-      <div class="qn">{{ branch.name }}</div>
-      <div class="qu">/?branch={{ branch.slug }}</div>
-      <div style="display:flex;gap:6px;width:100%;margin-top:4px;">
-        <a href="{% url 'dashboard:qr_download' branch.pk %}?format=png" class="btn btn-primary" style="flex:1;justify-content:center;" download>
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
-          Download
-        </a>
-        <a href="{% url 'dashboard:qr_download' branch.pk %}?format=pdf" class="btn btn-ghost" download>PDF</a>
-        <a href="/?branch={{ branch.slug }}" target="_blank" rel="noopener" class="btn btn-ghost">Preview</a>
-      </div>
-      <form method="post" action="{% url 'dashboard:qr_generate' branch.pk %}" style="width:100%;margin-top:4px;">
-        {% csrf_token %}
-        <button type="submit" class="btn ghost" style="width:100%;justify-content:center;">Regenerate</button>
-      </form>
-    {% else %}
-      <div class="qframe" style="display:flex;align-items:center;justify-content:center;color:var(--ink-3);font-size:12px;">No QR yet</div>
-      <div class="qn">{{ branch.name }}</div>
-      <div class="qu">/?branch={{ branch.slug }}</div>
-      <form method="post" action="{% url 'dashboard:qr_generate' branch.pk %}" style="width:100%;margin-top:8px;">
-        {% csrf_token %}
-        <button type="submit" class="btn primary" style="width:100%;justify-content:center;">Generate QR</button>
-      </form>
-      <a href="/?branch={{ branch.slug }}" target="_blank" class="btn ghost" style="width:100%;justify-content:center;margin-top:4px;">Preview</a>
-    {% endif %}
+    {# Every branch has a sheet as soon as it exists — the image is rendered
+       per request, so there is nothing to generate and nothing to refresh. #}
+    <div class="qframe">
+      <img src="{% url 'dashboard:qr_preview_image' branch.pk %}" alt="QR for {{ branch.name }}" style="width:100%;height:100%;object-fit:contain;" loading="lazy">
+    </div>
+    <div class="qn">{{ branch.name }}</div>
+    <div class="qu">/?branch={{ branch.slug }}</div>
+    <div style="display:flex;gap:6px;width:100%;margin-top:4px;">
+      <a href="{% url 'dashboard:qr_download' branch.pk %}?format=png" class="btn btn-primary" style="flex:1;justify-content:center;" download>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+        Download
+      </a>
+      <a href="{% url 'dashboard:qr_download' branch.pk %}?format=pdf" class="btn btn-ghost" download>PDF</a>
+      <a href="/?branch={{ branch.slug }}" target="_blank" rel="noopener" class="btn btn-ghost">Preview</a>
+    </div>
     <div class="mini" style="margin-top:4px;">{{ branch.table_count }} table QR{{ branch.table_count|pluralize }}</div>
     <a href="{% url 'dashboard:branch_qr' branch.slug %}" class="btn btn-ghost" style="width:100%;justify-content:center;margin-top:4px;">Manage in branch →</a>
   </div>

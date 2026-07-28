@@ -31,7 +31,6 @@ urlpatterns = [
     path('subcategories/<int:pk>/delete/', views.subcategory_delete, name='subcategory_delete'),
 
     path('qr/', views.qr_index, name='qr'),
-    path('qr/<int:branch_id>/generate/', views.qr_generate, name='qr_generate'),
     path('qr/<int:branch_id>/download/', views.qr_download, name='qr_download'),
     path('qr/<int:branch_id>/preview.png', views.qr_preview_image, name='qr_preview_image'),
 
