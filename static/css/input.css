@@ -11,6 +11,9 @@
   --accent-2: #ff9f1c;
   --accent-grad: linear-gradient(135deg,#ff9f1c,#e23744); --accent-ink: #fff;
   --green: #1f9d57; --green-soft: #e3f6ec; --amber: #c98a00; --amber-soft: #fdf0d4;
+  /* Printed cloth (Georgian lurji supra). --print-ink is sampled from the
+     founder's reference: the mean of the 143,861 pixels forming its strokes. */
+  --print-ink: #172d42; --print-ink-2: #2c4b6b; --print-deep: #0f2030;
 }
 /* ── Guest structural defaults (colors arrive inline from menu/themes.py via
    {% theme_style %}; pages carry data-theme + an inline token style, the
@@ -678,6 +681,30 @@ h1,h2,h3 { font-family: var(--hd); }
   .js .mk-reveal.is-in { opacity: 1; transform: none; }
   .mk-phone { border-radius: 2.2rem; border: 6px solid #14171f; overflow: hidden; background: #14171f; box-shadow: 0 24px 48px rgba(20,23,31,.25); }
   .mk-phone img { display: block; width: 100%; height: auto; border-radius: 1.85rem; }
+
+  /* ── printed cloth ornament (spec 2026-07-30) ──────────────────────────
+     Masks, not coloured images: one asset is indigo on cream between sections
+     and cream on indigo inside .mk-print-dark. The artwork carries no colour;
+     `currentColor` supplies it, so a section decides how its own ornament
+     looks by setting `color`. */
+  .mk-print-rule {
+    height: 28px; color: var(--print-ink); opacity: .55;
+    -webkit-mask: url("../images/print/border-strip.svg") repeat-x center / auto 28px;
+            mask: url("../images/print/border-strip.svg") repeat-x center / auto 28px;
+    background-color: currentColor;
+  }
+  /* The section already styles itself through --side/--side-2/--side-ink, all
+     three mapped to CSS variables in tailwind.config.js. Re-pointing them here
+     recolours every child without touching a single child's markup. */
+  .mk-print-dark { --side: var(--print-deep); --side-2: #16304a; --side-ink: #9db2c9; }
+  .mk-print-rosette {
+    position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);
+    width: 340px; height: 340px; pointer-events: none;
+    color: #fff; opacity: .10;
+    -webkit-mask: url("../images/print/rosette.svg") no-repeat center / contain;
+            mask: url("../images/print/rosette.svg") no-repeat center / contain;
+    background-color: currentColor;
+  }
 
   /* ── platform ops panel ── */
   .ops-stats { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 18px; }

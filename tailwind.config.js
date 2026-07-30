@@ -5,6 +5,10 @@ module.exports = {
     './static/js/**/*.js',
     './design/wireframes/**/*.html',
   ],
+  // Unused single-class @layer components rules get tree-shaken; no template
+  // references these yet (spec 2026-07-30). Remove in Task 4, once
+  // _multibranch.html and home.html reference all three.
+  safelist: ['mk-print-rule', 'mk-print-dark', 'mk-print-rosette'],
   theme: {
     extend: {
       colors: {

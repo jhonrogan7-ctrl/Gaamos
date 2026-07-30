@@ -117,3 +117,60 @@ class PrintAssetsTest(SimpleTestCase):
                 angles.setdefault(ref, set()).add(int(match.group(1)))
         self.assertEqual(sorted(angles['petal']), list(range(0, 360, 30)))
         self.assertEqual(sorted(angles['bead']), list(range(15, 360, 30)))
+
+
+class PrintCssTest(SimpleTestCase):
+    def _css(self):
+        path = Path(settings.BASE_DIR) / 'static' / 'css' / 'app.css'
+        self.assertTrue(path.exists(), 'app.css not built — run bin/build-css.sh')
+        return path.read_text()
+
+    def test_the_print_classes_survive_tailwinds_tree_shaking(self):
+        """Tailwind drops unused single-class @layer components rules. The
+        anchor matters: a bare substring would also match inside a compound
+        selector and pass while the rule itself is gone."""
+        css = self._css()
+        for cls in ('mk-print-rule', 'mk-print-dark', 'mk-print-rosette'):
+            self.assertRegex(css, r'[}{]\.' + cls + r'\{',
+                             f'.{cls} missing from the built CSS')
+
+    def test_the_ink_tokens_are_defined(self):
+        css = self._css()
+        for token in ('--print-ink:#172d42', '--print-deep:#0f2030'):
+            self.assertIn(token, css.replace(' ', ''), f'missing token {token}')
+
+    def test_print_rules_precede_the_mobile_dashboard_overrides(self):
+        """Source order decides the cascade between rules of equal specificity,
+        and the <900px dashboard shell is documented as needing to stay last:
+        its .side and .top rules share specificity with their bases above.
+        Asserting presence alone would pass while the shell rendered wrong.
+
+        Anchored on `.side{display:none}` rather than on the breakpoint:
+        `899.98px` appears three times in this stylesheet, and two unrelated
+        one-line overrides come earlier, so matching the breakpoint compares
+        against the wrong block and can never fail.
+        """
+        css = self._css()
+        anchor = '.side{display:none}'
+        self.assertEqual(css.count(anchor), 1,
+                         'the mobile-shell anchor is no longer unique — pick a '
+                         'new one rather than matching the wrong block')
+        last_print = max(m.start() for m in
+                         re.finditer(r'[}{]\.mk-print-[a-z]+\{', css))
+        self.assertLess(last_print, css.index(anchor),
+                        'print CSS was appended after the mobile dashboard block')
+
+    def test_the_mask_is_painted_by_currentcolor_not_a_baked_in_colour(self):
+        """One asset, two colourways. If the rule painted a fixed colour, the
+        dark section would need a second file kept in sync by hand."""
+        css = self._css()
+        rule = css[css.index('.mk-print-rule{'):][:400]
+        self.assertIn('currentColor', rule)
+        self.assertIn('border-strip.svg', rule)
+
+    def test_the_mask_carries_the_webkit_prefix(self):
+        """Safari needs -webkit-mask; without it the element renders as a solid
+        indigo bar across the page rather than as ornament."""
+        css = self._css()
+        rule = css[css.index('.mk-print-rule{'):][:400]
+        self.assertIn('-webkit-mask', rule)
