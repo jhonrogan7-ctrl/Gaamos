@@ -9,6 +9,7 @@ import re
 import xml.etree.ElementTree as ET
 from pathlib import Path
 
+import pytest
 from django.conf import settings
 from django.test import SimpleTestCase
 
@@ -174,3 +175,21 @@ class PrintCssTest(SimpleTestCase):
         css = self._css()
         rule = css[css.index('.mk-print-rule{'):][:400]
         self.assertIn('-webkit-mask', rule)
+
+
+@pytest.mark.django_db
+def test_the_landing_carries_printed_dividers(client):
+    """The dividers are the thread that ties the page together; an include
+    dropped in a later edit would remove them silently."""
+    body = client.get('/en/').content.decode()
+    assert body.count('mk-print-rule') == 4          # 3 dividers + the footer band
+    assert 'aria-hidden="true"' in body
+
+
+@pytest.mark.django_db
+def test_the_dividers_are_decorative_to_assistive_tech(client):
+    """They carry no text and no meaning. An empty div in a landmark is exactly
+    the thing a future refactor accidentally gives content to."""
+    body = client.get('/en/').content.decode()
+    for fragment in re.findall(r'<div class="mk-print-rule"[^>]*>', body):
+        assert 'aria-hidden="true"' in fragment
