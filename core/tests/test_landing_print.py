@@ -193,3 +193,53 @@ def test_the_dividers_are_decorative_to_assistive_tech(client):
     body = client.get('/en/').content.decode()
     for fragment in re.findall(r'<div class="mk-print-rule"[^>]*>', body):
         assert 'aria-hidden="true"' in fragment
+
+
+def _linear(c):
+    c = c / 255.0
+    return c / 12.92 if c <= 0.03928 else ((c + 0.055) / 1.055) ** 2.4
+
+
+def _luminance(hex_color):
+    r, g, b = (int(hex_color[i:i + 2], 16) for i in (1, 3, 5))
+    return 0.2126 * _linear(r) + 0.7152 * _linear(g) + 0.0722 * _linear(b)
+
+
+def contrast(a, b):
+    la, lb = sorted((_luminance(a), _luminance(b)), reverse=True)
+    return (la + 0.05) / (lb + 0.05)
+
+
+class PrintContrastTest(SimpleTestCase):
+    """Recolouring a dark section is where an accent decision quietly becomes an
+    accessibility defect. Same floors the guest themes are held to."""
+
+    DEEP, PANEL, INK = '#0f2030', '#16304a', '#9db2c9'
+
+    def test_body_text_on_the_indigo_ground_clears_aa(self):
+        self.assertGreaterEqual(contrast(self.INK, self.DEEP), 4.5)
+
+    def test_body_text_on_the_indigo_panels_clears_aa(self):
+        self.assertGreaterEqual(contrast(self.INK, self.PANEL), 4.5)
+
+    def test_white_headings_clear_aa_on_both_surfaces(self):
+        self.assertGreaterEqual(contrast('#ffffff', self.DEEP), 4.5)
+        self.assertGreaterEqual(contrast('#ffffff', self.PANEL), 4.5)
+
+
+@pytest.mark.django_db
+def test_the_multibranch_section_is_printed_indigo(client):
+    body = client.get('/en/').content.decode()
+    assert 'mk-print-dark' in body
+    assert 'mk-print-rosette' in body
+
+
+@pytest.mark.django_db
+def test_the_stat_numbers_keep_the_saffron_gradient(client):
+    """Deliberate (spec 6.2): warm on cool is the strongest pairing on the page,
+    and it keeps the action colour present in the one fully-indigo section. A
+    reviewer must not 'fix' this."""
+    body = client.get('/en/').content.decode()
+    section = body[body.index('mk-print-dark'):]
+    section = section[:section.index('</section>')]
+    assert section.count('mk-grad-text') == 3
