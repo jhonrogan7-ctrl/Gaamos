@@ -1,0 +1,46 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 28" width="120" height="28">
+  <!-- Georgian lurji supra border, redrawn. Three stacked rhythms: a diamond
+       and dot rule, a row of boteh, and the rule mirrored back.
+
+       Motifs are defined once at the origin and placed by <use>, so the tile's
+       rhythm reads as a list of offsets instead of being buried in path data —
+       and so the seam check can prove no motif crosses x=0 or x=120.
+
+       No fill or stroke: the CSS mask paints these shapes. -->
+  <defs>
+    <path id="dia" d="M0 -3 L3 0 L0 3 L-3 0 Z"/>
+    <circle id="dot" cx="0" cy="0" r="1.6"/>
+    <path id="boteh" d="M0 5 C3.6 5 4.2 0.6 1.6 -3.2 C0.6 -4.6 -1 -5 -2 -3.8 C-3.4 -2.2 -3.6 1.2 -2.4 3 C-1.6 4.4 -0.8 5 0 5 Z"/>
+  </defs>
+
+  <use href="#dia" transform="translate(10 4)"/>
+  <use href="#dot" transform="translate(20 4)"/>
+  <use href="#dia" transform="translate(30 4)"/>
+  <use href="#dot" transform="translate(40 4)"/>
+  <use href="#dia" transform="translate(50 4)"/>
+  <use href="#dot" transform="translate(60 4)"/>
+  <use href="#dia" transform="translate(70 4)"/>
+  <use href="#dot" transform="translate(80 4)"/>
+  <use href="#dia" transform="translate(90 4)"/>
+  <use href="#dot" transform="translate(100 4)"/>
+  <use href="#dia" transform="translate(110 4)"/>
+
+  <use href="#boteh" transform="translate(10 14)"/>
+  <use href="#boteh" transform="translate(30 14) scale(-1 1)"/>
+  <use href="#boteh" transform="translate(50 14)"/>
+  <use href="#boteh" transform="translate(70 14) scale(-1 1)"/>
+  <use href="#boteh" transform="translate(90 14)"/>
+  <use href="#boteh" transform="translate(110 14) scale(-1 1)"/>
+
+  <use href="#dia" transform="translate(10 24)"/>
+  <use href="#dot" transform="translate(20 24)"/>
+  <use href="#dia" transform="translate(30 24)"/>
+  <use href="#dot" transform="translate(40 24)"/>
+  <use href="#dia" transform="translate(50 24)"/>
+  <use href="#dot" transform="translate(60 24)"/>
+  <use href="#dia" transform="translate(70 24)"/>
+  <use href="#dot" transform="translate(80 24)"/>
+  <use href="#dia" transform="translate(90 24)"/>
+  <use href="#dot" transform="translate(100 24)"/>
+  <use href="#dia" transform="translate(110 24)"/>
+</svg>
