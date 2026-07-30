@@ -189,9 +189,16 @@ def test_the_landing_carries_printed_dividers(client):
 @pytest.mark.django_db
 def test_the_dividers_are_decorative_to_assistive_tech(client):
     """They carry no text and no meaning. An empty div in a landmark is exactly
-    the thing a future refactor accidentally gives content to."""
+    the thing a future refactor accidentally gives content to.
+
+    The match count is asserted before the loop: this regex depends on the
+    markup's attribute order, so a template reformat could otherwise leave it
+    matching nothing and silently asserting nothing at all.
+    """
     body = client.get('/en/').content.decode()
-    for fragment in re.findall(r'<div class="mk-print-rule"[^>]*>', body):
+    fragments = re.findall(r'<div class="mk-print-rule"[^>]*>', body)
+    assert len(fragments) == 4
+    for fragment in fragments:
         assert 'aria-hidden="true"' in fragment
 
 
