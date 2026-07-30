@@ -413,8 +413,8 @@ msgstr "ეს მათი ტელეფონია. დადეთ თქ�
 "ეს მათი ტელეფონია. განათავსეთ თქვენი მენიუ მასზე დღესვე — ლაივში წუთებში."
 
 #: templates/marketing/_final_cta.html:7
-msgid "Plans from Rs 3,000 a month — cancel anytime"
-msgstr "გეგმები თვეში 3,000 რუპიიდან — გააუქმეთ ნებისმიერ დროს"
+msgid "Plans from Rs 4,000 a month — cancel anytime"
+msgstr "გეგმები თვეში 4,000 რუპიიდან — გააუქმეთ ნებისმიერ დროს"
 
 #: templates/marketing/_footer.html:6
 msgid ""
