@@ -101,6 +101,36 @@ class PrintAssetsTest(SimpleTestCase):
         self.assertGreaterEqual(low, 0, 'a motif overflows the left edge')
         self.assertLessEqual(high, 120, 'a motif overflows the right edge')
 
+    def test_each_row_of_the_tile_closes_on_the_seam(self):
+        """The edge check above is necessary but NOT sufficient: motifs can sit
+        wholly inside the box and still break rhythm across a repeat. A row is
+        seamless only when its motif count times its step equals the tile width,
+        so the last motif of one tile is exactly one step from the first of the
+        next.
+
+        The original tile failed exactly this: 11 motifs at a 10-unit step
+        spanned 110 of 120, putting a 20-unit gap and two adjacent diamonds at
+        every seam. The edge check passed the whole time.
+        """
+        rows = {}
+        for use in ET.parse(STRIP).getroot().iter(f'{SVG_NS}use'):
+            ref = (use.get('href') or '').lstrip('#')
+            dx, dy = _TRANSLATE.search(use.get('transform', '')).groups()
+            rows.setdefault(float(dy), []).append((float(dx), ref))
+        self.assertEqual(len(rows), 3, 'expected three stacked rows')
+        for y, motifs in sorted(rows.items()):
+            motifs.sort()
+            xs = [x for x, _ in motifs]
+            steps = {round(b - a, 6) for a, b in zip(xs, xs[1:])}
+            self.assertEqual(len(steps), 1, f'row y={y} has an uneven step: {steps}')
+            step = steps.pop()
+            self.assertEqual(len(xs) * step, 120,
+                             f'row y={y}: {len(xs)} motifs x {step} != 120 — the '
+                             f'rhythm breaks at every tile seam')
+            self.assertEqual(len(motifs) % 2, 0,
+                             f'row y={y} has an odd motif count, so an '
+                             f'alternating sequence cannot continue across tiles')
+
     def test_the_rosette_has_twelvefold_symmetry(self):
         """Twelve-fold is what makes the medallion read as a medallion rather
         than as a flower. Built by rotating one petal, so the count is the
@@ -165,7 +195,8 @@ class PrintCssTest(SimpleTestCase):
         """One asset, two colourways. If the rule painted a fixed colour, the
         dark section would need a second file kept in sync by hand."""
         css = self._css()
-        rule = css[css.index('.mk-print-rule{'):][:400]
+        rule = css[css.index('.mk-print-rule{'):]
+        rule = rule[:rule.index('}') + 1]
         self.assertIn('currentColor', rule)
         self.assertIn('border-strip.svg', rule)
 
@@ -173,7 +204,8 @@ class PrintCssTest(SimpleTestCase):
         """Safari needs -webkit-mask; without it the element renders as a solid
         indigo bar across the page rather than as ornament."""
         css = self._css()
-        rule = css[css.index('.mk-print-rule{'):][:400]
+        rule = css[css.index('.mk-print-rule{'):]
+        rule = rule[:rule.index('}') + 1]
         self.assertIn('-webkit-mask', rule)
 
 

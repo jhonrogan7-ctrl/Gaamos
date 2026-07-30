@@ -699,7 +699,7 @@ h1,h2,h3 { font-family: var(--hd); }
   .mk-print-dark { --side: var(--print-deep); --side-2: #16304a; --side-ink: #9db2c9; }
   .mk-print-rosette {
     position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);
-    width: 340px; height: 340px; pointer-events: none;
+    width: min(340px, 100%); height: min(340px, 100%); pointer-events: none;
     color: #fff; opacity: .10;
     -webkit-mask: url("../images/print/rosette.svg") no-repeat center / contain;
             mask: url("../images/print/rosette.svg") no-repeat center / contain;

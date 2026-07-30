@@ -4,7 +4,9 @@
 
        Motifs are defined once at the origin and placed by <use>, so the tile's
        rhythm reads as a list of offsets instead of being buried in path data —
-       and so the seam check can prove no motif crosses x=0 or x=120.
+       and so the seam check can prove no motif crosses x=0 or x=120. Each row
+       must also close on the tile: count x step must equal 120, so the last
+       motif of one tile is exactly one step from the first of the next.
 
        No fill or stroke: the CSS mask paints these shapes. -->
   <defs>
@@ -13,17 +15,18 @@
     <path id="boteh" d="M0 5 C3.6 5 4.2 0.6 1.6 -3.2 C0.6 -4.6 -1 -5 -2 -3.8 C-3.4 -2.2 -3.6 1.2 -2.4 3 C-1.6 4.4 -0.8 5 0 5 Z"/>
   </defs>
 
-  <use href="#dia" transform="translate(10 4)"/>
-  <use href="#dot" transform="translate(20 4)"/>
-  <use href="#dia" transform="translate(30 4)"/>
-  <use href="#dot" transform="translate(40 4)"/>
-  <use href="#dia" transform="translate(50 4)"/>
-  <use href="#dot" transform="translate(60 4)"/>
-  <use href="#dia" transform="translate(70 4)"/>
-  <use href="#dot" transform="translate(80 4)"/>
-  <use href="#dia" transform="translate(90 4)"/>
-  <use href="#dot" transform="translate(100 4)"/>
-  <use href="#dia" transform="translate(110 4)"/>
+  <use href="#dia" transform="translate(5 4)"/>
+  <use href="#dot" transform="translate(15 4)"/>
+  <use href="#dia" transform="translate(25 4)"/>
+  <use href="#dot" transform="translate(35 4)"/>
+  <use href="#dia" transform="translate(45 4)"/>
+  <use href="#dot" transform="translate(55 4)"/>
+  <use href="#dia" transform="translate(65 4)"/>
+  <use href="#dot" transform="translate(75 4)"/>
+  <use href="#dia" transform="translate(85 4)"/>
+  <use href="#dot" transform="translate(95 4)"/>
+  <use href="#dia" transform="translate(105 4)"/>
+  <use href="#dot" transform="translate(115 4)"/>
 
   <use href="#boteh" transform="translate(10 14)"/>
   <use href="#boteh" transform="translate(30 14) scale(-1 1)"/>
@@ -32,15 +35,16 @@
   <use href="#boteh" transform="translate(90 14)"/>
   <use href="#boteh" transform="translate(110 14) scale(-1 1)"/>
 
-  <use href="#dia" transform="translate(10 24)"/>
-  <use href="#dot" transform="translate(20 24)"/>
-  <use href="#dia" transform="translate(30 24)"/>
-  <use href="#dot" transform="translate(40 24)"/>
-  <use href="#dia" transform="translate(50 24)"/>
-  <use href="#dot" transform="translate(60 24)"/>
-  <use href="#dia" transform="translate(70 24)"/>
-  <use href="#dot" transform="translate(80 24)"/>
-  <use href="#dia" transform="translate(90 24)"/>
-  <use href="#dot" transform="translate(100 24)"/>
-  <use href="#dia" transform="translate(110 24)"/>
+  <use href="#dia" transform="translate(5 24)"/>
+  <use href="#dot" transform="translate(15 24)"/>
+  <use href="#dia" transform="translate(25 24)"/>
+  <use href="#dot" transform="translate(35 24)"/>
+  <use href="#dia" transform="translate(45 24)"/>
+  <use href="#dot" transform="translate(55 24)"/>
+  <use href="#dia" transform="translate(65 24)"/>
+  <use href="#dot" transform="translate(75 24)"/>
+  <use href="#dia" transform="translate(85 24)"/>
+  <use href="#dot" transform="translate(95 24)"/>
+  <use href="#dia" transform="translate(105 24)"/>
+  <use href="#dot" transform="translate(115 24)"/>
 </svg>
