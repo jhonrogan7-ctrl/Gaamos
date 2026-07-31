@@ -48,7 +48,8 @@ BRANCHES = [
     {"initials": "YH", "name": "Your Hotel", "prefix": "yourhotel", "orders": "18"},
 ]
 TIERS = [
-    {"name": _("Business"), "price": "Rs 3,000", "per": _("/month"),
+    {"name": _("Business"),
+     "price_monthly": "Rs 4,000", "price_annual": "Rs 3,200", "per": _("/month"),
      "blurb": _("The whole product — everything your venue needs to run QR menus and live orders."),
      "cta": _("Get started"), "highlighted": True, "features": [
         _("Unlimited branches & menu items"),
@@ -59,7 +60,8 @@ TIERS = [
         _("Installable app (PWA) for guests & staff"),
         _("3 team members"),
     ]},
-    {"name": _("VIP"), "price": "Rs 7,000", "per": _("/month"),
+    {"name": _("VIP"),
+     "price_monthly": "Rs 5,500", "price_annual": "Rs 4,400", "per": _("/month"),
      "blurb": _("For venues that want full brand ownership and a bigger team."),
      "cta": _("Talk to us"), "highlighted": False, "features": [
         _("Everything in Business"),

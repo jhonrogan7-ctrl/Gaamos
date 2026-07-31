@@ -1,16 +1,42 @@
 {% load i18n %}
-<section id="pricing" class="mk-wrap py-20">
+<section id="pricing" class="mk-wrap py-20" x-data="{ annual: true }">
   <div class="text-center max-w-2xl mx-auto mb-12">
     <div class="mk-eyebrow">{% translate "Pricing" %}</div>
     <h2 class="font-hd text-3xl md:text-4xl font-extrabold text-ink mt-2">{% translate "Simple pricing that grows with you" %}</h2>
     <p class="text-ink-2 mt-3">{% translate "Simple monthly pricing in NPR. Cancel anytime." %}</p>
+
+    {# Annual is the default shown state, so a no-JS visitor still sees a price
+       and a billing note that agree with each other. The buttons carry no
+       colour in their static class: Alpine's :class owns the active state, and
+       a static colour would fight it once toggled. #}
+    <div class="flex justify-center mt-7">
+      <div class="inline-flex items-center gap-1 p-1 rounded-full bg-panel border border-line"
+           role="group" aria-label="{% translate 'Billing period' %}">
+        <button type="button" @click="annual = false"
+                :aria-pressed="annual ? 'false' : 'true'"
+                class="rounded-full px-5 py-2 text-sm font-semibold transition"
+                :class="annual ? 'text-ink-2' : 'mk-grad text-white'">{% translate "Monthly" %}</button>
+        <button type="button" @click="annual = true"
+                :aria-pressed="annual ? 'true' : 'false'"
+                class="rounded-full px-5 py-2 text-sm font-semibold transition"
+                :class="annual ? 'mk-grad text-white' : 'text-ink-2'">{% translate "Annual" %} &minus;20%</button>
+      </div>
+    </div>
   </div>
   <div class="grid md:grid-cols-2 gap-6 items-start max-w-3xl mx-auto">
     {% for t in tiers %}
     <div class="rounded-2xl p-6 transition hover:-translate-y-1 {% if t.highlighted %}text-white shadow-frame mk-grad{% else %}mk-card{% endif %}">
       {% if t.highlighted %}<div class="text-[11px] font-bold tracking-widest uppercase text-white/90 mb-3">{% translate "Most popular" %}</div>{% endif %}
       <div class="font-semibold {% if t.highlighted %}text-white{% else %}text-accent{% endif %}">{{ t.name }}</div>
-      <div class="mt-2"><span class="font-hd text-4xl font-extrabold {% if t.highlighted %}text-white{% else %}text-ink{% endif %}">{{ t.price }}</span><span class="{% if t.highlighted %}text-white/80{% else %}text-ink-3{% endif %}">{{ t.per }}</span></div>
+      {# Both prices are rendered server-side and swapped with x-show, so the
+         copy never has to travel through a JS string — and a no-JS visitor
+         keeps the annual price rather than an empty element. #}
+      <div class="mt-2">
+        <span class="font-hd text-4xl font-extrabold {% if t.highlighted %}text-white{% else %}text-ink{% endif %}"><span x-show="annual">{{ t.price_annual }}</span><span x-show="!annual" x-cloak>{{ t.price_monthly }}</span></span><span class="{% if t.highlighted %}text-white/80{% else %}text-ink-3{% endif %}">{{ t.per }}</span>
+      </div>
+      <div class="text-xs mt-1 {% if t.highlighted %}text-white/80{% else %}text-ink-3{% endif %}">
+        <span x-show="annual">{% translate "billed annually — save 20%" %}</span><span x-show="!annual" x-cloak>{% translate "billed monthly" %}</span>
+      </div>
       <div class="text-sm mt-2 {% if t.highlighted %}text-white/80{% else %}text-ink-2{% endif %}">{{ t.blurb }}</div>
       <div class="mt-5 space-y-2 text-sm">
         {% for f in t.features %}

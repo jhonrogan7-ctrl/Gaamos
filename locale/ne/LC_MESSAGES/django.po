@@ -400,8 +400,8 @@ msgid "It's their phone. Put your menu on it tonight — live in minutes."
 msgstr "त्यो उनीहरूकै फोन हो। आजै राति आफ्नो मेनु त्यसमा राख्नुहोस् — मिनेटमै लाइभ।"
 
 #: templates/marketing/_final_cta.html:7
-msgid "Plans from Rs 3,000 a month — cancel anytime"
-msgstr "योजना महिनाको रु ३,००० देखि — जहिले पनि रद्द गर्न सकिन्छ"
+msgid "Plans from Rs 4,000 a month — cancel anytime"
+msgstr "योजना महिनाको रु ४,००० देखि — जहिले पनि रद्द गर्न सकिन्छ"
 
 #: templates/marketing/_footer.html:6
 msgid ""
