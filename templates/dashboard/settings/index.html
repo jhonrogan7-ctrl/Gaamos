@@ -30,10 +30,11 @@
             <div class="fld"><label>Email</label><input class="inp" type="email" name="email" value="{{ restaurant.email|default:'' }}"></div>
           </div>
           <div class="frow">
-            <div class="fld"><label>Instagram</label><input class="inp" name="instagram" value="{{ restaurant.instagram|default:'' }}" placeholder="@handle"></div>
-            <div class="fld"><label>Facebook</label><input class="inp" name="facebook" value="{{ restaurant.facebook|default:'' }}"></div>
+            <div class="fld"><label>Instagram</label><input class="inp" name="instagram" value="{{ restaurant.instagram|default:'' }}" placeholder="@handle or link"></div>
+            <div class="fld"><label>Facebook</label><input class="inp" name="facebook" value="{{ restaurant.facebook|default:'' }}" placeholder="page name or link"></div>
           </div>
-          <div class="fld"><label>TikTok</label><input class="inp" name="tiktok" value="{{ restaurant.tiktok|default:'' }}" placeholder="@handle"></div>
+          <div class="fld"><label>TikTok</label><input class="inp" name="tiktok" value="{{ restaurant.tiktok|default:'' }}" placeholder="@handle or link"></div>
+          <p class="muted" style="margin-top:10px">Whatever you fill in shows in the Get in touch sheet on your menu. Leave a field empty to hide it there.</p>
           <div style="margin-top:16px">
             <button type="submit" class="btn">Save restaurant info</button>
           </div>
