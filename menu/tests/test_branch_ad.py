@@ -142,13 +142,40 @@ class PromotionManageTest(TenantTestCase):
     def _png(self, name='promo.png'):
         return SimpleUploadedFile(name, TINY_PNG, content_type='image/png')
 
-    def test_upload_creates_ad_inactive(self):
+    def test_upload_puts_the_promotion_live(self):
+        """Uploading a promotion IS promoting it.
+
+        This used to leave the ad switched off: the founder uploaded a poster,
+        the tab showed "Off", and the guest menu showed nothing. An upload that
+        does not appear is indistinguishable from a broken upload.
+        """
         self.login_as(self.owner)
         resp = self.client.post(self.save_url, {'image_file': self._png()})
         self.assertRedirects(resp, self.tab_url)
         ad = BranchAd.objects.get(branch=self.branch)
         self.assertTrue(ad.image_url.startswith('/media/ads/ad_'))
+        self.assertTrue(ad.is_active)
+
+    def test_replacing_the_image_on_a_paused_promotion_puts_it_back_live(self):
+        """Same reasoning: uploading is the act of publishing. Pausing is the
+        Deactivate button, which stays."""
+        BranchAd.objects.create(branch=self.branch,
+                                image_url='/media/ads/old.png', is_active=False)
+        self.login_as(self.owner)
+        self.client.post(self.save_url, {'image_file': self._png('new.png')})
+        self.assertTrue(BranchAd.objects.get(branch=self.branch).is_active)
+
+    def test_a_failed_upload_does_not_activate_a_paused_promotion(self):
+        """A rejected file must change nothing at all — otherwise a paused ad
+        goes live off the back of an upload that errored."""
+        BranchAd.objects.create(branch=self.branch,
+                                image_url='/media/ads/old.png', is_active=False)
+        self.login_as(self.owner)
+        self.client.post(self.save_url, {
+            'image_file': SimpleUploadedFile('promo.gif', b'GIF89a', content_type='image/gif')})
+        ad = BranchAd.objects.get(branch=self.branch)
         self.assertFalse(ad.is_active)
+        self.assertEqual(ad.image_url, '/media/ads/old.png')
 
     def test_upload_replaces_and_bumps_version(self):
         self.login_as(self.owner)
@@ -218,6 +245,32 @@ class PromotionManageTest(TenantTestCase):
             self.assertEqual(self.client.get(url).status_code, 405)
 
 
+class AdOverlayJsTest(TenantTestCase):
+    """The overlay opens on every page load.
+
+    It used to open once per browser session: `close()` wrote a sessionStorage
+    key and `init()` skipped the overlay whenever that key was present. Founder
+    decision 2026-07-31 — an uploaded promotion shows every time a guest opens
+    the menu, so nothing may suppress it across loads.
+    """
+
+    def _js(self):
+        from pathlib import Path
+        from django.conf import settings
+        return (Path(settings.BASE_DIR) / 'static/js/app.js').read_text()
+
+    def test_the_overlay_keeps_no_seen_state(self):
+        overlay = self._js().split("Alpine.data('adOverlay'")[1].split("Alpine.data(")[0]
+        self.assertNotIn('sessionStorage', overlay)
+        self.assertNotIn('localStorage', overlay)
+
+    def test_the_overlay_starts_open(self):
+        """`open` must be true before init() runs too: x-show flips it on the
+        first frame, so starting closed shows a flash of menu underneath."""
+        overlay = self._js().split("Alpine.data('adOverlay'")[1].split("Alpine.data(")[0]
+        self.assertIn('open: true', overlay)
+
+
 class GuestAdOverlayTest(TenantTestCase):
     def setUp(self):
         super().setUp()
@@ -232,7 +285,10 @@ class GuestAdOverlayTest(TenantTestCase):
         resp = self._menu()
         self.assertContains(resp, 'ad-overlay')
         self.assertContains(resp, '/media/ads/ad_1.png')
-        self.assertContains(resp, f"adOverlay('lake', {int(ad.updated_at.timestamp())})")
+        self.assertContains(resp, 'x-data="adOverlay"')
+        # the version rides on the image as a cache-buster, so a replaced
+        # poster is not served from a returning guest's cache
+        self.assertContains(resp, f"ad_1.png?v={int(ad.updated_at.timestamp())}")
 
     def test_inactive_ad_not_rendered(self):
         BranchAd.objects.create(branch=self.branch,

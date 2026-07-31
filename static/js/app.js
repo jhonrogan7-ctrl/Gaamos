@@ -44,27 +44,23 @@ document.addEventListener('alpine:init', () => {
     cleanup(() => { if (observer) observer.disconnect(); });
   });
 
-  // Promo ad interstitial — shows once per visit per branch+version.
-  // sessionStorage dies with the tab, so a fresh scan shows the ad again;
-  // the version in the key re-shows a replaced image even mid-visit.
-  Alpine.data('adOverlay', (branch, version) => ({
-    open: false,
-    key: 'gaamos-ad-' + branch + '-' + version,
+  // Promo ad interstitial — shown on EVERY load of a branch's menu while the
+  // promotion is active (founder decision 2026-07-31). It used to remember a
+  // sessionStorage key per branch+version and skip itself for the rest of the
+  // tab's life; a venue running a promotion wants every guest who opens the
+  // menu to see it, including the same guest coming back later in the day.
+  // Closing it (X, Esc, backdrop) affects this page view only.
+  Alpine.data('adOverlay', () => ({
+    open: true,
     init() {
-      let seen = false;
-      try { seen = !!sessionStorage.getItem(this.key); } catch (e) {}
-      if (!seen) {
-        this.open = true;
-        document.body.style.overflow = 'hidden';
-      }
+      document.body.style.overflow = 'hidden';
     },
-    hide() {  // image failed to load — fail open, but don't mark as seen
+    hide() {  // also the @error path: a broken image must not block the menu
       this.open = false;
       document.body.style.overflow = '';
     },
     close() {
       this.hide();
-      try { sessionStorage.setItem(this.key, '1'); } catch (e) {}
     },
   }));
 

@@ -907,6 +907,13 @@ def branch_promotion_save(request, slug):
             if created:
                 ad.delete()
             error = AD_UPLOAD_ERROR
+        elif not ad.is_active:
+            # Uploading a promotion is the act of promoting it. Leaving it off
+            # meant an owner uploaded a poster, saw "Off", and found nothing on
+            # the menu — an upload that never appears reads as a broken upload.
+            # Pausing is still available: that is what Deactivate is for.
+            ad.is_active = True
+            ad.save(update_fields=['is_active'])
     if error:
         return render(request, 'dashboard/branch/promotion.html', {
             'active_tab': 'branches', 'branch_tab': 'promotion', 'branch': branch,
