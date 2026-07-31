@@ -7,6 +7,7 @@ from django.shortcuts import redirect, render
 from django.views.decorators.csrf import ensure_csrf_cookie
 from django.views.decorators.http import require_POST
 from .models import Branch, BranchAd, BranchVisit, Category, BranchItemPlacement, BranchMenuItem, MenuItem, Table, Order, OrderItem, Company
+from .socials import social_link
 from .themes import DEFAULT_THEME, THEMES
 
 logger = logging.getLogger(__name__)
@@ -111,6 +112,11 @@ def menu(request):
             'phone': restaurant.phone if restaurant else '',
             'email': restaurant.email if restaurant else '',
             'logo_url': restaurant.logo_url if restaurant else '',
+            # None for a network the venue left empty — the contact sheet
+            # branches on presence, so an unset network renders no row at all.
+            'instagram': social_link('instagram', restaurant.instagram) if restaurant else None,
+            'facebook': social_link('facebook', restaurant.facebook) if restaurant else None,
+            'tiktok': social_link('tiktok', restaurant.tiktok) if restaurant else None,
         },
         'branches': branches,
         'branch': {

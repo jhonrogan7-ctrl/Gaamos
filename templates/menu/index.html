@@ -283,6 +283,43 @@
             </div>
             <span x-html="icon('dir')"></span>
           </div>
+
+          {% comment %}
+            One row per network the venue actually filled in. The payload sends
+            null for an empty one, so x-if is what keeps an unset network from
+            leaving an icon beside a blank value. The href is normalised
+            server-side (menu/socials.py) — never render the stored string.
+          {% endcomment %}
+          <template x-if="restaurant.instagram">
+            <a class="crow" :href="restaurant.instagram.url" target="_blank" rel="noopener noreferrer">
+              <div class="cic" x-html="icon('insta')"></div>
+              <div class="tx">
+                <div class="lb">Instagram</div>
+                <div class="vl" x-text="restaurant.instagram.handle"></div>
+              </div>
+              <span x-html="icon('dir')"></span>
+            </a>
+          </template>
+          <template x-if="restaurant.facebook">
+            <a class="crow" :href="restaurant.facebook.url" target="_blank" rel="noopener noreferrer">
+              <div class="cic" x-html="icon('fb')"></div>
+              <div class="tx">
+                <div class="lb">Facebook</div>
+                <div class="vl" x-text="restaurant.facebook.handle"></div>
+              </div>
+              <span x-html="icon('dir')"></span>
+            </a>
+          </template>
+          <template x-if="restaurant.tiktok">
+            <a class="crow" :href="restaurant.tiktok.url" target="_blank" rel="noopener noreferrer">
+              <div class="cic" x-html="icon('tiktok')"></div>
+              <div class="tx">
+                <div class="lb">TikTok</div>
+                <div class="vl" x-text="restaurant.tiktok.handle"></div>
+              </div>
+              <span x-html="icon('dir')"></span>
+            </a>
+          </template>
         </div>
 
         <div class="csec">
