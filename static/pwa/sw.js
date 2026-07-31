@@ -5,11 +5,18 @@
  * activate.
  *
  * Strategy:
- *   navigations  -> network-first, offline fallback page; HTML never cached
- *   GET /static/ -> stale-while-revalidate (ignoreSearch tolerates ?v=)
+ *   GET navigations -> network-first, offline fallback page; HTML never cached
+ *   GET /static/    -> stale-while-revalidate (ignoreSearch tolerates ?v=)
  *   anything else (POSTs, /media/, SSE streams, cross-origin) -> untouched
+ *
+ * The navigation branch is deliberately GET-only. A form submit is also a
+ * navigation, and re-issuing one through fetch(req) cannot replay a
+ * file-backed multipart body — the fetch rejects, the offline fallback
+ * swallows it, and the upload never reaches the network. That silently broke
+ * the branch promotion image upload (the dashboard's only multipart form)
+ * while small urlencoded POSTs kept working.
  */
-const VERSION = "v5";
+const VERSION = "v6";
 const CACHE = `gaamos-shell-${VERSION}`;
 
 const PRECACHE = [
@@ -38,7 +45,7 @@ self.addEventListener("activate", (e) => {
 self.addEventListener("fetch", (e) => {
   const req = e.request;
 
-  if (req.mode === "navigate") {
+  if (req.mode === "navigate" && req.method === "GET") {
     e.respondWith(
       fetch(req).catch(() =>
         caches.match("/offline/").then((r) => r || Response.error())

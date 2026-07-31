@@ -132,3 +132,7 @@ def test_sw_behaviour_markers(client):
     assert "navigate" in body                 # navigation branch exists
     assert 'c.addAll(["/"])' not in body      # old stub's cache-of-'/' is gone
     assert "ignoreSearch" in body             # static matching tolerates ?v= busters
+    # A form submit is a navigation too. Sending one back through fetch(req)
+    # cannot replay a multipart file body, which silently ate the branch
+    # promotion upload — the navigation branch must stay GET-only.
+    assert re.search(r'req\.mode === "navigate" && req\.method === "GET"', body)
