@@ -4,8 +4,9 @@
 {{ payload|json_script:"menu-data" }}
 
 {% if ad %}
-<!-- Promo ad interstitial — shown once per visit (sessionStorage); X / Esc / backdrop closes -->
-<div class="ad-overlay" x-data="adOverlay('{{ payload.selected_branch }}', {{ ad.version }})"
+<!-- Promo ad interstitial — shown on every load while active; X / Esc / backdrop closes.
+     The ?v= below is a cache-buster, so a replaced poster reaches a returning guest. -->
+<div class="ad-overlay" x-data="adOverlay"
      x-show="open" x-cloak role="dialog" aria-label="Promotion"
      @keydown.escape.window="close()" @click="close()">
   <button class="ad-close" type="button" @click="close()" aria-label="Close promotion">✕</button>
