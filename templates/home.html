@@ -1,37 +1,36 @@
 {% extends "base.html" %}
-{% load i18n %}
+{% load i18n static %}
 {% block title %}{% translate "Gaamos — QR menus & live orders for cafés, restaurants and bars" %}{% endblock %}
+{% block body_class %}bg-[#F8F1E6] text-[#8E2B23]{% endblock %}
 {% block head %}
   <link rel="alternate" hreflang="en" href="https://{{ base_domain }}/en/">
   <link rel="alternate" hreflang="ne" href="https://{{ base_domain }}/ne/">
   <link rel="alternate" hreflang="ka" href="https://{{ base_domain }}/ka/">
   <link rel="alternate" hreflang="x-default" href="https://{{ base_domain }}/en/">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Marcellus&family=Karla:wght@400;500;700&family=JetBrains+Mono:wght@400;500&display=swap">
+  <link rel="stylesheet" href="{% static 'css/landing.css' %}?v={{ asset_v }}">
 {% endblock %}
 {% block content %}
 <script>document.documentElement.classList.add('js');</script>
-{% include "marketing/_nav.html" %}
-<main>
-  {% include "marketing/_hero.html" %}
-  {% include "marketing/_social_proof.html" %}
-  <div class="mk-print-rule" aria-hidden="true"></div>
-  {% include "marketing/_features.html" %}
-  {% include "marketing/_how.html" %}
-  <div class="mk-print-rule" aria-hidden="true"></div>
-  {% include "marketing/_multibranch.html" %}
-  {% include "marketing/_pricing.html" %}
-  <div class="mk-print-rule" aria-hidden="true"></div>
-  {% include "marketing/_contact.html" %}
-  {% include "marketing/_final_cta.html" %}
-</main>
-<div class="mk-print-rule" aria-hidden="true"></div>
-{% include "marketing/_footer.html" %}
+<div class="orn">
+  {% include "marketing/_nav.html" %}
+  <main>
+    {% include "marketing/_hero.html" %}
+    {% include "marketing/_features.html" %}
+    {% include "marketing/_how.html" %}
+    {% include "marketing/_pricing.html" %}
+    {% include "marketing/_contact.html" %}
+    {% include "marketing/_final_cta.html" %}
+  </main>
+  {% include "marketing/_footer.html" %}
+</div>
 <script>
   (function () {
-    var els = document.querySelectorAll('.mk-reveal');
+    var els = document.querySelectorAll('.orn-reveal');
     if (!('IntersectionObserver' in window)) { els.forEach(function (e) { e.classList.add('is-in'); }); return; }
     var io = new IntersectionObserver(function (entries) {
       entries.forEach(function (e) { if (e.isIntersecting) { e.target.classList.add('is-in'); io.unobserve(e.target); } });
-    }, { threshold: 0.12 });
+    }, { threshold: 0.12, rootMargin: '0px 0px -8% 0px' });
     els.forEach(function (e) { io.observe(e); });
   })();
 </script>

@@ -32,20 +32,25 @@ LIVE_ORDERS = [
     {"id": "#1", "table": _("Table 2"), "items": "French Toast ×1, Plain Toast ×2", "status": "Served", "status_label": _("Served")},
 ]
 BUILDER_ITEMS = [
-    {"name": "Black Tea", "price": "Rs 40"},
-    {"name": "Masala Tea", "price": "Rs 70"},
-    {"name": "Milk Coffee", "price": "Rs 90"},
-    {"name": "Hot Chocolate", "price": "Rs 210"},
+    {"name": "Black Tea", "price": "Rs 40", "ticked": True},
+    {"name": "Masala Tea", "price": "Rs 70", "ticked": True},
+    {"name": "Milk Coffee", "price": "Rs 90", "ticked": False},
+    {"name": "Hot Chocolate", "price": "Rs 210", "ticked": False},
+]
+# The hero phone draws the guest menu in markup instead of showing a
+# screenshot. Like the other mocks on this page (builder rows, order queue
+# items) the contents stay untranslated literals — they stand in for a venue's
+# own data, which is whatever that venue typed.
+HERO_MENU = [
+    {"name": "French Toast", "note": "cinnamon, honey", "price": "Rs 210"},
+    {"name": "Plain Toast", "note": "butter, jam", "price": "Rs 120"},
+    {"name": "Masala Tea", "note": "house spice blend", "price": "Rs 70"},
+    {"name": "Milk Coffee", "note": "single origin", "price": "Rs 90"},
 ]
 STEPS = [
     {"n": "1", "title": _("Build your menu"), "body": _("Pick dishes from the template library, set prices, add photos. Organize into categories your guests will actually browse.")},
     {"n": "2", "title": _("Print your QRs"), "body": _("Generate one code for the counter or a numbered code per table. Download the whole set as a print-ready PDF.")},
     {"n": "3", "title": _("Receive orders"), "body": _("Guests scan, browse, and order from their own phone. Orders appear in your live queue the moment they're placed.")},
-]
-BRANCHES = [
-    {"initials": "YC", "name": "Your Café — Lakeside", "prefix": "yourcafe", "orders": "42"},
-    {"initials": "YC", "name": "Your Café — City Center", "prefix": "yourcafe-city", "orders": "31"},
-    {"initials": "YH", "name": "Your Hotel", "prefix": "yourhotel", "orders": "18"},
 ]
 TIERS = [
     {"name": _("Business"),
@@ -78,8 +83,8 @@ def _landing_context(**extra):
     ctx = {
         "live_orders": LIVE_ORDERS,
         "builder_items": BUILDER_ITEMS,
+        "hero_menu": HERO_MENU,
         "steps": STEPS,
-        "branches": BRANCHES,
         "tiers": TIERS,
         "table_qrs": TABLE_QRS,
         "venue_types": Lead.VENUE_TYPES,

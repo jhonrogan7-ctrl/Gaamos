@@ -1,20 +1,23 @@
-{% load i18n %}{% get_current_language as cur %}
-<header class="sticky top-0 z-40 bg-panel/90 backdrop-blur border-b border-line">
-  <nav class="mk-wrap flex items-center justify-between h-16 gap-3">
-    <a href="#top" class="flex items-center">{% include "marketing/_logo.html" %}</a>
-    <div class="hidden md:flex items-center gap-8 text-sm text-ink-2">
-      <a href="#features" class="hover:text-ink">{% translate "Features" %}</a>
-      <a href="#how" class="hover:text-ink">{% translate "How it works" %}</a>
-      <a href="#pricing" class="hover:text-ink">{% translate "Pricing" %}</a>
-      <a href="#contact" class="hover:text-ink">{% translate "Contact" %}</a>
+{% load i18n static %}{% get_current_language as cur %}
+<header class="orn-header">
+  <div class="orn-header-bar">
+    <a href="#top" class="orn-logo" aria-label="Gaamos">
+      <span class="orn-m orn-m-medallion orn-logo-medallion" aria-hidden="true"></span>
+      <img src="{% static 'images/gaamos-logo.png' %}" alt="Gaamos" width="302" height="87">
+    </a>
+    <nav class="orn-nav" aria-label="{% translate 'Primary' %}">
+      <a href="#features">{% translate "Features" %}</a>
+      <a href="#how">{% translate "How it works" %}</a>
+      <a href="#pricing">{% translate "Pricing" %}</a>
+      <a href="#contact">{% translate "Contact" %}</a>
+    </nav>
+    <span class="orn-spacer"></span>
+    <div class="orn-lang orn-mono">
+      <a href="/en/" class="{% if cur == 'en' %}is-on{% endif %}">EN</a>
+      <a href="/ne/" class="{% if cur == 'ne' %}is-on{% endif %}">ने</a>
+      <a href="/ka/" class="{% if cur == 'ka' %}is-on{% endif %}">ქა</a>
     </div>
-    <div class="flex items-center gap-3">
-      <div class="flex items-center gap-1 text-xs font-bold">
-        <a href="/en/" class="px-2 py-1 rounded-full {% if cur == 'en' %}bg-accent-soft text-accent-deep{% else %}text-ink-3 hover:text-ink{% endif %}">EN</a>
-        <a href="/ne/" class="px-2 py-1 rounded-full {% if cur == 'ne' %}bg-accent-soft text-accent-deep{% else %}text-ink-3 hover:text-ink{% endif %}">ने</a>
-        <a href="/ka/" class="px-2 py-1 rounded-full {% if cur == 'ka' %}bg-accent-soft text-accent-deep{% else %}text-ink-3 hover:text-ink{% endif %}">ქა</a>
-      </div>
-      <a href="#contact" class="mk-btn-primary !px-5 !py-2">{% translate "Get started" %}</a>
-    </div>
-  </nav>
+    <a href="#contact" class="orn-btn orn-btn-sm">{% translate "Get started" %}</a>
+  </div>
+  <div class="orn-band" aria-hidden="true"><i></i></div>
 </header>

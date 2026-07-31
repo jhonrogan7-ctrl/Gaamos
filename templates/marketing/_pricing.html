@@ -1,51 +1,65 @@
 {% load i18n %}
-<section id="pricing" class="mk-wrap py-20" x-data="{ annual: true }">
-  <div class="text-center max-w-2xl mx-auto mb-12">
-    <div class="mk-eyebrow">{% translate "Pricing" %}</div>
-    <h2 class="font-hd text-3xl md:text-4xl font-extrabold text-ink mt-2">{% translate "Simple pricing that grows with you" %}</h2>
-    <p class="text-ink-2 mt-3">{% translate "Simple monthly pricing in NPR. Cancel anytime." %}</p>
+<section id="pricing" class="orn-pricing" x-data="{ annual: true }">
+  <div class="orn-pricing-head orn-reveal">
+    <span class="orn-m orn-m-medallion orn-pricing-medallion" aria-hidden="true"></span>
+    <div class="orn-eyebrow">{% translate "Pricing" %}</div>
+    <h2 class="orn-h2">{% translate "Simple pricing that grows with you" %}</h2>
+    <p class="orn-pricing-sub">{% translate "Simple monthly pricing in NPR. Cancel anytime." %}</p>
 
-    {# Annual is the default shown state, so a no-JS visitor still sees a price
-       and a billing note that agree with each other. The buttons carry no
-       colour in their static class: Alpine's :class owns the active state, and
-       a static colour would fight it once toggled. #}
-    <div class="flex justify-center mt-7">
-      <div class="inline-flex items-center gap-1 p-1 rounded-full bg-panel border border-line"
-           role="group" aria-label="{% translate 'Billing period' %}">
-        <button type="button" @click="annual = false"
-                :aria-pressed="annual ? 'false' : 'true'"
-                class="rounded-full px-5 py-2 text-sm font-semibold transition"
-                :class="annual ? 'text-ink-2' : 'mk-grad text-white'">{% translate "Monthly" %}</button>
-        <button type="button" @click="annual = true"
-                :aria-pressed="annual ? 'true' : 'false'"
-                class="rounded-full px-5 py-2 text-sm font-semibold transition"
-                :class="annual ? 'mk-grad text-white' : 'text-ink-2'">{% translate "Annual" %} &minus;20%</button>
-      </div>
+    {% comment %}
+      The switcher is one bordered block split into two equal halves — square
+      corners, no gap, the same vocabulary as the buttons. Equal columns mean
+      the control keeps its width and position when the label changes.
+      Annual is the default shown state, so a no-JS visitor still gets a price
+      and a billing note that agree with each other. The buttons carry no
+      colour of their own: Alpine's :class owns the active state, and a static
+      colour would fight it once toggled.
+      (A {# #} comment may not span lines — Django's tag regex is not DOTALL,
+      so a multi-line one renders as literal page text.)
+    {% endcomment %}
+    <div class="orn-switch" role="group" aria-label="{% translate 'Billing period' %}">
+      <button type="button" @click="annual = false"
+              :aria-pressed="annual ? 'false' : 'true'"
+              :class="{ 'is-on': !annual }">{% translate "Monthly" %}</button>
+      <button type="button" @click="annual = true"
+              :aria-pressed="annual ? 'true' : 'false'"
+              class="is-on" :class="{ 'is-on': annual }">{% translate "Annual" %} &minus;20%</button>
     </div>
   </div>
-  <div class="grid md:grid-cols-2 gap-6 items-start max-w-3xl mx-auto">
+
+  <div class="orn-plans">
     {% for t in tiers %}
-    <div class="rounded-2xl p-6 transition hover:-translate-y-1 {% if t.highlighted %}text-white shadow-frame mk-grad{% else %}mk-card{% endif %}">
-      {% if t.highlighted %}<div class="text-[11px] font-bold tracking-widest uppercase text-white/90 mb-3">{% translate "Most popular" %}</div>{% endif %}
-      <div class="font-semibold {% if t.highlighted %}text-white{% else %}text-accent{% endif %}">{{ t.name }}</div>
-      {# Both prices are rendered server-side and swapped with x-show, so the
-         copy never has to travel through a JS string — and a no-JS visitor
-         keeps the annual price rather than an empty element. #}
-      <div class="mt-2">
-        <span class="font-hd text-4xl font-extrabold {% if t.highlighted %}text-white{% else %}text-ink{% endif %}"><span x-show="annual">{{ t.price_annual }}</span><span x-show="!annual" x-cloak>{{ t.price_monthly }}</span></span><span class="{% if t.highlighted %}text-white/80{% else %}text-ink-3{% endif %}">{{ t.per }}</span>
+    <div class="orn-plan orn-reveal {% if t.highlighted %}orn-plan-dark{% else %}orn-card orn-plan-light{% endif %}">
+      {% if t.highlighted %}<span class="orn-m orn-plan-birds" aria-hidden="true"></span>{% endif %}
+      <div class="orn-plan-inner">
+        <div class="orn-plan-head">
+          <div class="orn-plan-name">{{ t.name }}</div>
+          {% if t.highlighted %}<span class="orn-plan-flag">{% translate "Most popular" %}</span>{% endif %}
+        </div>
+        {% comment %}
+          Both prices are rendered server-side and swapped with x-show, so the
+          copy never has to travel through a JS string — and a no-JS visitor
+          keeps the annual price rather than an empty element.
+        {% endcomment %}
+        <div class="orn-price-row">
+          <span class="orn-price"><span x-show="annual">{{ t.price_annual }}</span><span x-show="!annual" x-cloak>{{ t.price_monthly }}</span></span>
+          <span class="orn-per">{{ t.per }}</span>
+        </div>
+        <div class="orn-bill">
+          <span x-show="annual">{% translate "billed annually — save 20%" %}</span><span x-show="!annual" x-cloak>{% translate "billed monthly" %}</span>
+        </div>
+        <p>{{ t.blurb }}</p>
+        <div class="orn-feats">
+          {% for f in t.features %}
+          <div class="orn-feat">
+            <span class="orn-m orn-m-tile" aria-hidden="true"></span><span>{{ f }}</span>
+          </div>
+          {% endfor %}
+        </div>
+        <a href="#contact" class="orn-btn orn-btn-block {% if t.highlighted %}orn-btn-light{% else %}orn-btn-outline{% endif %}">{{ t.cta }}</a>
       </div>
-      <div class="text-xs mt-1 {% if t.highlighted %}text-white/80{% else %}text-ink-3{% endif %}">
-        <span x-show="annual">{% translate "billed annually — save 20%" %}</span><span x-show="!annual" x-cloak>{% translate "billed monthly" %}</span>
-      </div>
-      <div class="text-sm mt-2 {% if t.highlighted %}text-white/80{% else %}text-ink-2{% endif %}">{{ t.blurb }}</div>
-      <div class="mt-5 space-y-2 text-sm">
-        {% for f in t.features %}
-        <div class="{% if t.highlighted %}text-white/90{% else %}text-ink-2{% endif %}"><span class="{% if t.highlighted %}text-white{% else %}text-accent{% endif %} font-bold mr-2">✓</span>{{ f }}</div>
-        {% endfor %}
-      </div>
-      <a href="#contact" class="block text-center mt-6 rounded-full px-6 py-3 font-semibold text-sm transition {% if t.highlighted %}bg-white text-ink{% else %}mk-btn-ghost{% endif %}">{{ t.cta }}</a>
     </div>
     {% endfor %}
   </div>
-  <p class="text-center text-xs text-ink-3 mt-8">{% translate "Both plans include the branded guest menu, QR generation, and live orders." %}</p>
+  <p class="orn-plan-foot">{% translate "Both plans include the branded guest menu, QR generation, and live orders." %}</p>
 </section>
