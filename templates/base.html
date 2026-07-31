@@ -17,7 +17,7 @@
   <script src="{% static 'vendor/htmx.min.js' %}"></script>
   {% block head %}{% endblock %}
 </head>
-<body class="bg-[#eef0f4] text-[#171a21]">
+<body class="{% block body_class %}bg-[#eef0f4] text-[#171a21]{% endblock %}">
   {% block content %}{% endblock %}
   <script>
     if ("serviceWorker" in navigator) {

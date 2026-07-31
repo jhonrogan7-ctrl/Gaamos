@@ -1,94 +1,81 @@
 {% load i18n static %}
-<section id="features" class="mk-wrap py-20">
-  <div class="text-center max-w-2xl mx-auto mb-14">
-    <div class="mk-eyebrow">{% translate "Features" %}</div>
-    <h2 class="font-hd text-3xl md:text-4xl font-extrabold text-ink mt-2">{% translate "Everything a busy venue needs. Nothing it doesn't." %}</h2>
-  </div>
+<section id="features" class="orn-dark orn-features">
+  <div class="orn-seam orn-band" aria-hidden="true"><i></i></div>
 
-  <!-- Feature 1: menu builder -->
-  <div class="grid md:grid-cols-2 gap-10 items-center mb-16 mk-reveal">
-    <div>
-      <div class="mk-eyebrow">{% translate "Menu Builder" %}</div>
-      <h3 class="font-hd text-2xl font-bold text-ink mt-2">{% translate "Build your menu in minutes, not weekends" %}</h3>
-      <p class="text-ink-2 mt-3">{% blocktranslate trimmed %}Start from a global library of dishes and drinks — tick the ones you serve, drop them into categories, set your prices, add photos. Your menu is live before your coffee gets cold.{% endblocktranslate %}</p>
-      <ul class="mt-4 space-y-2 text-sm text-ink-2">
-        <li><span class="text-accent font-bold mr-2">✓</span>{% translate "Template library of ready-made items" %}</li>
-        <li><span class="text-accent font-bold mr-2">✓</span>{% translate "Drag-and-drop categories and groups" %}</li>
-        <li><span class="text-accent font-bold mr-2">✓</span>{% translate "Clone a menu from another branch in one tap" %}</li>
-      </ul>
-    </div>
-    <div class="mk-card p-4">
-      <div class="flex items-center justify-between mb-3">
-        <span class="font-semibold text-ink">Hot Drinks <span class="text-ink-3 font-normal">{% translate "· 10 items" %}</span></span>
-        <span class="mk-badge-served">{% translate "live" %}</span>
+  <div class="orn-wrap" style="padding-top:72px">
+    <div class="orn-features-head orn-reveal">
+      <div>
+        <div class="orn-eyebrow">{% translate "Features" %}</div>
+        <h2 class="orn-h2" style="max-width:22em">{% translate "Everything a busy venue needs. Nothing it doesn't." %}</h2>
       </div>
-      {% for b in builder_items %}
-      <div class="flex items-center gap-3 py-2 border-b border-line text-sm">
-        <span class="text-ink-3">⣿</span><span class="flex-1 text-ink">{{ b.name }}</span><span class="text-ink-2">{{ b.price }}</span>
-      </div>
-      {% endfor %}
-      <div class="pt-3 text-sm text-accent font-semibold">{% translate "+ Add from library" %}</div>
+      <span class="orn-m orn-features-birds" aria-hidden="true"></span>
     </div>
-  </div>
 
-  <!-- Feature 2: branded QR menu -->
-  <div class="grid md:grid-cols-2 gap-10 items-center mb-16 mk-reveal">
-    <div class="order-2 md:order-1 mk-card p-4">
-      <div class="text-xs text-ink-3 mb-2">yourcafe.gaamos.io</div>
-      <div class="flex items-center gap-2 mb-3">
-        <span class="w-8 h-8 rounded-md mk-grad text-white text-xs font-bold flex items-center justify-center">MG</span>
-        <span class="leading-tight"><span class="block text-sm font-semibold text-ink">Your Café</span><span class="block text-xs text-ink-3">{% translate "Lakeside · open now" %}</span></span>
-      </div>
-      <div class="flex gap-2 mb-3 text-xs">
-        <span class="px-3 py-1 rounded-full mk-grad text-white">Toast</span>
-        <span class="px-3 py-1 rounded-full bg-bg text-ink-2">Breakfast</span>
-        <span class="px-3 py-1 rounded-full bg-bg text-ink-2">Drinks</span>
-      </div>
-      <div class="flex items-center justify-between text-sm py-2 border-t border-line">
-        <span class="text-ink">French Toast</span><span class="text-ink-2">Rs 210 <span class="text-accent font-bold">+</span></span>
-      </div>
-    </div>
-    <div class="order-1 md:order-2">
-      <div class="mk-eyebrow">{% translate "Branded Menu" %}</div>
-      <h3 class="font-hd text-2xl font-bold text-ink mt-2">{% translate "Your own address. Your own look." %}</h3>
-      <p class="text-ink-2 mt-3">{% blocktranslate trimmed %}Every venue gets its own subdomain — <span class="text-ink font-medium">your.gaamos.io</span> — with your logo, your colors, your menu. Guests scan and browse instantly in the browser. No app store, no sign-up, no friction.{% endblocktranslate %}</p>
-      <div class="inline-flex items-center gap-1 mt-4 text-sm bg-bg rounded-lg px-3 py-2"><span class="text-ink font-medium">yourcafe</span><span class="text-ink-3">.gaamos.io</span></div>
-    </div>
-  </div>
+    <div class="orn-feature-grid">
+      <div class="orn-feature-light orn-reveal">
+        <span class="orn-m orn-m-corner orn-feature-corner" aria-hidden="true"></span>
+        <div class="orn-eyebrow">{% translate "Menu Builder" %}</div>
+        <h3 class="orn-h3" style="max-width:16em">{% translate "Build your menu in minutes, not weekends" %}</h3>
+        <p class="orn-body">{% blocktranslate trimmed %}Start from a global library of dishes and drinks — tick the ones you serve, drop them into categories, set your prices, add photos. Your menu is live before your coffee gets cold.{% endblocktranslate %}</p>
 
-  <!-- Feature 3: live orders -->
-  <div class="grid md:grid-cols-2 gap-10 items-center mb-16 mk-reveal">
-    <div>
-      <div class="mk-eyebrow">{% translate "Live Orders" %}</div>
-      <h3 class="font-hd text-2xl font-bold text-ink mt-2">{% blocktranslate trimmed %}Orders land the second guests tap "Place order"{% endblocktranslate %}</h3>
-      <p class="text-ink-2 mt-3">{% blocktranslate trimmed %}No shouting across the room, no lost paper slips. Every order hits your live queue instantly — table or takeaway — and moves from <span class="mk-badge-new">New</span> to <span class="mk-badge-served">Served</span> with one tap.{% endblocktranslate %}</p>
-    </div>
-    <div class="mk-card p-4">
-      <div class="flex items-center gap-2 mb-3 text-sm"><span class="w-2 h-2 rounded-full mk-grad"></span><span class="font-semibold text-ink">{% translate "Live queue" %}</span><span class="text-ink-3">{% translate "· updates in real time" %}</span></div>
-      {% for o in live_orders %}
-      <div class="flex items-center gap-3 py-2 border-b border-line text-sm">
-        <span class="text-ink-3 w-8">{{ o.id }}</span><span class="w-20 text-ink-2">{{ o.table }}</span>
-        <span class="flex-1 text-ink truncate">{{ o.items }}</span>
-        <span class="{% if o.status == 'New' %}mk-badge-new{% else %}mk-badge-served{% endif %}">{{ o.status_label }}</span>
+        <div class="orn-list">
+          <div class="orn-list-head">
+            <span>Hot drinks</span><span>8 items live</span>
+          </div>
+          {% for b in builder_items %}
+          <div class="orn-list-row">
+            <span class="orn-tick {% if b.ticked %}is-on{% endif %}" aria-hidden="true">{% if b.ticked %}✓{% endif %}</span>
+            <span class="orn-grow">{{ b.name }}</span>
+            <span class="orn-price">{{ b.price }}</span>
+          </div>
+          {% endfor %}
+          <div class="orn-list-add">{% translate "+ Add from library" %}</div>
+        </div>
       </div>
-      {% endfor %}
-    </div>
-  </div>
 
-  <!-- Feature 4: table QRs -->
-  <div class="grid md:grid-cols-2 gap-10 items-center mk-reveal">
-    <div class="order-2 md:order-1 mk-card p-4">
-      <div class="flex items-center justify-between mb-3 text-sm"><span class="font-semibold text-ink">{% translate "Table QRs · 1–12" %}</span><span class="text-accent font-semibold">{% translate "↓ Download all (PDF)" %}</span></div>
-      <div class="grid grid-cols-4 gap-3">
-        {% for t in table_qrs %}
-        <div class="text-center">{% with "images/landing/table-qrs/qr-"|add:t|add:".png" as qr_path %}<img src="{% static qr_path %}" alt="{% blocktranslate %}Table {{ t }} QR code{% endblocktranslate %}" class="aspect-square w-full rounded-lg border border-line bg-white p-1" width="174" height="174">{% endwith %}<div class="text-xs text-ink-3 mt-1">{% blocktranslate %}Table {{ t }}{% endblocktranslate %}</div></div>
-        {% endfor %}
+      <div class="orn-feature-stack">
+        <div class="orn-panel-soft orn-reveal" style="padding:32px">
+          <div class="orn-eyebrow">{% translate "Live Orders" %}</div>
+          <h3 class="orn-h3">{% blocktranslate trimmed %}Orders land the second guests tap "Place order"{% endblocktranslate %}</h3>
+          <div class="orn-queue">
+            <div class="orn-queue-head">
+              <span class="orn-dot" aria-hidden="true"></span>{% translate "Live queue" %} {% translate "· updates in real time" %}
+            </div>
+            {% for o in live_orders %}
+            <div class="orn-order {% if o.status == 'Served' %}is-served{% endif %}">
+              <span class="orn-order-id">{{ o.id }}</span>
+              <span style="flex:1">
+                <span class="orn-order-where">{{ o.table }}</span>
+                <span class="orn-order-items">{{ o.items }}</span>
+              </span>
+              <span class="orn-order-state">{{ o.status_label }}</span>
+            </div>
+            {% endfor %}
+          </div>
+        </div>
+
+        <div class="orn-panel-soft orn-qr-split orn-reveal" style="padding:32px">
+          <div>
+            <div class="orn-eyebrow">{% translate "QR Codes" %}</div>
+            <h3 class="orn-h3">{% translate "A QR for the door, or one for every table" %}</h3>
+            <p class="orn-body" style="opacity:.8">{% blocktranslate trimmed %}Generate a single venue code or a whole range of table codes in seconds. Download them all as one print-ready PDF, stick them on tables, and you're taking orders. Table QRs tell you exactly where each order came from.{% endblocktranslate %}</p>
+          </div>
+          {% comment %}
+            Real generated table codes, not placeholders — the same PNGs the
+            dashboard hands a venue for printing.
+          {% endcomment %}
+          <div class="orn-qr-grid">
+            {% for t in table_qrs|slice:":4" %}
+            <div class="orn-qr-tile">
+              {% with "images/landing/table-qrs/qr-"|add:t|add:".png" as qr_path %}
+              <img src="{% static qr_path %}" alt="{% blocktranslate %}Table {{ t }} QR code{% endblocktranslate %}" width="174" height="174" loading="lazy">
+              {% endwith %}
+              <span>{% blocktranslate %}Table {{ t }}{% endblocktranslate %}</span>
+            </div>
+            {% endfor %}
+          </div>
+        </div>
       </div>
-    </div>
-    <div class="order-1 md:order-2">
-      <div class="mk-eyebrow">{% translate "QR Codes" %}</div>
-      <h3 class="font-hd text-2xl font-bold text-ink mt-2">{% translate "A QR for the door, or one for every table" %}</h3>
-      <p class="text-ink-2 mt-3">{% blocktranslate trimmed %}Generate a single venue code or a whole range of table codes in seconds. Download them all as one print-ready PDF, stick them on tables, and you're taking orders. Table QRs tell you exactly where each order came from.{% endblocktranslate %}</p>
     </div>
   </div>
 </section>

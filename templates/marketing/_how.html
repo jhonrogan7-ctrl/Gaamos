@@ -1,16 +1,42 @@
 {% load i18n %}
-<section id="how" class="mk-wrap py-20">
-  <div class="text-center mb-12">
-    <div class="mk-eyebrow">{% translate "How it works" %}</div>
-    <h2 class="font-hd text-3xl md:text-4xl font-extrabold text-ink mt-2">{% translate "Live by lunchtime" %}</h2>
-  </div>
-  <div class="grid md:grid-cols-3 gap-6">
-    {% for s in steps %}
-    <div class="mk-card p-6 mk-reveal transition hover:-translate-y-1">
-      <div class="w-10 h-10 rounded-full mk-grad text-white font-bold flex items-center justify-center">{{ s.n }}</div>
-      <h3 class="font-hd text-xl font-bold text-ink mt-4">{{ s.title }}</h3>
-      <p class="text-ink-2 mt-2 text-sm">{{ s.body }}</p>
+<section id="how" class="orn-how">
+  <div class="orn-how-grid">
+    <span class="orn-m orn-rail" aria-hidden="true"></span>
+    <div>
+      <div class="orn-reveal">
+        <div class="orn-eyebrow">{% translate "How it works" %}</div>
+        <h2 class="orn-h2">{% translate "Live by lunchtime" %}</h2>
+      </div>
+
+      <div class="orn-steps">
+        {% for s in steps %}
+        <div class="orn-card orn-step orn-reveal">
+          <div class="orn-step-n">{{ s.n }}</div>
+          <h3>{{ s.title }}</h3>
+          <p>{{ s.body }}</p>
+          <div class="orn-band" aria-hidden="true"><i></i></div>
+        </div>
+        {% endfor %}
+      </div>
+
+      {% comment %}
+        Multi-branch used to be its own full-width dark section; in the printed
+        design it is the closing panel of "how it works" — same claim, one
+        section fewer between the reader and the price.
+      {% endcomment %}
+      <div class="orn-card orn-branch orn-reveal">
+        <div>
+          <div class="orn-eyebrow">{% translate "Multi-branch" %}</div>
+          <h3>{% translate "Every location. One dashboard." %}</h3>
+          <p>{% blocktranslate trimmed %}Run two branches or twenty. Each gets its own menu, its own QR codes, and its own orders — while you watch everything from a single screen. Clone a menu to a new branch and open the doors the same day.{% endblocktranslate %}</p>
+          <div class="orn-stats">
+            <div><span class="orn-stat-k">1</span><span class="orn-stat-v">{% translate "dashboard" %}</span></div>
+            <div><span class="orn-stat-k">∞</span><span class="orn-stat-v">{% translate "branches" %}</span></div>
+            <div><span class="orn-stat-k">0</span><span class="orn-stat-v">{% translate "extra logins" %}</span></div>
+          </div>
+        </div>
+        <span class="orn-m orn-m-figures orn-branch-figures" aria-hidden="true"></span>
+      </div>
     </div>
-    {% endfor %}
   </div>
 </section>

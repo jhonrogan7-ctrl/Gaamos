@@ -1,31 +1,79 @@
 {% load i18n static %}
-<section id="top" class="relative overflow-hidden">
-  <div class="mk-wrap pt-16 pb-20 text-center">
-    <span class="inline-flex items-center gap-2 text-xs font-semibold text-ink-2 bg-panel border border-line rounded-full px-4 py-1.5">
-      <span class="w-2 h-2 rounded-full mk-grad"></span>{% translate "QR menus · live orders · no app required" %}
-    </span>
-    <h1 class="font-hd text-4xl md:text-6xl font-extrabold text-ink tracking-tight mt-6 max-w-3xl mx-auto">
-      {% blocktranslate trimmed %}Turn every table into a <span class="mk-grad-text">point of sale</span>{% endblocktranslate %}
-    </h1>
-    <p class="text-ink-2 text-lg mt-5 max-w-xl mx-auto">
-      {% blocktranslate trimmed %}Gaamos gives your café a branded QR menu and a live order queue. Guests scan, browse, and order — nothing to download, nothing to explain.{% endblocktranslate %}
-    </p>
-    <div class="flex flex-wrap items-center justify-center gap-3 mt-8">
-      <a href="#contact" class="mk-btn-primary">{% translate "Get started" %}</a>
-      <a href="#pricing" class="mk-btn-ghost">{% translate "See pricing" %}</a>
-    </div>
-    <p class="text-xs text-ink-3 mt-4">{% translate "Set up in under 15 minutes" %}</p>
+<section id="top" class="orn-hero">
+  <div class="orn-hero-bg" aria-hidden="true"><span class="orn-m"></span></div>
 
-    <!-- Real product: guest menu in a phone frame + scannable demo QR -->
-    <div class="mt-14 flex flex-col sm:flex-row items-center justify-center gap-8 sm:gap-10">
-      <div class="w-64 sm:w-64 lg:w-72 mk-phone relative z-10">
-        <img src="{% static 'images/landing/menu-screen.jpg' %}?v=2" alt="{% translate 'Guest QR menu' %}" width="740" height="1246">
+  <div class="orn-hero-grid">
+    <div class="orn-reveal">
+      <div class="orn-tag">
+        <span class="orn-m orn-m-tile" aria-hidden="true"></span>
+        {% translate "QR menus · live orders · no app required" %}
       </div>
-      <div class="mk-card p-5 text-center shadow-frame">
-        <img src="{% static 'images/landing/demo-qr.png' %}" alt="{% translate 'Demo menu QR code' %}" class="w-32 h-32 mx-auto" width="330" height="330">
-        <div class="text-sm font-semibold text-ink mt-3">{% translate "Scan to try the live demo" %}</div>
-        <div class="text-xs text-ink-3 mt-1">testco.zxyn.online</div>
+      <h1 class="orn-h1">{% blocktranslate trimmed %}Turn every table into a point of sale{% endblocktranslate %}</h1>
+      <p class="orn-lede">
+        {% blocktranslate trimmed %}Gaamos gives your café a branded QR menu and a live order queue. Guests scan, browse, and order — nothing to download, nothing to explain.{% endblocktranslate %}
+      </p>
+      <div class="orn-cta-row">
+        <a href="#contact" class="orn-btn">{% translate "Get started" %}</a>
+        <a href="#pricing" class="orn-btn orn-btn-ghost">{% translate "See pricing" %}</a>
+      </div>
+      <p class="orn-note">{% translate "Set up in under 15 minutes" %}</p>
+    </div>
+
+    {% comment %}
+      The guest menu is drawn in markup rather than screenshotted: it inherits
+      the printed palette, it translates with the rest of the page, and it stays
+      sharp at any width. The code beside it is the real, scannable demo QR —
+      the one thing on this page a visitor can act on immediately.
+    {% endcomment %}
+    <div class="orn-hero-art orn-reveal">
+      <span class="orn-m orn-m-medallion orn-hero-halo" aria-hidden="true"></span>
+      <div class="orn-phone">
+        <div class="orn-phone-screen">
+          <div class="orn-phone-head">
+            <div class="orn-phone-brand">
+              <span class="orn-phone-badge">
+                <span class="orn-m orn-m-medallion" aria-hidden="true"></span>
+                <img src="{% static 'images/gaamos-logo.png' %}" alt="" width="302" height="87">
+              </span>
+              <span>
+                <span class="orn-phone-name">Your Café</span>
+                <span class="orn-phone-host">yourcafe.gaamos.io · open now</span>
+              </span>
+            </div>
+            <div class="orn-chips">
+              <span class="orn-chip is-on">Toast</span>
+              <span class="orn-chip">Breakfast</span>
+              <span class="orn-chip">Drinks</span>
+            </div>
+          </div>
+          <div>
+            {% for it in hero_menu %}
+            <div class="orn-row">
+              <span class="orn-row-thumb"><span class="orn-m orn-m-tile" aria-hidden="true"></span></span>
+              <span style="flex:1">
+                <span class="orn-row-name">{{ it.name }}</span>
+                <span class="orn-row-note">{{ it.note }}</span>
+              </span>
+              <span class="orn-row-price">{{ it.price }}</span>
+              <span class="orn-row-add" aria-hidden="true">+</span>
+            </div>
+            {% endfor %}
+            <div class="orn-phone-foot">
+              <div class="orn-phone-order">Place order · Rs 280</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="orn-qr-card">
+        <img src="{% static 'images/landing/demo-qr.png' %}" alt="{% translate 'Demo menu QR code' %}" width="330" height="330">
+        <div class="orn-cap">{% translate "Scan to try the live demo" %}</div>
       </div>
     </div>
+  </div>
+
+  <div class="orn-strip">
+    <span>{% translate "Powering menus for cafés, restaurants and bars across the region" %}</span>
+    <span class="orn-band orn-band-rev" aria-hidden="true"><i></i></span>
+    <span>The Juicery Cafe</span>
   </div>
 </section>
