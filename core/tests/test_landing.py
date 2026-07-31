@@ -1,4 +1,9 @@
+import re
+from pathlib import Path
+
 import pytest
+
+from django.conf import settings
 
 
 @pytest.mark.django_db
@@ -17,7 +22,6 @@ def test_landing_features_section(client):
     body = client.get("/en/").content.decode()
     assert "Everything a busy venue needs" in body
     assert "Menu Builder" in body
-    assert "Branded Menu" in body
     assert "Live Orders" in body
     assert "QR Codes" in body
     assert "Build your menu in minutes" in body
@@ -28,8 +32,9 @@ def test_landing_how_and_multibranch(client):
     body = client.get("/en/").content.decode()
     assert "Live by lunchtime" in body
     assert "Print your QRs" in body
+    # multi-branch is now the closing panel of "how it works", not its own section
     assert "Every location. One dashboard." in body
-    assert "yourhotel." in body  # branch domain built from base_domain
+    assert "extra logins" in body
 
 
 @pytest.mark.django_db
@@ -50,10 +55,12 @@ def test_landing_pricing_and_footer(client):
 def test_landing_logo_and_hero_assets(client):
     body = client.get("/en/").content.decode()
     assert "images/gaamos-logo.png" in body           # real logo in nav + footer
-    assert "images/landing/menu-screen.jpg" in body   # menu screenshot hero
     assert "images/landing/demo-qr.png" in body       # scannable demo QR
     assert "Scan to try the live demo" in body
-    assert "images/landing/order-screen.jpg" not in body  # order screen dropped from hero
+    assert "images/landing/table-qrs/qr-1.png" in body  # real generated table codes
+    # the hero menu is drawn in markup now — no screenshot of it anywhere
+    assert "images/landing/menu-screen.jpg" not in body
+    assert "images/landing/order-screen.jpg" not in body
     assert "Start free" not in body                   # no free tier anywhere
 
 
@@ -78,13 +85,25 @@ def test_pricing_offers_a_monthly_annual_toggle(client):
 
 
 @pytest.mark.django_db
+def test_billing_switcher_halves_are_toggled_by_alpine_only(client):
+    """The active half is `.is-on`. Annual carries it statically so a no-JS
+    visitor sees the state its price matches; Alpine's object syntax is what
+    removes it again on click — a string :class would leave the static one
+    behind and light both halves at once."""
+    body = client.get("/en/").content.decode()
+    switch = body[body.index('class="orn-switch"'):]
+    switch = switch[:switch.index("</div>")]
+    assert """:class="{ 'is-on': !annual }\"""" in switch      # Monthly: bound only
+    assert """class="is-on" :class="{ 'is-on': annual }\"""" in switch  # Annual: static + bound
+
+
+@pytest.mark.django_db
 def test_the_annual_discount_is_exactly_twenty_percent(client):
     """The discount is advertised as −20%; if a price is ever edited without
     its partner, this is what catches it. Parsed from the rendered page rather
     than from the constants, so the guest sees what the test checks."""
-    import re
     body = client.get("/en/").content.decode()
-    # Scoped to the section: the hero's mock order queue also prints "Rs 40"
+    # Scoped to the section: the hero's mock menu also prints "Rs 40"
     # and friends, and a page-wide match silently picks those up too.
     section = body[body.index('id="pricing"'):]
     section = section[:section.index("</section>")]
@@ -109,3 +128,72 @@ def test_a_no_js_visitor_still_sees_a_price(client):
     section = section[:section.index("</section>")]
     assert 'x-show="annual">Rs 3,200' in section
     assert 'x-show="!annual" x-cloak>Rs 4,000' in section
+
+
+# ── printed-ornament design ────────────────────────────────────────────
+
+@pytest.mark.django_db
+def test_landing_loads_its_own_stylesheet_and_fonts(client):
+    body = client.get("/en/").content.decode()
+    assert "css/landing.css" in body
+    for family in ("Marcellus", "Karla", "JetBrains+Mono"):
+        assert family in body
+
+
+@pytest.mark.django_db
+def test_ornament_assets_are_masks_not_images(client):
+    """The ornaments are recoloured by `currentColor` through a CSS mask, which
+    is what lets one asset read ink-on-cream and cream-on-ink. Shipping one as
+    an <img> would freeze it at the colour it was cut in."""
+    body = client.get("/en/").content.decode()
+    assert "images/ornament/" not in body
+    css = (settings.BASE_DIR / "static" / "css" / "landing.css").read_text()
+    for cut in ("orn-band-tile", "orn-medallion", "orn-corner",
+                "orn-birds", "orn-figures", "orn-column", "orn-full"):
+        asset = settings.BASE_DIR / "static" / "images" / "ornament" / f"{cut}.png"
+        assert asset.exists(), f"missing ornament cut: {cut}"
+        assert f"images/ornament/{cut}.png" in css
+
+
+def test_landing_palette_stays_off_the_dashboard():
+    """The landing runs the Madder Red palette; the dashboard and guest menu
+    keep the house Saffron tokens. Scoping the palette to `.orn` instead of
+    `:root` is the whole reason those two can differ."""
+    css = (settings.BASE_DIR / "static" / "css" / "landing.css").read_text()
+    assert re.search(r"^\s*:root\s*[,{]", css, re.M) is None, "landing.css defines :root tokens"
+    palette = css[css.index(".orn {"):css.index("}")]
+    assert "--ink: #8E2B23" in palette
+    assert "--cream: #F8F1E6" in palette
+    assert "--accent: #1F4E4A" in palette
+
+
+def test_landing_css_mobile_overrides_come_last():
+    """These media queries share specificity with the desktop rules above them,
+    so source order is what decides. Anchor it: a later edit that appends a
+    desktop rule under them would silently win at every width."""
+    css = (settings.BASE_DIR / "static" / "css" / "landing.css").read_text()
+    first_media = css.index("@media (max-width: 1024px)")
+    assert css.index(".orn-footer-copy") < first_media
+    tail = css[first_media:]
+    assert re.search(r"\n\.orn[\w-]*\s*[,{]", tail) is None, \
+        "a top-level .orn rule was added after the responsive block"
+
+
+def test_no_multiline_django_comment_tags_in_templates():
+    """`{# … #}` is matched by a non-DOTALL regex, so a comment that spans two
+    lines is never a comment — it renders to the visitor as page text. This
+    shipped once on the pricing cards; {% comment %} is the multi-line form."""
+    offenders = []
+    for path in Path(settings.BASE_DIR / "templates").rglob("*.html"):
+        for n, line in enumerate(path.read_text().splitlines(), 1):
+            if "{#" in line and "#}" not in line:
+                offenders.append(f"{path.relative_to(settings.BASE_DIR)}:{n}")
+    assert not offenders, f"multi-line {{# #}} renders as visible text: {offenders}"
+
+
+@pytest.mark.django_db
+def test_no_template_syntax_leaks_into_the_rendered_page(client):
+    for url in ("/en/", "/ne/", "/ka/"):
+        body = client.get(url).content.decode()
+        for leak in ("{#", "#}", "{%", "{{"):
+            assert leak not in body, f"{leak} leaked into {url}"

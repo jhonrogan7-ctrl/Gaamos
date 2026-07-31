@@ -1,45 +1,48 @@
 {% load i18n %}
-<form id="contact-panel" class="mk-card p-6 md:p-8"
+<form id="contact-panel" class="orn-form"
       hx-post="{% url 'contact' %}" hx-target="#contact-panel" hx-swap="outerHTML"
       x-data="{ vtype: '{{ values.venue_type|default:'Café'|escapejs }}' }">
   {% csrf_token %}
-  <div class="grid gap-4 sm:grid-cols-2">
-    <label class="block text-sm font-medium text-ink-2">{% translate "Your name" %} *
+  <div class="orn-form-grid">
+    <label class="orn-field">
+      <span class="orn-label">{% translate "Your name" %} *</span>
       <input name="name" value="{{ values.name|default:'' }}" placeholder="{% translate 'Suman Thapa' %}"
-             class="mk-input" required>
+             class="orn-input" required>
     </label>
-    <label class="block text-sm font-medium text-ink-2">{% translate "Venue name" %} *
+    <label class="orn-field">
+      <span class="orn-label">{% translate "Venue name" %} *</span>
       <input name="venue_name" value="{{ values.venue_name|default:'' }}" placeholder="{% translate 'Your Hotel' %}"
-             class="mk-input" required>
+             class="orn-input" required>
     </label>
-  </div>
-  <div class="grid gap-4 sm:grid-cols-2 mt-4">
-    <label class="block text-sm font-medium text-ink-2">{% translate "Phone" %} *
+    <label class="orn-field">
+      <span class="orn-label">{% translate "Phone" %} *</span>
       <input name="phone" value="{{ values.phone|default:'' }}" placeholder="+977 98XX-XXXXXX"
-             class="mk-input" required>
+             class="orn-input" required>
     </label>
-    <label class="block text-sm font-medium text-ink-2">{% translate "Email" %}
+    <label class="orn-field">
+      <span class="orn-label">{% translate "Email" %}</span>
       <input name="email" type="email" value="{{ values.email|default:'' }}" placeholder="you@cafe.com"
-             class="mk-input">
+             class="orn-input">
+    </label>
+    <div class="orn-field orn-span-2">
+      <span class="orn-label">{% translate "Venue type" %}</span>
+      <div class="orn-vtypes">
+        {% for value, label in venue_types %}
+        <button type="button" class="orn-vtype" @click="vtype = '{{ value|escapejs }}'"
+                :class="{ 'is-on': vtype === '{{ value|escapejs }}' }">{{ label }}</button>
+        {% endfor %}
+      </div>
+      <input type="hidden" name="venue_type" :value="vtype">
+    </div>
+    <label class="orn-field orn-span-2">
+      <span class="orn-label">{% translate "What do you need?" %}</span>
+      <textarea name="message" rows="3" placeholder="{% translate 'e.g. 2 branches, ~60 menu items, table ordering…' %}"
+                class="orn-input">{{ values.message|default:'' }}</textarea>
     </label>
   </div>
-  <label class="block text-sm font-medium text-ink-2 mt-4">{% translate "Venue type" %}
-    <div class="flex flex-wrap gap-2 mt-2">
-      {% for value, label in venue_types %}
-      <button type="button" @click="vtype = '{{ value|escapejs }}'"
-              :class="vtype === '{{ value|escapejs }}' ? 'border-accent bg-accent-soft text-accent-deep' : 'border-line text-ink-2'"
-              class="px-4 py-2 rounded-full border text-sm font-medium transition">{{ label }}</button>
-      {% endfor %}
-    </div>
-    <input type="hidden" name="venue_type" :value="vtype">
-  </label>
-  <label class="block text-sm font-medium text-ink-2 mt-4">{% translate "What do you need?" %}
-    <textarea name="message" rows="3" placeholder="{% translate 'e.g. 2 branches, ~60 menu items, table ordering…' %}"
-              class="mk-input">{{ values.message|default:'' }}</textarea>
-  </label>
   {% if error %}
-  <div class="mt-3 text-sm text-accent-deep bg-accent-soft rounded-lg px-3 py-2">{{ error }}</div>
+  <div class="orn-form-error">{{ error }}</div>
   {% endif %}
-  <button type="submit" class="mk-btn-primary w-full mt-5">{% translate "Request a callback" %}</button>
-  <p class="text-xs text-ink-3 mt-3">{% translate "We'll only use your details to contact you about Gaamos." %}</p>
+  <button type="submit" class="orn-btn orn-btn-block" style="margin-top:20px">{% translate "Request a callback" %}</button>
+  <p class="orn-form-note">{% translate "We'll only use your details to contact you about Gaamos." %}</p>
 </form>
