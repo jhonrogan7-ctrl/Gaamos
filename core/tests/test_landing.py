@@ -51,6 +51,73 @@ def test_landing_pricing_and_footer(client):
     assert "© 2026 Gaamos" in body
 
 
+CLIENTS = [
+    "Pokhara Metro Eco Hotel",
+    "Chill Zone Restaurant &amp; Bar",   # escaped by the template
+    "Kailash Prabat Cafe",
+    "The Tranquility Inn",
+    "The Juicery Cafe",
+]
+
+
+def _card(body, plan_name):
+    """The markup of one pricing card, so a feature bullet can't pass a test by
+    appearing on the other plan."""
+    cards = body[body.index('class="orn-plans"'):]
+    start = cards.index(f">{plan_name}</div>")
+    nxt = cards.find('class="orn-plan ', start)
+    return cards[start:nxt if nxt != -1 else cards.index("</section>")]
+
+
+@pytest.mark.django_db
+def test_each_tier_states_its_table_limit(client):
+    """Tables are the one limit that differs between the plans, so each card has
+    to say its own number — 25 for Business, none for VIP."""
+    body = client.get("/en/").content.decode()
+    business, vip = _card(body, "Business"), _card(body, "VIP")
+    assert "Up to 25 tables" in business
+    assert "Unlimited tables" not in business
+    assert "Unlimited tables" in vip
+    assert "Up to 25 tables" not in vip
+
+
+@pytest.mark.django_db
+def test_landing_names_every_client(client):
+    body = client.get("/en/").content.decode()
+    section = body[body.index('id="clients"'):]
+    section = section[:section.index("</section>")]
+    for name in CLIENTS:
+        assert name in section, f"{name} missing from the clients section"
+
+
+@pytest.mark.django_db
+def test_clients_sit_between_how_it_works_and_pricing(client):
+    """Proof that other venues run this lands right before the price. Measured on
+    the rendered page rather than on home.html's include order."""
+    body = client.get("/en/").content.decode()
+    assert body.index('id="how"') < body.index('id="clients"') < body.index('id="pricing"')
+
+
+@pytest.mark.django_db
+def test_the_hero_strip_no_longer_names_a_single_client(client):
+    """One name in the strip read as arbitrary once all five were listed below."""
+    body = client.get("/en/").content.decode()
+    hero = body[body.index('id="top"'):]
+    hero = hero[:hero.index("</section>")]
+    assert "Juicery" not in hero
+    assert "across the region" in hero   # the strip itself stays
+
+
+@pytest.mark.django_db
+def test_client_names_are_not_translated(client):
+    """Venue names are proper nouns — they render as literals in every locale,
+    the same rule the mock menu and order data follow."""
+    for url in ("/ne/", "/ka/"):
+        body = client.get(url).content.decode()
+        for name in CLIENTS:
+            assert name in body, f"{name} missing from {url}"
+
+
 @pytest.mark.django_db
 def test_landing_logo_and_hero_assets(client):
     body = client.get("/en/").content.decode()

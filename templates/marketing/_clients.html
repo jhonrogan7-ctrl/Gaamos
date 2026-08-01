@@ -1,0 +1,26 @@
+{% load i18n %}
+<section id="clients" class="orn-clients">
+  <div class="orn-clients-inner">
+    <div class="orn-clients-head orn-reveal">
+      <div class="orn-eyebrow">{% translate "Trusted by" %}</div>
+      <h2 class="orn-h2">{% translate "Venues already running on Gaamos" %}</h2>
+      <p class="orn-clients-sub">{% translate "Hotels, cafés and restaurants serving their menus through a Gaamos QR today." %}</p>
+    </div>
+
+    {% comment %}
+      No logo files exist for these venues, so the cards are typographic: the
+      name in the display face over a mono type caption. A wall of same-sized
+      text boxes pretending to be logos reads as a placeholder.
+      Venue names are literals — proper nouns aren't translated.
+    {% endcomment %}
+    <div class="orn-clients-grid">
+      {% for c in clients %}
+      <div class="orn-card orn-client orn-reveal">
+        <span class="orn-m orn-m-tile orn-client-mark" aria-hidden="true"></span>
+        <div class="orn-client-name">{{ c.name }}</div>
+        <div class="orn-client-type">{{ c.type }}</div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
