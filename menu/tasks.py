@@ -6,7 +6,8 @@ from django.conf import settings
 from django.db import transaction
 
 from menu.models import Item, MenuScan
-from menu.pipeline import embed, extract, find_library, intake, normalize, photo_search
+from menu.pipeline import (extract, find_library, intake, item_embed, normalize,
+                           photo_search)
 
 
 @shared_task
@@ -29,7 +30,7 @@ def _write_drafts(scan, payload):
             fields = normalize.normalize_item(raw, page_types)
             text = f"{fields['name']} {fields['description']}".strip()
             Item.objects.create(source_scan=scan, status="draft",
-                                embedding=embed.embed(text), **fields)
+                                embedding=item_embed.embed_text(text), **fields)
 
 
 @shared_task

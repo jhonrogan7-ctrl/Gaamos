@@ -514,7 +514,9 @@ class Item(models.Model):
     shareable = models.BooleanField(default=True)
 
     # Media + matching
-    embedding = VectorField(dimensions=768, null=True, blank=True)
+    # 1024-d: `nvidia/nv-embedqa-e5-v5`'s width. See menu/pipeline/item_embed.py
+    # for why re-using the old 768-d Gemini vectors was never an option.
+    embedding = VectorField(dimensions=1024, null=True, blank=True)
     image_asset = models.ForeignKey('ImageAsset', null=True, blank=True,
                                     on_delete=models.SET_NULL, related_name='items')
 
