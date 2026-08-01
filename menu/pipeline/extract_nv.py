@@ -1,0 +1,139 @@
+"""NVIDIA vision adapter: a menu document to structured JSON.
+
+Reuses `extract.py`'s prompt and item schema VERBATIM. Those transcription rules
+-- never invent an item that is not printed, one item per price in a
+`HALF | FULL` matrix, tags only from words in the printed name, a low confidence
+rather than a guess on a misaligned price column -- are hard-won and
+provider-independent. Only the transport changes.
+
+Five behaviours here are measured requirements, not preferences (probe of
+2026-07-30, `nvidia/nemotron-nano-12b-v2-vl` on a two-column card with 36 items
+in 5 shared-line price matrices):
+
+1. `nvext.guided_json` is MANDATORY. Same model, same prompt, same image: 36/36
+   items with it, 26/36 without -- and the ten it drops are exactly the protein
+   variants. A dropped Buff Momo is a lost item; a merged one carries veg,
+   chicken and buff into one row's dietary_tags, which is the protein-veto
+   nightmare arriving before the matcher can see it.
+2. Guide on the ITEM ARRAY only. Including the `pages` wrapper is what sent the
+   8B model into a 230-entry repetition loop. Page type is inferred from the
+   item count here instead.
+3. Tolerate a bare array, an object wrapper, and a spurious null-price parent
+   row (the guided run emitted `Thukpa soup (noodles) :` beside its three
+   correct variants).
+4. Force `currency = NPR`. The unguided run volunteered `INR`.
+5. Compose the display name in code. The model leaves `name` as the shared
+   printed line on every variant and puts the difference only in
+   `variant_label`.
+
+One request per page: ~3.5 min each, which is why phase 4 runs documents as
+parallel jobs.
+"""
+import base64
+import json
+import urllib.request
+
+from menu.pipeline import nv, rasterize, throttle
+from menu.pipeline.extract import _ITEM_SCHEMA, _PROMPT
+
+# Rule 2: the array, and nothing wrapping it.
+_GUIDED_SCHEMA = {'type': 'array', 'items': _ITEM_SCHEMA}
+
+
+def _model():
+    from django.conf import settings
+    return settings.NVIDIA_VISION_MODEL
+
+
+def _rows_from(text):
+    """The item list out of whatever shape came back (rule 3)."""
+    try:
+        payload = json.loads(text)
+    except (TypeError, ValueError) as exc:
+        raise ValueError(
+            f'vision model did not return JSON: {str(text)[:200]!r}') from exc
+    if isinstance(payload, list):
+        return payload
+    if isinstance(payload, dict):
+        for field in ('items', 'data', 'results'):
+            if isinstance(payload.get(field), list):
+                return payload[field]
+    raise ValueError(f'vision model did not return JSON items: {str(text)[:200]!r}')
+
+
+def _display_name(row):
+    """Rule 5 -- built here, never requested from the model."""
+    base = (row.get('base_name') or '').strip()
+    variant = (row.get('variant_label') or '').strip()
+    if base and variant:
+        return f'{base} ({variant})'
+    return (row.get('name') or base or row.get('raw_name') or '').strip()
+
+
+def _is_parent_row(row, rows):
+    """A null-price row whose variants carry the prices (rule 3).
+
+    Distinguished from a genuinely unpriced item -- 'Soup of the Day' with no
+    number beside it -- by whether any OTHER row shares its base name and does
+    have a price. A real unpriced row survives, because gate 1 exists to ask a
+    human about exactly those.
+    """
+    if row.get('price') is not None:
+        return False
+    base = (row.get('base_name') or row.get('name') or '').strip().rstrip(':').strip()
+    if not base:
+        return False
+    return any(other is not row
+               and other.get('price') is not None
+               and (other.get('base_name') or '').strip() == base
+               for other in rows)
+
+
+def _clean(rows, page_number):
+    out = []
+    for row in rows:
+        if not isinstance(row, dict) or _is_parent_row(row, rows):
+            continue
+        row = dict(row)
+        row['name'] = _display_name(row)
+        row['currency'] = 'NPR'                      # rule 4
+        row['source_page'] = page_number
+        if not row['name']:
+            continue
+        row.setdefault('raw_name', row['name'])
+        out.append(row)
+    return out
+
+
+def extract_menu(file_bytes, mime, *, model=None, api_key=None,
+                 opener=urllib.request.urlopen, throttled=True):
+    """-> {"pages": [...], "items": [...]} — the same contract `extract.extract_menu` returns."""
+    model = model or _model()
+    key = nv.api_key() if api_key is None else api_key
+    if not key:
+        raise ValueError(
+            'No NVIDIA API key: pass api_key= or set NVIDIA_API_KEY in .env')
+
+    items, pages = [], []
+    for number, page in enumerate(rasterize.pages_of(file_bytes, mime), start=1):
+        if throttled:
+            throttle.acquire(model)
+        data_url = 'data:image/jpeg;base64,' + base64.b64encode(page).decode()
+        body = {
+            'model': model,
+            'messages': [{'role': 'user', 'content': [
+                {'type': 'text', 'text': _PROMPT},
+                {'type': 'image_url', 'image_url': {'url': data_url}},
+            ]}],
+            'max_tokens': 8192,
+            'temperature': 0.0,
+            'nvext': {'guided_json': _GUIDED_SCHEMA},   # rules 1 + 2
+        }
+        reply = nv.post('/chat/completions', body, key=key, opener=opener)
+        rows = _clean(_rows_from(nv.message_text(reply)), number)
+        items.extend(rows)
+        # Rule 2: page type from the item count, not from the model.
+        pages.append({'index': number,
+                      'page_type': 'menu' if rows else 'unknown',
+                      'confidence': 1.0 if rows else 0.0})
+    return {'pages': pages, 'items': items}
