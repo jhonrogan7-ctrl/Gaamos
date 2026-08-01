@@ -30,10 +30,18 @@ def _limits():
 
 
 def budget_for(model):
-    """This model's budget, falling back to `default`."""
+    """This model's budget, falling back to `default`.
+
+    `rpm` is clamped to at least 1. A budget of 0 reads as "no calls allowed",
+    which a function returning seconds-to-wait cannot express, and unclamped it
+    made `wait_time` raise IndexError on an empty bucket instead: 0 calls
+    satisfies `>= 0`, and there is then no oldest call to age out. One call per
+    window is the strictest budget this module can actually honour, so a
+    nonsense rpm lands there rather than on the caller's traceback.
+    """
     limits = _limits()
     raw = limits.get(model) or limits.get('default') or {}
-    return Budget(int(raw.get('rpm', 60)), float(raw.get('min_interval', 0.0)))
+    return Budget(max(1, int(raw.get('rpm', 60))), float(raw.get('min_interval', 0.0)))
 
 
 def _client():

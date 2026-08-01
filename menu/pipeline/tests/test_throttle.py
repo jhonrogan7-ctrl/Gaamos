@@ -56,6 +56,7 @@ def budgets(settings):
         'default': {'rpm': 40, 'min_interval': 0.0},
         'paced': {'rpm': 100, 'min_interval': 10.0},
         'small': {'rpm': 6, 'min_interval': 0.0},
+        'zero': {'rpm': 0, 'min_interval': 0.0},
     }
     return settings
 
@@ -121,6 +122,23 @@ def test_a_call_older_than_the_window_is_forgotten(budgets):
     throttle.acquire('small', client=client, now=1000.0, sleep=lambda s: None)
     throttle.wait_time('small', client=client, now=1100.0)
     assert client.zcard('throttle:small') == 0
+
+
+def test_a_zero_rpm_budget_does_not_crash_the_first_caller(budgets):
+    """`rpm: 0` reads as "no calls allowed", which this module cannot express --
+    it returns seconds to wait, not "never". Unclamped it was worse than
+    ambiguous: an empty bucket satisfies `0 >= 0`, and the wait was then computed
+    from `recent[0]` of an empty list, so a misconfigured budget raised
+    IndexError on the caller rather than pacing it."""
+    assert throttle.wait_time('zero', client=FakeRedis(), now=1000.0) == 0
+
+
+def test_a_zero_rpm_budget_paces_at_one_call_per_window(budgets):
+    """The strictest budget this module can actually express, which is where a
+    nonsense `rpm` should land -- not at "unlimited"."""
+    client = FakeRedis()
+    throttle.acquire('zero', client=client, now=1000.0, sleep=lambda s: None)
+    assert throttle.wait_time('zero', client=client, now=1010.0) == pytest.approx(50.0)
 
 
 def test_backoff_doubles_and_starts_at_the_base():
