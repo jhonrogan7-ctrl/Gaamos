@@ -35,14 +35,14 @@
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 8v8M8 12h8"/></svg>
       New tenant
     </a>
-    <a href="{% url 'ops:images' %}" class="nav {% if active == 'images' %}on{% endif %}">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
-      Images
-    </a>
-    <a href="{% url 'ops:scans' %}" class="nav {% if active == 'scans' %}on{% endif %}">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>
-      Scans
-    </a>
+    {% comment %}
+      Images and Scans were unlinked 2026-08-01 on the founder's call: the
+      Gemini-backed scan path is superseded by the menu-build wizard (spec
+      2026-07-30), whose phase 1 shipped the item library the wizard matches
+      against. The routes and views still exist and still work — only the nav
+      entries are gone — so nothing in flight breaks and phase 4 can reuse the
+      workbench and publish code rather than rewrite it.
+    {% endcomment %}
     <div class="grp">Account</div>
     <form method="post" action="{% url 'ops:logout' %}">{% csrf_token %}
       <button type="submit" class="nav" style="width:100%;text-align:left;background:none;border:0;cursor:pointer">
@@ -80,14 +80,7 @@
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 8v8M8 12h8"/></svg>
     <span>New</span>
   </a>
-  <a href="{% url 'ops:images' %}" class="tb {% if active == 'images' %}on{% endif %}">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
-    <span>Images</span>
-  </a>
-  <a href="{% url 'ops:scans' %}" class="tb {% if active == 'scans' %}on{% endif %}">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>
-    <span>Scans</span>
-  </a>
+  {# Images and Scans unlinked 2026-08-01 — see the sidebar comment above. #}
   <form method="post" action="{% url 'ops:logout' %}" style="display:contents">{% csrf_token %}
     <button type="submit" class="tb">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/></svg>

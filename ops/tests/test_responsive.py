@@ -74,16 +74,24 @@ class OpsMobileShellTests(TestCase):
         boss = User.objects.create_superuser('boss', 'b@x.io', 'pw')
         self.client.force_login(boss)
 
-    def test_tabbar_present_with_five_links_and_signout(self):
+    def test_tabbar_present_with_three_links_and_signout(self):
         body = self.client.get('/platform/leads', **self.apex).content.decode()
         self.assertIn('class="tabbar"', body)
         tabbar = body.split('class="tabbar"', 1)[1]
         self.assertIn('/platform/leads', tabbar)
         self.assertIn('/platform/tenants', tabbar)
         self.assertIn('/platform/tenants/new', tabbar)
-        self.assertIn('/platform/images/', tabbar)  # image library
-        self.assertIn('/platform/scans/', tabbar)   # menu scans
         self.assertIn('/platform/logout', tabbar)   # sign-out POST form in the bar
+
+    def test_the_superseded_scan_path_is_not_offered_anywhere_in_the_shell(self):
+        """Founder call 2026-08-01: the Gemini-backed Images/Scans path is
+        superseded by the menu-build wizard and must not be reachable from the
+        nav. The routes still resolve on purpose — phase 4 reuses the workbench
+        and publish code — so only the offer is gone, and this pins it against a
+        future session helpfully putting the links back."""
+        body = self.client.get('/platform/leads', **self.apex).content.decode()
+        self.assertNotIn('/platform/images', body)
+        self.assertNotIn('/platform/scans', body)
 
     def test_tabbar_active_state_follows_page(self):
         body = self.client.get('/platform/tenants', **self.apex).content.decode()
