@@ -83,6 +83,12 @@ class Command(BaseCommand):
             self.stdout.write(self.style.WARNING(
                 f'cleared {len(report.cleared_live)} live image(s): '
                 + ', '.join(report.cleared_live)))
+        if report.reconciled:
+            self.stdout.write(self.style.WARNING(
+                f'reconciled {len(report.reconciled)} entry/entries that '
+                f'predate the library:'))
+            for line in report.reconciled:
+                self.stdout.write(f'  ↻ {line}')
         if report.no_placement:
             self.stdout.write(self.style.WARNING(
                 f'{len(report.no_placement)} item(s) have no category placement '

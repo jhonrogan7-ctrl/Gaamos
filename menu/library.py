@@ -40,6 +40,7 @@ class BackfillReport:
     rejected_live: list = field(default_factory=list)
     no_placement: list = field(default_factory=list)
     cleared_live: list = field(default_factory=list)
+    reconciled: list = field(default_factory=list)
 
 
 def asset_index():
@@ -123,8 +124,13 @@ def _create_entry(menu_item, *, company, section, asset, shareable, search_name,
         use_count=1)
 
 
-def _merge_into(entry, menu_item, *, asset):
-    """Fill this entry's gaps from another venue's row. Never overwrite.
+def _merge_into(entry, *, asset, description, dietary_tags, price):
+    """Fill this entry's gaps from another row. Never overwrite.
+
+    The fields are passed one by one rather than as an object because the two
+    callers hand over different shapes -- a tenant `MenuItem` (`price`) and an
+    older catalog `Item` (`reference_price`) -- and a duck-typed `.price` would
+    read whichever attribute happened to exist.
 
     The first venue to contribute a dish owns the entry's text: a later venue's
     wording is not more correct, and the printed row price wins at publish time
@@ -142,17 +148,55 @@ def _merge_into(entry, menu_item, *, asset):
         if asset.prompt:
             entry.image_prompt = asset.prompt
             changed.append('image_prompt')
-    if menu_item.description and not entry.description:
-        entry.description = menu_item.description
+    if description and not entry.description:
+        entry.description = description
         changed.append('description')
-    if menu_item.dietary_tags and not entry.dietary_tags:
-        entry.dietary_tags = list(menu_item.dietary_tags)
+    if dietary_tags and not entry.dietary_tags:
+        entry.dietary_tags = list(dietary_tags)
         changed.append('dietary_tags')
-    if entry.reference_price is None and menu_item.price is not None:
-        entry.reference_price = menu_item.price
+    if entry.reference_price is None and price is not None:
+        entry.reference_price = price
         changed.append('reference_price')
     if changed:
         entry.save(update_fields=changed)
+
+
+def reconcile_stray_entries(report):
+    """Give a pre-backfill `active` row the key the library compares on.
+
+    The scan-review flow could approve an item into this table before it was a
+    library, so those rows carry no `search_name` and the matcher cannot see
+    them. Deriving one is mechanical -- it comes from the row's own printed
+    name. What it can reveal is that the row duplicates an entry the backfill
+    built from a real venue's menu, and two `active` rows on one key would make
+    the matcher return an arbitrary one of them. The duplicate is folded into
+    the venue-grounded entry with the model's own `merged` / `merged_into`
+    vocabulary: nothing is deleted, and the older row keeps its provenance.
+    """
+    for entry in Item.objects.filter(status='active', search_name=''):
+        entry.search_name = name_norm.search_form(entry.name)
+        if not entry.image_prompt:
+            entry.image_prompt = prompts.for_item(entry.name, entry.category)
+        variant = name_norm.normalize(entry.variant_label)
+        keeper = next(
+            (c for c in Item.objects.filter(status='active',
+                                            search_name=entry.search_name)
+             .exclude(pk=entry.pk)
+             if name_norm.normalize(c.variant_label) == variant), None)
+        if keeper is None:
+            entry.save(update_fields=['search_name', 'image_prompt'])
+            report.reconciled.append(f'#{entry.pk} {entry.name} -> keyed')
+            continue
+        _merge_into(keeper, asset=entry.image_asset,
+                    description=entry.description,
+                    dietary_tags=entry.dietary_tags,
+                    price=entry.reference_price)
+        entry.status = 'merged'
+        entry.merged_into = keeper
+        entry.save(update_fields=['search_name', 'image_prompt', 'status',
+                                  'merged_into'])
+        report.reconciled.append(
+            f'#{entry.pk} {entry.name} -> merged into #{keeper.pk} {keeper.name}')
 
 
 def backfill(companies, *, index=None, clear_rejected_live=False):
@@ -197,10 +241,16 @@ def backfill(companies, *, index=None, clear_rejected_live=False):
                                       search_name=search_name, report=report)
                 report.created += 1
             else:
-                _merge_into(entry, menu_item, asset=asset)
+                _merge_into(entry, asset=asset,
+                            description=menu_item.description,
+                            dietary_tags=menu_item.dietary_tags,
+                            price=menu_item.price)
                 report.merged += 1
             contributors[entry.pk].add(company.pk)
 
     for pk, venues in contributors.items():
         Item.objects.filter(pk=pk).update(use_count=len(venues))
+    # Last, so a stray row is compared against the entries this run just built
+    # rather than against whatever happened to exist first.
+    reconcile_stray_entries(report)
     return report

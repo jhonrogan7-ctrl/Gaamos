@@ -359,3 +359,76 @@ def test_without_the_flag_the_rejected_picture_is_reported_but_left_alone():
     menu_item.refresh_from_db()
     assert menu_item.image_url != ''
     assert 'rejected asset' in out.getvalue()
+
+
+@pytest.mark.django_db
+def test_a_row_that_predates_the_library_gets_the_key_the_matcher_compares_on():
+    """The scan-review flow could approve an item into this table before it was
+    a library, so those rows carry no search_name and the matcher cannot see
+    them."""
+    stray = Item.objects.create(name='Ruslan Vodka 60ml', base_name='Ruslan Vodka',
+                                variant_label='60ml', category='HARD DRINKS',
+                                status='active', reference_price=300)
+    company, branch = _venue('chillzone')
+    _item(company, branch, name='Black Tea', section='Hot Drinks')
+
+    report = library.backfill([company])
+
+    stray.refresh_from_db()
+    assert stray.status == 'active'
+    assert stray.search_name == 'ruslan vodka'
+    assert stray.image_prompt                       # composed from its own name
+    assert 'Ruslan Vodka 60ml -> keyed' in report.reconciled[0]
+
+
+@pytest.mark.django_db
+def test_a_stray_row_that_duplicates_a_real_entry_is_merged_not_left_active():
+    """Two active rows on one key would make the matcher return an arbitrary one
+    of them. The venue-grounded entry keeps the key; the older row is folded in
+    with the model's own vocabulary, and nothing is deleted."""
+    stray = Item.objects.create(name='8848 Vodka 60ml', base_name='8848 Vodka',
+                                variant_label='60ml', category='HARD DRINKS',
+                                status='active', reference_price=300)
+    company, branch = _venue('chillzone')
+    _item(company, branch, name='8848 Vodka (60ml)', section='Hard Drinks', price=300)
+
+    library.backfill([company])
+
+    stray.refresh_from_db()
+    keeper = Item.objects.get(status='active', search_name='8848 vodka')
+    assert stray.status == 'merged'
+    assert stray.merged_into_id == keeper.pk
+    assert keeper.name == '8848 Vodka (60ml)'       # the one a real venue prints
+    assert Item.objects.filter(status='active', search_name='8848 vodka').count() == 1
+
+
+@pytest.mark.django_db
+def test_a_stray_row_fills_the_keepers_gaps_before_it_is_merged_away():
+    """Its image is the only copy of that picture the library has."""
+    asset = _asset('vodka', prompt='a shot of vodka, STYLE')
+    stray = Item.objects.create(name='8848 Vodka 60ml', variant_label='60ml',
+                                status='active', image_asset=asset,
+                                description='a nip of the local vodka')
+    company, branch = _venue('chillzone')
+    _item(company, branch, name='8848 Vodka (60ml)', section='Hard Drinks')
+
+    library.backfill([company])
+
+    stray.refresh_from_db()
+    keeper = Item.objects.get(status='active', search_name='8848 vodka')
+    assert stray.status == 'merged'
+    assert keeper.image_asset_id == asset.pk
+    assert keeper.description == 'a nip of the local vodka'
+
+
+@pytest.mark.django_db
+def test_reconciling_leaves_a_healthy_library_alone():
+    """Every entry the backfill writes already has a search_name, so a second
+    run must find nothing to reconcile."""
+    company, branch = _venue('chillzone')
+    _item(company, branch, name='Black Tea', section='Hot Drinks')
+
+    library.backfill([company])
+    second = library.backfill([company])
+
+    assert second.reconciled == []
