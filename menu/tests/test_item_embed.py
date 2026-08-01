@@ -14,9 +14,10 @@ def test_the_catalog_width_is_the_nvidia_models_width():
     assert item_embed.DIMENSIONS == 1024
 
 
-def test_no_provider_means_no_vector_rather_than_an_error():
+def test_no_provider_means_no_vector_rather_than_an_error(settings):
     """Spec D6: every AI layer is optional and the wizard must work with every
-    endpoint dead. No embedder simply switches the vector layer off."""
+    endpoint dead. Nothing configured simply switches the vector layer off."""
+    settings.NVIDIA_API_KEY = ''
     assert item_embed.PROVIDER is None
     assert item_embed.embed_text('black tea') is None
 

@@ -4,6 +4,7 @@ import tempfile
 import pytest
 from django.conf import settings
 from django.core.cache import cache
+from django.test import override_settings
 
 
 @pytest.fixture(autouse=True)
@@ -16,6 +17,27 @@ def _clear_cache():
     each test's rate-limit window isolated."""
     cache.clear()
     yield
+
+
+@pytest.fixture(autouse=True)
+def _no_live_model_calls():
+    """Blank the NVIDIA key for every test, so none can reach a real endpoint.
+
+    Same class of bug as `_isolated_media_root` below, and it already bit once:
+    `item_embed.embed_text` falls back to `resolve_provider()`, which returns a
+    live embedder whenever a key is configured — and the dev `.env` carries a
+    real one. A test that writes scan drafts without patching `PROVIDER` then
+    spends real quota and gets a real vector, which is how
+    `test_extraction_succeeds_with_no_embedder_configured` started failing: it
+    asserts the vector layer is OFF and was silently handed live embeddings.
+
+    The whole suite is meant to be network-free; the live run is a hand-driven
+    command, never a test. A test that genuinely wants a provider sets the key
+    itself (the `settings` fixture applies on top of this) or patches
+    `item_embed.PROVIDER`.
+    """
+    with override_settings(NVIDIA_API_KEY=''):
+        yield
 
 
 @pytest.fixture(scope='session', autouse=True)
