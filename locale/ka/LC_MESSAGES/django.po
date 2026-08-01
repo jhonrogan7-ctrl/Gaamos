@@ -5,7 +5,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gaamos-landing\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-07-31 13:31+0545\n"
+"POT-Creation-Date: 2026-08-01 13:14+0545\n"
 "PO-Revision-Date: 2026-07-13 20:00+0545\n"
 "Last-Translator: Gaamos team <hello@gaamos.io>\n"
 "Language-Team: Georgian\n"
@@ -15,7 +15,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: core/models.py:11
+#: core/models.py:11 core/views.py:89 core/views.py:91
 msgid "Café"
 msgstr "კაფე"
 
@@ -27,7 +27,7 @@ msgstr "რესტორანი"
 msgid "Bar"
 msgstr "ბარი"
 
-#: core/models.py:14
+#: core/models.py:14 core/views.py:87
 msgid "Hotel"
 msgstr "სასტუმრო"
 
@@ -95,7 +95,7 @@ msgstr ""
 msgid "Business"
 msgstr "Business"
 
-#: core/views.py:57 core/views.py:69
+#: core/views.py:57 core/views.py:70
 msgid "/month"
 msgstr "/თვე"
 
@@ -129,50 +129,66 @@ msgid "Table QRs + printable PDF export"
 msgstr "მაგიდის QR-ები + დასაბეჭდი PDF ექსპორტი"
 
 #: core/views.py:64
+msgid "Up to 25 tables"
+msgstr "25 მაგიდამდე"
+
+#: core/views.py:65
 msgid "Photos, badges & promo banner"
 msgstr "ფოტოები, ბეჯები და პრომო ბანერი"
 
-#: core/views.py:65
+#: core/views.py:66
 msgid "Installable app (PWA) for guests & staff"
 msgstr "დაინსტალირებადი აპი (PWA) სტუმრებისა და პერსონალისთვის"
 
-#: core/views.py:66
+#: core/views.py:67
 msgid "3 team members"
 msgstr "3 გუნდის წევრი"
 
-#: core/views.py:68
+#: core/views.py:69
 msgid "VIP"
 msgstr "VIP"
 
-#: core/views.py:70
+#: core/views.py:71
 msgid "For venues that want full brand ownership and a bigger team."
 msgstr "ობიექტებისთვის, რომლებსაც სურთ სრული ბრენდის ფლობა და დიდი გუნდი."
 
-#: core/views.py:71 templates/marketing/_contact.html:6
+#: core/views.py:72 templates/marketing/_contact.html:6
 msgid "Talk to us"
 msgstr "დაგვიკავშირდით"
 
-#: core/views.py:72
+#: core/views.py:73
 msgid "Everything in Business"
 msgstr "ყველაფერი Business-იდან"
 
-#: core/views.py:73
+#: core/views.py:74
+msgid "Unlimited tables — no cap"
+msgstr "შეუზღუდავი მაგიდები — ლიმიტის გარეშე"
+
+#: core/views.py:75
 msgid "Custom domain — menu.yourrestaurant.com"
 msgstr "საკუთარი დომენი — menu.yourrestaurant.com"
 
-#: core/views.py:74
+#: core/views.py:76
 msgid "Your venue as its own branded app"
 msgstr "თქვენი ობიექტი საკუთარ ბრენდირებულ აპად"
 
-#: core/views.py:75
+#: core/views.py:77
 msgid "Unlimited team + branch-scoped managers"
 msgstr "ულიმიტო გუნდი + ფილიალის მენეჯერები"
 
-#: core/views.py:76
+#: core/views.py:78
 msgid "Priority WhatsApp support"
 msgstr "პრიორიტეტული WhatsApp მხარდაჭერა"
 
-#: core/views.py:124
+#: core/views.py:88
+msgid "Restaurant & Bar"
+msgstr "რესტორანი და ბარი"
+
+#: core/views.py:90
+msgid "Inn"
+msgstr "სასტუმრო სახლი"
+
+#: core/views.py:138
 msgid "Please fill in your name, venue name and phone number."
 msgstr ""
 "გთხოვთ შეავსოთ თქვენი სახელი, ობიექტის სახელი და ტელეფონის ნომერი.გთხოვთ, "
@@ -184,6 +200,19 @@ msgstr ""
 "Gaamos — QR მენიუები და ლაივ შეკვეთები კაფეების, რესტორნებისა და "
 "ბარებისთვისGaamos — QR-მენიუ და ლაივ შეკვეთები კაფეების, რესტორნებისა და "
 "ბარებისთვის"
+
+#: templates/marketing/_clients.html:5
+msgid "Trusted by"
+msgstr "ჩვენი კლიენტები"
+
+#: templates/marketing/_clients.html:6
+msgid "Venues already running on Gaamos"
+msgstr "ობიექტები, რომლებიც უკვე მუშაობენ Gaamos-ზე"
+
+#: templates/marketing/_clients.html:7
+msgid ""
+"Hotels, cafés and restaurants serving their menus through a Gaamos QR today."
+msgstr "სასტუმროები, კაფეები და რესტორნები, რომლებიც დღეს თავიანთ მენიუს Gaamos QR-ით სთავაზობენ სტუმრებს."
 
 #: templates/marketing/_contact.html:7
 msgid "Tell us about your venue"

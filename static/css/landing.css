@@ -400,6 +400,26 @@
 }
 .orn-branch-figures { width: 180px; height: 180px; flex: none; opacity: .16; }
 
+/* ── clients ───────────────────────────────────────────────────────── */
+/* Typographic, not a logo wall — we hold no logo files for these venues, and
+   uniform text boxes standing in for logos read as unfinished. */
+.orn-clients { position: relative; padding: 0 28px 84px; }
+.orn-clients-inner { max-width: 1180px; margin: 0 auto; }
+.orn-clients-head { text-align: center; }
+.orn-clients-sub { font-size: 16.5px; color: var(--ink-75); margin-top: 12px; }
+.orn-clients-grid {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 22px; margin-top: 44px;
+}
+/* Five cards over three columns leave the last row short by one. That is the
+   real roster — a filler card to square the grid would be a fake client. */
+.orn-client { padding: 26px 24px; text-align: center; }
+.orn-client-mark { width: 30px; height: 30px; margin: 0 auto 14px; opacity: .55; }
+.orn-client-name { font-family: Marcellus, serif; font-size: 23px; line-height: 1.2; }
+.orn-client-type {
+  font-family: var(--mono); font-size: 10.5px; margin-top: 9px;
+  letter-spacing: .1em; text-transform: uppercase; color: var(--ink-60);
+}
+
 /* ── pricing ───────────────────────────────────────────────────────── */
 .orn-pricing { position: relative; padding: 0 28px 96px; }
 .orn-pricing-head { max-width: 1180px; margin: 0 auto; text-align: center; }
@@ -571,6 +591,10 @@ textarea.orn-input { resize: vertical; }
   .orn-branch { grid-template-columns: 1fr; gap: 24px; padding: 26px; margin-top: 36px; }
   .orn-branch h3 { font-size: 28px; }
   .orn-branch-figures { width: 140px; height: 140px; }
+  .orn-clients { padding: 0 18px 56px; }
+  .orn-clients-grid { grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 32px; }
+  .orn-client { padding: 22px 18px; }
+  .orn-client-name { font-size: 20px; }
   .orn-pricing { padding: 0 18px 64px; }
   .orn-plans { grid-template-columns: 1fr; margin-top: 32px; }
   .orn-plan { padding: 26px; }
@@ -600,6 +624,7 @@ textarea.orn-input { resize: vertical; }
   .orn-form { padding: 22px; }
   .orn-form-grid { grid-template-columns: 1fr; }
   .orn-field.orn-span-2 { grid-column: span 1; }
+  .orn-clients-grid { grid-template-columns: 1fr; }
   .orn-switch { width: 100%; }
   .orn-switch button { min-width: 0; padding: 11px 8px; }
   .orn-contact-steps { flex-direction: column; gap: 10px; }

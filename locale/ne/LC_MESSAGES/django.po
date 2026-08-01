@@ -5,7 +5,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gaamos-landing\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-07-31 13:31+0545\n"
+"POT-Creation-Date: 2026-08-01 13:14+0545\n"
 "PO-Revision-Date: 2026-07-13 20:00+0545\n"
 "Last-Translator: Gaamos team <hello@gaamos.io>\n"
 "Language-Team: Nepali\n"
@@ -15,7 +15,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: core/models.py:11
+#: core/models.py:11 core/views.py:89 core/views.py:91
 msgid "Café"
 msgstr "क्याफे"
 
@@ -27,7 +27,7 @@ msgstr "रेस्टुरेन्ट"
 msgid "Bar"
 msgstr "बार"
 
-#: core/models.py:14
+#: core/models.py:14 core/views.py:87
 msgid "Hotel"
 msgstr "होटल"
 
@@ -95,7 +95,7 @@ msgstr ""
 msgid "Business"
 msgstr "बिजनेस"
 
-#: core/views.py:57 core/views.py:69
+#: core/views.py:57 core/views.py:70
 msgid "/month"
 msgstr "/महिना"
 
@@ -127,56 +127,85 @@ msgid "Table QRs + printable PDF export"
 msgstr "टेबल QR + प्रिन्ट-योग्य PDF निर्यात"
 
 #: core/views.py:64
+msgid "Up to 25 tables"
+msgstr "२५ वटासम्म टेबल"
+
+#: core/views.py:65
 msgid "Photos, badges & promo banner"
 msgstr "फोटो, ब्याज र प्रोमो ब्यानर"
 
-#: core/views.py:65
+#: core/views.py:66
 msgid "Installable app (PWA) for guests & staff"
 msgstr "पाहुना र कर्मचारीका लागि इन्स्टल गर्न मिल्ने एप (PWA)"
 
-#: core/views.py:66
+#: core/views.py:67
 msgid "3 team members"
 msgstr "३ टोली सदस्य"
 
-#: core/views.py:68
+#: core/views.py:69
 msgid "VIP"
 msgstr "VIP"
 
-#: core/views.py:70
+#: core/views.py:71
 msgid "For venues that want full brand ownership and a bigger team."
 msgstr "पूर्ण ब्रान्ड स्वामित्व र ठूलो टोली चाहने स्थलहरूका लागि।"
 
-#: core/views.py:71 templates/marketing/_contact.html:6
+#: core/views.py:72 templates/marketing/_contact.html:6
 msgid "Talk to us"
 msgstr "हामीसँग कुरा गर्नुहोस्"
 
-#: core/views.py:72
+#: core/views.py:73
 msgid "Everything in Business"
 msgstr "Business का सबै सुविधा"
 
-#: core/views.py:73
+#: core/views.py:74
+msgid "Unlimited tables — no cap"
+msgstr "असीमित टेबल — कुनै सीमा छैन"
+
+#: core/views.py:75
 msgid "Custom domain — menu.yourrestaurant.com"
 msgstr "कस्टम डोमेन — menu.yourrestaurant.com"
 
-#: core/views.py:74
+#: core/views.py:76
 msgid "Your venue as its own branded app"
 msgstr "तपाईंको स्थल आफ्नै ब्रान्डेड एपका रूपमा"
 
-#: core/views.py:75
+#: core/views.py:77
 msgid "Unlimited team + branch-scoped managers"
 msgstr "असीमित टोली + शाखा-स्तरका म्यानेजर"
 
-#: core/views.py:76
+#: core/views.py:78
 msgid "Priority WhatsApp support"
 msgstr "प्राथमिकता WhatsApp सहयोग"
 
-#: core/views.py:124
+#: core/views.py:88
+msgid "Restaurant & Bar"
+msgstr "रेस्टुरेन्ट र बार"
+
+#: core/views.py:90
+msgid "Inn"
+msgstr "लज"
+
+#: core/views.py:138
 msgid "Please fill in your name, venue name and phone number."
 msgstr "कृपया आफ्नो नाम, स्थलको नाम र फोन नम्बर भर्नुहोस्।"
 
 #: templates/home.html:3
 msgid "Gaamos — QR menus & live orders for cafés, restaurants and bars"
 msgstr "Gaamos — क्याफे, रेस्टुरेन्ट र बारका लागि QR मेनु र लाइभ अर्डर"
+
+#: templates/marketing/_clients.html:5
+msgid "Trusted by"
+msgstr "हाम्रा ग्राहकहरू"
+
+#: templates/marketing/_clients.html:6
+msgid "Venues already running on Gaamos"
+msgstr "गामोसमा चलिरहेका भेन्युहरू"
+
+#: templates/marketing/_clients.html:7
+msgid ""
+"Hotels, cafés and restaurants serving their menus through a Gaamos QR today."
+msgstr "आज गामोस QR मार्फत आफ्नो मेनु देखाइरहेका होटल, क्याफे र रेस्टुरेन्टहरू।"
 
 #: templates/marketing/_contact.html:7
 msgid "Tell us about your venue"
