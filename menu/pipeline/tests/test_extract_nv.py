@@ -6,6 +6,7 @@ model might do.
 """
 import io
 import json
+from unittest.mock import patch
 
 import pytest
 from PIL import Image
@@ -195,3 +196,21 @@ def test_a_missing_key_is_refused_before_any_request_is_built():
     with pytest.raises(ValueError, match='NVIDIA API key'):
         extract_nv.extract_menu(_png(), 'image/png', model='m', api_key='',
                                 opener=_opener(_chat(ONE_ITEM)), throttled=False)
+
+
+def test_every_page_draws_on_the_rate_budget_separately():
+    """Every test above passes `throttled=False`, so none of them would notice
+    the throttle being unwired. Pacing is per REQUEST, not per document: a real
+    card is 5 pages, so one scan is 5 calls against a 6/min budget."""
+    import fitz
+    doc = fitz.open()
+    for _ in range(3):
+        doc.new_page()
+
+    def opener(req, timeout=None):
+        return io.BytesIO(json.dumps(_chat(ONE_ITEM)).encode())
+
+    with patch('menu.pipeline.throttle.acquire') as acquire:
+        extract_nv.extract_menu(doc.tobytes(), 'application/pdf', model='m',
+                                api_key='k', opener=opener)
+    assert acquire.call_count == 3

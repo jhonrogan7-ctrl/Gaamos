@@ -2,6 +2,7 @@
 this; phase 4 authors prompts with it."""
 import io
 import json
+from unittest.mock import patch
 
 import pytest
 
@@ -59,3 +60,12 @@ def test_json_that_does_not_parse_under_a_schema_fails_loudly():
     with pytest.raises(ValueError, match='did not return JSON'):
         text_nv.complete('decide', schema={'type': 'object'}, model='m',
                          api_key='k', opener=_opener('sorry'), throttled=False)
+
+
+def test_the_default_call_draws_on_this_model_s_rate_budget():
+    """Every test above passes `throttled=False`, so none of them would notice
+    the throttle being unwired -- and an adapter that skips it is exactly the
+    racing sleep loop `throttle.py` was written to delete."""
+    with patch('menu.pipeline.throttle.acquire') as acquire:
+        text_nv.complete('decide', model='m', api_key='k', opener=_opener('ok'))
+    acquire.assert_called_once_with('m')

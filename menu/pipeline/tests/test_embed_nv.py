@@ -6,6 +6,7 @@ part of the contract, not a detail.
 """
 import io
 import json
+from unittest.mock import patch
 
 import pytest
 
@@ -73,3 +74,13 @@ def test_no_key_means_no_provider_rather_than_an_error(settings):
     off; layers 0-2 of the matcher carry on."""
     settings.NVIDIA_API_KEY = ''
     assert item_embed.resolve_provider() is None
+
+
+def test_the_default_call_draws_on_this_model_s_rate_budget():
+    """Every test above passes `throttled=False`, so none of them would notice
+    the throttle being unwired -- and a backfill over the 517 library entries is
+    517 unpaced requests if it is."""
+    with patch('menu.pipeline.throttle.acquire') as acquire:
+        embed_nv.embed('black tea', model='m', api_key='k',
+                       opener=_opener([0.1] * 1024))
+    acquire.assert_called_once_with('m')
