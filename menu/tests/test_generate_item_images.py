@@ -42,9 +42,16 @@ def sheet(tmp_path):
 @pytest.fixture(autouse=True)
 def no_real_waiting(monkeypatch):
     """The command paces itself against a rate-limited endpoint by default;
-    tests must not actually sleep. The pacing tests re-patch this to record."""
+    tests must not actually sleep. The pacing tests re-patch this to record.
+
+    `throttle.acquire` is neutralised for the same reason and one more: it
+    reaches a real Redis and honours the real budget, and NVIDIA_IMAGE_MODEL
+    carries `min_interval: 10.0` — left alone it would put a ten-second sleep
+    between every generated image in this file and share one bucket across
+    tests."""
     monkeypatch.setattr("menu.management.commands.generate_item_images.time.sleep",
                         lambda seconds: None)
+    monkeypatch.setattr("menu.pipeline.throttle.acquire", lambda model: 0.0)
 
 
 @pytest.fixture
@@ -220,9 +227,27 @@ def test_skip_key_excludes_one_key_by_hand(sheet, fake_flux, settings, tmp_path)
 
 
 @pytest.mark.django_db
-def test_waits_between_calls_to_respect_the_endpoint_rate_limit(sheet, fake_flux,
-                                                                settings, tmp_path,
-                                                                monkeypatch):
+def test_every_image_draws_on_the_shared_rate_budget(sheet, fake_flux, settings,
+                                                     tmp_path, monkeypatch):
+    """Pacing used to be `--delay` seconds slept in this process alone, which
+    meant a worker generating at the same time doubled the real rate against a
+    6/min endpoint. It now comes from the budget every caller shares."""
+    settings.MEDIA_ROOT = str(tmp_path / "media")
+    paced = []
+    monkeypatch.setattr("menu.pipeline.throttle.acquire",
+                        lambda model: paced.append(model) or 0.0)
+
+    call_command("generate_item_images", "--prompts", sheet, "--delay", "9")
+
+    assert len(fake_flux) == 3
+    assert paced == [settings.NVIDIA_IMAGE_MODEL] * 3
+
+
+@pytest.mark.django_db
+def test_the_delay_option_no_longer_paces_anything(sheet, fake_flux, settings,
+                                                   tmp_path, monkeypatch):
+    """`--delay` is kept so existing invocations and scripts still parse, but it
+    is advisory: nothing sleeps on it any more."""
     settings.MEDIA_ROOT = str(tmp_path / "media")
     slept = []
     monkeypatch.setattr("menu.management.commands.generate_item_images.time.sleep",
@@ -231,7 +256,7 @@ def test_waits_between_calls_to_respect_the_endpoint_rate_limit(sheet, fake_flux
     call_command("generate_item_images", "--prompts", sheet, "--delay", "9")
 
     assert len(fake_flux) == 3
-    assert slept == [9, 9]          # between calls, not before the first or after the last
+    assert slept == []
 
 
 @pytest.mark.django_db
