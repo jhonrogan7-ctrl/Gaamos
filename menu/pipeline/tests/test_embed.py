@@ -1,7 +1,7 @@
 import io
 import json
 
-from menu.models import Item
+from menu.models import ImageAsset
 from menu.pipeline import embed
 
 
@@ -17,7 +17,10 @@ captured = {}
 
 
 def _column_dimensions():
-    return Item._meta.get_field('embedding').dimensions
+    """`ImageAsset`, not `Item`: this adapter is the image pool's, and only the
+    image pool's. The catalog moved to 1024-d NVIDIA vectors behind
+    `menu.pipeline.item_embed`, and the two spaces are not interchangeable."""
+    return ImageAsset._meta.get_field('embedding').dimensions
 
 
 def test_embed_returns_vector_and_calls_embedcontent():

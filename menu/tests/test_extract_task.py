@@ -36,7 +36,7 @@ def _scan(tmp_path, settings):
 def test_task_extracts_and_marks_extracted(tmp_path, settings):
     scan = _scan(tmp_path, settings)
     with patch("menu.pipeline.extract.extract_menu", return_value=MENU) as m, \
-         patch("menu.pipeline.embed.embed", _emb([0.1] * 768)):
+         patch("menu.pipeline.item_embed.PROVIDER", _emb([0.1] * 1024)):
         extract_menu_scan(scan.id)
     m.assert_called_once()
     scan.refresh_from_db()
@@ -48,7 +48,7 @@ def test_task_extracts_and_marks_extracted(tmp_path, settings):
 def test_task_writes_normalized_draft_items(tmp_path, settings):
     scan = _scan(tmp_path, settings)
     with patch("menu.pipeline.extract.extract_menu", return_value=MENU), \
-         patch("menu.pipeline.embed.embed", _emb([0.1] * 768)):
+         patch("menu.pipeline.item_embed.PROVIDER", _emb([0.1] * 1024)):
         extract_menu_scan(scan.id)
     drafts = Item.objects.filter(source_scan=scan).order_by("name")
     assert drafts.count() == 2
@@ -58,7 +58,7 @@ def test_task_writes_normalized_draft_items(tmp_path, settings):
     assert tea.dietary_tags == ["veg"]
     assert tea.reference_price == 50
     assert tea.needs_review is False
-    assert list(tea.embedding) == [pytest.approx(0.1)] * 768
+    assert list(tea.embedding) == [pytest.approx(0.1)] * 1024
     vodka = drafts.get(name="Ruslan Vodka (Qtr.)")
     assert vodka.base_name == "Ruslan Vodka"
     assert vodka.variant_label == "Qtr."
@@ -71,14 +71,14 @@ def test_reextraction_replaces_drafts_but_keeps_reviewed_rows(tmp_path, settings
     """Idempotency: re-running a scan must never destroy human decisions."""
     scan = _scan(tmp_path, settings)
     with patch("menu.pipeline.extract.extract_menu", return_value=MENU), \
-         patch("menu.pipeline.embed.embed", _emb([0.1] * 768)):
+         patch("menu.pipeline.item_embed.PROVIDER", _emb([0.1] * 1024)):
         extract_menu_scan(scan.id)
     approved = Item.objects.filter(source_scan=scan, name="Black Tea").get()
     approved.status = "active"
     approved.save(update_fields=["status"])
 
     with patch("menu.pipeline.extract.extract_menu", return_value=MENU), \
-         patch("menu.pipeline.embed.embed", _emb([0.1] * 768)):
+         patch("menu.pipeline.item_embed.PROVIDER", _emb([0.1] * 1024)):
         extract_menu_scan(scan.id)
 
     approved.refresh_from_db()
@@ -98,7 +98,7 @@ def test_screenshot_page_flags_its_items(tmp_path, settings):
                    "confidence": 0.9}],
     }
     with patch("menu.pipeline.extract.extract_menu", return_value=payload), \
-         patch("menu.pipeline.embed.embed", _emb([0.1] * 768)):
+         patch("menu.pipeline.item_embed.PROVIDER", _emb([0.1] * 1024)):
         extract_menu_scan(scan.id)
     item = Item.objects.get(source_scan=scan)
     assert item.needs_review is True
@@ -111,7 +111,7 @@ def test_failed_rewrite_keeps_the_previous_drafts(tmp_path, settings):
     the previous drafts survive intact rather than being replaced by a fragment."""
     scan = _scan(tmp_path, settings)
     with patch("menu.pipeline.extract.extract_menu", return_value=MENU), \
-         patch("menu.pipeline.embed.embed", _emb([0.1] * 768)):
+         patch("menu.pipeline.item_embed.PROVIDER", _emb([0.1] * 1024)):
         extract_menu_scan(scan.id)
     first = set(Item.objects.filter(source_scan=scan).values_list("pk", flat=True))
     assert len(first) == 2
@@ -122,10 +122,10 @@ def test_failed_rewrite_keeps_the_previous_drafts(tmp_path, settings):
         calls["n"] += 1
         if calls["n"] > 1:
             raise RuntimeError("embed boom")
-        return [0.2] * 768
+        return [0.2] * 1024
 
     with patch("menu.pipeline.extract.extract_menu", return_value=MENU), \
-         patch("menu.pipeline.embed.embed", flaky):
+         patch("menu.pipeline.item_embed.PROVIDER", flaky):
         extract_menu_scan(scan.id)
 
     scan.refresh_from_db()
@@ -142,3 +142,17 @@ def test_task_marks_failed_on_error(tmp_path, settings):
     assert scan.status == "failed"
     assert "boom" in scan.error
     assert Item.objects.filter(source_scan=scan).count() == 0
+
+
+@pytest.mark.django_db
+def test_extraction_succeeds_with_no_embedder_configured(tmp_path, settings):
+    """Phase 1 ships with no 1024-d provider. A scan must still extract and
+    write its drafts -- the vector layer is off, not broken (spec D6)."""
+    scan = _scan(tmp_path, settings)
+    with patch("menu.pipeline.extract.extract_menu", return_value=MENU):
+        extract_menu_scan(scan.id)
+    scan.refresh_from_db()
+    assert scan.status == "extracted"
+    drafts = Item.objects.filter(source_scan=scan)
+    assert drafts.count() == 2
+    assert all(d.embedding is None for d in drafts)

@@ -24,7 +24,7 @@ from menu.models import Branch, Company, ImageAsset, Item, Membership, MenuScan
 from menu.tenancy import reset_current_company, set_current_company
 from menu.tasks import extract_menu_scan, find_images_for_scan
 from menu.pipeline import embed as image_embed
-from menu.pipeline import embed as item_embed
+from menu.pipeline import item_embed
 from menu.pipeline import intake as pipeline_intake
 from menu.pipeline import normalize
 from menu.pipeline import photo_search
@@ -339,7 +339,8 @@ def scan_combine(request, scan_id):
         return HttpResponseBadRequest('combine needs at least one other draft row')
     keeper.name = keeper.split_from or keeper.name
     keeper.variant_label = ''
-    keeper.embedding = item_embed.embed(f"{keeper.name} {keeper.description}".strip())
+    keeper.embedding = item_embed.embed_text(
+        f"{keeper.name} {keeper.description}".strip())
     keeper.save(update_fields=['name', 'variant_label', 'embedding'])
     for sibling in siblings:
         sibling.status = 'merged'

@@ -24,6 +24,7 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.sessions",
     "django.contrib.staticfiles",
+    "django.contrib.postgres",     # pg_trgm lookups + GIN opclass indexes
     "core",
     "menu",
     "ops",
