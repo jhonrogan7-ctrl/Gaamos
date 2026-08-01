@@ -1,8 +1,9 @@
 import secrets
 
+from django.contrib.postgres.indexes import GinIndex, OpClass
 from django.core.exceptions import ValidationError
 from django.db import models
-from django.db.models import Q
+from django.db.models import F, Q
 from pgvector.django import VectorField
 
 from .tenancy import TenantScopedModel, get_current_company
@@ -495,6 +496,23 @@ class Item(models.Model):
     # Classification
     dietary_tags = models.JSONField(default=list, blank=True)
 
+    # --- Library (spec D3: the library IS this model, extended) ---
+    # The normalized base name, written by `name_norm.search_form`. The
+    # matcher's fast path and the backfill's dedup key; trigram-indexed below.
+    search_name = models.CharField(max_length=200, blank=True)
+    # Every entry carries its prompt, so a MATCHED item can be re-rolled at
+    # gate 2 without re-deriving anything.
+    image_prompt = models.TextField(blank=True)
+    # How many venues serve this entry. Breaks ties between duplicate
+    # candidates: the tea four venues pour outranks a one-off.
+    use_count = models.PositiveIntegerField(default=0)
+    origin_company = models.ForeignKey('Company', null=True, blank=True,
+                                       on_delete=models.SET_NULL,
+                                       related_name='library_items')
+    # False for a photograph the venue supplied (founder, spec D2). It is their
+    # property: the entry matches for that venue only and never leaks.
+    shareable = models.BooleanField(default=True)
+
     # Media + matching
     embedding = VectorField(dimensions=768, null=True, blank=True)
     image_asset = models.ForeignKey('ImageAsset', null=True, blank=True,
@@ -521,6 +539,15 @@ class Item(models.Model):
 
     class Meta:
         ordering = ['name']
+        indexes = [
+            # Layer 2 of the matcher: fuzzy candidates over OCR noise and
+            # spelling drift, at zero API cost.
+            GinIndex(OpClass(F('search_name'), name='gin_trgm_ops'),
+                     name='item_search_name_trgm'),
+            # Layer 1: exact on (search_name, variant_label).
+            models.Index(fields=['search_name', 'variant_label'],
+                         name='item_search_variant'),
+        ]
 
     def __str__(self):
         return self.name
