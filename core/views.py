@@ -61,6 +61,7 @@ TIERS = [
         _("Branded QR menu — 3 themes × 3 layouts"),
         _("Guest ordering + live order queue"),
         _("Table QRs + printable PDF export"),
+        _("Up to 25 tables"),
         _("Photos, badges & promo banner"),
         _("Installable app (PWA) for guests & staff"),
         _("3 team members"),
@@ -70,6 +71,7 @@ TIERS = [
      "blurb": _("For venues that want full brand ownership and a bigger team."),
      "cta": _("Talk to us"), "highlighted": False, "features": [
         _("Everything in Business"),
+        _("Unlimited tables — no cap"),
         _("Custom domain — menu.yourrestaurant.com"),
         _("Your venue as its own branded app"),
         _("Unlimited team + branch-scoped managers"),
@@ -77,6 +79,17 @@ TIERS = [
     ]},
 ]
 TABLE_QRS = ["1", "2", "3", "4", "5", "6", "7", "8"]
+# Live venues running on Gaamos. Names are proper nouns and stay untranslated
+# literals in every locale; only the type caption beside them is a translated
+# string. Five strings don't need a model — a Client table would cost a
+# migration and an admin for content that changes a few times a year.
+CLIENTS = [
+    {"name": "Pokhara Metro Eco Hotel", "type": _("Hotel")},
+    {"name": "Chill Zone Restaurant & Bar", "type": _("Restaurant & Bar")},
+    {"name": "Kailash Prabat Cafe", "type": _("Café")},
+    {"name": "The Tranquility Inn", "type": _("Inn")},
+    {"name": "The Juicery Cafe", "type": _("Café")},
+]
 
 
 def _landing_context(**extra):
@@ -87,6 +100,7 @@ def _landing_context(**extra):
         "steps": STEPS,
         "tiers": TIERS,
         "table_qrs": TABLE_QRS,
+        "clients": CLIENTS,
         "venue_types": Lead.VENUE_TYPES,
     }
     ctx.update(extra)
