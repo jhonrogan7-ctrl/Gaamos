@@ -276,3 +276,86 @@ def test_draft_rows_from_the_scan_flow_are_not_treated_as_library_entries():
 
     assert Item.objects.filter(status='active').count() == 1
     assert Item.objects.filter(status='draft').count() == 1
+
+
+from io import StringIO
+
+from django.core.management import call_command
+from django.core.management.base import CommandError
+
+
+@pytest.mark.django_db
+def test_the_command_backfills_the_named_companies():
+    company, branch = _venue('chillzone')
+    _item(company, branch, name='Black Tea', section='Hot Drinks')
+    out = StringIO()
+
+    call_command('build_library', '--company', 'chillzone', stdout=out)
+
+    assert Item.objects.filter(status='active').count() == 1
+    assert 'created 1' in out.getvalue()
+
+
+@pytest.mark.django_db
+def test_an_unknown_company_slug_is_an_error_not_a_silent_no_op():
+    with pytest.raises(CommandError, match='nosuchvenue'):
+        call_command('build_library', '--company', 'nosuchvenue')
+
+
+@pytest.mark.django_db
+def test_dry_run_writes_nothing():
+    company, branch = _venue('chillzone')
+    _item(company, branch, name='Black Tea', section='Hot Drinks')
+    out = StringIO()
+
+    call_command('build_library', '--company', 'chillzone', '--dry-run', stdout=out)
+
+    assert Item.objects.filter(status='active').count() == 0
+    assert 'created 1' in out.getvalue()
+    assert 'rolled back' in out.getvalue()
+
+
+@pytest.mark.django_db
+def test_prune_drafts_removes_the_scan_flows_stale_rows_only():
+    Item.objects.create(name='Stale Draft', status='draft')
+    Item.objects.create(name='Live Entry', status='active')
+    out = StringIO()
+    company, branch = _venue('chillzone')
+
+    call_command('build_library', '--company', 'chillzone', '--prune-drafts', stdout=out)
+
+    assert Item.objects.filter(status='draft').count() == 0
+    assert Item.objects.filter(name='Live Entry').exists()
+    assert 'pruned 1 draft' in out.getvalue()
+
+
+@pytest.mark.django_db
+def test_clear_rejected_live_takes_the_rejected_picture_off_the_live_menu():
+    """A wrong photograph is a claim the guest orders from. Blank beats wrong."""
+    company, branch = _venue('tranquility-inn')
+    _asset('lemon', status='rejected')
+    menu_item = _item(company, branch, name='Lemon Soda', section='Soft Drinks',
+                      body=_png('lemon'))
+    out = StringIO()
+
+    call_command('build_library', '--company', 'tranquility-inn',
+                 '--clear-rejected-live', stdout=out)
+
+    menu_item.refresh_from_db()
+    assert menu_item.image_url == ''
+    assert 'cleared 1' in out.getvalue()
+
+
+@pytest.mark.django_db
+def test_without_the_flag_the_rejected_picture_is_reported_but_left_alone():
+    company, branch = _venue('tranquility-inn')
+    _asset('lemon', status='rejected')
+    menu_item = _item(company, branch, name='Lemon Soda', section='Soft Drinks',
+                      body=_png('lemon'))
+    out = StringIO()
+
+    call_command('build_library', '--company', 'tranquility-inn', stdout=out)
+
+    menu_item.refresh_from_db()
+    assert menu_item.image_url != ''
+    assert 'rejected asset' in out.getvalue()
