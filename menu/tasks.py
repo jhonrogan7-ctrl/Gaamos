@@ -6,8 +6,8 @@ from django.conf import settings
 from django.db import transaction
 
 from menu.models import Item, MenuScan
-from menu.pipeline import (extract, find_library, intake, item_embed, normalize,
-                           photo_search)
+from menu.pipeline import (extract, extract_nv, find_library, intake, item_embed,
+                           normalize, photo_search)
 
 
 @shared_task
@@ -33,6 +33,29 @@ def _write_drafts(scan, payload):
                                 embedding=item_embed.embed_text(text), **fields)
 
 
+# Maps to the MODULE, not to the function: `extract_nv.extract_menu` looked up
+# once here would be captured at import, and a test patching the module
+# attribute would silently keep calling the real adapter. The attribute is read
+# at call time instead.
+_BACKENDS = {'nvidia': extract_nv, 'gemini': extract}
+
+
+def extraction_backend():
+    """The configured vision adapter.
+
+    Both are kept on purpose: NVIDIA is the live key, and `extract.py` remains
+    the prompt's home and the way back if that reverses. Rasterizing lives
+    inside the NVIDIA adapter, so this seam stays a plain swap.
+    """
+    name = getattr(settings, 'MENU_EXTRACT_BACKEND', 'nvidia')
+    try:
+        module = _BACKENDS[name]
+    except KeyError:
+        raise ValueError(
+            f'MENU_EXTRACT_BACKEND={name!r} is not one of {sorted(_BACKENDS)}')
+    return module.extract_menu
+
+
 @shared_task
 def extract_menu_scan(scan_id):
     scan = MenuScan.objects.get(pk=scan_id)
@@ -41,7 +64,7 @@ def extract_menu_scan(scan_id):
     try:
         path = Path(settings.MEDIA_ROOT) / scan.file
         mime = mimetypes.guess_type(scan.file)[0] or "application/pdf"
-        data = extract.extract_menu(path.read_bytes(), mime)
+        data = extraction_backend()(path.read_bytes(), mime)
         _write_drafts(scan, data)
         scan.raw_extraction = data
         scan.status = "extracted"
