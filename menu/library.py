@@ -229,7 +229,15 @@ def supersede_recompleted_entries(contributors, report):
         candidates = Item.objects.filter(
             status='active', pk__in=list(contributors),
             search_name__startswith=f'{entry.search_name} ')
-        if not entry.shareable:
+        if entry.shareable:
+            # A shared entry is visible to every tenant, so it may only be
+            # superseded into another shared entry -- never into one venue's
+            # private (`shareable=False`) photograph. Otherwise the shared
+            # row vanishes from every other tenant's candidate pool (goes
+            # `merged`) and its image is absorbed into one venue's private
+            # entry, which a pk tie can win even at `use_count=1`.
+            candidates = candidates.filter(shareable=True)
+        else:
             candidates = candidates.filter(origin_company_id=entry.origin_company_id)
         successors = [c for c in candidates
                      if name_norm.normalize(c.variant_label) == variant]

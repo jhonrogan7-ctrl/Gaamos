@@ -333,6 +333,52 @@ def test_the_adjudication_seam_is_offered_the_ambiguous_middle():
 
 
 @pytest.mark.django_db
+@override_settings(MENU_MATCH_HIGH=0.5, MENU_MATCH_MID=0.3)
+def test_a_fuzzy_match_above_high_is_still_offered_to_the_adjudicator():
+    """Ordering bug regression: a trigram score that clears `MENU_MATCH_HIGH`
+    must be demoted to `suggested` BEFORE the adjudication branch runs, not
+    after -- so it reaches layer 4 exactly like a score already inside the
+    ambiguous middle does. Before the reorder, `_best` only ever consulted
+    `adjudicate` when `_decide` itself returned 'suggested', so this
+    over-`high` candidate skipped adjudication entirely -- the higher-scoring
+    match got strictly LESS scrutiny than a lower-scoring one.
+    """
+    entry = _entry('Masala Chowmein', section='Chowmein')
+    company = _company('venue')
+    seen = []
+
+    def _adjudicate(row, ranked):
+        seen.append((row.name, [e.pk for e, _ in ranked]))
+        return ranked[0][0].pk
+
+    [match] = matching.match_rows(
+        [matching.Row(name='Masaala Chowmein', section='Chowmein')],
+        company=company, adjudicate=_adjudicate)
+
+    assert seen == [('Masaala Chowmein', [entry.pk])]
+    assert match.entry_id == entry.pk
+    assert match.layer == 'adjudicated'
+    assert match.decision == 'auto'
+
+
+@pytest.mark.django_db
+def test_an_adjudicator_returning_an_unknown_pk_leaves_the_row_unmatched():
+    """A seam refuses, it does not crash. If an adjudicator ever returns an id
+    outside the ranked candidates it was shown, `_best` must not raise
+    `StopIteration` -- it must treat that exactly like the adjudicator
+    returning `None`."""
+    _entry('Masala Chowmein', section='Chowmein')
+    company = _company('venue')
+
+    [match] = matching.match_rows(
+        [matching.Row(name='Masaala Chowmein', section='Chowmein')],
+        company=company, adjudicate=lambda row, ranked: -1)
+
+    assert match.entry_id is None
+    assert match.decision == 'none'
+
+
+@pytest.mark.django_db
 def test_the_adjudicator_may_refuse_and_the_row_stays_unmatched():
     _entry('Masala Chowmein', section='Chowmein')
     company = _company('venue')

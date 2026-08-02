@@ -144,6 +144,16 @@ def _decide(score, high, mid):
 # a second opinion in a way a raw similarity score is not. Whether an
 # adjudicated match may auto-apply is a separate founder call if layer 4 is
 # ever built -- it is not decided by this measurement.
+#
+# Ordering in `_best` matters: this demotion runs BEFORE the adjudication
+# branch, not after. A fuzzy candidate that cleared `high` (score >= high,
+# layer not in AUTO_LAYERS) must be demoted to `suggested` first, so the
+# *whole* `suggested` band -- including what was just demoted -- is what gets
+# offered to the adjudicator. Running adjudication first and demoting only
+# afterward (the historical bug) makes a HIGHER-scoring fuzzy match skip
+# adjudication entirely while a lower-scoring one gets a second opinion --
+# exactly backwards, and exactly the band the Fanta-class failures (cosine
+# 0.71-0.94) live in. Do not "simplify" this back to demote-after-adjudicate.
 AUTO_LAYERS = frozenset({'exact', 'adjudicated'})
 
 
@@ -250,15 +260,6 @@ def _best(row, scored, vetoed, high, mid, adjudicate):
     layers = {entry.pk: layer for entry, _, layer in scored}
     entry, score = ranked[0]
     decision = _decide(score, high, mid)
-    if decision == 'suggested' and adjudicate is not None:
-        chosen = adjudicate(row, ranked[:5])
-        if chosen is None:
-            return Match(row=row, veto_count=vetoed)
-        entry = next(e for e, _ in ranked if e.pk == chosen)
-        return Match(row=row, entry_id=entry.pk, score=score,
-                     layer='adjudicated', decision='auto', veto_count=vetoed)
-    if decision == 'none':
-        return Match(row=row, veto_count=vetoed)
     layer = layers[entry.pk]
     if decision == 'auto' and layer not in AUTO_LAYERS:
         # Demote only. A trigram/vector score that cleared `high` is still a
@@ -267,6 +268,22 @@ def _best(row, scored, vetoed, high, mid, adjudicate):
         # `AUTO_LAYERS`. `suggested` still reaches the review gate; it just
         # never skips it. This must never run for `decision == 'none'`, which
         # is why it is gated on `== 'auto'` rather than `!= 'none'`.
+        #
+        # This runs BEFORE the adjudication branch below on purpose -- see
+        # the ordering note on `AUTO_LAYERS`.
         decision = 'suggested'
+    if decision == 'suggested' and adjudicate is not None:
+        chosen = adjudicate(row, ranked[:5])
+        # `chosen` is untrusted: an adjudicator returning an id outside
+        # `ranked` must refuse, not crash the row. `next(..., None)` treats
+        # that exactly like the adjudicator returning `None` -- the row stays
+        # unmatched rather than raising `StopIteration`.
+        found = next((e for e, _ in ranked if e.pk == chosen), None)
+        if found is None:
+            return Match(row=row, veto_count=vetoed)
+        return Match(row=row, entry_id=found.pk, score=score,
+                     layer='adjudicated', decision='auto', veto_count=vetoed)
+    if decision == 'none':
+        return Match(row=row, veto_count=vetoed)
     return Match(row=row, entry_id=entry.pk, score=score,
                  layer=layer, decision=decision, veto_count=vetoed)

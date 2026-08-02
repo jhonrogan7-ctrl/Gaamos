@@ -635,6 +635,32 @@ def test_a_not_shareable_stale_entry_is_never_superseded_by_another_companys_ent
 
 
 @pytest.mark.django_db
+def test_a_shareable_stale_entry_is_never_superseded_into_a_private_successor():
+    """A shared entry (spec D2) belongs to every tenant. Superseding it into
+    another venue's private (`shareable=False`) successor would pull it out
+    of every other tenant's candidate pool (it goes `merged`) and hand its
+    image to one venue's private entry -- which a pk tie can win even at
+    `use_count=1` (`min(-use_count, pk)`). Verified 0 occurrences in live
+    data, but the boundary must hold regardless.
+    """
+    company, branch = _venue('kailash-parbat', 'Kailash Parbat')
+    stale = Item.objects.create(name='Apple', variant_label='', category='Juice',
+                                status='active', search_name='apple',
+                                shareable=True)
+    _item(company, branch, name='Apple', section='Juice', price=250,
+          body=_png('own-apple-photo'))
+
+    report = library.backfill([company])
+
+    stale.refresh_from_db()
+    private_successor = Item.objects.get(status='active', search_name='apple juice')
+    assert private_successor.shareable is False
+    assert stale.status == 'active'
+    assert stale.merged_into_id is None
+    assert report.superseded == []
+
+
+@pytest.mark.django_db
 def test_superseding_a_second_time_changes_nothing():
     company, branch = _venue('kailash-parbat', 'Kailash Parbat')
     _item(company, branch, name='Apple', section='Juice', price=250)

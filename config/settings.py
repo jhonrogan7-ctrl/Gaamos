@@ -147,8 +147,19 @@ MENU_EXTRACT_BACKEND = os.environ.get("MENU_EXTRACT_BACKEND", "nvidia")
 MENU_PRICE_VERIFY = os.environ.get("MENU_PRICE_VERIFY", "") == "1"
 
 # --- Matcher thresholds (menu/matching.py) ---------------------------------
-# Tuned against `match_report --holdout chillzone`; these are the pre-tuning
-# defaults and Task 8 of the phase-3 plan replaces them with measured values.
+# Untuned by choice, not by neglect. `match_report --holdout` measures false
+# matches against a truth set derived from the same key function layer 1
+# (exact) uses -- so a fuzzy (trigram/vector) true positive is structurally
+# impossible in that harness, and its false-match count for layers 2-3 does
+# not measure what it appears to. Task 8 (phase-3 plan) evaluated this and
+# explicitly declined to tune against it.
+#
+# What actually bounds the risk here is `AUTO_LAYERS` in menu/matching.py:
+# layers 2-3 can only ever produce `suggested`, never `auto`, so a wrong fuzzy
+# match costs one human click at the review gate, not a wrong photo reaching a
+# paying guest. Do NOT tune `MENU_MATCH_HIGH` / `MENU_MATCH_MID` against
+# `match_report`'s false-match number -- that requires human-judged ground
+# truth on the rows layer 1 misses, which does not exist yet.
 MENU_MATCH_HIGH = float(os.environ.get("MENU_MATCH_HIGH", "0.90"))
 MENU_MATCH_MID = float(os.environ.get("MENU_MATCH_MID", "0.55"))
 # Below this a trigram candidate is not worth a database row, let alone a
