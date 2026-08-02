@@ -38,6 +38,10 @@ class Command(BaseCommand):
                             help='Blank the image on any live menu item whose '
                                  'picture is a rejected pool asset. A wrong '
                                  'photograph is a claim; blank beats wrong.')
+        parser.add_argument('--embed', action='store_true',
+                            help='Give every active entry the 1024-d vector '
+                                 'the matcher\'s layer 3 searches. Reaches a '
+                                 'live endpoint: roughly one call per entry.')
 
     def handle(self, *args, **opts):
         companies = []
@@ -67,6 +71,19 @@ class Command(BaseCommand):
             f'library: {entries.count()} entries | '
             f'{entries.exclude(image_asset=None).count()} with an image | '
             f'{entries.filter(shareable=False).count()} not shareable'))
+
+        if opts['embed']:
+            if opts['dry_run']:
+                self.stdout.write(self.style.WARNING(
+                    '--embed skipped: a dry run would spend the API calls and '
+                    'then roll the vectors back'))
+                return
+            report = library.embed_entries()
+            self.stdout.write(
+                f'embedded {report.embedded} | already had one '
+                f'{report.skipped} | failed {len(report.failed)}')
+            for line in report.failed:
+                self.stdout.write(self.style.ERROR(f'  ✗ {line}'))
 
     def _report(self, report):
         self.stdout.write(

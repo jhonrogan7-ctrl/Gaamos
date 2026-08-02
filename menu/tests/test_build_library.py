@@ -10,7 +10,7 @@ from pathlib import Path
 import pytest
 from django.conf import settings
 
-from menu import library
+from menu import library, matching
 from menu.models import (Branch, BranchCategory, BranchItemPlacement,
                          BranchMenuItem, Category, Company, ImageAsset, Item,
                          MenuItem)
@@ -479,3 +479,64 @@ def test_a_stray_entry_is_rekeyed_through_its_own_section():
     library.reconcile_stray_entries(library.BackfillReport())
 
     assert Item.objects.get(name='Apple').search_name == 'apple juice'
+
+
+@pytest.mark.django_db
+def test_embed_entries_gives_every_active_entry_a_vector():
+    company, branch = _venue('venue', 'Venue')
+    _item(company, branch, name='Black Tea', section='Hot Drinks')
+    library.backfill([company])
+
+    report = library.embed_entries(embedder=lambda text: [0.5] * 1024)
+
+    assert report.embedded == 1
+    assert Item.objects.get(search_name='black tea').embedding is not None
+
+
+@pytest.mark.django_db
+def test_embed_entries_embeds_the_text_the_matcher_will_query_with():
+    """The entry is a `passage` and the incoming row is a `query`; if the two
+    are built from different strings the vectors are quietly incomparable."""
+    company, branch = _venue('venue', 'Venue')
+    _item(company, branch, name='Black Tea', section='Hot Drinks')
+    library.backfill([company])
+    seen = []
+
+    library.embed_entries(embedder=lambda text: seen.append(text) or [0.5] * 1024)
+
+    assert seen == [matching.index_text('Black Tea', 'Hot Drinks')]
+
+
+@pytest.mark.django_db
+def test_embed_entries_skips_an_entry_that_already_has_one():
+    """517 calls is two minutes; re-running must not spend them again."""
+    company, branch = _venue('venue', 'Venue')
+    _item(company, branch, name='Black Tea', section='Hot Drinks')
+    library.backfill([company])
+    library.embed_entries(embedder=lambda text: [0.5] * 1024)
+
+    report = library.embed_entries(embedder=lambda text: [0.5] * 1024)
+
+    assert report.embedded == 0
+    assert report.skipped == 1
+
+
+@pytest.mark.django_db
+def test_embed_entries_reports_a_failure_rather_than_abandoning_the_run():
+    """A 500 on entry 200 of 517 must not cost the 199 already written."""
+    company, branch = _venue('venue', 'Venue')
+    _item(company, branch, name='Black Tea', section='Hot Drinks')
+    _item(company, branch, name='Veg Momo', section='Momo')
+    library.backfill([company])
+    calls = []
+
+    def _flaky(text):
+        calls.append(text)
+        if len(calls) == 1:
+            raise ValueError('endpoint said no')
+        return [0.5] * 1024
+
+    report = library.embed_entries(embedder=_flaky)
+
+    assert report.embedded == 1
+    assert len(report.failed) == 1

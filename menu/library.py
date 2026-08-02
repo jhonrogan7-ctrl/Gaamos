@@ -28,7 +28,7 @@ from pathlib import Path
 from django.conf import settings
 
 from menu.models import BranchItemPlacement, ImageAsset, Item, MenuItem
-from menu.pipeline import name_norm, prompts
+from menu.pipeline import item_embed, name_norm, prompts
 
 
 @dataclass
@@ -258,4 +258,50 @@ def backfill(companies, *, index=None, clear_rejected_live=False):
     # Last, so a stray row is compared against the entries this run just built
     # rather than against whatever happened to exist first.
     reconcile_stray_entries(report)
+    return report
+
+
+@dataclass
+class EmbedReport:
+    embedded: int = 0
+    skipped: int = 0
+    failed: list = field(default_factory=list)
+
+
+def embed_entries(entries=None, *, embedder=None):
+    """Give every active library entry the 1024-d vector layer 3 searches.
+
+    Phase 1 created 517 entries while the catalog embedder was still None and
+    phase 2 wired the provider into scan drafts only, so the vector column was
+    empty on every one of them and layer 3 could never return anything. This is
+    the backfill that turns it on.
+
+    Entries that already carry a vector are skipped: 517 calls is roughly two
+    minutes of endpoint time and a re-run must not spend it again.
+
+    One entry's failure is recorded and the walk continues. A 500 on entry 200
+    of 517 must not cost the 199 rows already written -- the whole point of
+    writing each row as it is embedded rather than in one transaction at the
+    end.
+    """
+    from menu.matching import index_text
+    if entries is None:
+        entries = Item.objects.filter(status='active')
+    report = EmbedReport()
+    for entry in entries:
+        if entry.embedding is not None:
+            report.skipped += 1
+            continue
+        try:
+            vector = item_embed.embed_text(
+                index_text(entry.name, entry.category), embedder=embedder)
+        except Exception as exc:                      # noqa: BLE001
+            report.failed.append(f'#{entry.pk} {entry.name}: {exc}')
+            continue
+        if vector is None:
+            report.skipped += 1
+            continue
+        entry.embedding = vector
+        entry.save(update_fields=['embedding'])
+        report.embedded += 1
     return report
