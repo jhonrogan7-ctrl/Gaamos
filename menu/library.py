@@ -174,7 +174,9 @@ def reconcile_stray_entries(report):
     vocabulary: nothing is deleted, and the older row keeps its provenance.
     """
     for entry in Item.objects.filter(status='active', search_name=''):
-        entry.search_name = name_norm.search_form(entry.name)
+        # `category` is where `_create_entry` wrote the section, so a stray row
+        # is re-keyed by the same rule the backfill uses.
+        entry.search_name = name_norm.search_form(entry.name, entry.category)
         if not entry.image_prompt:
             entry.image_prompt = prompts.for_item(entry.name, entry.category)
         variant = name_norm.normalize(entry.variant_label)
@@ -232,7 +234,10 @@ def backfill(companies, *, index=None, clear_rejected_live=False):
                 report.venue_photos += 1
             shareable = not venue_photo
 
-            search_name, variant = name_norm.entry_key(menu_item.name)
+            # The section, not just the name: a printed name is not unique
+            # within one card. `Apple` appears under both JUICE and MILK SHAKE
+            # / LASSI on the Kailash Parbat menu at the same price.
+            search_name, variant = name_norm.entry_key(menu_item.name, section)
             scope = None if shareable else company.pk
             entry = _find_entry(search_name, variant, scope)
             if entry is None:

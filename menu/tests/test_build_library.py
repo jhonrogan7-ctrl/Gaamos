@@ -45,7 +45,11 @@ def _item(company, branch, *, name, section, price=100, description='',
         company=company, slug=section.lower().replace(' ', '-'),
         defaults={'name': section})
     BranchCategory.objects.get_or_create(branch=branch, category=category)
-    slug = name.lower().replace(' ', '-').replace('(', '').replace(')', '')
+    # Suffixed with the category slug: a printed name is not unique within one
+    # company's card (`Apple` under both JUICE and MILK SHAKE / LASSI), and the
+    # menu item slug is unique per company.
+    slug = (name.lower().replace(' ', '-').replace('(', '').replace(')', '')
+            + '-' + category.slug)
     image_url = ''
     if body is not None:
         rel = f'items/{company.slug}/{slug}.webp'
@@ -432,3 +436,46 @@ def test_reconciling_leaves_a_healthy_library_alone():
     second = library.backfill([company])
 
     assert second.reconciled == []
+
+
+@pytest.mark.django_db
+def test_one_printed_name_in_two_sections_forms_two_entries():
+    """The Kailash Parbat card prints `Apple` at 250 under MILK SHAKE / LASSI
+    and `Apple` at 250 under JUICE. Before section completion these merged into
+    one entry and the lassi inherited the juice's photograph."""
+    company, branch = _venue('kailash-parbat', 'Kailash Parbat')
+    _item(company, branch, name='Apple', section='Juice', price=250)
+    _item(company, branch, name='Apple', section='Milk Shake / Lassi', price=250)
+
+    library.backfill([company])
+
+    keys = set(Item.objects.filter(status='active').values_list('search_name', flat=True))
+    assert keys == {'apple juice', 'apple shake'}
+
+
+@pytest.mark.django_db
+def test_one_dish_under_two_venues_differently_named_sections_stays_one_entry():
+    """`Hot Drinks` and `Beverages` are the same section by another name. This
+    is the 72-key case that putting the section INTO the key would destroy."""
+    company_a, branch_a = _venue('venue-a', 'Venue A')
+    company_b, branch_b = _venue('venue-b', 'Venue B')
+    _item(company_a, branch_a, name='Black Tea', section='Hot Drinks', price=50)
+    _item(company_b, branch_b, name='Black Tea', section='Beverages', price=60)
+
+    library.backfill([company_a, company_b])
+
+    entries = Item.objects.filter(status='active', search_name='black tea')
+    assert entries.count() == 1
+    assert entries.first().use_count == 2
+
+
+@pytest.mark.django_db
+def test_a_stray_entry_is_rekeyed_through_its_own_section():
+    """`reconcile_stray_entries` derives a key for a pre-library row. It reads
+    the row's `category`, which is where the backfill wrote its section."""
+    Item.objects.create(name='Apple', category='Juice', status='active',
+                        search_name='', image_prompt='')
+
+    library.reconcile_stray_entries(library.BackfillReport())
+
+    assert Item.objects.get(name='Apple').search_name == 'apple juice'
