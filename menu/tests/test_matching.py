@@ -342,3 +342,34 @@ def test_the_adjudicator_may_refuse_and_the_row_stays_unmatched():
 
     assert match.entry_id is None
     assert match.decision == 'none'
+
+
+@pytest.mark.django_db
+def test_an_explicit_pool_is_searched_instead_of_candidates_for():
+    """The accuracy harness's seam: a restricted `pool` must win even over an
+    entry `candidates_for(company)` would otherwise hand straight back."""
+    company = _company('venue')
+    excluded = _entry('House Special', section='Snacks', company=company,
+                      shareable=False)
+    restricted_pool = matching.candidates_for(company).exclude(pk=excluded.pk)
+
+    [match] = matching.match_rows(
+        [matching.Row(name='House Special', section='Snacks')],
+        company=company, pool=restricted_pool)
+
+    assert match.entry_id is None
+    assert match.decision == 'none'
+
+
+@pytest.mark.django_db
+def test_no_pool_argument_still_matches_through_candidates_for():
+    """The default (`pool=None`) is the production path and must be exactly
+    what it was before the seam existed."""
+    entry = _entry('House Special', section='Snacks')
+    company = _company('venue')
+
+    [match] = matching.match_rows(
+        [matching.Row(name='House Special', section='Snacks')],
+        company=company)
+
+    assert match.entry_id == entry.pk

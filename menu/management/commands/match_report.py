@@ -118,7 +118,8 @@ class Command(BaseCommand):
         if company is None:
             raise CommandError(f'No company with slug {opts["holdout"]!r}.')
 
-        pool = list(pool_without(company))
+        pool_qs = pool_without(company)
+        pool = list(pool_qs)
         rows = rows_for(company)
         if opts['limit']:
             rows = rows[:opts['limit']]
@@ -127,7 +128,13 @@ class Command(BaseCommand):
             entry = truth_for(row, pool)
             truths[index] = entry.pk if entry else None
 
-        matches = matching.match_rows(rows, company=company)
+        # `pool_qs`, not `pool`: the matcher's own layers filter/annotate a
+        # QuerySet (`_exact`, `_trigram`, `_vector`), and it must see the same
+        # restricted set `truth_for` was scored against -- otherwise the
+        # matcher can hand back an entry the truth set was built to exclude,
+        # which the scorer would then book as a false match on a row that was
+        # in fact matched correctly (defect #14).
+        matches = matching.match_rows(rows, company=company, pool=pool_qs)
         tally = score(matches, truths)
         self._report(company, pool, tally, matches, truths)
 

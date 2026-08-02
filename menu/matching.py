@@ -166,7 +166,7 @@ def _vector(row, pool, embedder):
     return [(entry, 1.0 - float(entry.distance)) for entry in hits]
 
 
-def match_rows(rows, *, company, adjudicate=None, embedder=_UNSET):
+def match_rows(rows, *, company, adjudicate=None, embedder=_UNSET, pool=None):
     """-> one `Match` per row, in order.
 
     `adjudicate` is the layer-4 seam: a callable taking (row, [(entry, score)])
@@ -178,12 +178,19 @@ def match_rows(rows, *, company, adjudicate=None, embedder=_UNSET):
     `embedder` is layer 3's seam and defaults to the configured catalog
     embedder. Pass None to force the vector layer off; pass a callable in tests
     so the suite never reaches an endpoint.
+
+    `pool` is the candidate-set seam: pass a restricted queryset to search a
+    library smaller than `company` would normally see -- the accuracy harness
+    uses it to measure against a library that has never heard of the venue
+    under test, which `candidates_for` alone cannot do because it always
+    admits a company's own entries. Production leaves this `None` and gets
+    `candidates_for(company)`, unchanged.
     """
     if embedder is _UNSET:
         from menu.pipeline import item_embed
         embedder = item_embed.resolve_provider()
     high, mid = _thresholds()
-    pool = candidates_for(company)
+    pool = candidates_for(company) if pool is None else pool
     out = []
     for row in rows:
         vetoed = 0
