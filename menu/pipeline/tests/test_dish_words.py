@@ -71,3 +71,17 @@ def test_a_name_may_carry_several_proteins():
 def test_punctuation_and_case_do_not_hide_a_token():
     assert dish_words.dish_word('MO:MO') == 'momo'
     assert dish_words.proteins('VEG.') == frozenset({'veg'})
+
+
+def test_the_spellings_live_cards_actually_print_resolve():
+    """`Deserts` and `Shisa (Hukka)` are real category names in this
+    platform's own data and neither resolved in the first version of this
+    module. A shisha row is a bare flavour name (`Mint`, `Grape`), so failing
+    to complete it is precisely the collision section completion exists to
+    prevent."""
+    assert dish_words.dish_word('Deserts') == 'dessert'
+    assert dish_words.dish_word('Shisa (Hukka)') == 'shisha'
+
+
+def test_a_synonym_is_still_matched_only_as_a_whole_token():
+    assert dish_words.dish_word('Deserted Island Platter') == ''

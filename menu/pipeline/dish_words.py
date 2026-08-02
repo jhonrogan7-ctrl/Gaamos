@@ -66,6 +66,22 @@ def _tokens(text):
     return tuple(t for t in _TOKENS.split(plain.lower()) if t)
 
 
+# Spellings real cards print for a dish word already in DISH_WORDS. Same shape
+# as PROTEINS: surface form -> canonical. Two of these are live category names
+# in this platform's own data -- `Deserts` (a typo for Desserts, and a menu
+# section spelled that way is never about sand) and `Shisa (Hukka)`. Both were
+# invisible to the first version of this module, which mattered because a
+# shisha row IS a bare flavour name (`Mint`, `Grape`) and is exactly the case
+# section completion exists to disambiguate.
+#
+# Extended when a real card prints a spelling, never speculatively.
+DISH_SYNONYMS = {
+    'desert': 'dessert',
+    'shisa': 'shisha',
+    'hukka': 'hookah',
+}
+
+
 def _singular(token):
     """`desserts` -> `dessert`, `sandwiches` -> `sandwich`.
 
@@ -87,6 +103,8 @@ def _singular(token):
     for candidate in candidates:
         if candidate in DISH_WORDS:
             return candidate
+        if candidate in DISH_SYNONYMS:
+            return DISH_SYNONYMS[candidate]
     return token
 
 
