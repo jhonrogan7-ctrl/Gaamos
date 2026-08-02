@@ -22,6 +22,7 @@ from dataclasses import dataclass
 from django.core.management.base import BaseCommand, CommandError
 
 from menu import library, matching
+from menu.matching import candidates_for
 from menu.models import Company, Item, MenuItem
 from menu.pipeline import name_norm
 
@@ -45,9 +46,19 @@ def pool_without(holdout):
     exactly the set no other venue contributed to. An entry the holdout shares
     with somebody else stays: removing it would understate what the library
     genuinely knows.
+
+    ⚠ It builds on `candidates_for(holdout)`, NOT on `Item.objects.all()`. That
+    is the same `shareable=True | origin_company=holdout` visibility rule the
+    matcher enforces everywhere else, and skipping it here put every OTHER
+    venue's private venue-photographs into the pool. Measured on the live data:
+    all 25 of Tranquility Inn's private entries were visible to a chillzone
+    holdout and **15 of them collided on key with chillzone's own rows**
+    (`black tea`, `lemon tea`, `green salad`, `coke fanta sprite`, …), so the
+    harness would have derived its ground truth from another tenant's private
+    asset and scored a cross-tenant match as a hit. A measurement tool is not
+    exempt from fail-closed tenant scoping.
     """
-    return Item.objects.filter(status='active').exclude(
-        origin_company=holdout, use_count=1)
+    return candidates_for(holdout).exclude(origin_company=holdout, use_count=1)
 
 
 def rows_for(company):

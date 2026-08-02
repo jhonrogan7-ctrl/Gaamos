@@ -31,6 +31,27 @@ def test_the_holdouts_own_one_off_entries_are_excluded_from_the_pool():
 
 
 @pytest.mark.django_db
+def test_another_venues_private_entry_is_never_in_the_pool():
+    """A measurement tool is not exempt from fail-closed tenant scoping.
+
+    Before this was fixed, `pool_without` subtracted the holdout's own entries
+    from EVERY active entry rather than from the holdout's visible ones, so
+    another venue's `shareable=False` photographs were in the pool. Measured on
+    live data: all 25 of Tranquility Inn's private entries were visible to a
+    chillzone holdout and 15 collided on key with chillzone's own rows, which
+    would have made the harness read its ground truth off another tenant's
+    private asset and score a cross-tenant match as a hit.
+    """
+    holdout = Company.objects.create(name='Chill Zone', slug='chillzone')
+    other = Company.objects.create(name='Other', slug='other')
+    private = _entry('Black Tea', section='Hot Drinks', company=other)
+    private.shareable = False
+    private.save(update_fields=['shareable'])
+
+    assert private.pk not in {e.pk for e in match_report.pool_without(holdout)}
+
+
+@pytest.mark.django_db
 def test_an_entry_the_holdout_shares_with_another_venue_stays_in_the_pool():
     """`use_count=2` means a second venue serves it, so it is not the holdout's
     to remove -- removing it would understate what the library really knows."""
