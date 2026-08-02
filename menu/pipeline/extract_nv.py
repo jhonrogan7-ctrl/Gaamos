@@ -28,12 +28,49 @@ in 5 shared-line price matrices):
    printed line on every variant and puts the difference only in
    `variant_label`.
 
-One request per page: ~3.5 min each, which is why phase 4 runs documents as
-parallel jobs.
+Two more came from the 2026-08-02 live run, in which 27 of 159 prices on a real
+card were invented -- 25 where a spread's price column was cut off at the
+binding, 2 where the cell was simply blank:
+
+6. VERIFY EVERY PRICE against a second, independent look at the page --
+   available, but OFF unless `MENU_PRICE_VERIFY` or `verify=True` says
+   otherwise. The model does not know it is guessing and cannot be asked:
+   `confidence` was 1 on all 27, `raw_price_text` was confabulated to match the
+   invented number, and a guided `price_source` enum is not available at all
+   (adding one to the item schema returns HTTP 500). An unverifiable price
+   becomes None and the row is flagged `price_unverified` -- never a guess, per
+   the founder rule of 2026-07-24. The name is kept; it is the price that is
+   unknown.
+
+   ⚠ WHY IT SHIPS OFF (founder call, 2026-08-02). It has only ever run against a
+   stub verifier, so the number that decides whether it is a net win -- how many
+   TRUE printed prices it nulls as collateral on a real card -- does not exist.
+   An over-eager guard nulls a correct menu, which is its own kind of wrong. 25
+   of the 27 fabrications came from one spread photographed at an angle with its
+   price column cut off at the binding, and an upload-quality rule at gate 1
+   addresses those without a second inference pass. The remaining 2 came from a
+   BLANK PRICE CELL on a perfectly legible page, and no upload rule reaches
+   them, which is why this code stays. Measure the collateral, then decide.
+7. Drop what is not a menu item. A QR-code caption arrives priced at zero, and a
+   cover page arrives as a few unpriced words. This is ALWAYS on -- it needs no
+   extra request and nothing it removes was ever a menu row. Ordering matters:
+   it runs BEFORE verification, which deliberately nulls prices.
+
+⚠ CONSEQUENCE OF SHIPPING WITH RULE 6 OFF: this adapter never emits a null price
+for a menu item. Gate 1's blocking rule -- "a row with no price cannot advance
+unless explicitly marked deliberately unpriced" -- will therefore never fire on
+its own. The split-screen human check is the only thing catching a blank-cell
+item. Do not build gate 1 assuming nulls arrive.
+
+One request per page (~110 s); with verification on it is two (~110 s + ~34 s)
+and a page costs two slots of the 6/min vision budget, which is why phase 4 runs
+documents as parallel jobs.
 """
 import base64
 import json
+import re
 import urllib.request
+from collections import Counter
 
 from menu.pipeline import nv, rasterize, throttle
 from menu.pipeline.extract import _ITEM_SCHEMA, _PROMPT
@@ -41,10 +78,31 @@ from menu.pipeline.extract import _ITEM_SCHEMA, _PROMPT
 # Rule 2: the array, and nothing wrapping it.
 _GUIDED_SCHEMA = {'type': 'array', 'items': _ITEM_SCHEMA}
 
+# Rule 6. Deliberately narrow: it asks for one thing and offers no room to
+# describe an item, because the moment it can name a dish it starts pricing one.
+_VERIFY_PROMPT = (
+    'Transcribe ONLY the prices printed in this image, in reading order '
+    '(left column fully, then right column). Output one entry per printed '
+    'price, with the section heading it sits under and the exact printed '
+    'digits. Do not list an item that has no printed price. Do not infer or '
+    'estimate a price. If a price is cut off, hidden or unreadable, leave it '
+    'out entirely.')
+
+_VERIFY_SCHEMA = {'type': 'array', 'items': {
+    'type': 'object',
+    'properties': {'section': {'type': 'string'},
+                   'printed_price': {'type': 'string'}},
+    'required': ['printed_price']}}
+
 
 def _model():
     from django.conf import settings
     return settings.NVIDIA_VISION_MODEL
+
+
+def _verify_enabled():
+    from django.conf import settings
+    return settings.MENU_PRICE_VERIFY
 
 
 def _rows_from(text):
@@ -107,10 +165,97 @@ def _clean(rows, page_number):
     return out
 
 
+def _printed_digits(value):
+    """The integer a transcribed price denotes, or None if it holds no digits.
+
+    Measured: asked for printed prices the model returns bare digits, but also
+    'Rs. 250', and -- for the two rows whose price cell is blank -- the item
+    name where the digits would go. A name yields None and claims nothing.
+    """
+    digits = re.sub(r'[^0-9]', '', str(value if value is not None else ''))
+    return int(digits) if digits else None
+
+
+def _observed_prices(page, *, model, key, opener, throttled):
+    """A second, independent look at the page: what prices are actually printed?
+
+    A separate request on purpose. Asking the same call to mark its own
+    uncertainty does not work -- `confidence` came back 1 on all 27 fabricated
+    prices and `raw_price_text` was confabulated to match them -- and asking via
+    a guided enum is not even available: adding one to the item schema makes the
+    endpoint return HTTP 500.
+    """
+    if throttled:
+        throttle.acquire(model)
+    body = {
+        'model': model,
+        'messages': [{'role': 'user', 'content': [
+            {'type': 'text', 'text': _VERIFY_PROMPT},
+            {'type': 'image_url', 'image_url': {'url':
+                'data:image/jpeg;base64,' + base64.b64encode(page).decode()}},
+        ]}],
+        'max_tokens': 4096,
+        'temperature': 0.0,
+        **nv.guided_json(_VERIFY_SCHEMA, name='prices'),
+    }
+    reply = nv.post('/chat/completions', body, key=key, opener=opener)
+    counts = Counter()
+    for row in _rows_from(nv.message_text(reply)):
+        if isinstance(row, dict):
+            value = _printed_digits(row.get('printed_price'))
+            if value is not None:
+                counts[value] += 1
+    return counts
+
+
+def _has_price_evidence(row):
+    price = row.get('price')
+    return bool((price is not None and price != 0)
+                or (row.get('raw_price_text') or '').strip())
+
+
+def _drop_junk(rows):
+    """Rows that are not menu items at all (rule 7).
+
+    Two shapes, both measured. A QR-code caption comes back priced at ZERO with
+    no printed price text -- 'Global IME Bank', 'E-Sewa' -- and zero is never a
+    menu price. A cover page comes back as a handful of unpriced words; a page
+    on which NOTHING carries a price is not a menu page, so its rows go together.
+
+    Deliberately page-level for the second case: an unpriced item sitting beside
+    priced ones is a real row ('Soup of the Day'), and gate 1 exists to ask a
+    human about exactly those.
+    """
+    kept = [row for row in rows if row.get('price') != 0 or _has_price_evidence(row)]
+    if not any(_has_price_evidence(row) for row in kept):
+        return []
+    return kept
+
+
+def _verify(rows, observed):
+    """Spend an observed price per item; null and flag whatever cannot pay.
+
+    Consumption, not mere matching: the occluded half of a spread invents a
+    ladder of round numbers that the legible half really does print, so one
+    printed 250 must not validate five items claiming 250.
+    """
+    for row in rows:
+        price = row.get('price')
+        if price is None:
+            continue
+        if observed[price] > 0:
+            observed[price] -= 1
+        else:
+            row['price'] = None
+            row['price_unverified'] = True
+    return rows
+
+
 def extract_menu(file_bytes, mime, *, model=None, api_key=None,
-                 opener=urllib.request.urlopen, throttled=True):
+                 opener=urllib.request.urlopen, throttled=True, verify=None):
     """-> {"pages": [...], "items": [...]} — the same contract `extract.extract_menu` returns."""
     model = model or _model()
+    verify = _verify_enabled() if verify is None else verify
     key = nv.api_key() if api_key is None else api_key
     if not key:
         raise ValueError(
@@ -135,6 +280,12 @@ def extract_menu(file_bytes, mime, *, model=None, api_key=None,
         }
         reply = nv.post('/chat/completions', body, key=key, opener=opener)
         rows = _clean(_rows_from(nv.message_text(reply)), number)
+        # Junk BEFORE verification: verification deliberately nulls prices, so
+        # a junk filter running after it would delete the rows it just guarded.
+        rows = _drop_junk(rows)
+        if rows and verify:
+            rows = _verify(rows, _observed_prices(
+                page, model=model, key=key, opener=opener, throttled=throttled))
         items.extend(rows)
         # Rule 2: page type from the item count, not from the model.
         pages.append({'index': number,

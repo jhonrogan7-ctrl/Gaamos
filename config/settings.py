@@ -140,6 +140,12 @@ NVIDIA_RATE_LIMITS = {
 # Which vision backend `extract_menu_scan` uses: "nvidia" or "gemini".
 MENU_EXTRACT_BACKEND = os.environ.get("MENU_EXTRACT_BACKEND", "nvidia")
 
+# Second-look price verification in `extract_nv` (rule 6). OFF by default: it
+# has only ever run against a stub verifier, so the number that matters — how
+# many TRUE printed prices it nulls as collateral — does not exist yet. Turning
+# it on doubles the vision calls per page. Measure on a real card first.
+MENU_PRICE_VERIFY = os.environ.get("MENU_PRICE_VERIFY", "") == "1"
+
 # Free stock-photo APIs for the image 'find' path (all from .env, never committed).
 PEXELS_API_KEY = os.environ.get("PEXELS_API_KEY", "")
 OPENVERSE_CLIENT_ID = os.environ.get("OPENVERSE_CLIENT_ID", "")
