@@ -4,6 +4,7 @@ The vetoes are the point of this module, not the scores. A wrong score costs a
 click; a wrong veto decision puts a buffalo photograph on a vegetarian row.
 """
 import pytest
+from django.test import override_settings
 
 from menu import matching
 from menu.models import Company, Item
@@ -373,3 +374,79 @@ def test_no_pool_argument_still_matches_through_candidates_for():
         company=company)
 
     assert match.entry_id == entry.pk
+
+
+@pytest.mark.django_db
+@override_settings(MENU_MATCH_HIGH=0.5, MENU_MATCH_MID=0.3)
+def test_a_trigram_match_above_high_is_capped_to_suggested_not_auto():
+    """Founder decision 2026-08-02: layer 2 may never auto-apply. Measured on
+    two held-out venues, trigram/vector produced zero verifiable correct
+    matches and every wrong one, so a score clearing `high` is capped rather
+    than trusted. Thresholds are overridden here so the test pins the cap
+    itself, not today's `MENU_MATCH_HIGH` value -- a future threshold tune
+    must not silently make this test meaningless.
+    """
+    _entry('Masala Chowmein', section='Chowmein')
+    company = _company('venue')
+
+    [match] = matching.match_rows(
+        [matching.Row(name='Masaala Chowmein', section='Chowmein')],
+        company=company)
+
+    assert match.layer == 'trigram'
+    assert match.score >= 0.5
+    assert match.decision == 'suggested'
+
+
+@pytest.mark.django_db
+@override_settings(MENU_MATCH_HIGH=0.5, MENU_MATCH_MID=0.3)
+def test_a_vector_match_above_high_is_capped_to_suggested_not_auto():
+    """Same cap, layer 3. This is the measured `Fanta` failure mode: a cosine
+    score comfortably above `high` (0.71-0.77 on real wrong matches) must not
+    reach a guest as a pre-filled photograph."""
+    entry = _entry('Lemon Soda', section='Soft Drinks')
+    entry.embedding = [1.0] + [0.0] * 1023
+    entry.save(update_fields=['embedding'])
+    company = _company('venue')
+
+    [match] = matching.match_rows(
+        [matching.Row(name='Fresh Lime Soda', section='Soft Drinks')],
+        company=company, embedder=lambda text: [1.0] + [0.0] * 1023)
+
+    assert match.entry_id == entry.pk
+    assert match.layer == 'vector'
+    assert match.score >= 0.5
+    assert match.decision == 'suggested'
+
+
+@pytest.mark.django_db
+def test_an_exact_match_is_still_auto_the_cap_does_not_over_reach():
+    """The cap targets trigram/vector only. Layer 1 had perfect precision
+    across the same measurement and must keep auto-applying."""
+    entry = _entry('Veg Momo', section='Momo')
+    company = _company('venue')
+
+    [match] = matching.match_rows(
+        [matching.Row(name='Veg Momo', section='Momo')], company=company)
+
+    assert match.entry_id == entry.pk
+    assert match.layer == 'exact'
+    assert match.decision == 'auto'
+
+
+@pytest.mark.django_db
+@override_settings(MENU_MATCH_HIGH=0.99, MENU_MATCH_MID=0.95)
+def test_a_fuzzy_match_below_mid_is_still_none_the_cap_only_demotes():
+    """The cap in `_best` demotes an over-`high` trigram/vector `auto` to
+    `suggested`; it must never promote a genuinely low score. Raising `mid`
+    above the measured ~0.833 trigram score forces `_decide` to return `none`
+    before the cap logic runs at all, and `none` must come out unchanged."""
+    _entry('Masala Chowmein', section='Chowmein')
+    company = _company('venue')
+
+    [match] = matching.match_rows(
+        [matching.Row(name='Masaala Chowmein', section='Chowmein')],
+        company=company)
+
+    assert match.entry_id is None
+    assert match.decision == 'none'

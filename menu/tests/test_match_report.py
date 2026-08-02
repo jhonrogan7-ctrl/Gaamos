@@ -107,3 +107,22 @@ def test_the_ambiguous_middle_is_counted_separately():
 
     assert tally.ambiguous == 1
     assert tally.hits == 1
+
+
+@pytest.mark.django_db
+def test_a_false_auto_match_is_counted_separately_from_a_suggested_one():
+    """`matching.AUTO_LAYERS` caps trigram/vector at `suggested`, so it does
+    not shrink `false_matches` at all -- both an `auto` and a `suggested`
+    false match were already counted there. `false_auto` is the number that
+    actually moves: only the `auto` one reaches a guest with no human in the
+    loop.
+    """
+    tally = match_report.score(
+        [matching.Match(row=matching.Row(name='X'), entry_id=7, score=0.95,
+                        layer='trigram', decision='auto'),
+         matching.Match(row=matching.Row(name='Y'), entry_id=8, score=0.7,
+                        layer='trigram', decision='suggested')],
+        {0: None, 1: None})
+
+    assert tally.false_matches == 2
+    assert tally.false_auto == 1

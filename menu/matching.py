@@ -121,6 +121,32 @@ def _decide(score, high, mid):
     return 'none'
 
 
+# Layers whose winning candidate may reach a guest with no human in the loop.
+#
+# Measured on two held-out venues (2026-08-02): layers 2 (trigram) and 3
+# (vector) produced zero verifiable correct matches and every wrong one,
+# including `Blue Diamond (60 ml)` [Gin] -> `Fanta (180ml)` at cosine 0.71 and
+# `Absolut` -> `Fanta` at 0.74 -- both comfortably clearing `MENU_MATCH_HIGH`.
+# Cosine on `nv-embedqa-e5-v5` is compressed into a band where unrelated items
+# score high, so a vector score cannot share a threshold scale with a trigram
+# or exact score. Layer 1 (exact key) had perfect precision across the same
+# run, so it alone may auto-apply.
+#
+# Founder decision, 2026-08-02: a wrong fuzzy match must cost one human click
+# at the review gate, not put a Fanta photograph on a gin row on a paying
+# guest's menu. Blank beats wrong. Do not "simplify" this back to a string
+# comparison inline in `_best` -- the named set is what stops a future editor
+# from re-deriving the Fanta bug by treating the cap as redundant with
+# `_decide`.
+#
+# `adjudicated` IS in this set on purpose: layer 4 is not built (`adjudicate`
+# ships as `None` below), and a text model explicitly affirming "same dish" is
+# a second opinion in a way a raw similarity score is not. Whether an
+# adjudicated match may auto-apply is a separate founder call if layer 4 is
+# ever built -- it is not decided by this measurement.
+AUTO_LAYERS = frozenset({'exact', 'adjudicated'})
+
+
 CANDIDATE_LIMIT = 10
 
 # `None` is a meaningful value for `embedder` (force layer 3 off), so
@@ -233,5 +259,14 @@ def _best(row, scored, vetoed, high, mid, adjudicate):
                      layer='adjudicated', decision='auto', veto_count=vetoed)
     if decision == 'none':
         return Match(row=row, veto_count=vetoed)
+    layer = layers[entry.pk]
+    if decision == 'auto' and layer not in AUTO_LAYERS:
+        # Demote only. A trigram/vector score that cleared `high` is still a
+        # confident-sounding number, but confidence from these two layers has
+        # been measured wrong 100% of the time it was checked -- see
+        # `AUTO_LAYERS`. `suggested` still reaches the review gate; it just
+        # never skips it. This must never run for `decision == 'none'`, which
+        # is why it is gated on `== 'auto'` rather than `!= 'none'`.
+        decision = 'suggested'
     return Match(row=row, entry_id=entry.pk, score=score,
-                 layer=layers[entry.pk], decision=decision, veto_count=vetoed)
+                 layer=layer, decision=decision, veto_count=vetoed)

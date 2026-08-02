@@ -33,6 +33,7 @@ class Tally:
     hits: int = 0
     misses: int = 0
     false_matches: int = 0
+    false_auto: int = 0
     correct_abstentions: int = 0
     ambiguous: int = 0
     vetoed: int = 0
@@ -107,6 +108,13 @@ def score(matches, truths):
             # answer that names the wrong entry. They are one failure from the
             # guest's side: a photograph of something else.
             tally.false_matches += 1
+            if match.decision == 'auto':
+                # The subset that actually reaches a guest with no human in
+                # the loop. `matching.AUTO_LAYERS` caps trigram/vector at
+                # `suggested`, so after that change this is only ever an
+                # exact-layer (or adjudicated-layer) false match -- a much
+                # smaller and much more alarming number than the total.
+                tally.false_auto += 1
     return tally
 
 
@@ -157,9 +165,21 @@ class Command(BaseCommand):
         self.stdout.write(self.style.MIGRATE_HEADING(
             f'{company.slug}: {tally.rows} rows against {len(pool)} entries '
             f'({have_truth} rows have a true counterpart)'))
+        # `false_auto` is the headline: it is the count that reaches a guest
+        # with no human in the loop. `AUTO_LAYERS` caps trigram/vector at
+        # `suggested`, so this is the number that change actually moves --
+        # `false_matches` below does not shrink, because a wrong trigram or
+        # vector match was already counted there whether it landed `auto` or
+        # `suggested`.
+        style_auto = self.style.ERROR if tally.false_auto else self.style.SUCCESS
+        self.stdout.write(style_auto(
+            f'FALSE AUTO-MATCHES {tally.false_auto}'
+            f'  ({tally.false_auto / max(1, tally.rows):.1%} of rows)'
+            '  -- reach a guest with no human in the loop'))
         style = self.style.ERROR if tally.false_matches else self.style.SUCCESS
         self.stdout.write(style(
-            f'FALSE MATCHES {tally.false_matches}'
+            f'false matches, total incl. ones a human must confirm at review '
+            f'{tally.false_matches}'
             f'  ({tally.false_matches / max(1, tally.rows):.1%} of rows)'))
         self.stdout.write(
             f'hits {tally.hits} | misses {tally.misses} | '
