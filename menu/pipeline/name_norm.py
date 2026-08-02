@@ -7,7 +7,9 @@ means. Every rule is data-driven and tested, because a wrong fold here does not
 fail loudly: it silently mismatches every menu that follows.
 
 It decides nothing about whether two dishes ARE the same dish -- that is the
-matcher's job, protein veto included. This only produces the key it compares on.
+matcher's job, protein veto included. This only produces the key it compares
+on, which since 2026-08-02 includes completing an under-determined name from
+the section it was printed under.
 """
 import re
 import unicodedata
@@ -80,12 +82,46 @@ def split_variant(name):
     return text, ''
 
 
-def search_form(name):
-    """The value stored in `Item.search_name`: the normalized base name."""
-    return normalize(split_variant(name)[0])
+def complete(base_norm, section):
+    """`base_norm` plus the section's dish word, when the name lacks one.
+
+    A printed name is not always enough to identify a dish. The Kailash Parbat
+    card prints `Apple` at 250 under MILK SHAKE / LASSI and `Apple` at 250
+    under JUICE; rows like `ABC`, `Mixed`, `Plain` and `Sweet` are bare
+    modifiers whose dish type exists only in the section header. Measured on
+    the live library: 7 such collisions already share one key.
+
+    Fires ONLY when the name names no dish. That asymmetry is the whole design:
+    putting the section into the key would also split `Hot Drinks` from
+    `Beverages` and fragment the 72 keys that four venues currently share --
+    which is the sharing the library exists for.
+
+    A section that names no dish (`KAILASH TOUCH`) completes nothing. A guess
+    is worse than a bare key.
+    """
+    from menu.pipeline import dish_words
+    if not base_norm or dish_words.has_dish_word(base_norm):
+        return base_norm
+    word = dish_words.dish_word(section)
+    return f'{base_norm} {word}' if word else base_norm
 
 
-def entry_key(name):
-    """(search_name, normalized variant) -- the library's identity for a name."""
+def search_form(name, section=''):
+    """The value stored in `Item.search_name`: the normalized base name,
+    completed from its printed section when the name cannot identify itself.
+
+    `section` defaults to '' so every caller that predates the matcher keeps
+    working -- but a caller that HAS a section and omits it derives a different
+    key than the backfill did, and matches nothing. Pass it.
+    """
+    return complete(normalize(split_variant(name)[0]), section)
+
+
+def entry_key(name, section=''):
+    """(search_name, normalized variant) -- the library's identity for a name.
+
+    The section completes the BASE name only. `Apple (Large)` under JUICE is
+    `apple juice` + `large`: a serving size says nothing about what the dish is.
+    """
     base, variant = split_variant(name)
-    return normalize(base), normalize(variant)
+    return complete(normalize(base), section), normalize(variant)
