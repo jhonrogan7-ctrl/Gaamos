@@ -1,0 +1,162 @@
+"""Find the library entry that is the same dish as a printed row.
+
+Layered cheapest-first (spec §4): an exact key, a trigram index, a vector
+search, and an adjudication seam that ships unfilled. Every layer is optional
+except the exact one -- with every endpoint dead the matcher still runs and the
+wizard still works with fewer matches.
+
+The VETOES are what this module is for. A similarity score is a suggestion; a
+veto is a refusal, and it wins against any number. Handing a Veg row a Buff
+photograph is a religious and dietary violation that reaches a guest, not a
+picture somebody dislikes -- so the protein veto fires on ANY disagreement
+including absence (founder, 2026-08-02): printed `Momo` matches only `Momo`.
+
+An unmatched row is not a failure. It falls through to generation from its own
+printed name, which is the safe outcome. Blank beats wrong.
+"""
+from dataclasses import dataclass
+
+from django.db.models import Q
+
+from menu.models import Item
+from menu.pipeline import dish_lexicon, dish_words, name_norm, prompts
+
+
+@dataclass(frozen=True)
+class Row:
+    """One printed menu row, as the extractor read it.
+
+    Deliberately not a model: phase 4's `MenuBuildRow` does not exist yet, the
+    harness feeds this from tenant `MenuItem`s, and a matcher that could only
+    be called with a database row could not be tested without one.
+    """
+    name: str
+    section: str = ''
+    dietary_tags: tuple = ()
+
+
+@dataclass(frozen=True)
+class Match:
+    row: Row
+    entry_id: int = None
+    score: float = 0.0
+    layer: str = ''          # 'exact' | 'trigram' | 'vector' | 'adjudicated'
+    decision: str = 'none'   # 'auto' | 'suggested' | 'none'
+    veto_count: int = 0      # candidates a veto refused, for the report
+
+
+def _thresholds():
+    from django.conf import settings
+    return settings.MENU_MATCH_HIGH, settings.MENU_MATCH_MID
+
+
+def index_text(name, section):
+    """The text BOTH sides embed -- a stored entry as `passage`, an incoming
+    row as `query`.
+
+    One function on purpose. The two calls happen in different modules on
+    different days, and a query embedded from a different string than the
+    passage is a silent accuracy loss with no failing test anywhere.
+    """
+    return f'{name} — {section}' if section else name
+
+
+def candidates_for(company):
+    """Every library entry this company is allowed to match against.
+
+    A venue-supplied photograph is `shareable=False` and belongs to the venue
+    that supplied it (spec D2). Scoped in the query rather than filtered after,
+    so no code path can forget it.
+    """
+    return Item.objects.filter(status='active').filter(
+        Q(shareable=True) | Q(origin_company=company))
+
+
+def veto_reason(row, entry):
+    """Why this entry may not match this row, or None.
+
+    Returns a string rather than a bool so the harness can report which veto
+    fired and how often -- a veto that never fires is dead code and one that
+    fires constantly is miscalibrated, and neither is visible from a hit rate.
+    """
+    if dish_words.proteins(row.name) != dish_words.proteins(entry.name):
+        return 'protein'
+    row_heads = set(dish_lexicon.head_words(
+        row.name, drink=prompts.is_drink(row.section)))
+    entry_heads = set(dish_lexicon.head_words(
+        entry.name, drink=prompts.is_drink(entry.category)))
+    # Disjoint, not merely different: `Masala Chowmein` and `Chowmein` share a
+    # head-word and are plainly the same dish. Only a total disagreement --
+    # `Chicken Chilly` against `Chicken Chowmein` -- is a refusal.
+    if row_heads and entry_heads and row_heads.isdisjoint(entry_heads):
+        return 'head-word'
+    return None
+
+
+def _rank(scored):
+    """Best candidate first: score, then how many venues serve it, then whether
+    it can actually supply a picture."""
+    return sorted(scored, key=lambda s: (-s[1], -s[0].use_count,
+                                         s[0].image_asset_id is None, s[0].pk))
+
+
+def _exact(row, pool):
+    """Layer 1 -- exact on (search_name, variant_label). Near-certain, free.
+
+    The stored `variant_label` is the printed text, not a normalized form, so
+    it is compared through `normalize` here rather than in the query.
+    """
+    search_name, variant = name_norm.entry_key(row.name, row.section)
+    return [e for e in pool.filter(search_name=search_name)
+            if name_norm.normalize(e.variant_label) == variant]
+
+
+def _decide(score, high, mid):
+    if score >= high:
+        return 'auto'
+    if score >= mid:
+        return 'suggested'
+    return 'none'
+
+
+def match_rows(rows, *, company, adjudicate=None, embedder=None):
+    """-> one `Match` per row, in order.
+
+    `adjudicate` is the layer-4 seam: a callable taking (row, [(entry, score)])
+    and returning an entry id or None. It ships as None -- phase 3 measures how
+    many rows land in the ambiguous middle before deciding whether a text model
+    belongs there at all. No `rerank_nv` module exists, because no reranking
+    model exists on this account and an empty module claims one might.
+    """
+    high, mid = _thresholds()
+    pool = candidates_for(company)
+    out = []
+    for row in rows:
+        scored, vetoed = [], 0
+        for entry in _exact(row, pool):
+            if veto_reason(row, entry):
+                vetoed += 1
+                continue
+            scored.append((entry, 1.0, 'exact'))
+        out.append(_best(row, scored, vetoed, high, mid, adjudicate))
+    return out
+
+
+def _best(row, scored, vetoed, high, mid, adjudicate):
+    if not scored:
+        return Match(row=row, veto_count=vetoed)
+    ranked = _rank([(entry, score) for entry, score, _ in scored])
+    layers = {entry.pk: layer for entry, _, layer in scored}
+    entry, score = ranked[0]
+    decision = _decide(score, high, mid)
+    if decision == 'suggested' and adjudicate is not None:
+        chosen = adjudicate(row, ranked[:5])
+        if chosen is None:
+            return Match(row=row, veto_count=vetoed)
+        entry = next(e for e, _ in ranked if e.pk == chosen)
+        return Match(row=row, entry_id=entry.pk, score=score,
+                     layer='adjudicated', decision='auto', veto_count=vetoed)
+    if decision == 'none':
+        return Match(row=row, veto_count=vetoed)
+    return Match(row=row, entry_id=entry.pk, score=score,
+                 layer=layers[entry.pk], decision=decision, veto_count=vetoed)

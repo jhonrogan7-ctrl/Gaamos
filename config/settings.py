@@ -146,6 +146,15 @@ MENU_EXTRACT_BACKEND = os.environ.get("MENU_EXTRACT_BACKEND", "nvidia")
 # it on doubles the vision calls per page. Measure on a real card first.
 MENU_PRICE_VERIFY = os.environ.get("MENU_PRICE_VERIFY", "") == "1"
 
+# --- Matcher thresholds (menu/matching.py) ---------------------------------
+# Tuned against `match_report --holdout chillzone`; these are the pre-tuning
+# defaults and Task 8 of the phase-3 plan replaces them with measured values.
+MENU_MATCH_HIGH = float(os.environ.get("MENU_MATCH_HIGH", "0.90"))
+MENU_MATCH_MID = float(os.environ.get("MENU_MATCH_MID", "0.55"))
+# Below this a trigram candidate is not worth a database row, let alone a
+# human's attention. Spec §4 layer 2.
+MENU_MATCH_TRIGRAM_FLOOR = float(os.environ.get("MENU_MATCH_TRIGRAM_FLOOR", "0.35"))
+
 # Free stock-photo APIs for the image 'find' path (all from .env, never committed).
 PEXELS_API_KEY = os.environ.get("PEXELS_API_KEY", "")
 OPENVERSE_CLIENT_ID = os.environ.get("OPENVERSE_CLIENT_ID", "")
