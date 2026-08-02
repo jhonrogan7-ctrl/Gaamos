@@ -107,6 +107,12 @@ class Command(BaseCommand):
                 f'predate the library:'))
             for line in report.reconciled:
                 self.stdout.write(f'  ↻ {line}')
+        if report.superseded:
+            self.stdout.write(self.style.WARNING(
+                f'superseded {len(report.superseded)} entry/entries the '
+                f'section re-key replaced:'))
+            for line in report.superseded:
+                self.stdout.write(f'  ↝ {line}')
         if report.no_placement:
             self.stdout.write(self.style.WARNING(
                 f'{len(report.no_placement)} item(s) have no category placement '

@@ -550,3 +550,107 @@ def test_embed_entries_reports_a_failure_rather_than_abandoning_the_run():
 
     assert report.embedded == 1
     assert len(report.failed) == 1
+
+
+@pytest.mark.django_db
+def test_a_recompleted_key_supersedes_the_stale_entry():
+    """Section completion re-keys `apple` to `apple juice`. Re-running the
+    backfill after that change must fold the old key into the new one rather
+    than leaving it beside it as a second live candidate."""
+    company, branch = _venue('kailash-parbat', 'Kailash Parbat')
+    _item(company, branch, name='Apple', section='Juice', price=250)
+    library.backfill([company])
+    stale = Item.objects.create(name='Apple', variant_label='', category='Juice',
+                                status='active', search_name='apple')
+
+    report = library.backfill([company])
+
+    stale.refresh_from_db()
+    successor = Item.objects.get(status='active', search_name='apple juice')
+    assert stale.status == 'merged'
+    assert stale.merged_into_id == successor.pk
+    assert report.superseded
+    assert f'#{stale.pk} Apple' in report.superseded[0]
+
+
+@pytest.mark.django_db
+def test_an_entry_with_no_successor_is_left_untouched():
+    """The rule that protects a scan-approved catalog row with no venue behind
+    it (the `8848 Vodka` case): no run can ever produce a successor for it, so
+    it must never be touched."""
+    stray = Item.objects.create(name='8848 Vodka', variant_label='',
+                                category='HARD DRINKS', status='active',
+                                search_name='8848 vodka', image_prompt='kept')
+    company, branch = _venue('chillzone')
+    _item(company, branch, name='Black Tea', section='Hot Drinks')
+
+    report = library.backfill([company])
+
+    stray.refresh_from_db()
+    assert stray.status == 'active'
+    assert stray.merged_into_id is None
+    assert stray.search_name == '8848 vodka'
+    assert stray.image_prompt == 'kept'
+    assert report.superseded == []
+
+
+@pytest.mark.django_db
+def test_the_successor_inherits_the_stale_entrys_gaps_but_never_overwrites():
+    company, branch = _venue('kailash-parbat', 'Kailash Parbat')
+    _item(company, branch, name='Apple', section='Juice', price=250,
+          description='fresh apple juice')
+    library.backfill([company])
+    asset = _asset('apple', prompt='a glass of apple juice, STYLE')
+    Item.objects.create(name='Apple', variant_label='', category='Juice',
+                        status='active', search_name='apple', image_asset=asset,
+                        description='an old note', dietary_tags=['veg'],
+                        reference_price=999)
+
+    library.backfill([company])
+
+    successor = Item.objects.get(status='active', search_name='apple juice')
+    assert successor.image_asset_id == asset.pk           # gap, filled
+    assert successor.dietary_tags == ['veg']               # gap, filled
+    assert successor.description == 'fresh apple juice'    # already had one, kept
+    assert successor.reference_price == 250                # already had one, kept
+
+
+@pytest.mark.django_db
+def test_a_not_shareable_stale_entry_is_never_superseded_by_another_companys_entry():
+    """A private entry (founder, spec D2) must never be handed to another
+    venue's row, superseding included."""
+    owner, _ = _venue('tranquility-inn')
+    other, other_branch = _venue('chillzone')
+    stale = Item.objects.create(name='Apple', variant_label='', category='Juice',
+                                status='active', search_name='apple',
+                                shareable=False, origin_company=owner)
+    _item(other, other_branch, name='Apple', section='Juice', price=250)
+
+    report = library.backfill([other])
+
+    stale.refresh_from_db()
+    assert stale.status == 'active'
+    assert stale.merged_into_id is None
+    assert report.superseded == []
+
+
+@pytest.mark.django_db
+def test_superseding_a_second_time_changes_nothing():
+    company, branch = _venue('kailash-parbat', 'Kailash Parbat')
+    _item(company, branch, name='Apple', section='Juice', price=250)
+    library.backfill([company])
+    stale = Item.objects.create(name='Apple', variant_label='', category='Juice',
+                                status='active', search_name='apple')
+    library.backfill([company])
+    stale.refresh_from_db()
+    before = (stale.status, stale.merged_into_id)
+    before_active = set(Item.objects.filter(status='active')
+                        .values_list('pk', flat=True))
+
+    second = library.backfill([company])
+    stale.refresh_from_db()
+
+    assert second.superseded == []
+    assert (stale.status, stale.merged_into_id) == before
+    assert set(Item.objects.filter(status='active')
+              .values_list('pk', flat=True)) == before_active

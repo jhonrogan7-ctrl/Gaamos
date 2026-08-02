@@ -41,6 +41,7 @@ class BackfillReport:
     no_placement: list = field(default_factory=list)
     cleared_live: list = field(default_factory=list)
     reconciled: list = field(default_factory=list)
+    superseded: list = field(default_factory=list)
 
 
 def asset_index():
@@ -201,6 +202,51 @@ def reconcile_stray_entries(report):
             f'#{entry.pk} {entry.name} -> merged into #{keeper.pk} {keeper.name}')
 
 
+def supersede_recompleted_entries(contributors, report):
+    """Fold a stale pre-completion key into the row this run recompleted it into.
+
+    Section completion (2026-08-02) changed the key a bare name like `Apple`
+    gets: it used to be `apple`, and is now `apple juice`. Re-running the
+    backfill after that change does not update an old `apple` entry -- it
+    creates `apple juice` beside it, and the stale `apple` row stays `active`
+    with its image, a live candidate the matcher can still return. Measured
+    against the real library: every stale key this rule can find has exactly
+    the successor it needs (166 of 166), so there is nothing here for a
+    catalog row with no venue behind it (an `active` row this run's own
+    venues never touched and that no re-key produced) to collide with --
+    `contributors` is how that row is told apart from one this run wrote.
+
+    An entry counts as stale only if THIS run did not touch it (its pk is not
+    in `contributors`): an entry the run touched is by definition current,
+    re-keyed or not.
+    """
+    stale_pks = set(Item.objects.filter(status='active')
+                     .exclude(pk__in=list(contributors))
+                     .values_list('pk', flat=True))
+    for pk in stale_pks:
+        entry = Item.objects.get(pk=pk)
+        variant = name_norm.normalize(entry.variant_label)
+        candidates = Item.objects.filter(
+            status='active', pk__in=list(contributors),
+            search_name__startswith=f'{entry.search_name} ')
+        if not entry.shareable:
+            candidates = candidates.filter(origin_company_id=entry.origin_company_id)
+        successors = [c for c in candidates
+                     if name_norm.normalize(c.variant_label) == variant]
+        if not successors:
+            continue
+        successor = min(successors, key=lambda c: (-c.use_count, c.pk))
+        _merge_into(successor, asset=entry.image_asset,
+                    description=entry.description,
+                    dietary_tags=entry.dietary_tags,
+                    price=entry.reference_price)
+        entry.status = 'merged'
+        entry.merged_into = successor
+        entry.save(update_fields=['status', 'merged_into'])
+        report.superseded.append(
+            f'#{entry.pk} {entry.name} -> superseded by #{successor.pk} {successor.name}')
+
+
 def backfill(companies, *, index=None, clear_rejected_live=False):
     """Walk each company's menu and record it in the library.
 
@@ -258,6 +304,9 @@ def backfill(companies, *, index=None, clear_rejected_live=False):
     # Last, so a stray row is compared against the entries this run just built
     # rather than against whatever happened to exist first.
     reconcile_stray_entries(report)
+    # Last of all, so it sees the final state -- including anything
+    # `reconcile_stray_entries` just re-keyed or merged.
+    supersede_recompleted_entries(contributors, report)
     return report
 
 
