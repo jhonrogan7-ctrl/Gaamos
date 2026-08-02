@@ -10,7 +10,7 @@ from pathlib import Path
 import pytest
 from django.conf import settings
 
-from menu import library
+from menu import library, matching
 from menu.models import (Branch, BranchCategory, BranchItemPlacement,
                          BranchMenuItem, Category, Company, ImageAsset, Item,
                          MenuItem)
@@ -45,7 +45,11 @@ def _item(company, branch, *, name, section, price=100, description='',
         company=company, slug=section.lower().replace(' ', '-'),
         defaults={'name': section})
     BranchCategory.objects.get_or_create(branch=branch, category=category)
-    slug = name.lower().replace(' ', '-').replace('(', '').replace(')', '')
+    # Suffixed with the category slug: a printed name is not unique within one
+    # company's card (`Apple` under both JUICE and MILK SHAKE / LASSI), and the
+    # menu item slug is unique per company.
+    slug = (name.lower().replace(' ', '-').replace('(', '').replace(')', '')
+            + '-' + category.slug)
     image_url = ''
     if body is not None:
         rel = f'items/{company.slug}/{slug}.webp'
@@ -316,6 +320,16 @@ def test_dry_run_writes_nothing():
 
 
 @pytest.mark.django_db
+def test_embed_refuses_to_run_under_dry_run():
+    """The combination is a contradiction, not a request to skip half the work:
+    a dry run would spend one live API call per entry and then roll every
+    vector back."""
+    _venue('venue', 'Venue')
+    with pytest.raises(CommandError, match='cannot be combined'):
+        call_command('build_library', '--company', 'venue', '--embed', '--dry-run')
+
+
+@pytest.mark.django_db
 def test_prune_drafts_removes_the_scan_flows_stale_rows_only():
     Item.objects.create(name='Stale Draft', status='draft')
     Item.objects.create(name='Live Entry', status='active')
@@ -432,3 +446,237 @@ def test_reconciling_leaves_a_healthy_library_alone():
     second = library.backfill([company])
 
     assert second.reconciled == []
+
+
+@pytest.mark.django_db
+def test_one_printed_name_in_two_sections_forms_two_entries():
+    """The Kailash Parbat card prints `Apple` at 250 under MILK SHAKE / LASSI
+    and `Apple` at 250 under JUICE. Before section completion these merged into
+    one entry and the lassi inherited the juice's photograph."""
+    company, branch = _venue('kailash-parbat', 'Kailash Parbat')
+    _item(company, branch, name='Apple', section='Juice', price=250)
+    _item(company, branch, name='Apple', section='Milk Shake / Lassi', price=250)
+
+    library.backfill([company])
+
+    keys = set(Item.objects.filter(status='active').values_list('search_name', flat=True))
+    assert keys == {'apple juice', 'apple shake'}
+
+
+@pytest.mark.django_db
+def test_one_dish_under_two_venues_differently_named_sections_stays_one_entry():
+    """`Hot Drinks` and `Beverages` are the same section by another name. This
+    is the 72-key case that putting the section INTO the key would destroy."""
+    company_a, branch_a = _venue('venue-a', 'Venue A')
+    company_b, branch_b = _venue('venue-b', 'Venue B')
+    _item(company_a, branch_a, name='Black Tea', section='Hot Drinks', price=50)
+    _item(company_b, branch_b, name='Black Tea', section='Beverages', price=60)
+
+    library.backfill([company_a, company_b])
+
+    entries = Item.objects.filter(status='active', search_name='black tea')
+    assert entries.count() == 1
+    assert entries.first().use_count == 2
+
+
+@pytest.mark.django_db
+def test_a_stray_entry_is_rekeyed_through_its_own_section():
+    """`reconcile_stray_entries` derives a key for a pre-library row. It reads
+    the row's `category`, which is where the backfill wrote its section."""
+    Item.objects.create(name='Apple', category='Juice', status='active',
+                        search_name='', image_prompt='')
+
+    library.reconcile_stray_entries(library.BackfillReport())
+
+    assert Item.objects.get(name='Apple').search_name == 'apple juice'
+
+
+@pytest.mark.django_db
+def test_embed_entries_gives_every_active_entry_a_vector():
+    company, branch = _venue('venue', 'Venue')
+    _item(company, branch, name='Black Tea', section='Hot Drinks')
+    library.backfill([company])
+
+    report = library.embed_entries(embedder=lambda text: [0.5] * 1024)
+
+    assert report.embedded == 1
+    assert Item.objects.get(search_name='black tea').embedding is not None
+
+
+@pytest.mark.django_db
+def test_embed_entries_embeds_the_text_the_matcher_will_query_with():
+    """The entry is a `passage` and the incoming row is a `query`; if the two
+    are built from different strings the vectors are quietly incomparable."""
+    company, branch = _venue('venue', 'Venue')
+    _item(company, branch, name='Black Tea', section='Hot Drinks')
+    library.backfill([company])
+    seen = []
+
+    library.embed_entries(embedder=lambda text: seen.append(text) or [0.5] * 1024)
+
+    assert seen == [matching.index_text('Black Tea', 'Hot Drinks')]
+
+
+@pytest.mark.django_db
+def test_embed_entries_skips_an_entry_that_already_has_one():
+    """517 calls is two minutes; re-running must not spend them again."""
+    company, branch = _venue('venue', 'Venue')
+    _item(company, branch, name='Black Tea', section='Hot Drinks')
+    library.backfill([company])
+    library.embed_entries(embedder=lambda text: [0.5] * 1024)
+
+    report = library.embed_entries(embedder=lambda text: [0.5] * 1024)
+
+    assert report.embedded == 0
+    assert report.skipped == 1
+
+
+@pytest.mark.django_db
+def test_embed_entries_reports_a_failure_rather_than_abandoning_the_run():
+    """A 500 on entry 200 of 517 must not cost the 199 already written."""
+    company, branch = _venue('venue', 'Venue')
+    _item(company, branch, name='Black Tea', section='Hot Drinks')
+    _item(company, branch, name='Veg Momo', section='Momo')
+    library.backfill([company])
+    calls = []
+
+    def _flaky(text):
+        calls.append(text)
+        if len(calls) == 1:
+            raise ValueError('endpoint said no')
+        return [0.5] * 1024
+
+    report = library.embed_entries(embedder=_flaky)
+
+    assert report.embedded == 1
+    assert len(report.failed) == 1
+
+
+@pytest.mark.django_db
+def test_a_recompleted_key_supersedes_the_stale_entry():
+    """Section completion re-keys `apple` to `apple juice`. Re-running the
+    backfill after that change must fold the old key into the new one rather
+    than leaving it beside it as a second live candidate."""
+    company, branch = _venue('kailash-parbat', 'Kailash Parbat')
+    _item(company, branch, name='Apple', section='Juice', price=250)
+    library.backfill([company])
+    stale = Item.objects.create(name='Apple', variant_label='', category='Juice',
+                                status='active', search_name='apple')
+
+    report = library.backfill([company])
+
+    stale.refresh_from_db()
+    successor = Item.objects.get(status='active', search_name='apple juice')
+    assert stale.status == 'merged'
+    assert stale.merged_into_id == successor.pk
+    assert report.superseded
+    assert f'#{stale.pk} Apple' in report.superseded[0]
+
+
+@pytest.mark.django_db
+def test_an_entry_with_no_successor_is_left_untouched():
+    """The rule that protects a scan-approved catalog row with no venue behind
+    it (the `8848 Vodka` case): no run can ever produce a successor for it, so
+    it must never be touched."""
+    stray = Item.objects.create(name='8848 Vodka', variant_label='',
+                                category='HARD DRINKS', status='active',
+                                search_name='8848 vodka', image_prompt='kept')
+    company, branch = _venue('chillzone')
+    _item(company, branch, name='Black Tea', section='Hot Drinks')
+
+    report = library.backfill([company])
+
+    stray.refresh_from_db()
+    assert stray.status == 'active'
+    assert stray.merged_into_id is None
+    assert stray.search_name == '8848 vodka'
+    assert stray.image_prompt == 'kept'
+    assert report.superseded == []
+
+
+@pytest.mark.django_db
+def test_the_successor_inherits_the_stale_entrys_gaps_but_never_overwrites():
+    company, branch = _venue('kailash-parbat', 'Kailash Parbat')
+    _item(company, branch, name='Apple', section='Juice', price=250,
+          description='fresh apple juice')
+    library.backfill([company])
+    asset = _asset('apple', prompt='a glass of apple juice, STYLE')
+    Item.objects.create(name='Apple', variant_label='', category='Juice',
+                        status='active', search_name='apple', image_asset=asset,
+                        description='an old note', dietary_tags=['veg'],
+                        reference_price=999)
+
+    library.backfill([company])
+
+    successor = Item.objects.get(status='active', search_name='apple juice')
+    assert successor.image_asset_id == asset.pk           # gap, filled
+    assert successor.dietary_tags == ['veg']               # gap, filled
+    assert successor.description == 'fresh apple juice'    # already had one, kept
+    assert successor.reference_price == 250                # already had one, kept
+
+
+@pytest.mark.django_db
+def test_a_not_shareable_stale_entry_is_never_superseded_by_another_companys_entry():
+    """A private entry (founder, spec D2) must never be handed to another
+    venue's row, superseding included."""
+    owner, _ = _venue('tranquility-inn')
+    other, other_branch = _venue('chillzone')
+    stale = Item.objects.create(name='Apple', variant_label='', category='Juice',
+                                status='active', search_name='apple',
+                                shareable=False, origin_company=owner)
+    _item(other, other_branch, name='Apple', section='Juice', price=250)
+
+    report = library.backfill([other])
+
+    stale.refresh_from_db()
+    assert stale.status == 'active'
+    assert stale.merged_into_id is None
+    assert report.superseded == []
+
+
+@pytest.mark.django_db
+def test_a_shareable_stale_entry_is_never_superseded_into_a_private_successor():
+    """A shared entry (spec D2) belongs to every tenant. Superseding it into
+    another venue's private (`shareable=False`) successor would pull it out
+    of every other tenant's candidate pool (it goes `merged`) and hand its
+    image to one venue's private entry -- which a pk tie can win even at
+    `use_count=1` (`min(-use_count, pk)`). Verified 0 occurrences in live
+    data, but the boundary must hold regardless.
+    """
+    company, branch = _venue('kailash-parbat', 'Kailash Parbat')
+    stale = Item.objects.create(name='Apple', variant_label='', category='Juice',
+                                status='active', search_name='apple',
+                                shareable=True)
+    _item(company, branch, name='Apple', section='Juice', price=250,
+          body=_png('own-apple-photo'))
+
+    report = library.backfill([company])
+
+    stale.refresh_from_db()
+    private_successor = Item.objects.get(status='active', search_name='apple juice')
+    assert private_successor.shareable is False
+    assert stale.status == 'active'
+    assert stale.merged_into_id is None
+    assert report.superseded == []
+
+
+@pytest.mark.django_db
+def test_superseding_a_second_time_changes_nothing():
+    company, branch = _venue('kailash-parbat', 'Kailash Parbat')
+    _item(company, branch, name='Apple', section='Juice', price=250)
+    library.backfill([company])
+    stale = Item.objects.create(name='Apple', variant_label='', category='Juice',
+                                status='active', search_name='apple')
+    library.backfill([company])
+    stale.refresh_from_db()
+    before = (stale.status, stale.merged_into_id)
+    before_active = set(Item.objects.filter(status='active')
+                        .values_list('pk', flat=True))
+
+    second = library.backfill([company])
+    stale.refresh_from_db()
+
+    assert second.superseded == []
+    assert (stale.status, stale.merged_into_id) == before
+    assert set(Item.objects.filter(status='active')
+              .values_list('pk', flat=True)) == before_active

@@ -28,7 +28,7 @@ from pathlib import Path
 from django.conf import settings
 
 from menu.models import BranchItemPlacement, ImageAsset, Item, MenuItem
-from menu.pipeline import name_norm, prompts
+from menu.pipeline import item_embed, name_norm, prompts
 
 
 @dataclass
@@ -41,6 +41,7 @@ class BackfillReport:
     no_placement: list = field(default_factory=list)
     cleared_live: list = field(default_factory=list)
     reconciled: list = field(default_factory=list)
+    superseded: list = field(default_factory=list)
 
 
 def asset_index():
@@ -174,7 +175,9 @@ def reconcile_stray_entries(report):
     vocabulary: nothing is deleted, and the older row keeps its provenance.
     """
     for entry in Item.objects.filter(status='active', search_name=''):
-        entry.search_name = name_norm.search_form(entry.name)
+        # `category` is where `_create_entry` wrote the section, so a stray row
+        # is re-keyed by the same rule the backfill uses.
+        entry.search_name = name_norm.search_form(entry.name, entry.category)
         if not entry.image_prompt:
             entry.image_prompt = prompts.for_item(entry.name, entry.category)
         variant = name_norm.normalize(entry.variant_label)
@@ -197,6 +200,59 @@ def reconcile_stray_entries(report):
                                   'merged_into'])
         report.reconciled.append(
             f'#{entry.pk} {entry.name} -> merged into #{keeper.pk} {keeper.name}')
+
+
+def supersede_recompleted_entries(contributors, report):
+    """Fold a stale pre-completion key into the row this run recompleted it into.
+
+    Section completion (2026-08-02) changed the key a bare name like `Apple`
+    gets: it used to be `apple`, and is now `apple juice`. Re-running the
+    backfill after that change does not update an old `apple` entry -- it
+    creates `apple juice` beside it, and the stale `apple` row stays `active`
+    with its image, a live candidate the matcher can still return. Measured
+    against the real library: every stale key this rule can find has exactly
+    the successor it needs (166 of 166), so there is nothing here for a
+    catalog row with no venue behind it (an `active` row this run's own
+    venues never touched and that no re-key produced) to collide with --
+    `contributors` is how that row is told apart from one this run wrote.
+
+    An entry counts as stale only if THIS run did not touch it (its pk is not
+    in `contributors`): an entry the run touched is by definition current,
+    re-keyed or not.
+    """
+    stale_pks = set(Item.objects.filter(status='active')
+                     .exclude(pk__in=list(contributors))
+                     .values_list('pk', flat=True))
+    for pk in stale_pks:
+        entry = Item.objects.get(pk=pk)
+        variant = name_norm.normalize(entry.variant_label)
+        candidates = Item.objects.filter(
+            status='active', pk__in=list(contributors),
+            search_name__startswith=f'{entry.search_name} ')
+        if entry.shareable:
+            # A shared entry is visible to every tenant, so it may only be
+            # superseded into another shared entry -- never into one venue's
+            # private (`shareable=False`) photograph. Otherwise the shared
+            # row vanishes from every other tenant's candidate pool (goes
+            # `merged`) and its image is absorbed into one venue's private
+            # entry, which a pk tie can win even at `use_count=1`.
+            candidates = candidates.filter(shareable=True)
+        else:
+            candidates = candidates.filter(origin_company_id=entry.origin_company_id)
+        successors = [c for c in candidates
+                     if name_norm.normalize(c.variant_label) == variant]
+        if not successors:
+            continue
+        successor = min(successors, key=lambda c: (-c.use_count, c.pk))
+        _merge_into(successor, asset=entry.image_asset,
+                    description=entry.description,
+                    dietary_tags=entry.dietary_tags,
+                    price=entry.reference_price)
+        entry.status = 'merged'
+        entry.merged_into = successor
+        entry.save(update_fields=['status', 'merged_into'])
+        report.superseded.append(
+            f'#{entry.pk} {entry.name} -> superseded by #{successor.pk} {successor.name}')
 
 
 def backfill(companies, *, index=None, clear_rejected_live=False):
@@ -232,7 +288,10 @@ def backfill(companies, *, index=None, clear_rejected_live=False):
                 report.venue_photos += 1
             shareable = not venue_photo
 
-            search_name, variant = name_norm.entry_key(menu_item.name)
+            # The section, not just the name: a printed name is not unique
+            # within one card. `Apple` appears under both JUICE and MILK SHAKE
+            # / LASSI on the Kailash Parbat menu at the same price.
+            search_name, variant = name_norm.entry_key(menu_item.name, section)
             scope = None if shareable else company.pk
             entry = _find_entry(search_name, variant, scope)
             if entry is None:
@@ -253,4 +312,53 @@ def backfill(companies, *, index=None, clear_rejected_live=False):
     # Last, so a stray row is compared against the entries this run just built
     # rather than against whatever happened to exist first.
     reconcile_stray_entries(report)
+    # Last of all, so it sees the final state -- including anything
+    # `reconcile_stray_entries` just re-keyed or merged.
+    supersede_recompleted_entries(contributors, report)
+    return report
+
+
+@dataclass
+class EmbedReport:
+    embedded: int = 0
+    skipped: int = 0
+    failed: list = field(default_factory=list)
+
+
+def embed_entries(entries=None, *, embedder=None):
+    """Give every active library entry the 1024-d vector layer 3 searches.
+
+    Phase 1 created 517 entries while the catalog embedder was still None and
+    phase 2 wired the provider into scan drafts only, so the vector column was
+    empty on every one of them and layer 3 could never return anything. This is
+    the backfill that turns it on.
+
+    Entries that already carry a vector are skipped: 517 calls is roughly two
+    minutes of endpoint time and a re-run must not spend it again.
+
+    One entry's failure is recorded and the walk continues. A 500 on entry 200
+    of 517 must not cost the 199 rows already written -- the whole point of
+    writing each row as it is embedded rather than in one transaction at the
+    end.
+    """
+    from menu.matching import index_text
+    if entries is None:
+        entries = Item.objects.filter(status='active')
+    report = EmbedReport()
+    for entry in entries:
+        if entry.embedding is not None:
+            report.skipped += 1
+            continue
+        try:
+            vector = item_embed.embed_text(
+                index_text(entry.name, entry.category), embedder=embedder)
+        except Exception as exc:                      # noqa: BLE001
+            report.failed.append(f'#{entry.pk} {entry.name}: {exc}')
+            continue
+        if vector is None:
+            report.skipped += 1
+            continue
+        entry.embedding = vector
+        entry.save(update_fields=['embedding'])
+        report.embedded += 1
     return report

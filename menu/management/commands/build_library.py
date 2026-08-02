@@ -38,8 +38,18 @@ class Command(BaseCommand):
                             help='Blank the image on any live menu item whose '
                                  'picture is a rejected pool asset. A wrong '
                                  'photograph is a claim; blank beats wrong.')
+        parser.add_argument('--embed', action='store_true',
+                            help='Give every active entry the 1024-d vector '
+                                 'the matcher\'s layer 3 searches. Reaches a '
+                                 'live endpoint: roughly one call per entry.')
 
     def handle(self, *args, **opts):
+        if opts['embed'] and opts['dry_run']:
+            raise CommandError(
+                '--embed cannot be combined with --dry-run: embedding reaches a '
+                'live endpoint, so the run would spend ~1 API call per entry and '
+                'then roll every vector back.')
+
         companies = []
         for slug in opts['companies']:
             company = Company.objects.filter(slug=slug).first()
@@ -68,6 +78,14 @@ class Command(BaseCommand):
             f'{entries.exclude(image_asset=None).count()} with an image | '
             f'{entries.filter(shareable=False).count()} not shareable'))
 
+        if opts['embed']:
+            report = library.embed_entries()
+            self.stdout.write(
+                f'embedded {report.embedded} | already had one '
+                f'{report.skipped} | failed {len(report.failed)}')
+            for line in report.failed:
+                self.stdout.write(self.style.ERROR(f'  ✗ {line}'))
+
     def _report(self, report):
         self.stdout.write(
             f'created {report.created} | merged into an existing entry '
@@ -89,6 +107,12 @@ class Command(BaseCommand):
                 f'predate the library:'))
             for line in report.reconciled:
                 self.stdout.write(f'  ↻ {line}')
+        if report.superseded:
+            self.stdout.write(self.style.WARNING(
+                f'superseded {len(report.superseded)} entry/entries the '
+                f'section re-key replaced:'))
+            for line in report.superseded:
+                self.stdout.write(f'  ↝ {line}')
         if report.no_placement:
             self.stdout.write(self.style.WARNING(
                 f'{len(report.no_placement)} item(s) have no category placement '
