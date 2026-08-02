@@ -44,6 +44,12 @@ class Command(BaseCommand):
                                  'live endpoint: roughly one call per entry.')
 
     def handle(self, *args, **opts):
+        if opts['embed'] and opts['dry_run']:
+            raise CommandError(
+                '--embed cannot be combined with --dry-run: embedding reaches a '
+                'live endpoint, so the run would spend ~1 API call per entry and '
+                'then roll every vector back.')
+
         companies = []
         for slug in opts['companies']:
             company = Company.objects.filter(slug=slug).first()
@@ -73,11 +79,6 @@ class Command(BaseCommand):
             f'{entries.filter(shareable=False).count()} not shareable'))
 
         if opts['embed']:
-            if opts['dry_run']:
-                self.stdout.write(self.style.WARNING(
-                    '--embed skipped: a dry run would spend the API calls and '
-                    'then roll the vectors back'))
-                return
             report = library.embed_entries()
             self.stdout.write(
                 f'embedded {report.embedded} | already had one '

@@ -320,6 +320,16 @@ def test_dry_run_writes_nothing():
 
 
 @pytest.mark.django_db
+def test_embed_refuses_to_run_under_dry_run():
+    """The combination is a contradiction, not a request to skip half the work:
+    a dry run would spend one live API call per entry and then roll every
+    vector back."""
+    _venue('venue', 'Venue')
+    with pytest.raises(CommandError, match='cannot be combined'):
+        call_command('build_library', '--company', 'venue', '--embed', '--dry-run')
+
+
+@pytest.mark.django_db
 def test_prune_drafts_removes_the_scan_flows_stale_rows_only():
     Item.objects.create(name='Stale Draft', status='draft')
     Item.objects.create(name='Live Entry', status='active')
