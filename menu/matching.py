@@ -16,7 +16,9 @@ printed name, which is the safe outcome. Blank beats wrong.
 """
 from dataclasses import dataclass
 
+from django.contrib.postgres.search import TrigramSimilarity
 from django.db.models import Q
+from pgvector.django import CosineDistance
 
 from menu.models import Item
 from menu.pipeline import dish_lexicon, dish_words, name_norm, prompts
@@ -119,7 +121,52 @@ def _decide(score, high, mid):
     return 'none'
 
 
-def match_rows(rows, *, company, adjudicate=None, embedder=None):
+CANDIDATE_LIMIT = 10
+
+# `None` is a meaningful value for `embedder` (force layer 3 off), so
+# `match_rows` needs a distinct sentinel to mean "not supplied -- resolve the
+# configured provider".
+_UNSET = object()
+
+
+def _trigram(row, pool):
+    """Layer 2 -- `pg_trgm` over the GIN index phase 1's migration 0019 built.
+
+    Catches OCR noise, spacing and spelling drift. Still zero API calls.
+    """
+    from django.conf import settings
+    search_name, _ = name_norm.entry_key(row.name, row.section)
+    if not search_name:
+        return []
+    hits = (pool.annotate(sim=TrigramSimilarity('search_name', search_name))
+            .filter(sim__gte=settings.MENU_MATCH_TRIGRAM_FLOOR)
+            .order_by('-sim')[:CANDIDATE_LIMIT])
+    return [(entry, float(entry.sim)) for entry in hits]
+
+
+def _vector(row, pool, embedder):
+    """Layer 3 -- cosine over `Item.embedding`, or nothing at all.
+
+    Earns its place on synonymy trigram cannot see: `Fresh Lime Soda` and
+    `Lemon Soda` are the same drink and share almost no trigrams.
+
+    Returns [] when no embedder is configured, which is spec D6 in one line --
+    a dead endpoint switches this layer off rather than breaking the matcher.
+    The row is a `query` and a stored entry is a `passage`; that asymmetry is
+    why `nv-embedqa-e5-v5` was chosen, and `item_embed` owns it.
+    """
+    if embedder is None:
+        return []
+    vector = embedder(index_text(row.name, row.section))
+    if vector is None:
+        return []
+    hits = (pool.exclude(embedding=None)
+            .annotate(distance=CosineDistance('embedding', vector))
+            .order_by('distance')[:CANDIDATE_LIMIT])
+    return [(entry, 1.0 - float(entry.distance)) for entry in hits]
+
+
+def match_rows(rows, *, company, adjudicate=None, embedder=_UNSET):
     """-> one `Match` per row, in order.
 
     `adjudicate` is the layer-4 seam: a callable taking (row, [(entry, score)])
@@ -127,17 +174,38 @@ def match_rows(rows, *, company, adjudicate=None, embedder=None):
     many rows land in the ambiguous middle before deciding whether a text model
     belongs there at all. No `rerank_nv` module exists, because no reranking
     model exists on this account and an empty module claims one might.
+
+    `embedder` is layer 3's seam and defaults to the configured catalog
+    embedder. Pass None to force the vector layer off; pass a callable in tests
+    so the suite never reaches an endpoint.
     """
+    if embedder is _UNSET:
+        from menu.pipeline import item_embed
+        embedder = item_embed.resolve_provider()
     high, mid = _thresholds()
     pool = candidates_for(company)
     out = []
     for row in rows:
-        scored, vetoed = [], 0
-        for entry in _exact(row, pool):
+        vetoed = 0
+        seen = {}
+        exact = _exact(row, pool)
+        if exact:
+            found = [(entry, 1.0, 'exact') for entry in exact]
+        else:
+            # Cheapest-first is a cost decision, not a style: layer 3 spends an
+            # API call per row and must not run for a row layer 1 answered.
+            found = [(entry, score, 'trigram')
+                     for entry, score in _trigram(row, pool)]
+            found += [(entry, score, 'vector')
+                      for entry, score in _vector(row, pool, embedder)]
+        for entry, score, layer in found:
             if veto_reason(row, entry):
                 vetoed += 1
                 continue
-            scored.append((entry, 1.0, 'exact'))
+            # A candidate both layers found keeps its better score.
+            if entry.pk not in seen or score > seen[entry.pk][1]:
+                seen[entry.pk] = (entry, score, layer)
+        scored = list(seen.values())
         out.append(_best(row, scored, vetoed, high, mid, adjudicate))
     return out
 

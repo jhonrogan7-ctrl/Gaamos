@@ -179,3 +179,166 @@ def test_the_entry_more_venues_serve_wins_a_tie():
 def test_index_text_is_one_function_so_query_and_passage_cannot_drift():
     assert matching.index_text('Apple', 'Juice') == 'Apple — Juice'
     assert matching.index_text('Apple', '') == 'Apple'
+
+
+@pytest.mark.django_db
+def test_trigram_catches_a_spelling_drift_the_exact_key_misses():
+    """`masaala chowmein` vs `masala chowmein` — measured similarity 0.833.
+
+    The drifting word is deliberately neither a protein nor a dish word: drift
+    on a protein token is vetoed (see the Task 4 test) and drift on a dish word
+    changes what the section completes, so either would test something other
+    than layer 2.
+    """
+    entry = _entry('Masala Chowmein', section='Chowmein')
+    company = _company('venue')
+
+    [match] = matching.match_rows(
+        [matching.Row(name='Masaala Chowmein', section='Chowmein')],
+        company=company)
+
+    assert match.entry_id == entry.pk
+    assert match.layer == 'trigram'
+    assert 0.0 < match.score < 1.0
+
+
+@pytest.mark.django_db
+def test_a_trigram_candidate_below_the_floor_is_not_returned():
+    """Measured similarity 0.077, well under the 0.35 floor. Neither name
+    carries a protein and only one carries a head-word, so no veto can fire --
+    the floor is the only thing rejecting this, which is what the test is for.
+    """
+    _entry('Masala Chowmein', section='Chowmein')
+    company = _company('venue')
+
+    [match] = matching.match_rows(
+        [matching.Row(name='Fruit Salad', section='Salad')], company=company)
+
+    assert match.entry_id is None
+
+
+@pytest.mark.django_db
+def test_a_veto_beats_a_perfect_trigram_score():
+    """This is the whole design in one test: the strings are one character
+    apart and the answer is still no."""
+    _entry('Buff Momo', section='Momo')
+    company = _company('venue')
+
+    [match] = matching.match_rows(
+        [matching.Row(name='Bufff Momo', section='Momo')], company=company)
+
+    assert match.entry_id is None
+    assert match.veto_count == 1
+
+
+@pytest.mark.django_db
+def test_the_vector_layer_finds_synonymy_trigram_cannot_see():
+    """`Fresh Lime Soda` and `Lemon Soda` share almost no trigrams."""
+    entry = _entry('Lemon Soda', section='Soft Drinks')
+    entry.embedding = [1.0] + [0.0] * 1023
+    entry.save(update_fields=['embedding'])
+    company = _company('venue')
+
+    [match] = matching.match_rows(
+        [matching.Row(name='Fresh Lime Soda', section='Soft Drinks')],
+        company=company, embedder=lambda text: [1.0] + [0.0] * 1023)
+
+    assert match.entry_id == entry.pk
+    assert match.layer == 'vector'
+
+
+@pytest.mark.django_db
+def test_the_vector_layer_switches_itself_off_when_nothing_is_configured():
+    """Spec D6: no embed model means the matcher runs layers 0-2 and every
+    other layer works without it. No endpoint can block this feature."""
+    entry = _entry('Lemon Soda', section='Soft Drinks')
+    entry.embedding = [1.0] + [0.0] * 1023
+    entry.save(update_fields=['embedding'])
+    company = _company('venue')
+
+    [match] = matching.match_rows(
+        [matching.Row(name='Fresh Lime Soda', section='Soft Drinks')],
+        company=company, embedder=None)
+
+    assert match.entry_id is None
+
+
+@pytest.mark.django_db
+def test_an_entry_with_no_vector_is_simply_not_a_vector_candidate():
+    _entry('Lemon Soda', section='Soft Drinks')
+    company = _company('venue')
+
+    [match] = matching.match_rows(
+        [matching.Row(name='Fresh Lime Soda', section='Soft Drinks')],
+        company=company, embedder=lambda text: [1.0] + [0.0] * 1023)
+
+    assert match.entry_id is None
+
+
+@pytest.mark.django_db
+def test_a_candidate_found_by_both_layers_keeps_its_better_score():
+    """Trigram scores this pair 0.833; the injected vectors score it 1.0."""
+    entry = _entry('Masala Chowmein', section='Chowmein')
+    entry.embedding = [1.0] + [0.0] * 1023
+    entry.save(update_fields=['embedding'])
+    company = _company('venue')
+
+    [match] = matching.match_rows(
+        [matching.Row(name='Masaala Chowmein', section='Chowmein')],
+        company=company, embedder=lambda text: [1.0] + [0.0] * 1023)
+
+    assert match.entry_id == entry.pk
+    assert match.layer == 'vector'
+    assert match.score == pytest.approx(1.0, abs=1e-6)
+
+
+@pytest.mark.django_db
+def test_the_exact_layer_short_circuits_and_costs_no_embedding():
+    """Cheapest-first is not decoration: an exact key must not spend an API
+    call. The embedder raises, so calling it fails the test."""
+    entry = _entry('Veg Momo', section='Momo')
+    company = _company('venue')
+
+    def _explode(text):
+        raise AssertionError('layer 3 ran for a row layer 1 already answered')
+
+    [match] = matching.match_rows(
+        [matching.Row(name='Veg Momo', section='Momo')],
+        company=company, embedder=_explode)
+
+    assert match.entry_id == entry.pk
+
+
+@pytest.mark.django_db
+def test_the_adjudication_seam_is_offered_the_ambiguous_middle():
+    """0.833 sits inside [MID 0.55, HIGH 0.90) — the ambiguous middle by
+    construction, which is the only band the seam is offered."""
+    entry = _entry('Masala Chowmein', section='Chowmein')
+    company = _company('venue')
+    seen = []
+
+    def _adjudicate(row, ranked):
+        seen.append((row.name, [e.pk for e, _ in ranked]))
+        return ranked[0][0].pk
+
+    [match] = matching.match_rows(
+        [matching.Row(name='Masaala Chowmein', section='Chowmein')],
+        company=company, adjudicate=_adjudicate)
+
+    assert seen == [('Masaala Chowmein', [entry.pk])]
+    assert match.entry_id == entry.pk
+    assert match.layer == 'adjudicated'
+    assert match.decision == 'auto'
+
+
+@pytest.mark.django_db
+def test_the_adjudicator_may_refuse_and_the_row_stays_unmatched():
+    _entry('Masala Chowmein', section='Chowmein')
+    company = _company('venue')
+
+    [match] = matching.match_rows(
+        [matching.Row(name='Masaala Chowmein', section='Chowmein')],
+        company=company, adjudicate=lambda row, ranked: None)
+
+    assert match.entry_id is None
+    assert match.decision == 'none'
