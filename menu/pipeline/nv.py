@@ -31,6 +31,25 @@ def base_url():
     return settings.NVIDIA_BASE_URL.rstrip('/')
 
 
+def _with_detail(exc, limit=400):
+    """`reason`, plus whatever the endpoint put in the response body.
+
+    Reads defensively: a body that is missing, already consumed or not JSON must
+    not turn a useful HTTP error into an unrelated crash in the error path.
+    """
+    try:
+        raw = exc.read().decode(errors='replace').strip()
+    except Exception:                                   # noqa: BLE001
+        return exc.reason
+    if not raw:
+        return exc.reason
+    try:
+        message = json.loads(raw)['error']['message']
+    except (ValueError, KeyError, TypeError):
+        message = raw
+    return f'{exc.reason}: {str(message)[:limit]}'
+
+
 def post(path, body, *, key=None, opener=urllib.request.urlopen, timeout=300):
     """POST JSON to `path` (e.g. '/chat/completions'); return the parsed reply."""
     key = api_key() if key is None else key
@@ -49,7 +68,12 @@ def post(path, body, *, key=None, opener=urllib.request.urlopen, timeout=300):
         if exc.code in (403, 404):
             raise NotAvailable(
                 f'{body.get("model", "?")}: HTTP {exc.code} for this account') from exc
-        raise
+        # The body is the diagnostic. Without it a scan's stored error reads
+        # 'HTTP Error 500: Internal Server Error' whether the host's inference
+        # engine crashed or we sent a schema it cannot compile -- two problems
+        # with opposite fixes. Type and status stay put; only the reason grows.
+        raise urllib.error.HTTPError(
+            exc.url, exc.code, _with_detail(exc), exc.headers, None) from exc
 
 
 def guided_json(schema, *, name='payload'):
