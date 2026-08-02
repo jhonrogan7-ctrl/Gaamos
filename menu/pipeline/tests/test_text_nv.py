@@ -39,7 +39,8 @@ def test_a_schema_is_sent_as_guided_json_not_pasted_into_the_prompt():
     schema = {'type': 'object', 'properties': {'same': {'type': 'boolean'}}}
     text_nv.complete('decide', schema=schema, model='m', api_key='k',
                      opener=_opener('{"same": true}'), throttled=False)
-    assert captured['body']['nvext']['guided_json'] == schema
+    assert captured['body']['response_format']['json_schema']['schema'] == schema
+    assert 'nvext' not in captured['body']
     assert 'properties' not in captured['body']['messages'][-1]['content']
 
 

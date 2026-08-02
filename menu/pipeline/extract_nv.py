@@ -10,11 +10,13 @@ Five behaviours here are measured requirements, not preferences (probe of
 2026-07-30, `nvidia/nemotron-nano-12b-v2-vl` on a two-column card with 36 items
 in 5 shared-line price matrices):
 
-1. `nvext.guided_json` is MANDATORY. Same model, same prompt, same image: 36/36
-   items with it, 26/36 without -- and the ten it drops are exactly the protein
+1. Guided JSON is MANDATORY. Same model, same prompt, same image: 36/36 items
+   with it, 26/36 without -- and the ten it drops are exactly the protein
    variants. A dropped Buff Momo is a lost item; a merged one carries veg,
    chicken and buff into one row's dietary_tags, which is the protein-veto
-   nightmare arriving before the matcher can see it.
+   nightmare arriving before the matcher can see it. It is requested through
+   `nv.guided_json` (`response_format`), NOT `nvext`: this host accepts `nvext`
+   and ignores it, and an unguided call to this model loops to max_tokens.
 2. Guide on the ITEM ARRAY only. Including the `pages` wrapper is what sent the
    8B model into a 230-entry repetition loop. Page type is inferred from the
    item count here instead.
@@ -127,7 +129,9 @@ def extract_menu(file_bytes, mime, *, model=None, api_key=None,
             ]}],
             'max_tokens': 8192,
             'temperature': 0.0,
-            'nvext': {'guided_json': _GUIDED_SCHEMA},   # rules 1 + 2
+            # Rules 1 + 2. Via `response_format`, never `nvext` -- see
+            # `nv.guided_json` for the measurement that forced that.
+            **nv.guided_json(_GUIDED_SCHEMA, name='menu_items'),
         }
         reply = nv.post('/chat/completions', body, key=key, opener=opener)
         rows = _clean(_rows_from(nv.message_text(reply)), number)

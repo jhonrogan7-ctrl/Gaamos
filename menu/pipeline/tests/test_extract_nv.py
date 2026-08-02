@@ -49,11 +49,16 @@ def test_the_prompt_is_the_gemini_prompt_verbatim():
 
 
 def test_the_request_carries_guided_json_because_without_it_ten_items_vanish():
-    """36/36 items with `nvext.guided_json`, 26/36 without -- and the ten it
-    drops are exactly the protein variants inside the price matrices."""
+    """36/36 items with guided decoding, 26/36 without -- and the ten it drops
+    are exactly the protein variants inside the price matrices.
+
+    Sent as `response_format`, never `nvext`: measured 2026-08-02, this host
+    accepts `nvext.guided_json` and ignores it, returning a reply
+    byte-identical to an unguided one."""
     extract_nv.extract_menu(_png(), 'image/png', model='m', api_key='k',
                             opener=_opener(_chat(ONE_ITEM)), throttled=False)
-    assert 'guided_json' in captured['body']['nvext']
+    assert captured['body']['response_format']['type'] == 'json_schema'
+    assert 'nvext' not in captured['body']
 
 
 def test_the_guided_schema_is_the_item_array_only():
@@ -61,7 +66,7 @@ def test_the_guided_schema_is_the_item_array_only():
     repetition loop. Page type is decided from the item count instead."""
     extract_nv.extract_menu(_png(), 'image/png', model='m', api_key='k',
                             opener=_opener(_chat(ONE_ITEM)), throttled=False)
-    schema = captured['body']['nvext']['guided_json']
+    schema = captured['body']['response_format']['json_schema']['schema']
     assert schema['type'] == 'array'
     assert 'pages' not in json.dumps(schema)
 

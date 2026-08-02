@@ -52,6 +52,30 @@ def post(path, body, *, key=None, opener=urllib.request.urlopen, timeout=300):
         raise
 
 
+def guided_json(schema, *, name='payload'):
+    """The body fragment that makes this host constrain output to `schema`.
+
+    Use this rather than writing the field by hand. `nvext.guided_json` -- the
+    NIM-native form, and the one every NVIDIA NIM example shows -- is accepted
+    and then SILENTLY IGNORED by `integrate.api.nvidia.com`. Measured 2026-08-02
+    against both chat models:
+
+    - vision, blank image, `nvext.guided_json`: `1. BLT 2. BLT 3. BLT ...` to
+      `finish_reason: length` -- byte-identical to the same request carrying no
+      guidance at all, which is how we know it is a no-op and not merely weak.
+    - vision, same request via `response_format`: `[  ]`, `finish_reason: stop`,
+      4 completion tokens.
+    - text, `nvext.guided_json`: prose that does not parse. Via
+      `response_format`: `{"verdict": "same", "confidence": 0.9}`.
+
+    Guided decoding itself is not optional -- 36/36 items with it against 26/36
+    without (probe 2026-07-30), the ten lost being exactly the protein variants.
+    Only the field carrying it changed.
+    """
+    return {'response_format': {'type': 'json_schema',
+                                'json_schema': {'name': name, 'schema': schema}}}
+
+
 def message_text(reply):
     """The assistant text out of an OpenAI-shaped chat reply."""
     try:

@@ -32,7 +32,7 @@ def complete(prompt, *, schema=None, system=None, model=None, api_key=None,
     if schema is not None:
         # Guided decoding, never a schema pasted into the prompt: the vision
         # probe measured that difference at 26/36 items versus 36/36.
-        body['nvext'] = {'guided_json': schema}
+        body.update(nv.guided_json(schema, name='decision'))
     text = nv.message_text(nv.post('/chat/completions', body, key=api_key,
                                    opener=opener))
     if schema is None:
