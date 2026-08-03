@@ -32,8 +32,10 @@ can catch a wrong one. A human reads each section against the photograph.
     {{ stats.sections_confirmed }} / {{ stats.sections }} confirmed</span>
 </div>
 
-{# The jump list: a reviewer may work out of order without the screen becoming
-   one long scroll where a section gets confirmed without being looked at. #}
+{% comment %}
+The jump list: a reviewer may work out of order without the screen becoming
+one long scroll where a section gets confirmed without being looked at.
+{% endcomment %}
 <nav class="wz-jump" aria-label="Sections">
   {% for s in sections %}
     <a href="?section={{ s.pk }}"

@@ -81,8 +81,10 @@ the rows at read time, because this is the page a human decides on.
   </span>
   <span class="wz-grow"></span>
   {% if preview.unconfirmed %}
-    {# The gate is re-checked server-side on publish; this only stops a
-       pointless round trip and says which section is missing. #}
+    {% comment %}
+    The gate is re-checked server-side on publish; this only stops a pointless
+    round trip and says which section is missing.
+    {% endcomment %}
     <span class="wz-st wz-st--fail">{{ preview.unconfirmed|length }} section{{ preview.unconfirmed|length|pluralize }} unchecked</span>
     <a class="btn ghost" href="{% url 'ops:build_gate1' build.pk %}">Finish gate 1 →</a>
   {% else %}
