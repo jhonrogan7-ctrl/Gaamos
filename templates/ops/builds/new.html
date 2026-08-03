@@ -35,15 +35,29 @@ lists every tenant on the platform.
     <h3>Branches</h3>
     <div class="wz-hint">The menu publishes to every branch ticked. Pick more than one when
       they share a card.</div>
+    {% comment %}
+    ⚠ NO `x-cloak` here, deliberately. These labels are `x-show`n, and the built
+    CSS hides `[x-cloak]` with `display:none !important` — Alpine is the only
+    thing that removes the attribute. So with x-cloak, any load where Alpine did
+    not run (stale cached page, back/forward restore, a JS error) hid every
+    branch FOREVER and no build could be started at all. That shipped, and the
+    founder hit it: "Pick at least one branch of that venue" with no branch on
+    screen to pick.
+
+    Filtering to the chosen venue is an enhancement. Being able to submit the
+    form is not. Without JS every branch shows, each labelled with its venue,
+    and the POST already re-checks that the branch belongs to the company.
+    {% endcomment %}
     <div class="wz-pickgrid">
       {% for b in branches %}
-        <label class="wz-pick" x-show="company === {{ b.company_id }}" x-cloak>
+        <label class="wz-pick" x-show="!company || company === {{ b.company_id }}">
           <input type="checkbox" name="branches" value="{{ b.pk }}" class="wz-pick-input">
           <b>{{ b.name }}</b>
           <span>{{ b.company.name }}</span>
         </label>
+      {% empty %}
+        <div class="wz-hint">No branches exist yet — add one under Tenants first.</div>
       {% endfor %}
-      <div class="wz-hint" x-show="!company">Pick a venue first.</div>
     </div>
   </div>
 

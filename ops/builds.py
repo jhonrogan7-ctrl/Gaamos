@@ -92,13 +92,24 @@ def build_new(request):
         context['error'] = 'Pick a venue.'
         return render(request, 'ops/builds/new.html', context, status=200)
 
+    # A venue with no branch has nowhere to publish, and "pick at least one
+    # branch" is a cruel thing to tell someone with nothing to pick.
+    available = list(Branch.all_objects.filter(company=company))
+    if not available:
+        context['error'] = (f'{company.name} has no branch yet, so a menu has '
+                            'nowhere to publish. Add one under Tenants first.')
+        context['picked_company'] = company
+        return render(request, 'ops/builds/new.html', context, status=200)
+
     branch_ids = request.POST.getlist('branches')
     # Scoped to the posted company on purpose: a branch id is guessable and this
     # form lists every tenant's branches. `len(...) != len(set(...))` catches an
     # id that belongs to somebody else rather than silently dropping it.
     branches = list(Branch.all_objects.filter(company=company, pk__in=branch_ids))
     if not branches or len(branches) != len(set(branch_ids)):
-        context['error'] = 'Pick at least one branch of that venue.'
+        names = ', '.join(b.name for b in available)
+        context['error'] = (f'Tick at least one branch of {company.name} '
+                            f'({names}) before starting.')
         context['picked_company'] = company
         return render(request, 'ops/builds/new.html', context, status=200)
 

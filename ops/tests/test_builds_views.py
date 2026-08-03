@@ -333,3 +333,41 @@ def test_publishing_is_refused_while_a_section_is_unconfirmed(client, admin,
     client.post(reverse('ops:build_publish', args=[gate1_build.pk]))
 
     assert MenuItem.all_objects.filter(company=gate1_build.company).count() == 0
+
+
+@pytest.mark.django_db
+def test_branches_are_selectable_without_javascript(client, admin, company):
+    """The branch picker must not depend on Alpine to become visible.
+
+    It did: the labels carried `x-show` AND `x-cloak`, and the built CSS hides
+    `[x-cloak]` with `display:none !important`. Alpine is what removes that
+    attribute -- so on any load where Alpine did not run (a stale cached page,
+    a back/forward restore, a JS error) every branch was hidden FOREVER and the
+    form could never be completed. The founder hit exactly that and got back
+    "Pick at least one branch of that venue." with no branch on screen to pick.
+
+    Filtering by venue is an enhancement. Being able to submit the form is not.
+    """
+    client.login(username='root', password='pw')
+
+    html = client.get(reverse('ops:build_new')).content.decode()
+
+    label = html[html.index('name="branches"') - 400:html.index('name="branches"')]
+    assert 'x-cloak' not in label, (
+        'a branch label must not be x-cloak\'d -- without Alpine it is hidden '
+        'permanently and no build can ever be started')
+
+
+@pytest.mark.django_db
+def test_the_form_says_so_when_a_venue_has_no_branches(client, admin, db):
+    """A venue with no branch cannot be built, and "pick at least one branch"
+    is a cruel thing to tell someone with nothing to pick."""
+    from menu.models import Company
+    empty = Company.objects.create(name='Juicery B', slug='juicery-b')
+    client.login(username='root', password='pw')
+
+    resp = client.post(reverse('ops:build_new'), {'company': empty.pk})
+    body = resp.content.decode()
+
+    assert MenuBuild.objects.count() == 0
+    assert 'no branch' in body.lower()
