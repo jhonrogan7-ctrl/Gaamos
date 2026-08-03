@@ -180,3 +180,49 @@ class OpsMobileShellTests(TestCase):
         self.client.logout()
         body = self.client.get('/platform/login', **self.apex).content.decode()
         self.assertNotIn('class="tabbar"', body)
+
+
+class OpsShellRunsItsJavascriptTest(TestCase):
+    """A page that USES Alpine must LOAD Alpine.
+
+    This is the gap that shipped the phase-4a wizard with every interactive
+    control dead: `ops/base.html` loaded HTMX but not Alpine, so `x-data`,
+    `x-show` and `@click` were inert -- and because the built CSS carries
+    `[x-cloak]{display:none !important}`, every `x-cloak` element was hidden
+    PERMANENTLY rather than merely un-animated.
+
+    Nothing caught it. The test client renders templates without executing
+    them, and curl fetches the same markup: an element that never un-hides
+    still *appears* in the HTML, so every presence assertion passed. The only
+    honest check at this layer is that the runtime is on the page at all.
+    """
+
+    def setUp(self):
+        self.apex = {'HTTP_HOST': APEX}
+        self.client.force_login(User.objects.create_superuser('boss', 'b@x.io', 'pw'))
+
+    def _pages(self):
+        from menu.models import Branch, Company, MenuBuild, MenuBuildSection
+        company = Company.objects.create(name='Kailash Parbat', slug='kailash')
+        Branch.all_objects.create(company=company, name='Lakeside', slug='lakeside')
+        build = MenuBuild.objects.create(company=company, status='gate1')
+        MenuBuildSection.objects.create(build=build, name='JUICE')
+        return ['/platform/builds/', '/platform/builds/new/',
+                f'/platform/builds/{build.pk}/gate1/',
+                f'/platform/builds/{build.pk}/review/']
+
+    def test_every_ops_page_using_alpine_also_loads_it(self):
+        for url in self._pages():
+            html = self.client.get(url, **self.apex).content.decode()
+            if 'x-data' in html:
+                self.assertIn(
+                    'alpine', html.lower(),
+                    f'{url} uses Alpine directives but never loads Alpine -- '
+                    'every x-show/@click on it is dead and every x-cloak '
+                    'element is hidden for good')
+
+    def test_the_ops_shell_serves_alpine_locally(self):
+        # From `static/vendor/`, like `templates/base.html` -- not a CDN. The
+        # platform screens are staff tools that must work on a venue's wifi.
+        html = self.client.get('/platform/builds/new/', **self.apex).content.decode()
+        self.assertIn('vendor/alpine.min.js', html)

@@ -746,7 +746,13 @@ h1,h2,h3 { font-family: var(--hd); }
 
   .wz-drop { display: block; border: 2px dashed var(--line-2); border-radius: 14px; padding: 30px 16px; text-align: center; color: var(--ink-3); font-size: 12px; cursor: pointer; margin-top: 11px; }
   .wz-drop b { display: block; font-size: 15px; color: var(--ink); font-family: var(--hd); margin-bottom: 4px; }
+  .wz-drop--over { border-color: var(--accent); background: var(--accent-soft); color: var(--accent-deep); }
+  /* Hidden, never `display:none` — that would drop it from the tab order and
+     from the label's click target. It is also why a DROP cannot reach it, which
+     is what the zone's own drop handler exists to fix. */
   .wz-drop-input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+  .wz-drop-files { display: flex; gap: 6px; flex-wrap: wrap; justify-content: center; margin-top: 10px; }
+  .wz-file { font-size: 11.5px; font-weight: 700; padding: 4px 10px; border-radius: 999px; background: var(--accent-soft); color: var(--accent-deep); overflow-wrap: anywhere; }
 
   .wz-docs { display: flex; flex-direction: column; gap: 9px; }
   .wz-doc { display: flex; align-items: center; gap: 12px; background: var(--panel); border: 1px solid var(--line); border-radius: 13px; padding: 12px 14px; }

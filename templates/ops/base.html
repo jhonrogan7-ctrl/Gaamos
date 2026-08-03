@@ -9,6 +9,15 @@
   <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="{% static 'css/app.css' %}?v={{ asset_v|default:'ops1' }}">
   <script src="{% static 'vendor/htmx.min.js' %}" defer></script>
+  {% comment %}
+  Alpine drives every local control on these screens (the menu-build wizard's
+  row sheets, the venue picker, the drop zone). Without it `x-show`/`@click`
+  are inert AND `[x-cloak]` stays on the element, which the built CSS hides
+  with `display:none !important` — so a missing Alpine does not degrade the
+  page, it deletes half of it. Served from static/vendor like base.html, not a
+  CDN: these are staff tools used on a venue's wifi.
+  {% endcomment %}
+  <script src="{% static 'vendor/alpine.min.js' %}" defer></script>
   <link rel="manifest" href="{% static 'pwa/manifest-ops.webmanifest' %}">
   <meta name="theme-color" content="#15171d">
   <link rel="apple-touch-icon" sizes="180x180" href="{% static 'pwa/icon-ops-180.png' %}">
