@@ -1,0 +1,94 @@
+{% comment %}
+One printed row. The price is its own tap target because the price is the one
+field this whole gate exists to check.
+
+⚠ Actions are ALWAYS visible, never hover-revealed. The wireframe's desktop
+cards reveal edit and delete on hover and hover does not exist on a phone — a
+reviewer on touch would have no way to reach them at all.
+{% endcomment %}
+<div class="wz-row {% if not row.price %}wz-row--flag{% endif %}"
+     x-data="{ open: false, mode: 'edit' }">
+  <div class="wz-row-main">
+    <div class="wz-row-nm">{{ row.name }}</div>
+    {% if row.description %}<div class="wz-row-desc">{{ row.description }}</div>{% endif %}
+    {% if row.dietary_tags %}
+      <div class="wz-tags">
+        {% for tag in row.dietary_tags %}<span class="wz-tg">{{ tag }}</span>{% endfor %}
+      </div>
+    {% endif %}
+    {% if not row.price %}
+      <div class="wz-row-flag">⚑ no price — this row cannot publish</div>
+    {% endif %}
+  </div>
+
+  <button type="button" class="wz-row-pr {% if not row.price %}wz-row-pr--warn{% endif %}"
+          @click="open = !open; mode = 'edit'"
+          aria-label="Edit the price of {{ row.name }}">
+    {% if row.price %}{{ row.price }}{% else %}—{% endif %}
+  </button>
+  <button type="button" class="wz-row-more" @click="open = !open"
+          aria-label="More actions for {{ row.name }}">⋯</button>
+
+  <div class="wz-row-sheet" x-show="open" x-cloak>
+    <div class="wz-row-tabs">
+      <button type="button" class="wz-chip" :class="mode === 'edit' && 'on'"
+              @click="mode = 'edit'">✎ Edit</button>
+      <button type="button" class="wz-chip" :class="mode === 'split' && 'on'"
+              @click="mode = 'split'">⧉ Split</button>
+      <button type="button" class="wz-chip" :class="mode === 'move' && 'on'"
+              @click="mode = 'move'">→ Move</button>
+    </div>
+
+    <form x-show="mode === 'edit'"
+          hx-post="{% url 'ops:build_row_edit' build.pk row.pk %}"
+          hx-target="#section-{{ section.pk }}" hx-swap="outerHTML">
+      {% csrf_token %}
+      <input class="wz-fld" name="name" value="{{ row.name }}" aria-label="Name">
+      <div class="wz-row-edit">
+        <input class="wz-fld wz-fld--pr" name="price" inputmode="numeric"
+               value="{{ row.price|default_if_none:'' }}" aria-label="Price in rupees">
+        <button type="submit" class="btn btn-sm primary">Save</button>
+      </div>
+    </form>
+
+    <form x-show="mode === 'split'" x-cloak
+          hx-post="{% url 'ops:build_row_split' build.pk row.pk %}"
+          hx-target="#section-{{ section.pk }}" hx-swap="outerHTML">
+      {% csrf_token %}
+      {% comment %}
+      One printed line at several prices is several products. The labels are
+      very often the protein, which is why the split does not carry the
+      parent's photograph across — see `build_row_split`.
+      {% endcomment %}
+      <div class="wz-hint">One line, several prices — e.g. Veg,Chicken,Buff and 150,250,250.</div>
+      <input class="wz-fld" name="labels" placeholder="Half,Full" aria-label="Variant labels">
+      <div class="wz-row-edit">
+        <input class="wz-fld" name="prices" placeholder="200,260" inputmode="numeric"
+               aria-label="One price per label">
+        <button type="submit" class="btn btn-sm primary">Split</button>
+      </div>
+    </form>
+
+    <form x-show="mode === 'move'" x-cloak
+          hx-post="{% url 'ops:build_row_move' build.pk row.pk %}"
+          hx-target="#section-{{ section.pk }}" hx-swap="outerHTML">
+      {% csrf_token %}
+      <div class="wz-hint">`Apple` under JUICE is a different dish from `Apple` under MILK SHAKE.</div>
+      <div class="wz-row-edit">
+        <select class="wz-fld" name="section" aria-label="Move to section">
+          {% for s in sections %}
+            {% if s.pk != section.pk %}<option value="{{ s.pk }}">{{ s.name }}</option>{% endif %}
+          {% endfor %}
+        </select>
+        <button type="submit" class="btn btn-sm primary">Move</button>
+      </div>
+    </form>
+
+    <form hx-post="{% url 'ops:build_row_delete' build.pk row.pk %}"
+          hx-target="#section-{{ section.pk }}" hx-swap="outerHTML"
+          hx-confirm="Delete “{{ row.name }}”?" class="wz-row-del">
+      {% csrf_token %}
+      <button type="submit" class="wz-chip wz-chip--alert">🗑 Delete this row</button>
+    </form>
+  </div>
+</div>

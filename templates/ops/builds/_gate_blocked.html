@@ -1,0 +1,26 @@
+{% comment %}
+Why the gate refused. Returned with 400 so a POST straight at the endpoint gets
+the same answer the button does — the gate is not a UI convention, it is the
+control, and it says exactly what is missing rather than "invalid".
+{% endcomment %}
+<div class="wz-note wz-note--bad" role="alert">
+  {% if unconfirmed %}
+    <b>Not yet — {{ unconfirmed|length }} section{{ unconfirmed|length|pluralize }}
+      {{ unconfirmed|length|pluralize:"has,have" }} not been checked against the photograph.</b>
+    <div style="margin-top:6px;font-weight:600">
+      {% for s in unconfirmed %}
+        <a href="{% url 'ops:build_gate1' build.pk %}?section={{ s.pk }}">{{ s.name }}</a>{% if not forloop.last %} · {% endif %}
+      {% endfor %}
+    </div>
+  {% elif unpriced %}
+    <b>{{ unpriced|length }} row{{ unpriced|length|pluralize }} carr{{ unpriced|length|pluralize:"ies,y" }} no price.</b>
+    <div style="margin-top:6px;font-weight:600">
+      {% for r in unpriced %}{{ r.name }}{% if not forloop.last %} · {% endif %}{% endfor %}
+    </div>
+    <div class="wz-hint">Give each a price, or delete the row — a priced menu cannot publish a
+      row a guest could not be charged for.</div>
+  {% endif %}
+  <div style="margin-top:10px">
+    <a class="btn btn-sm ghost" href="{% url 'ops:build_gate1' build.pk %}">Back to gate 1</a>
+  </div>
+</div>

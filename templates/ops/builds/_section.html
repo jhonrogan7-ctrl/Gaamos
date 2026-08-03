@@ -1,0 +1,55 @@
+{% comment %}
+One section of the printed card, and the swap target for every row mutation.
+
+A row can leave this section (move), become two rows (split) or stop existing
+(delete) — none of which a per-card swap can express — so the whole section
+re-renders and there is one target that is always right.
+{% endcomment %}
+<div class="wz-sect" id="section-{{ section.pk }}">
+  <div class="wz-sect-h" x-data="{ renaming: false }">
+    <span class="wz-sect-ic">{{ section.icon_key|default:'dish' }}</span>
+    <h3>{{ section.name }}</h3>
+    <span class="wz-sect-cnt">{{ rows|length }} row{{ rows|length|pluralize }}</span>
+    {% if section.prices_confirmed %}<span class="wz-st wz-st--done">✓ Confirmed</span>{% endif %}
+    <span class="wz-grow"></span>
+    <button type="button" class="btn btn-sm ghost" @click="renaming = !renaming">Rename / icon</button>
+
+    <form method="post" action="{% url 'ops:build_section_edit' build.pk section.pk %}"
+          class="wz-sect-rename" x-show="renaming" x-cloak>
+      {% csrf_token %}
+      {% comment %}
+      A rename is cosmetic and deliberately does NOT clear `prices_confirmed`:
+      it would send a reviewer back through a section they already checked
+      against the photograph.
+      {% endcomment %}
+      <input class="wz-fld" name="name" value="{{ section.name }}" aria-label="Section name">
+      <div class="wz-row-edit">
+        <select class="wz-fld" name="icon_key" aria-label="Section icon">
+          {% for key in icon_keys %}
+            <option value="{{ key }}" {% if key == section.icon_key %}selected{% endif %}>{{ key }}</option>
+          {% endfor %}
+        </select>
+        <button type="submit" class="btn btn-sm primary">Save</button>
+      </div>
+      <div class="wz-hint">The venue's own words stay — this only fixes a misread.</div>
+    </form>
+  </div>
+
+  <div class="wz-rows">
+    {% for row in rows %}{% include 'ops/builds/_row_card.html' %}{% endfor %}
+
+    <form class="wz-row wz-row--add"
+          hx-post="{% url 'ops:build_row_add' build.pk section.pk %}"
+          hx-target="#section-{{ section.pk }}" hx-swap="outerHTML">
+      {% csrf_token %}
+      {# A printed line with no row is as wrong as a row with no printed line. #}
+      <input class="wz-fld" name="name" placeholder="+ Add a row the reader missed"
+             aria-label="New row name" required>
+      <div class="wz-row-edit">
+        <input class="wz-fld wz-fld--pr" name="price" inputmode="numeric"
+               placeholder="Rs" aria-label="Price in rupees">
+        <button type="submit" class="btn btn-sm ghost">Add</button>
+      </div>
+    </form>
+  </div>
+</div>

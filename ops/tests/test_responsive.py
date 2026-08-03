@@ -103,6 +103,36 @@ class WizardResponsiveCssTest(SimpleTestCase):
                 f'.{cls} single-column override must come AFTER the auto-fill base '
                 'rule or the wizard stays multi-column on a phone')
 
+    def test_gate1_split_collapses_after_its_desktop_base(self):
+        # Gate 1 is ONE layout at both sizes: the photo-beside-rows split
+        # collapses to a stack under 900px. Same specificity, so if the
+        # override ever sorts before the base the phone gets a 340px photo
+        # pane beside the rows at 360px wide -- unusable, and invisible to
+        # every assertion that only checks the rule exists.
+        css = self._css()
+        base = re.search(r'[}{,]\.wz-split\{[^}]*grid-template-columns:\s*minmax[^}]*\}', css)
+        override = re.search(
+            r'[}{,]\.wz-split\{[^}]*grid-template-columns:\s*1fr[^}]*\}', css)
+        self.assertIsNotNone(base, 'desktop .wz-split two-column base missing')
+        self.assertIsNotNone(override, 'mobile .wz-split stack override missing')
+        self.assertGreater(override.start(), base.start(),
+                           '.wz-split stack override must come AFTER the two-column base')
+
+    def test_gate1_row_actions_are_not_hover_only(self):
+        # The founder rule this screen is most likely to lose: the wireframe
+        # reveals edit/delete on hover, and hover does not exist on touch. The
+        # price and the ... sheet are always-visible controls with real tap
+        # targets, so neither may be gated behind :hover.
+        css = self._css()
+        for cls in ['wz-row-pr', 'wz-row-more']:
+            rule = re.search(r'[}{,]\.' + cls + r'\{[^}]*\}', css)
+            self.assertIsNotNone(rule, f'.{cls} base rule missing')
+            self.assertIn('min-height:44px', rule.group(0).replace(' ', ''),
+                          f'.{cls} must be a real tap target')
+        self.assertIsNone(
+            re.search(r'\.wz-row[a-z-]*:hover\{[^}]*(display|visibility|opacity)', css),
+            'no wizard row control may be revealed by hover -- touch has none')
+
     def test_wizard_mobile_actions_are_thumb_sized(self):
         # Every wizard action is a real tap target under 900px. A control that
         # only appears on hover, or lands under 44px, is unusable on the phone

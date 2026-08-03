@@ -40,4 +40,14 @@ urlpatterns = [
     path('builds/<int:build_id>/', builds.build_detail, name='build_detail'),
     path('builds/<int:build_id>/progress/', builds.build_progress, name='build_progress'),
     path('builds/<int:build_id>/rescan/<int:scan_id>/', builds.build_rescan, name='build_rescan'),
+    # gate 1 — the prices gate
+    path('builds/<int:build_id>/gate1/', builds.build_gate1, name='build_gate1'),
+    path('builds/<int:build_id>/rows/<int:row_id>/edit/', builds.build_row_edit, name='build_row_edit'),
+    path('builds/<int:build_id>/rows/<int:row_id>/delete/', builds.build_row_delete, name='build_row_delete'),
+    path('builds/<int:build_id>/rows/<int:row_id>/split/', builds.build_row_split, name='build_row_split'),
+    path('builds/<int:build_id>/rows/<int:row_id>/move/', builds.build_row_move, name='build_row_move'),
+    path('builds/<int:build_id>/sections/<int:section_id>/add/', builds.build_row_add, name='build_row_add'),
+    path('builds/<int:build_id>/sections/<int:section_id>/edit/', builds.build_section_edit, name='build_section_edit'),
+    path('builds/<int:build_id>/sections/<int:section_id>/confirm/', builds.build_section_confirm, name='build_section_confirm'),
+    path('builds/<int:build_id>/advance/', builds.build_advance, name='build_advance'),
 ]

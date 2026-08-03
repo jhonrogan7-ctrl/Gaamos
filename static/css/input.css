@@ -763,6 +763,57 @@ h1,h2,h3 { font-family: var(--hd); }
   .wz-spin { display: inline-block; width: 11px; height: 11px; border: 2px solid currentColor; border-right-color: transparent; border-radius: 50%; animation: wz-spin .7s linear infinite; vertical-align: -1px; }
   @keyframes wz-spin { to { transform: rotate(360deg); } }
 
+  /* ── GATE 1 — one section at a time, photo beside the rows.
+     The same layout at 1440 and at 360: the split collapses, it is not a
+     second design. ── */
+  .wz-jump { display: flex; gap: 7px; overflow-x: auto; padding-bottom: 9px; margin-bottom: 13px; }
+  .wz-jump-i { flex: none; font-size: 12px; font-weight: 700; padding: 7px 12px; border-radius: 999px; border: 1px solid var(--line-2); background: #fff; color: var(--ink-2); text-decoration: none; min-height: 34px; display: flex; align-items: center; }
+  .wz-jump-i.ok { color: var(--green); border-color: var(--green-soft); background: var(--green-soft); }
+  .wz-jump-i.on { border-color: var(--accent); background: var(--accent-soft); color: var(--accent-deep); }
+
+  .wz-split { display: grid; grid-template-columns: minmax(240px, 340px) 1fr; gap: 16px; align-items: start; }
+  .wz-photo { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 12px; position: sticky; top: 14px; }
+  .wz-photo-h { font-size: 12.5px; margin-bottom: 8px; }
+  .wz-photo img { width: 100%; border-radius: 9px; display: block; }
+
+  .wz-sect { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 14px; }
+  .wz-sect-h { display: flex; align-items: center; gap: 9px; flex-wrap: wrap; padding-bottom: 11px; border-bottom: 1px solid var(--line); }
+  .wz-sect-h h3 { font-family: var(--hd); font-size: 15px; font-weight: 800; margin: 0; }
+  .wz-sect-ic { width: 26px; height: 26px; border-radius: 8px; background: var(--accent-soft); color: var(--accent-deep); font-size: 9px; font-weight: 800; display: flex; align-items: center; justify-content: center; flex: none; overflow: hidden; }
+  .wz-sect-cnt { font-size: 11.5px; color: var(--ink-3); font-weight: 700; }
+  .wz-sect-rename { width: 100%; margin: 9px 0 0; }
+
+  .wz-rows { display: flex; flex-direction: column; gap: 8px; margin-top: 11px; }
+  .wz-row { display: flex; align-items: flex-start; gap: 9px; flex-wrap: wrap; border: 1px solid var(--line-2); border-radius: 11px; padding: 10px 11px; background: #fff; }
+  .wz-row--flag { border-color: #fcd34d; background: #fffbeb; }
+  .wz-row--add { flex-direction: column; align-items: stretch; border-style: dashed; }
+  .wz-row-main { flex: 1; min-width: 0; }
+  .wz-row-nm { font-size: 13.5px; font-weight: 700; overflow-wrap: anywhere; }
+  .wz-row-desc { font-size: 11.5px; color: var(--ink-3); margin-top: 2px; }
+  .wz-row-flag { font-size: 11px; color: #92400e; font-weight: 700; margin-top: 4px; }
+  /* The price is its own control: it is the one field this gate checks, so it
+     is reachable in one tap rather than behind the ⋯ sheet. */
+  .wz-row-pr { font-family: var(--hd); font-size: 16px; font-weight: 800; min-width: 62px; min-height: 44px; padding: 0 11px; border: 1px solid var(--line-2); border-radius: 10px; background: #fff; color: var(--ink); cursor: pointer; }
+  .wz-row-pr--warn { border-color: #fcd34d; color: #92400e; }
+  /* ⚠ Always visible. The wireframe reveals these on hover and hover does not
+     exist on touch — hover-only here means unreachable on a phone. */
+  .wz-row-more { min-width: 40px; min-height: 44px; border: 1px solid var(--line-2); border-radius: 10px; background: #fff; color: var(--ink-3); font-size: 15px; cursor: pointer; }
+  .wz-row-sheet { width: 100%; border-top: 1px solid var(--line); margin-top: 9px; padding-top: 10px; }
+  .wz-row-tabs { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 9px; }
+  .wz-row-edit { display: flex; gap: 7px; align-items: center; margin-top: 7px; }
+  .wz-row-del { margin: 9px 0 0; }
+
+  .wz-fld { width: 100%; font: inherit; font-size: 13px; padding: 9px 11px; min-height: 40px; border: 1px solid var(--line-2); border-radius: 9px; background: #fff; color: var(--ink); }
+  .wz-fld--pr { width: 92px; flex: none; }
+  .wz-chip { font-size: 11.5px; font-weight: 700; padding: 6px 11px; min-height: 34px; border-radius: 999px; border: 1px solid var(--line-2); background: #fff; color: var(--ink-2); cursor: pointer; }
+  .wz-chip.on { border-color: var(--accent); background: var(--accent-soft); color: var(--accent-deep); }
+  .wz-chip--alert { border-color: #fca5a5; color: #b91c1c; }
+  .wz-tags { display: flex; gap: 5px; flex-wrap: wrap; margin-top: 5px; }
+  .wz-tg { font-size: 10px; font-weight: 700; padding: 2px 7px; border-radius: 999px; background: #f1f5f9; color: #64748b; }
+
+  .wz-foot { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-top: 16px; padding-top: 13px; border-top: 1px solid var(--line); }
+  .wz-foot form { margin: 0; }
+
   /* ══════════════════════════════════════════
      MOBILE DASHBOARD SHELL — <900px overrides.
      MUST stay at the END of @layer components: .side/.top overrides share
@@ -815,6 +866,21 @@ h1,h2,h3 { font-family: var(--hd); }
     .wz-doc { flex-wrap: wrap; }
     .wz-doc .wz-rescan { width: 100%; }
     .wz-doc .wz-rescan .btn { width: 100%; margin-top: 7px; }
+
+    /* ── GATE 1 ON A PHONE. The split collapses to the photo as a peek bar
+       above the rows: side by side at 360px gives neither half enough room.
+       Not a second design — the same markup, stacked. ── */
+    .wz-split { grid-template-columns: 1fr; }
+    /* Sticky is what makes it a peek bar rather than something scrolled past
+       and forgotten — the photograph is the thing being checked against. */
+    .wz-photo { position: sticky; top: 0; z-index: 5; padding: 9px; }
+    .wz-photo img { max-height: 26vh; object-fit: cover; }
+    .wz-sect { padding: 11px; }
+    .wz-foot { position: sticky; bottom: 0; background: var(--panel); padding-bottom: 10px; }
+    /* The confirm button is the act this whole gate is built around; on a
+       phone it gets the full width rather than sharing a row. */
+    .wz-foot form, .wz-foot .btn { width: 100%; }
+    .wz-foot .btn { min-height: 44px; }
   }
 }
 
