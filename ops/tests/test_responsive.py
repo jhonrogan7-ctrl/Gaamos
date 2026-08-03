@@ -65,6 +65,54 @@ class OpsResponsiveCssTest(SimpleTestCase):
                            'full-width override must come after the 560px base rule')
 
 
+class WizardResponsiveCssTest(SimpleTestCase):
+    """The menu-build wizard's own built-CSS guards (phase 4a).
+
+    The `wz-` rules are single-class `@layer components` rules, which is the
+    exact shape Tailwind tree-shakes when it cannot see the class in a
+    template — and they carry <900px overrides at equal specificity, where
+    source order is the only thing deciding the winner. Both traps have
+    reached this project before, so they are pinned rather than trusted.
+    """
+
+    def _css(self):
+        return (Path(settings.BASE_DIR) / 'static/css/app.css').read_text()
+
+    def test_wizard_base_rules_survived_the_purge(self):
+        # `[}{]` anchored so a match inside a compound selector (.wz-doc .btn)
+        # cannot stand in for the base rule actually being present.
+        css = self._css()
+        for cls in ['wz-grid', 'wz-card', 'wz-pickgrid', 'wz-pick', 'wz-drop',
+                    'wz-doc', 'wz-docs', 'wz-st', 'wz-bar', 'wz-note']:
+            self.assertIsNotNone(
+                re.search(r'[}{,]\.' + cls + r'[{,]', css),
+                f'missing standalone base rule for .{cls}')
+
+    def test_wizard_single_column_overrides_come_after_their_base(self):
+        # Base lays the cards out in an auto-fill grid; <900px collapses both
+        # grids to one column. Equal specificity -> whichever is later wins.
+        css = self._css()
+        for cls in ['wz-grid', 'wz-pickgrid']:
+            base = re.search(r'[}{,]\.' + cls + r'\{[^}]*repeat\(auto-fill[^}]*\}', css)
+            override = re.search(
+                r'[}{,]\.' + cls + r'\{[^}]*grid-template-columns:\s*1fr[^}]*\}', css)
+            self.assertIsNotNone(base, f'base .{cls} auto-fill rule missing')
+            self.assertIsNotNone(override, f'mobile .{cls} single-column rule missing')
+            self.assertGreater(
+                override.start(), base.start(),
+                f'.{cls} single-column override must come AFTER the auto-fill base '
+                'rule or the wizard stays multi-column on a phone')
+
+    def test_wizard_mobile_actions_are_thumb_sized(self):
+        # Every wizard action is a real tap target under 900px. A control that
+        # only appears on hover, or lands under 44px, is unusable on the phone
+        # the staff member is actually holding at the venue.
+        css = self._css()
+        self.assertIsNotNone(
+            re.search(r'\.wz-cta\s+\.btn[^{]*\{[^}]*min-height:\s*44px', css),
+            'wizard mobile actions must carry a 44px min-height')
+
+
 APEX = settings.BASE_DOMAIN
 
 

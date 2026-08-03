@@ -1,0 +1,46 @@
+{% comment %}
+One build on the builds list. A card, never a table row (founder rule) — and
+the same card at 1440 px and at 360 px, so there is one layout to keep honest.
+
+Every action is a real control, never hover-revealed: hover does not exist on
+touch.
+{% endcomment %}
+<div class="wz-card">
+  <div class="wz-top">
+    <h3>{{ item.build.company.name }}</h3>
+    {% if item.build.status == 'published' %}<span class="wz-st wz-st--done">Published</span>
+    {% elif item.build.status == 'gate1' %}<span class="wz-st wz-st--gate">Gate 1</span>
+    {% elif item.build.status == 'extracting' %}<span class="wz-st wz-st--work">Extracting</span>
+    {% elif item.build.status == 'publishing' %}<span class="wz-st wz-st--gate">Review</span>
+    {% elif item.build.status == 'failed' %}<span class="wz-st wz-st--fail">Failed</span>
+    {% else %}<span class="wz-st wz-st--draft">Draft</span>{% endif %}
+  </div>
+  <div class="wz-sub">
+    {% for b in item.stats.branches %}{{ b.name }}{% if not forloop.last %}, {% endif %}{% empty %}No branch{% endfor %}
+    · {{ item.stats.documents }} document{{ item.stats.documents|pluralize }}
+  </div>
+  {% if item.build.status == 'gate1' or item.build.status == 'publishing' %}
+    <div class="wz-prog"><i style="width:{{ item.stats.percent }}%"></i></div>
+  {% endif %}
+  <div class="wz-meta">
+    <div><b>{{ item.stats.rows }}</b>rows</div>
+    <div><b>{{ item.stats.sections_confirmed }}/{{ item.stats.sections }}</b>sections ok</div>
+    <div><b>{{ item.stats.with_image }}</b>with image</div>
+  </div>
+  {% if item.stats.documents_failed %}
+    <div class="wz-note wz-note--bad">{{ item.stats.documents_failed }} document{{ item.stats.documents_failed|pluralize }} failed to read</div>
+  {% endif %}
+  <div class="wz-cta">
+    {% if item.build.status == 'extracting' %}
+      <a class="btn btn-sm ghost" href="{% url 'ops:build_detail' item.build.pk %}">Watch progress</a>
+    {% elif item.build.status == 'gate1' %}
+      <a class="btn btn-sm primary" href="{% url 'ops:build_detail' item.build.pk %}">Continue →</a>
+    {% elif item.build.status == 'publishing' %}
+      <a class="btn btn-sm primary" href="{% url 'ops:build_detail' item.build.pk %}">Review &amp; publish →</a>
+    {% elif item.build.status == 'published' %}
+      <a class="btn btn-sm ghost" href="{% url 'ops:build_detail' item.build.pk %}">Open report</a>
+    {% else %}
+      <a class="btn btn-sm ghost" href="{% url 'ops:build_detail' item.build.pk %}">Open</a>
+    {% endif %}
+  </div>
+</div>

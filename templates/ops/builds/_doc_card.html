@@ -1,0 +1,33 @@
+{% comment %}
+One uploaded document. Drawn in its awkward state on purpose: a failed page
+shows why it failed and carries its own re-upload control, so a bad photograph
+is re-taken alone rather than restarting a nine-minute run.
+{% endcomment %}
+<div class="wz-doc {% if scan.status == 'failed' %}wz-doc--failed{% endif %}">
+  <div class="wz-ic">p{{ forloop.counter }}</div>
+  <div class="wz-docbody">
+    <div class="wz-nm">{{ scan.file|cut:"scans/" }}</div>
+    {% if scan.status == 'failed' %}
+      <div class="wz-dmsg wz-dmsg--bad">{{ scan.error|default:"could not be read" }}</div>
+    {% elif scan.status == 'queued' %}
+      <div class="wz-dmsg">queued</div>
+    {% elif scan.status == 'processing' %}
+      <div class="wz-dmsg wz-dmsg--info"><span class="wz-spin"></span> reading the card…</div>
+    {% else %}
+      <div class="wz-dmsg wz-dmsg--ok">{{ scan.raw_extraction.items|length }} row{{ scan.raw_extraction.items|length|pluralize }} read</div>
+    {% endif %}
+  </div>
+  {% if scan.status == 'failed' %}
+    <form method="post" enctype="multipart/form-data"
+          action="{% url 'ops:build_rescan' build.pk scan.pk %}" class="wz-rescan">
+      {% csrf_token %}
+      <label class="btn btn-sm primary">
+        Re-upload this page
+        <input type="file" name="document" accept="image/*,application/pdf"
+               class="wz-drop-input" onchange="this.form.submit()">
+      </label>
+    </form>
+  {% elif scan.status == 'queued' %}<span class="wz-st wz-st--draft">Queued</span>
+  {% elif scan.status == 'processing' %}<span class="wz-st wz-st--work">Working</span>
+  {% else %}<span class="wz-st wz-st--done">Done</span>{% endif %}
+</div>

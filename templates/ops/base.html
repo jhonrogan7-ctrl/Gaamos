@@ -35,6 +35,10 @@
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 8v8M8 12h8"/></svg>
       New tenant
     </a>
+    <a href="{% url 'ops:builds' %}" class="nav {% if active == 'builds' %}on{% endif %}">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h11l5 5v11H4z"/><path d="M8 12h8M8 16h5"/></svg>
+      Menu builds
+    </a>
     {% comment %}
       Images and Scans were unlinked 2026-08-01 on the founder's call: the
       Gemini-backed scan path is superseded by the menu-build wizard (spec
@@ -79,6 +83,10 @@
   <a href="{% url 'ops:tenant_new' %}" class="tb {% if active == 'new' %}on{% endif %}">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 8v8M8 12h8"/></svg>
     <span>New</span>
+  </a>
+  <a href="{% url 'ops:builds' %}" class="tb {% if active == 'builds' %}on{% endif %}">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h11l5 5v11H4z"/><path d="M8 12h8M8 16h5"/></svg>
+    <span>Builds</span>
   </a>
   {# Images and Scans unlinked 2026-08-01 — see the sidebar comment above. #}
   <form method="post" action="{% url 'ops:logout' %}" style="display:contents">{% csrf_token %}

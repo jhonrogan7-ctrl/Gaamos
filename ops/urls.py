@@ -1,6 +1,6 @@
 from django.urls import path
 
-from . import views
+from . import builds, views
 
 app_name = 'ops'
 
@@ -34,4 +34,10 @@ urlpatterns = [
     path('images/<int:asset_id>/use-photo/', views.image_use_photo, name='image_use_photo'),
     path('images/<int:asset_id>/find-another/', views.image_find_another, name='image_find_another'),
     path('images/browse/', views.image_browse, name='image_browse'),
+    # ── menu-build wizard (phase 4a) ──
+    path('builds/', builds.builds_list, name='builds'),
+    path('builds/new/', builds.build_new, name='build_new'),
+    path('builds/<int:build_id>/', builds.build_detail, name='build_detail'),
+    path('builds/<int:build_id>/progress/', builds.build_progress, name='build_progress'),
+    path('builds/<int:build_id>/rescan/<int:scan_id>/', builds.build_rescan, name='build_rescan'),
 ]

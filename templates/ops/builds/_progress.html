@@ -1,0 +1,33 @@
+{% comment %}
+The HTMX polling target. It stops polling itself once no document is still
+moving — `hx-trigger` is only emitted while `running`, so a finished build does
+not keep a browser tab hitting the server for the rest of the afternoon.
+{% endcomment %}
+<div id="build-progress"
+     {% if running %}hx-get="{% url 'ops:build_progress' build.pk %}"
+     hx-trigger="every 4s" hx-swap="outerHTML"{% endif %}>
+  <div class="wz-bar">
+    <b style="font-size:15px">{{ build.company.name }}</b>
+    {% if running %}<span class="wz-st wz-st--work">Extracting</span>
+    {% else %}<span class="wz-st wz-st--done">Read</span>{% endif %}
+    <span class="wz-grow"></span>
+    <span style="color:var(--ink-3);font-size:12.5px">
+      {% if running %}<span class="wz-spin"></span> {% endif %}
+      {{ stats.documents_done }} of {{ stats.documents }} done
+    </span>
+  </div>
+
+  <div class="wz-docs">
+    {% for scan in scans %}{% include 'ops/builds/_doc_card.html' %}{% endfor %}
+  </div>
+
+  <div class="wz-bar" style="margin-top:14px">
+    <span style="color:var(--ink-3);font-size:12.5px">You can leave — it keeps running.</span>
+    <span class="wz-grow"></span>
+    {% if running %}
+      <button class="btn primary" disabled>Continue to gate 1 →</button>
+    {% else %}
+      <a class="btn primary" href="{% url 'ops:build_detail' build.pk %}">Continue to gate 1 →</a>
+    {% endif %}
+  </div>
+</div>

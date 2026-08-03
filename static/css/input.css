@@ -698,6 +698,72 @@ h1,h2,h3 { font-family: var(--hd); }
   .imp-bar button { font: inherit; font-size: 12px; padding: 3px 12px; border: 1px solid var(--accent-deep); border-radius: 8px; background: transparent; color: var(--accent-deep); cursor: pointer; }
 
   /* ══════════════════════════════════════════
+     MENU-BUILD WIZARD (ops/builds/*) — phase 4a.
+     Namespaced `wz-` on purpose: the wireframe calls these .bcard/.cta/.st,
+     and .bcard and .cta ALREADY EXIST above with dashboard meanings. Reusing
+     them would have inherited .bcard .bh / .bcard.add and silently restyled
+     the venue dashboard. Buttons and .panel are the project's own, not the
+     wireframe's — one button idiom, not two.
+     Mobile overrides live in the <900px block at the end of this layer.
+  ══════════════════════════════════════════ */
+  .wz-bar { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 14px; }
+  .wz-grow { flex: 1; }
+  .wz-hint { font-size: 12.5px; color: var(--ink-3); line-height: 1.5; margin-top: 4px; }
+
+  .wz-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(290px, 1fr)); gap: 14px; }
+  .wz-card { background: var(--panel); border: 1px solid var(--line); border-radius: 16px; padding: 16px; display: flex; flex-direction: column; }
+  .wz-card--new { border-style: dashed; border-color: var(--line-2); align-items: center; justify-content: center; color: var(--accent-deep); font-weight: 800; font-size: 13px; min-height: 160px; text-decoration: none; }
+  .wz-top { display: flex; align-items: center; gap: 8px; }
+  .wz-top h3 { font-family: var(--hd); font-weight: 800; font-size: 15px; margin: 0; flex: 1; min-width: 0; overflow-wrap: anywhere; }
+  .wz-sub { font-size: 11.5px; color: var(--ink-3); font-weight: 600; margin-top: 3px; }
+  .wz-meta { display: flex; gap: 16px; margin: 13px 0 12px; flex-wrap: wrap; }
+  .wz-meta div { font-size: 10px; color: var(--ink-3); font-weight: 700; }
+  .wz-meta b { display: block; font-family: var(--hd); font-size: 18px; color: var(--ink); }
+  .wz-cta { display: flex; gap: 8px; margin-top: auto; flex-wrap: wrap; }
+  .wz-prog { height: 5px; background: #edeff2; border-radius: 99px; overflow: hidden; margin-top: 10px; }
+  .wz-prog i { display: block; height: 100%; background: var(--accent-grad); border-radius: 99px; }
+
+  .wz-st { font-size: 10.5px; font-weight: 800; padding: 3px 9px; border-radius: 999px; white-space: nowrap; }
+  .wz-st--done { background: var(--green-soft); color: var(--green); }
+  .wz-st--gate { background: var(--accent-soft); color: var(--accent-deep); }
+  .wz-st--work { background: #dbeafe; color: #1e40af; }
+  .wz-st--fail { background: #fee2e2; color: #b91c1c; }
+  .wz-st--draft { background: #f1f5f9; color: #64748b; }
+
+  .wz-note { border-radius: 10px; padding: 10px 14px; font-size: 12.5px; font-weight: 600; margin-bottom: 12px; }
+  .wz-note--bad { background: #fee2e2; border: 1px solid #fca5a5; color: #b91c1c; }
+
+  .wz-pickgrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 9px; margin-top: 11px; }
+  .wz-pick { display: block; border: 1px solid var(--line-2); border-radius: 12px; padding: 11px 13px; cursor: pointer; background: #fff; min-height: 44px; }
+  .wz-pick b { display: block; font-size: 13px; font-weight: 700; }
+  .wz-pick span { font-size: 11px; color: var(--ink-3); font-weight: 600; }
+  /* The native control is the accessible one and stays focusable — it is moved
+     out of sight, never `display:none`, which would drop it from the tab order
+     and from the label's own click target. */
+  .wz-pick-input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+  .wz-pick:has(.wz-pick-input:checked), .wz-pick.on { border-color: var(--accent); background: var(--accent-soft); }
+  .wz-pick:focus-within { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+  .wz-drop { display: block; border: 2px dashed var(--line-2); border-radius: 14px; padding: 30px 16px; text-align: center; color: var(--ink-3); font-size: 12px; cursor: pointer; margin-top: 11px; }
+  .wz-drop b { display: block; font-size: 15px; color: var(--ink); font-family: var(--hd); margin-bottom: 4px; }
+  .wz-drop-input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+
+  .wz-docs { display: flex; flex-direction: column; gap: 9px; }
+  .wz-doc { display: flex; align-items: center; gap: 12px; background: var(--panel); border: 1px solid var(--line); border-radius: 13px; padding: 12px 14px; }
+  .wz-doc--failed { border-color: #fca5a5; background: #fff5f5; }
+  .wz-ic { width: 34px; height: 44px; border-radius: 7px; background: #eef1f5; color: var(--ink-3); font-size: 10px; font-weight: 800; display: flex; align-items: center; justify-content: center; flex: none; }
+  .wz-docbody { flex: 1; min-width: 0; }
+  .wz-nm { font-size: 13px; font-weight: 700; overflow-wrap: anywhere; }
+  .wz-dmsg { font-size: 12px; color: var(--ink-3); margin-top: 2px; }
+  .wz-dmsg--ok { color: var(--green); }
+  .wz-dmsg--bad { color: #b91c1c; }
+  .wz-dmsg--info { color: #1e40af; }
+  .wz-rescan { margin: 0; }
+
+  .wz-spin { display: inline-block; width: 11px; height: 11px; border: 2px solid currentColor; border-right-color: transparent; border-radius: 50%; animation: wz-spin .7s linear infinite; vertical-align: -1px; }
+  @keyframes wz-spin { to { transform: rotate(360deg); } }
+
+  /* ══════════════════════════════════════════
      MOBILE DASHBOARD SHELL — <900px overrides.
      MUST stay at the END of @layer components: .side/.top overrides share
      specificity with their base rules above, so source order decides
@@ -735,6 +801,20 @@ h1,h2,h3 { font-family: var(--hd); }
     .ops-table { display: none; }
     .ops-form fieldset { max-width: none; }
     .ops-card .actions .btn, .ops-card .actions .ops-status { min-height: 44px; }
+
+    /* ── MENU-BUILD WIZARD MOBILE — one card per row, real tap targets.
+       Must stay after the base .wz-* rules above: these share specificity
+       with them, so source order is what decides. ── */
+    .wz-grid { grid-template-columns: 1fr; gap: 10px; }
+    .wz-card { padding: 13px 14px; }
+    .wz-pickgrid { grid-template-columns: 1fr; }
+    /* Every action is thumb-sized. There is no hover on touch, so nothing here
+       may be hover-revealed and nothing may be smaller than a fingertip. */
+    .wz-cta .btn, .wz-doc .btn, .wz-bar .btn { min-height: 44px; flex: 1; }
+    .wz-meta { gap: 12px; }
+    .wz-doc { flex-wrap: wrap; }
+    .wz-doc .wz-rescan { width: 100%; }
+    .wz-doc .wz-rescan .btn { width: 100%; margin-top: 7px; }
   }
 }
 
