@@ -9,7 +9,12 @@
  *   GET /static/ -> stale-while-revalidate (ignoreSearch tolerates ?v=)
  *   anything else (POSTs, /media/, SSE streams, cross-origin) -> untouched
  */
-const VERSION = "v5";
+/* v6 (2026-08-03): the menu-build wizard added ~120 `.wz-*` rules to the
+ * precached app.css. `?v=` does NOT defeat this cache -- /static/ is matched
+ * with `ignoreSearch: true` against the bare precache key -- so without this
+ * bump every returning client keeps serving the OLD app.css indefinitely and
+ * sees the wizard unstyled. */
+const VERSION = "v6";
 const CACHE = `gaamos-shell-${VERSION}`;
 
 const PRECACHE = [
