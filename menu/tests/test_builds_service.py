@@ -194,3 +194,136 @@ def test_matching_passes_the_section_so_a_bare_name_is_identified(build):
     counts = builds.match_build_rows(build, embedder=None)
 
     assert counts['auto'] == 1
+
+
+@pytest.mark.django_db
+def test_publishing_writes_the_printed_price_to_the_tenant(build):
+    from menu.models import MenuItem
+    branch = Branch.all_objects.get(company=build.company)
+    build.branches.add(branch)
+    section = MenuBuildSection.objects.create(build=build, name='Hot Drinks')
+    MenuBuildRow.objects.create(build=build, section=section, name='Black Tea', price=60)
+
+    builds.publish_build(build)
+
+    assert MenuItem.all_objects.get(company=build.company, name='Black Tea').price == 60
+    assert build.status == 'published'
+
+
+@pytest.mark.django_db
+def test_publishing_links_each_row_to_the_item_it_created(build):
+    branch = Branch.all_objects.get(company=build.company)
+    build.branches.add(branch)
+    section = MenuBuildSection.objects.create(build=build, name='Hot Drinks')
+    MenuBuildRow.objects.create(build=build, section=section, name='Black Tea', price=60)
+
+    builds.publish_build(build)
+
+    assert build.rows.get(name='Black Tea').published_item is not None
+
+
+@pytest.mark.django_db
+def test_an_unmatched_row_becomes_a_new_library_entry(build):
+    from menu.models import Item
+    branch = Branch.all_objects.get(company=build.company)
+    build.branches.add(branch)
+    section = MenuBuildSection.objects.create(build=build, name='Hot Drinks')
+    MenuBuildRow.objects.create(build=build, section=section, name='Sherpa Punch',
+                                price=340, image_prompt='a punch')
+
+    report = builds.publish_build(build)
+
+    entry = Item.objects.get(name='Sherpa Punch', status='active')
+    assert entry.origin_company_id == build.company_id
+    assert entry.search_name
+    assert entry.image_prompt == 'a punch'
+    assert report.library_created == 1
+
+
+@pytest.mark.django_db
+def test_a_matched_row_bumps_the_entry_usage_instead_of_duplicating_it(build):
+    from menu.models import Item
+    branch = Branch.all_objects.get(company=build.company)
+    build.branches.add(branch)
+    entry = Item.objects.create(name='Black Tea', status='active',
+                                search_name='black tea', category='Hot Drinks',
+                                image_prompt='x', use_count=1)
+    section = MenuBuildSection.objects.create(build=build, name='Hot Drinks')
+    MenuBuildRow.objects.create(build=build, section=section, name='Black Tea',
+                                price=60, matched_item=entry, match_state='auto')
+
+    report = builds.publish_build(build)
+
+    entry.refresh_from_db()
+    assert entry.use_count == 2
+    assert report.library_reused == 1
+    assert Item.objects.filter(search_name='black tea', status='active').count() == 1
+
+
+@pytest.mark.django_db
+def test_usage_from_the_backfill_survives_a_build_publishing_the_entry(build):
+    """`use_count` is incremented, never recomputed from build rows. Phase 1's
+    backfill counted venues that never went through a build, and a recompute
+    would erase all of them the first time one venue was onboarded."""
+    from menu.models import Item
+    build.branches.add(Branch.all_objects.get(company=build.company))
+    entry = Item.objects.create(name='Black Tea', status='active',
+                                search_name='black tea', category='Hot Drinks',
+                                image_prompt='x', use_count=9)
+    section = MenuBuildSection.objects.create(build=build, name='Hot Drinks')
+    MenuBuildRow.objects.create(build=build, section=section, name='Black Tea',
+                                price=60, matched_item=entry, match_state='auto')
+
+    builds.publish_build(build)
+
+    entry.refresh_from_db()
+    assert entry.use_count == 10
+
+
+@pytest.mark.django_db
+def test_one_venue_printing_a_dish_in_two_sections_counts_once(build):
+    from menu.models import Item
+    build.branches.add(Branch.all_objects.get(company=build.company))
+    entry = Item.objects.create(name='Black Tea', status='active',
+                                search_name='black tea', category='Hot Drinks',
+                                image_prompt='x', use_count=1)
+    for name in ('Hot Drinks', 'Breakfast'):
+        section = MenuBuildSection.objects.create(build=build, name=name)
+        MenuBuildRow.objects.create(build=build, section=section, name='Black Tea',
+                                    price=60, matched_item=entry, match_state='auto')
+
+    builds.publish_build(build)
+
+    entry.refresh_from_db()
+    assert entry.use_count == 2
+
+
+@pytest.mark.django_db
+def test_publishing_twice_does_not_duplicate_the_menu_or_the_usage(build):
+    from menu.models import Item, MenuItem
+    branch = Branch.all_objects.get(company=build.company)
+    build.branches.add(branch)
+    section = MenuBuildSection.objects.create(build=build, name='Hot Drinks')
+    MenuBuildRow.objects.create(build=build, section=section, name='Black Tea',
+                                price=60, image_prompt='x')
+
+    builds.publish_build(build)
+    builds.publish_build(build)
+
+    assert MenuItem.all_objects.filter(company=build.company).count() == 1
+    assert Item.objects.filter(search_name='black tea', status='active').count() == 1
+    # The whole "publish now, add images in 4b" story rests on this.
+    assert Item.objects.get(search_name='black tea').use_count == 1
+
+
+@pytest.mark.django_db
+def test_a_section_icon_reaches_the_published_category(build):
+    from menu.models import Category
+    branch = Branch.all_objects.get(company=build.company)
+    build.branches.add(branch)
+    section = MenuBuildSection.objects.create(build=build, name='Momo', icon_key='momo')
+    MenuBuildRow.objects.create(build=build, section=section, name='Veg Momo', price=180)
+
+    builds.publish_build(build)
+
+    assert Category.all_objects.get(company=build.company, name='Momo').icon_key == 'momo'

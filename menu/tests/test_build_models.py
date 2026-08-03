@@ -50,6 +50,20 @@ def test_deleting_a_build_takes_its_sections_and_rows_with_it(build):
 
 
 @pytest.mark.django_db
+def test_branch_list_reads_branches_without_a_tenant_context(build):
+    """`build.branches.all()` raises: the M2M's related manager inherits
+    Branch's fail-closed TenantManager and every wizard screen is apex. That is
+    the guard working, not a bug -- so there is exactly one place that does the
+    deliberate cross-tenant read, and this pins it."""
+    from menu.tenancy import TenantContextRequired
+
+    with pytest.raises(TenantContextRequired):
+        list(build.branches.all())
+
+    assert [b.slug for b in build.branch_list()] == ['lakeside']
+
+
+@pytest.mark.django_db
 def test_a_scan_without_a_build_is_still_valid(db):
     """The old /platform/scans/ flow creates scans with no build and must keep
     working — that is the entire reason this FK is nullable."""

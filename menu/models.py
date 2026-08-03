@@ -591,6 +591,18 @@ class MenuBuild(models.Model):
     def __str__(self):
         return f'{self.company.slug} build #{self.pk} ({self.status})'
 
+    def branch_list(self):
+        """This build's branches, read cross-tenant on purpose.
+
+        `self.branches.all()` CANNOT be used and is not an oversight: the M2M's
+        related manager derives from `Branch`'s fail-closed `TenantManager`, and
+        every wizard screen is apex with no company in context, so it raises
+        `TenantContextRequired`. Routing through `all_objects` here is the
+        deliberate cross-tenant access that guard asks for -- in one place, so
+        no view or service can forget it.
+        """
+        return Branch.all_objects.filter(menu_builds=self)
+
 
 class MenuBuildSection(models.Model):
     """A printed section of the card, in the venue's own words.

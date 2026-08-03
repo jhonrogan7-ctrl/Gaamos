@@ -26,6 +26,10 @@ class PublishReport:
     zero_priced: list = field(default_factory=list)
     skipped: list = field(default_factory=list)
     categories_created: list = field(default_factory=list)
+    # Filled by `builds.publish_build` only: `publish_rows` writes the tenant
+    # menu, growing the library is the wizard's own step.
+    library_created: int = 0
+    library_reused: int = 0
 
 
 def unique_item_slug(company, name, *, taken=None):
