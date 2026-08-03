@@ -137,40 +137,93 @@ def upsert_menu_item(company, branches, *, slug, name, description, price,
     return item, created
 
 
-def publish_items(company, branches, items):
-    """Publish catalog Items into `company`'s menu on `branches`.
+@dataclass
+class PublishRow:
+    """One row on its way into a tenant menu.
 
-    Only `status != 'active'` refuses a row (B6) — a flagged item, a missing
-    photo and a null price all publish. A null price becomes 0 and the item is
-    named in the report (B7): the report is the mitigation, not a veto.
+    Deliberately not a model and not a catalog `Item`: the wizard's rows, the
+    fixture importer and the scan workbench all publish, and they agree on this
+    shape rather than on each other's storage.
+
+    `price` is the price PRINTED ON THIS VENUE'S CARD. A catalog entry's
+    `reference_price` belongs to whichever venue contributed it first, and
+    publishing that onto another venue's menu is the defect this record exists
+    to prevent.
     """
-    items = list(items)
+    name: str
+    price: int = None
+    description: str = ''
+    dietary_tags: list = field(default_factory=list)
+    category: str = 'Menu'
+    category_icon: str = ''
+    image_asset: object = None
+    publishable: bool = True
+
+
+def publish_items(company, branches, items):
+    """Publish catalog `Item`s into `company`'s menu on `branches`.
+
+    Kept for the fixture importer and the scan workbench, which both hold
+    `Item`s rather than printed rows. A thin adapter over `publish_rows` so
+    there is still exactly one writer.
+
+    Note it passes `reference_price` — correct here, because these callers have
+    no printed row to read a price from; the wizard does, and uses it.
+    """
+    rows = [PublishRow(name=it.name, price=it.reference_price,
+                       description=it.description,
+                       dietary_tags=list(it.dietary_tags or []),
+                       category=(it.category or '').strip() or 'Menu',
+                       image_asset=it.image_asset if it.image_asset_id else None,
+                       publishable=(it.status == 'active'))
+            for it in items]
+    return publish_rows(company, branches, rows)
+
+
+def publish_rows(company, branches, rows):
+    """Publish printed rows into `company`'s menu on `branches`.
+
+    Only an unpublishable row is refused (B6) — a flagged item, a missing photo
+    and a null price all publish. A null price becomes 0 and the row is named in
+    the report (B7): the report is the mitigation, not a veto.
+    """
+    rows = list(rows)
     report = PublishReport()
-    publishable = [it for it in items if it.status == 'active']
+    publishable = [r for r in rows if r.publishable]
     cats, created_names = ensure_categories(
-        company, branches, [(it.category or '').strip() or 'Menu' for it in publishable])
+        company, branches, [(r.category or '').strip() or 'Menu' for r in publishable])
     report.categories_created = created_names
 
+    for row in publishable:
+        icon = (row.category_icon or '').strip()
+        if icon:
+            category = cats[(row.category or '').strip() or 'Menu']
+            if category.icon_key != icon:
+                category.icon_key = icon
+                category.save(update_fields=['icon_key'])
+
     used = set()
-    for order, it in enumerate(items):
-        if it.status != 'active':
-            report.skipped.append(it.name)
+    for order, row in enumerate(rows):
+        if not row.publishable:
+            report.skipped.append(row.name)
             continue
-        price = it.reference_price if it.reference_price is not None else 0
-        if it.reference_price is None:
-            report.zero_priced.append(it.name)
-        slug = unique_item_slug(company, it.name, taken=used)
+        price = row.price if row.price is not None else 0
+        if row.price is None:
+            report.zero_priced.append(row.name)
+        slug = unique_item_slug(company, row.name, taken=used)
         used.add(slug)
         menu_item, created = upsert_menu_item(
-            company, branches, slug=slug, name=it.name, description=it.description,
-            price=price, dietary_tags=it.dietary_tags,
-            category=cats[(it.category or '').strip() or 'Menu'], display_order=order)
+            company, branches, slug=slug, name=row.name,
+            description=row.description, price=price,
+            dietary_tags=row.dietary_tags,
+            category=cats[(row.category or '').strip() or 'Menu'],
+            display_order=order)
         if created:
             report.created += 1
         else:
             report.updated += 1
-        if it.image_asset_id and it.image_asset.file:
-            src = Path(settings.MEDIA_ROOT) / it.image_asset.file
+        if row.image_asset is not None and row.image_asset.file:
+            src = Path(settings.MEDIA_ROOT) / row.image_asset.file
             if src.exists():
                 url, fx, fy = copy_image_to_tenant(company, menu_item.slug, src)
                 menu_item.image_url = url
