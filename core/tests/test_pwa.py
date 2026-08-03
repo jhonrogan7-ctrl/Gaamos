@@ -155,3 +155,43 @@ def test_the_sw_never_intercepts_a_form_submission(client):
     assert 'method === "GET"' in guard, (
         'the navigate branch must be guarded to GET, or a form POST is '
         're-issued inside the worker and can be lost before it is sent')
+
+
+@pytest.mark.django_db
+def test_the_sw_script_itself_is_never_http_cached(client):
+    """The worker must be able to replace itself.
+
+    `/sw.js` was served with NO cache headers, so the browser applied its own
+    heuristic caching to the worker SCRIPT. A registration then re-reads the
+    cached copy and the client keeps running the old worker forever -- which is
+    exactly how a phone stayed on v5 while v7 was live on the server, so two
+    fixes shipped and neither ever reached the device.
+
+    `no-cache` means revalidate, not "do not store": the 304 path still works,
+    only the stale-without-asking path is closed.
+    """
+    resp = client.get("/sw.js")
+    assert "no-cache" in resp.headers.get("Cache-Control", "")
+
+
+@pytest.mark.django_db
+def test_every_sw_registration_bypasses_the_http_cache(client):
+    """`updateViaCache: 'none'` on every registration, for the same reason.
+
+    The browser default is `'imports'`, which caches the top-level worker
+    script. Belt and braces with the header above: whichever surface a user
+    installs the PWA from, the worker can still update itself.
+    """
+    from pathlib import Path
+
+    from django.conf import settings
+
+    offenders = []
+    for path in Path(settings.BASE_DIR / "templates").rglob("*.html"):
+        body = path.read_text()
+        if "serviceWorker.register" not in body:
+            continue
+        call = body[body.index("serviceWorker.register"):]
+        if "updateViaCache" not in call[:220]:
+            offenders.append(str(path.relative_to(settings.BASE_DIR)))
+    assert not offenders, f"registrations that can serve a stale worker: {offenders}"
