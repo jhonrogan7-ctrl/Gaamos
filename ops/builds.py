@@ -152,6 +152,8 @@ def build_detail(request, build_id):
     build = _build_or_404(build_id)
     if build.status == 'gate1':
         return redirect('ops:build_gate1', build_id=build.pk)
+    if build.status in ('publishing', 'published'):
+        return redirect('ops:build_review', build_id=build.pk)
     scans = list(build.scans.all())
     return render(request, 'ops/builds/extracting.html', {
         'active': 'builds', 'build': build, 'stats': _card_stats(build),
@@ -468,3 +470,65 @@ def build_advance(request, build_id):
     build.status = 'publishing'
     build.save(update_fields=['status'])
     return redirect('ops:build_detail', build_id=build.pk)
+
+
+# ── Gate 3: review, then publish ──────────────────────────────────────────
+
+
+def _publish_preview(build):
+    """What a publish would write, counted from the rows themselves.
+
+    Every number here is derived at read time. A stored count is a count that
+    can quietly disagree with the rows it claims to describe, and this screen
+    is the last thing a human reads before a tenant's live menu changes.
+    """
+    rows = list(build.rows.select_related('section'))
+    sections = list(build.sections.all())
+    return {
+        'rows': len(rows),
+        'sections': sections,
+        'per_section': [(s, sum(1 for r in rows if r.section_id == s.pk))
+                        for s in sections],
+        'with_image': sum(1 for r in rows if r.image_asset_id),
+        # Rs 0 is a real price a guest can be charged, and a row with no price
+        # at all is a different problem. Counted apart so neither hides in the
+        # other's total.
+        'free': sum(1 for r in rows if r.price == 0),
+        'unpriced': sum(1 for r in rows if r.price is None),
+        'branches': list(build.branch_list()),
+        'unconfirmed': [s for s in sections if not s.prices_confirmed],
+    }
+
+
+@platform_admin_required
+def build_review(request, build_id):
+    """The last screen before anything reaches a tenant. It says so plainly:
+    up to this point every row has lived in scratch tables."""
+    build = _build_or_404(build_id)
+    return render(request, 'ops/builds/review.html', {
+        'active': 'builds', 'build': build, 'preview': _publish_preview(build),
+        'stats': _card_stats(build),
+    })
+
+
+@platform_admin_required
+@require_POST
+def build_publish(request, build_id):
+    """Write the build into its tenant.
+
+    ⚠ The gate is re-checked HERE, not only on the way in. `build_advance` is
+    a button; this is the door. A POST aimed straight at this endpoint must not
+    be able to walk around the one human check standing between a fabricated
+    price and a paying guest.
+    """
+    build = _build_or_404(build_id)
+    unconfirmed = list(build.sections.filter(prices_confirmed=False))
+    if unconfirmed:
+        return render(request, 'ops/builds/_gate_blocked.html',
+                      {'build': build, 'unconfirmed': unconfirmed}, status=400)
+
+    report = build_service.publish_build(build)
+    return render(request, 'ops/builds/published.html', {
+        'active': 'builds', 'build': build, 'report': report,
+        'branches': list(build.branch_list()),
+    })

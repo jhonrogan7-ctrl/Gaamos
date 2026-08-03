@@ -289,3 +289,47 @@ def test_renaming_a_section_does_not_disturb_its_confirmation(client, admin,
 
     section.refresh_from_db()
     assert section.prices_confirmed is True
+
+
+@pytest.mark.django_db
+def test_the_review_screen_counts_what_will_publish(client, admin, gate1_build):
+    gate1_build.status = 'publishing'
+    gate1_build.save(update_fields=['status'])
+    client.login(username='root', password='pw')
+
+    html = client.get(reverse('ops:build_review',
+                              args=[gate1_build.pk])).content.decode()
+
+    assert '2' in html                      # two rows
+    assert 'Lakeside' in html               # the branch it publishes to
+
+
+@pytest.mark.django_db
+def test_publishing_from_the_review_screen_writes_the_menu(client, admin,
+                                                           gate1_build):
+    from menu.models import MenuItem
+    gate1_build.status = 'publishing'
+    gate1_build.save(update_fields=['status'])
+    gate1_build.sections.update(prices_confirmed=True)
+    client.login(username='root', password='pw')
+
+    client.post(reverse('ops:build_publish', args=[gate1_build.pk]))
+
+    gate1_build.refresh_from_db()
+    assert gate1_build.status == 'published'
+    assert MenuItem.all_objects.filter(company=gate1_build.company).count() == 2
+
+
+@pytest.mark.django_db
+def test_publishing_is_refused_while_a_section_is_unconfirmed(client, admin,
+                                                              gate1_build):
+    """The gate cannot be walked around by posting straight at publish."""
+    from menu.models import MenuItem
+    gate1_build.status = 'publishing'
+    gate1_build.save(update_fields=['status'])
+    gate1_build.sections.filter(name='JUICE').update(prices_confirmed=False)
+    client.login(username='root', password='pw')
+
+    client.post(reverse('ops:build_publish', args=[gate1_build.pk]))
+
+    assert MenuItem.all_objects.filter(company=gate1_build.company).count() == 0

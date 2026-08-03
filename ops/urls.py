@@ -50,4 +50,7 @@ urlpatterns = [
     path('builds/<int:build_id>/sections/<int:section_id>/edit/', builds.build_section_edit, name='build_section_edit'),
     path('builds/<int:build_id>/sections/<int:section_id>/confirm/', builds.build_section_confirm, name='build_section_confirm'),
     path('builds/<int:build_id>/advance/', builds.build_advance, name='build_advance'),
+    # gate 3 — review, then the only thing that writes to a tenant
+    path('builds/<int:build_id>/review/', builds.build_review, name='build_review'),
+    path('builds/<int:build_id>/publish/', builds.build_publish, name='build_publish'),
 ]

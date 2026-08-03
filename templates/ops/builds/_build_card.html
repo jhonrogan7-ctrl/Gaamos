@@ -34,11 +34,11 @@ touch.
     {% if item.build.status == 'extracting' %}
       <a class="btn btn-sm ghost" href="{% url 'ops:build_detail' item.build.pk %}">Watch progress</a>
     {% elif item.build.status == 'gate1' %}
-      <a class="btn btn-sm primary" href="{% url 'ops:build_detail' item.build.pk %}">Continue →</a>
+      <a class="btn btn-sm primary" href="{% url 'ops:build_gate1' item.build.pk %}">Continue →</a>
     {% elif item.build.status == 'publishing' %}
-      <a class="btn btn-sm primary" href="{% url 'ops:build_detail' item.build.pk %}">Review &amp; publish →</a>
+      <a class="btn btn-sm primary" href="{% url 'ops:build_review' item.build.pk %}">Review &amp; publish →</a>
     {% elif item.build.status == 'published' %}
-      <a class="btn btn-sm ghost" href="{% url 'ops:build_detail' item.build.pk %}">Open report</a>
+      <a class="btn btn-sm ghost" href="{% url 'ops:build_review' item.build.pk %}">Open report</a>
     {% else %}
       <a class="btn btn-sm ghost" href="{% url 'ops:build_detail' item.build.pk %}">Open</a>
     {% endif %}

@@ -1,0 +1,97 @@
+{% extends 'ops/base.html' %}
+{% block title %}Review &amp; publish{% endblock %}
+{% block top %}Review &amp; publish{% endblock %}
+{% block content %}
+{% comment %}
+The last screen before anything reaches a tenant. Every number is counted from
+the rows at read time, because this is the page a human decides on.
+{% endcomment %}
+
+{% if build.status == 'published' %}
+  <div class="wz-note" style="background:var(--green-soft);border:1px solid var(--green);color:var(--green)">
+    <b>Already published.</b> These rows are live on the menu below. Publishing again is safe —
+    it updates the same items rather than duplicating them.
+  </div>
+{% endif %}
+
+<div class="wz-bar">
+  <b style="font-size:15px">{{ build.company.name }}</b>
+  <span class="wz-grow"></span>
+  <a class="btn ghost" href="{% url 'ops:build_gate1' build.pk %}">← Back to gate 1</a>
+</div>
+
+<div class="wz-grid">
+  <div class="wz-card">
+    <div class="wz-top"><h3>What publishes</h3></div>
+    <div class="wz-meta">
+      <div><b>{{ preview.rows }}</b>rows</div>
+      <div><b>{{ preview.sections|length }}</b>sections</div>
+      <div><b>{{ preview.with_image }}</b>with image</div>
+    </div>
+    {% if preview.free %}
+      <div class="wz-note wz-note--bad">{{ preview.free }} row{{ preview.free|pluralize }}
+        publish{{ preview.free|pluralize:"es," }} at Rs 0 — a guest is charged nothing for
+        {{ preview.free|pluralize:"it,them" }}.</div>
+    {% endif %}
+    {% if preview.unpriced %}
+      <div class="wz-note wz-note--bad">{{ preview.unpriced }} row{{ preview.unpriced|pluralize }}
+        carr{{ preview.unpriced|pluralize:"ies,y" }} no price at all.</div>
+    {% endif %}
+  </div>
+
+  <div class="wz-card">
+    <div class="wz-top"><h3>Where it lands</h3></div>
+    <div class="wz-sub">
+      {% for b in preview.branches %}{{ b.name }}{% if not forloop.last %}, {% endif %}
+      {% empty %}No branch — this build has nowhere to publish.{% endfor %}
+    </div>
+    <div class="wz-hint" style="margin-top:9px">
+      Every branch listed gets this menu. Items already on the menu are updated in place, not
+      duplicated.
+    </div>
+  </div>
+
+  <div class="wz-card">
+    <div class="wz-top"><h3>Sections</h3></div>
+    <div class="wz-rows" style="margin-top:9px">
+      {% for section, count in preview.per_section %}
+        <div class="wz-doc">
+          <div class="wz-docbody">
+            <div class="wz-nm">{{ section.name }}</div>
+            <div class="wz-dmsg">{{ count }} row{{ count|pluralize }}</div>
+          </div>
+          {% if section.prices_confirmed %}
+            <span class="wz-st wz-st--done">✓</span>
+          {% else %}
+            <span class="wz-st wz-st--fail">unchecked</span>
+          {% endif %}
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+
+<div class="wz-foot">
+  <span style="color:var(--ink-3);font-size:12.5px">
+    {% if build.status == 'published' %}
+      Published. Re-publishing updates the same items.
+    {% else %}
+      Nothing has touched the tenant yet — every row above still lives in scratch tables.
+    {% endif %}
+  </span>
+  <span class="wz-grow"></span>
+  {% if preview.unconfirmed %}
+    {# The gate is re-checked server-side on publish; this only stops a
+       pointless round trip and says which section is missing. #}
+    <span class="wz-st wz-st--fail">{{ preview.unconfirmed|length }} section{{ preview.unconfirmed|length|pluralize }} unchecked</span>
+    <a class="btn ghost" href="{% url 'ops:build_gate1' build.pk %}">Finish gate 1 →</a>
+  {% else %}
+    <form method="post" action="{% url 'ops:build_publish' build.pk %}">
+      {% csrf_token %}
+      <button type="submit" class="btn primary">
+        {% if build.status == 'published' %}Publish again{% else %}Publish to the menu →{% endif %}
+      </button>
+    </form>
+  {% endif %}
+</div>
+{% endblock %}
