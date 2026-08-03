@@ -119,3 +119,78 @@ def test_section_for_is_idempotent(build):
 
     assert a.pk == b.pk
     assert build.sections.count() == 1
+
+
+@pytest.mark.django_db
+def test_an_exact_match_takes_the_library_image(build):
+    from menu.models import ImageAsset, Item
+    asset = ImageAsset.objects.create(source='flux', status='verified',
+                                      file='imagelib/momo.webp')
+    Item.objects.create(name='Veg Momo', status='active', search_name='veg momo',
+                        category='Momo', image_asset=asset, image_prompt='x')
+    section = MenuBuildSection.objects.create(build=build, name='Momo')
+    MenuBuildRow.objects.create(build=build, section=section, name='Veg Momo', price=180)
+
+    counts = builds.match_build_rows(build, embedder=None)
+
+    row = build.rows.get(name='Veg Momo')
+    assert counts['auto'] == 1
+    assert row.match_state == 'auto'
+    assert row.image_state == 'matched'
+    assert row.image_asset_id == asset.pk
+
+
+@pytest.mark.django_db
+def test_a_row_with_no_counterpart_stays_imageless(build):
+    section = MenuBuildSection.objects.create(build=build, name='Momo')
+    MenuBuildRow.objects.create(build=build, section=section, name='Veg Momo', price=180)
+
+    counts = builds.match_build_rows(build, embedder=None)
+
+    row = build.rows.get(name='Veg Momo')
+    assert counts['none'] == 1
+    assert row.match_state == 'none'
+    assert row.image_state == 'none'
+    assert row.image_asset_id is None
+
+
+@pytest.mark.django_db
+def test_a_suggested_match_records_its_candidate_but_takes_no_image(build):
+    """Founder ruling: a fuzzy match may suggest, never auto-apply. Gate 2 does
+    not exist in 4a, so the row publishes imageless -- but the candidate is kept
+    so 4b can offer it without re-running the matcher."""
+    from django.test import override_settings
+    from menu.models import ImageAsset, Item
+    asset = ImageAsset.objects.create(source='flux', status='verified',
+                                      file='imagelib/x.webp')
+    Item.objects.create(name='Masala Chowmein', status='active',
+                        search_name='masala chowmein', category='Chowmein',
+                        image_asset=asset, image_prompt='x')
+    section = MenuBuildSection.objects.create(build=build, name='Chowmein')
+    MenuBuildRow.objects.create(build=build, section=section,
+                                name='Masaala Chowmein', price=250)
+
+    with override_settings(MENU_MATCH_HIGH=0.90, MENU_MATCH_MID=0.55):
+        counts = builds.match_build_rows(build, embedder=None)
+
+    row = build.rows.get(name='Masaala Chowmein')
+    assert counts['suggested'] == 1
+    assert row.match_state == 'suggested'
+    assert row.matched_item is not None
+    assert row.image_state == 'none'
+    assert row.image_asset_id is None
+
+
+@pytest.mark.django_db
+def test_matching_passes_the_section_so_a_bare_name_is_identified(build):
+    """`Apple` under JUICE is a different dish from `Apple` under MILK SHAKE.
+    The matcher can only know that if the section reaches it."""
+    from menu.models import Item
+    Item.objects.create(name='Apple', status='active', search_name='apple juice',
+                        category='Juice', image_prompt='x')
+    section = MenuBuildSection.objects.create(build=build, name='Juice')
+    MenuBuildRow.objects.create(build=build, section=section, name='Apple', price=250)
+
+    counts = builds.match_build_rows(build, embedder=None)
+
+    assert counts['auto'] == 1
