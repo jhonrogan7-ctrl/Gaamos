@@ -65,6 +65,79 @@ class OpsResponsiveCssTest(SimpleTestCase):
                            'full-width override must come after the 560px base rule')
 
 
+class WizardResponsiveCssTest(SimpleTestCase):
+    """The menu-build wizard's own built-CSS guards (phase 4a).
+
+    The `wz-` rules are single-class `@layer components` rules, which is the
+    exact shape Tailwind tree-shakes when it cannot see the class in a
+    template — and they carry <900px overrides at equal specificity, where
+    source order is the only thing deciding the winner. Both traps have
+    reached this project before, so they are pinned rather than trusted.
+    """
+
+    def _css(self):
+        return (Path(settings.BASE_DIR) / 'static/css/app.css').read_text()
+
+    def test_wizard_base_rules_survived_the_purge(self):
+        # `[}{]` anchored so a match inside a compound selector (.wz-doc .btn)
+        # cannot stand in for the base rule actually being present.
+        css = self._css()
+        # `wz-drop` and `wz-docs` are deliberately absent: the build now starts
+        # from a spreadsheet, so the multi-file drop zone and the document list
+        # they styled are gone from the markup and Tailwind is right to purge
+        # them. Pinning a class no template uses would only ever fail.
+        # `wz-tile` replaces them — it is the generating screen's row card, and
+        # it is a single-class @layer rule, which is exactly what gets purged.
+        for cls in ['wz-grid', 'wz-card', 'wz-pickgrid', 'wz-pick', 'wz-tile',
+                    'wz-tilegrid', 'wz-doc', 'wz-st', 'wz-bar', 'wz-note']:
+            self.assertIsNotNone(
+                re.search(r'[}{,]\.' + cls + r'[{,]', css),
+                f'missing standalone base rule for .{cls}')
+
+    def test_the_tile_grid_does_not_reuse_the_card_grid_class(self):
+        """`.wz-grid` lays out build cards at minmax(290px) on the list, review
+        and published screens. The generating screen's picture tiles are much
+        smaller, and when they were written as a second `.wz-grid` rule they won
+        by source order and silently halved the card width on all three.
+        """
+        css = self._css()
+
+        self.assertIsNone(
+            re.search(r'[}{,]\.wz-grid\{[^}]*minmax\(148px', css),
+            'the tile sizing is back on .wz-grid — it will shrink the build '
+            'cards on the list, review and published screens')
+        self.assertIsNotNone(
+            re.search(r'[}{,]\.wz-tilegrid\{[^}]*minmax\(148px', css),
+            'the tile grid lost its own sizing')
+        self.assertIsNotNone(
+            re.search(r'[}{,]\.wz-grid\{[^}]*minmax\(290px', css),
+            'the build-card grid lost its own sizing')
+
+    def test_wizard_single_column_overrides_come_after_their_base(self):
+        # Base lays the cards out in an auto-fill grid; <900px collapses both
+        # grids to one column. Equal specificity -> whichever is later wins.
+        css = self._css()
+        for cls in ['wz-grid', 'wz-pickgrid']:
+            base = re.search(r'[}{,]\.' + cls + r'\{[^}]*repeat\(auto-fill[^}]*\}', css)
+            override = re.search(
+                r'[}{,]\.' + cls + r'\{[^}]*grid-template-columns:\s*1fr[^}]*\}', css)
+            self.assertIsNotNone(base, f'base .{cls} auto-fill rule missing')
+            self.assertIsNotNone(override, f'mobile .{cls} single-column rule missing')
+            self.assertGreater(
+                override.start(), base.start(),
+                f'.{cls} single-column override must come AFTER the auto-fill base '
+                'rule or the wizard stays multi-column on a phone')
+
+    def test_wizard_mobile_actions_are_thumb_sized(self):
+        # Every wizard action is a real tap target under 900px. A control that
+        # only appears on hover, or lands under 44px, is unusable on the phone
+        # the staff member is actually holding at the venue.
+        css = self._css()
+        self.assertIsNotNone(
+            re.search(r'\.wz-cta\s+\.btn[^{]*\{[^}]*min-height:\s*44px', css),
+            'wizard mobile actions must carry a 44px min-height')
+
+
 APEX = settings.BASE_DOMAIN
 
 
@@ -102,3 +175,73 @@ class OpsMobileShellTests(TestCase):
         self.client.logout()
         body = self.client.get('/platform/login', **self.apex).content.decode()
         self.assertNotIn('class="tabbar"', body)
+
+
+class OpsShellRunsItsJavascriptTest(TestCase):
+    """A page that USES Alpine must LOAD Alpine.
+
+    This is the gap that shipped the phase-4a wizard with every interactive
+    control dead: `ops/base.html` loaded HTMX but not Alpine, so `x-data`,
+    `x-show` and `@click` were inert -- and because the built CSS carries
+    `[x-cloak]{display:none !important}`, every `x-cloak` element was hidden
+    PERMANENTLY rather than merely un-animated.
+
+    Nothing caught it. The test client renders templates without executing
+    them, and curl fetches the same markup: an element that never un-hides
+    still *appears* in the HTML, so every presence assertion passed. The only
+    honest check at this layer is that the runtime is on the page at all.
+    """
+
+    def setUp(self):
+        self.apex = {'HTTP_HOST': APEX}
+        self.client.force_login(User.objects.create_superuser('boss', 'b@x.io', 'pw'))
+
+    def _pages(self):
+        from menu.models import (Branch, Company, MenuBuild, MenuBuildRow,
+                                 MenuBuildSection)
+        company = Company.objects.create(name='Kailash Parbat', slug='kailash')
+        Branch.all_objects.create(company=company, name='Lakeside', slug='lakeside')
+        build = MenuBuild.objects.create(company=company, status='generating')
+        section = MenuBuildSection.objects.create(build=build, name='JUICE')
+        MenuBuildRow.objects.create(build=build, section=section, name='Apple',
+                                    price=250)
+        return ['/platform/builds/', '/platform/builds/new/',
+                f'/platform/builds/{build.pk}/',
+                f'/platform/builds/{build.pk}/review/']
+
+    def test_every_ops_page_using_alpine_also_loads_it(self):
+        for url in self._pages():
+            html = self.client.get(url, **self.apex).content.decode()
+            if 'x-data' in html:
+                self.assertIn(
+                    'alpine', html.lower(),
+                    f'{url} uses Alpine directives but never loads Alpine -- '
+                    'every x-show/@click on it is dead and every x-cloak '
+                    'element is hidden for good')
+
+    def test_the_ops_shell_serves_alpine_locally(self):
+        # From `static/vendor/`, like `templates/base.html` -- not a CDN. The
+        # platform screens are staff tools that must work on a venue's wifi.
+        html = self.client.get('/platform/builds/new/', **self.apex).content.decode()
+        self.assertIn('vendor/alpine.min.js', html)
+
+
+class TileActionsFitTest(SimpleTestCase):
+    """The picture tile is 148px wide and its buttons are `nowrap`.
+
+    On one line they overflowed the tile and covered the tile beside it, which
+    then sat on top in paint order and swallowed every click meant for that
+    row's controls. Nothing in the markup shows this — a browser found it — so
+    the rule that prevents it is pinned here.
+    """
+
+    def _css(self):
+        return (Path(settings.BASE_DIR) / 'static/css/app.css').read_text()
+
+    def test_the_tile_action_row_wraps(self):
+        rule = re.search(r'[}{,]\.wz-tile-act\{([^}]*)\}', self._css())
+
+        self.assertIsNotNone(rule, '.wz-tile-act base rule missing')
+        self.assertIn('flex-wrap:wrap', rule.group(1).replace(' ', ''),
+                      'the tile action row must wrap, or its buttons overflow '
+                      'onto the neighbouring tile and block its clicks')

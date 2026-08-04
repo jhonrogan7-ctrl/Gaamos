@@ -1,0 +1,16 @@
+{% if errors %}
+  <div class="rounded-lg border border-red-300 bg-red-50 p-4 mb-4">
+    <p class="font-semibold text-red-800 mb-2">This spreadsheet was not imported.</p>
+    <ul class="text-sm text-red-700 space-y-1">
+      {% for message, lines in errors %}
+        <li>
+          <span class="font-medium">{{ message }}</span>
+          {% if lines %}
+            — {{ lines|length }} row{{ lines|pluralize }}:
+            {{ lines|slice:":12"|join:", " }}{% if lines|length > 12 %}…{% endif %}
+          {% endif %}
+        </li>
+      {% endfor %}
+    </ul>
+  </div>
+{% endif %}

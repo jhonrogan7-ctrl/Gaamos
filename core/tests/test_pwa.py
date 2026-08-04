@@ -132,3 +132,66 @@ def test_sw_behaviour_markers(client):
     assert "navigate" in body                 # navigation branch exists
     assert 'c.addAll(["/"])' not in body      # old stub's cache-of-'/' is gone
     assert "ignoreSearch" in body             # static matching tolerates ?v= busters
+
+
+@pytest.mark.django_db
+def test_the_sw_never_intercepts_a_form_submission(client):
+    """A POST navigation must reach the network untouched.
+
+    A form submission is `mode === "navigate"` with `method === "POST"`, so an
+    unguarded navigate branch re-issues it through `fetch(req)` inside the
+    worker. For a multipart upload -- the menu-build wizard posts an 8 MB PDF --
+    that is a known failure, and the branch's own `.catch()` then swallows it
+    and serves the offline page, so THE REQUEST NEVER REACHES THE SERVER. It
+    looks to the user exactly like the button doing nothing.
+
+    Found in PWA mode on a phone: the founder hit Start extraction repeatedly
+    and the access log showed no POST at all. The file's strategy comment has
+    always claimed POSTs are untouched; this pins the code to the comment.
+    """
+    body = client.get("/sw.js").content.decode()
+    nav = body[body.index('mode === "navigate"'):]
+    guard = nav[:nav.index('respondWith')]
+    assert 'method === "GET"' in guard, (
+        'the navigate branch must be guarded to GET, or a form POST is '
+        're-issued inside the worker and can be lost before it is sent')
+
+
+@pytest.mark.django_db
+def test_the_sw_script_itself_is_never_http_cached(client):
+    """The worker must be able to replace itself.
+
+    `/sw.js` was served with NO cache headers, so the browser applied its own
+    heuristic caching to the worker SCRIPT. A registration then re-reads the
+    cached copy and the client keeps running the old worker forever -- which is
+    exactly how a phone stayed on v5 while v7 was live on the server, so two
+    fixes shipped and neither ever reached the device.
+
+    `no-cache` means revalidate, not "do not store": the 304 path still works,
+    only the stale-without-asking path is closed.
+    """
+    resp = client.get("/sw.js")
+    assert "no-cache" in resp.headers.get("Cache-Control", "")
+
+
+@pytest.mark.django_db
+def test_every_sw_registration_bypasses_the_http_cache(client):
+    """`updateViaCache: 'none'` on every registration, for the same reason.
+
+    The browser default is `'imports'`, which caches the top-level worker
+    script. Belt and braces with the header above: whichever surface a user
+    installs the PWA from, the worker can still update itself.
+    """
+    from pathlib import Path
+
+    from django.conf import settings
+
+    offenders = []
+    for path in Path(settings.BASE_DIR / "templates").rglob("*.html"):
+        body = path.read_text()
+        if "serviceWorker.register" not in body:
+            continue
+        call = body[body.index("serviceWorker.register"):]
+        if "updateViaCache" not in call[:220]:
+            offenders.append(str(path.relative_to(settings.BASE_DIR)))
+    assert not offenders, f"registrations that can serve a stale worker: {offenders}"

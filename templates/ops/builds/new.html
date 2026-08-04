@@ -1,0 +1,84 @@
+{% extends 'ops/base.html' %}
+{% block title %}New build{% endblock %}
+{% block top %}New build{% endblock %}
+{% block content %}
+{% comment %}
+Alpine holds only which venue is selected — it decides which branch list is
+shown, and no server round-trip should be needed to tick a checkbox. The POST
+re-checks that every branch belongs to the chosen venue regardless: this picker
+lists every tenant on the platform.
+{% endcomment %}
+<form method="post" enctype="multipart/form-data" action="{% url 'ops:build_new' %}"
+      x-data="{ company: {% if picked_company %}{{ picked_company.pk }}{% else %}null{% endif %} }">
+  {% csrf_token %}
+
+  {% if error %}<div class="wz-note wz-note--bad" role="alert">{{ error }}</div>{% endif %}
+
+  <div class="panel">
+    <h3>Venue</h3>
+    <div class="wz-hint">Existing tenants only — the wizard does not create companies.</div>
+    <div class="wz-pickgrid">
+      {% for c in companies %}
+        <label class="wz-pick" :class="company === {{ c.pk }} && 'on'">
+          <input type="radio" name="company" value="{{ c.pk }}" x-model.number="company"
+                 {% if picked_company.pk == c.pk %}checked{% endif %} class="wz-pick-input">
+          <b>{{ c.name }}</b>
+          <span>{{ c.slug }}</span>
+        </label>
+      {% empty %}
+        <div class="wz-hint">No active tenants yet — create one under Tenants first.</div>
+      {% endfor %}
+    </div>
+  </div>
+
+  <div class="panel">
+    <h3>Branches</h3>
+    <div class="wz-hint">The menu publishes to every branch ticked. Pick more than one when
+      they share a card.</div>
+    {% comment %}
+    ⚠ NO `x-cloak` here, deliberately. These labels are `x-show`n, and the built
+    CSS hides `[x-cloak]` with `display:none !important` — Alpine is the only
+    thing that removes the attribute. So with x-cloak, any load where Alpine did
+    not run (stale cached page, back/forward restore, a JS error) hid every
+    branch FOREVER and no build could be started at all. That shipped, and the
+    founder hit it: "Pick at least one branch of that venue" with no branch on
+    screen to pick.
+
+    Filtering to the chosen venue is an enhancement. Being able to submit the
+    form is not. Without JS every branch shows, each labelled with its venue,
+    and the POST already re-checks that the branch belongs to the company.
+    {% endcomment %}
+    <div class="wz-pickgrid">
+      {% for b in branches %}
+        <label class="wz-pick" x-show="!company || company === {{ b.company_id }}">
+          <input type="checkbox" name="branches" value="{{ b.pk }}" class="wz-pick-input">
+          <b>{{ b.name }}</b>
+          <span>{{ b.company.name }}</span>
+        </label>
+      {% empty %}
+        <div class="wz-hint">No branches exist yet — add one under Tenants first.</div>
+      {% endfor %}
+    </div>
+  </div>
+
+  <div class="panel">
+    <h3>The printed card</h3>
+    {% include 'ops/builds/_upload_errors.html' %}
+    <label class="block text-sm font-medium mb-1" for="sheet">Menu spreadsheet (.xlsx)</label>
+    <input id="sheet" type="file" name="sheet" accept=".xlsx" required
+           class="block w-full text-sm border rounded-lg p-2">
+    <p class="text-xs text-gray-500 mt-1">
+      One row per item per price. Use the Gaamos template — the platform adds the
+      photography style itself, so the sheet only needs the subject.
+    </p>
+  </div>
+
+  <div class="wz-bar">
+    <span style="color:var(--ink-3);font-size:12.5px">Nothing is written to the tenant until
+      you publish at the end.</span>
+    <span class="wz-grow"></span>
+    <a class="btn ghost" href="{% url 'ops:builds' %}">Cancel</a>
+    <button type="submit" class="btn primary">Start extraction →</button>
+  </div>
+</form>
+{% endblock %}

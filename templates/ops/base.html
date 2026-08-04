@@ -9,6 +9,15 @@
   <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="{% static 'css/app.css' %}?v={{ asset_v|default:'ops1' }}">
   <script src="{% static 'vendor/htmx.min.js' %}" defer></script>
+  {% comment %}
+  Alpine drives every local control on these screens (the menu-build wizard's
+  row sheets, the venue picker, the drop zone). Without it `x-show`/`@click`
+  are inert AND `[x-cloak]` stays on the element, which the built CSS hides
+  with `display:none !important` — so a missing Alpine does not degrade the
+  page, it deletes half of it. Served from static/vendor like base.html, not a
+  CDN: these are staff tools used on a venue's wifi.
+  {% endcomment %}
+  <script src="{% static 'vendor/alpine.min.js' %}" defer></script>
   <link rel="manifest" href="{% static 'pwa/manifest-ops.webmanifest' %}">
   <meta name="theme-color" content="#15171d">
   <link rel="apple-touch-icon" sizes="180x180" href="{% static 'pwa/icon-ops-180.png' %}">
@@ -35,6 +44,10 @@
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 8v8M8 12h8"/></svg>
       New tenant
     </a>
+    <a href="{% url 'ops:builds' %}" class="nav {% if active == 'builds' %}on{% endif %}">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h11l5 5v11H4z"/><path d="M8 12h8M8 16h5"/></svg>
+      Menu builds
+    </a>
     {% comment %}
       Images and Scans were unlinked 2026-08-01 on the founder's call: the
       Gemini-backed scan path is superseded by the menu-build wizard (spec
@@ -54,12 +67,17 @@
   <main class="main">
     <div class="top"><h2>{% block top %}Platform{% endblock %}</h2><div class="spacer"></div></div>
     <div class="body">
-      {% if stats %}
+      {% comment %}
+      `ops_stats`, not `stats`: the build screens pass their own per-build
+      numbers under `stats`, and while this strip was keyed on that name it
+      rendered on every build page with four blank figures in it.
+      {% endcomment %}
+      {% if ops_stats %}
       <div class="ops-stats">
-        <div class="ops-stat"><b>{{ stats.new_leads }}</b><span>new leads</span></div>
-        <div class="ops-stat"><b>{{ stats.total_leads }}</b><span>total leads</span></div>
-        <div class="ops-stat"><b>{{ stats.active_tenants }}</b><span>active tenants</span></div>
-        <div class="ops-stat"><b>{{ stats.suspended_tenants }}</b><span>suspended</span></div>
+        <div class="ops-stat"><b>{{ ops_stats.new_leads }}</b><span>new leads</span></div>
+        <div class="ops-stat"><b>{{ ops_stats.total_leads }}</b><span>total leads</span></div>
+        <div class="ops-stat"><b>{{ ops_stats.active_tenants }}</b><span>active tenants</span></div>
+        <div class="ops-stat"><b>{{ ops_stats.suspended_tenants }}</b><span>suspended</span></div>
       </div>
       {% endif %}
       {% block content %}{% endblock %}
@@ -80,6 +98,10 @@
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 8v8M8 12h8"/></svg>
     <span>New</span>
   </a>
+  <a href="{% url 'ops:builds' %}" class="tb {% if active == 'builds' %}on{% endif %}">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h11l5 5v11H4z"/><path d="M8 12h8M8 16h5"/></svg>
+    <span>Builds</span>
+  </a>
   {# Images and Scans unlinked 2026-08-01 — see the sidebar comment above. #}
   <form method="post" action="{% url 'ops:logout' %}" style="display:contents">{% csrf_token %}
     <button type="submit" class="tb">
@@ -90,7 +112,7 @@
 </nav>
 <script>
   if ("serviceWorker" in navigator) {
-    navigator.serviceWorker.register("/sw.js", { scope: "/" });
+    navigator.serviceWorker.register("/sw.js", { scope: "/", updateViaCache: "none" });
   }
 </script>
 </body>

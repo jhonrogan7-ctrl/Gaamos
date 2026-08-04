@@ -1,6 +1,6 @@
 from django.urls import path
 
-from . import views
+from . import builds, views
 
 app_name = 'ops'
 
@@ -34,4 +34,18 @@ urlpatterns = [
     path('images/<int:asset_id>/use-photo/', views.image_use_photo, name='image_use_photo'),
     path('images/<int:asset_id>/find-another/', views.image_find_another, name='image_find_another'),
     path('images/browse/', views.image_browse, name='image_browse'),
+    # ── menu-build wizard: sheet in, pictures generated, menu out ──
+    path('builds/', builds.builds_list, name='builds'),
+    path('builds/new/', builds.build_new, name='build_new'),
+    path('builds/<int:build_id>/', builds.build_detail, name='build_detail'),
+    path('builds/<int:build_id>/progress/', builds.build_progress, name='build_progress'),
+    # row editing, on the tile it belongs to
+    path('builds/<int:build_id>/rows/<int:row_id>/edit/', builds.build_row_edit, name='build_row_edit'),
+    path('builds/<int:build_id>/rows/<int:row_id>/card/', builds.build_row_card, name='build_row_card'),
+    path('builds/<int:build_id>/rows/<int:row_id>/reroll/', builds.build_row_reroll, name='build_row_reroll'),
+    path('builds/<int:build_id>/rows/<int:row_id>/delete/', builds.build_row_delete, name='build_row_delete'),
+    path('builds/<int:build_id>/rows/<int:row_id>/move/', builds.build_row_move, name='build_row_move'),
+    # review, then the only thing that writes to a tenant
+    path('builds/<int:build_id>/review/', builds.build_review, name='build_review'),
+    path('builds/<int:build_id>/publish/', builds.build_publish, name='build_publish'),
 ]

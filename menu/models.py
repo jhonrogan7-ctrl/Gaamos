@@ -455,6 +455,10 @@ class MenuScan(models.Model):
     created_by = models.ForeignKey('auth.User', null=True, blank=True,
                                    on_delete=models.SET_NULL, related_name='menu_scans')
     created_at = models.DateTimeField(auto_now_add=True)
+    # Nullable on purpose: the pre-wizard /platform/scans/ flow creates scans
+    # with no build and must keep working untouched.
+    build = models.ForeignKey('MenuBuild', null=True, blank=True,
+                              on_delete=models.CASCADE, related_name='scans')
 
     class Meta:
         ordering = ['-created_at']
@@ -550,6 +554,172 @@ class Item(models.Model):
             models.Index(fields=['search_name', 'variant_label'],
                          name='item_search_variant'),
         ]
+
+    def __str__(self):
+        return self.name
+
+
+class MenuBuild(models.Model):
+    """One onboarding run: a venue, its branches, and the card it was built from.
+
+    Owns disposable scratch rows, never tenant data. Nothing here is written to
+    a live menu until `publish`, which is what makes an abandoned build free and
+    re-extracting a single document safe.
+    """
+
+    STATUS_CHOICES = [
+        ('draft', 'Draft'),
+        ('generating', 'Generating'),
+        ('review', 'Review'),
+        ('publishing', 'Publishing'),
+        ('published', 'Published'),
+        ('failed', 'Failed'),
+    ]
+
+    company = models.ForeignKey('Company', on_delete=models.CASCADE,
+                                related_name='menu_builds')
+    branches = models.ManyToManyField('Branch', related_name='menu_builds')
+    status = models.CharField(max_length=12, choices=STATUS_CHOICES, default='draft')
+    created_by = models.ForeignKey('auth.User', null=True, blank=True,
+                                   on_delete=models.SET_NULL,
+                                   related_name='menu_builds')
+    created_at = models.DateTimeField(auto_now_add=True)
+    # The models this run actually used. A build is reproducible, and a later
+    # model swap is visible rather than silently changing what a rebuild means.
+    vision_model = models.CharField(max_length=120, blank=True)
+    embed_model = models.CharField(max_length=120, blank=True)
+    # What the parser did, kept so the build page can say it out loud rather
+    # than silently swallowing forty dashes.
+    sheet_name = models.CharField(max_length=120, blank=True)
+    dashes_normalised = models.PositiveIntegerField(default=0)
+
+    class Meta:
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return f'{self.company.slug} build #{self.pk} ({self.status})'
+
+    def branch_list(self):
+        """This build's branches, read cross-tenant on purpose.
+
+        `self.branches.all()` CANNOT be used and is not an oversight: the M2M's
+        related manager derives from `Branch`'s fail-closed `TenantManager`, and
+        every wizard screen is apex with no company in context, so it raises
+        `TenantContextRequired`. Routing through `all_objects` here is the
+        deliberate cross-tenant access that guard asks for -- in one place, so
+        no view or service can forget it.
+        """
+        return Branch.all_objects.filter(menu_builds=self)
+
+
+class MenuBuildSection(models.Model):
+    """A printed section of the card, in the venue's own words.
+
+    A model rather than a string on the row (the parent spec's shape) because
+    gate 1 confirms prices PER SECTION, and sections rename, reorder and carry
+    an icon. Against a denormalised string a rename rewrites every row and
+    `prices_confirmed` has nowhere to live.
+    """
+
+    build = models.ForeignKey(MenuBuild, on_delete=models.CASCADE,
+                              related_name='sections')
+    name = models.CharField(max_length=200)
+    # The sheet has two levels and so does a published menu (BranchCategory +
+    # BranchSubcategory). A section is therefore the PAIR: `Nepali Foods` alone
+    # holds six subcategories on the first real card, and flattening them would
+    # drop all six into one heap.
+    sub_name = models.CharField(max_length=200, blank=True)
+    display_order = models.PositiveSmallIntegerField(default=0)
+    icon_key = models.CharField(max_length=60, blank=True)
+    # Gate 1's blocking rule. The spec's null-price rule can never fire -- the
+    # extractor invents a price for every one it cannot read -- so what blocks
+    # the build is a human confirming a section against the photograph.
+    prices_confirmed = models.BooleanField(default=False)
+
+    class Meta:
+        ordering = ['display_order', 'pk']
+        constraints = [
+            models.UniqueConstraint(fields=['build', 'name', 'sub_name'],
+                                    name='uniq_buildsection_build_name'),
+        ]
+
+    def __str__(self):
+        return self.name
+
+
+class MenuBuildRow(models.Model):
+    """One printed menu row, as scratch space.
+
+    Disposable by design: `Item`, `ImageAsset` and `MenuItem` stay canonical and
+    this table is free to be rewritten by a re-extraction.
+    """
+
+    MATCH_STATES = [
+        ('none', 'No match'), ('auto', 'Auto'), ('suggested', 'Suggested'),
+        ('accepted', 'Accepted'), ('rejected', 'Rejected'),
+    ]
+    IMAGE_STATES = [
+        ('none', 'None'), ('matched', 'From the library'),
+        ('generating', 'Generating'), ('generated', 'Generated'),
+        ('failed', 'Failed'),
+    ]
+
+    build = models.ForeignKey(MenuBuild, on_delete=models.CASCADE, related_name='rows')
+    section = models.ForeignKey(MenuBuildSection, on_delete=models.CASCADE,
+                                related_name='rows')
+    display_order = models.PositiveSmallIntegerField(default=0)
+
+    # --- what the card printed ---
+    name = models.CharField(max_length=300)
+    base_name = models.CharField(max_length=200, blank=True)
+    variant_label = models.CharField(max_length=80, blank=True)
+    description = models.TextField(blank=True)
+    price = models.PositiveIntegerField(null=True, blank=True)
+    tags = models.JSONField(default=list, blank=True)
+    dietary_tags = models.JSONField(default=list, blank=True)
+    raw_name = models.CharField(max_length=300, blank=True)
+    raw_price_text = models.CharField(max_length=120, blank=True)
+    split_from = models.CharField(max_length=300, blank=True)
+    confidence = models.FloatField(default=1.0)
+    source_scan = models.ForeignKey('MenuScan', null=True, blank=True,
+                                    on_delete=models.SET_NULL, related_name='build_rows')
+    source_page = models.PositiveSmallIntegerField(null=True, blank=True)
+
+    # --- the match ---
+    matched_item = models.ForeignKey('Item', null=True, blank=True,
+                                     on_delete=models.SET_NULL, related_name='build_rows')
+    match_score = models.FloatField(default=0.0)
+    match_method = models.CharField(max_length=20, blank=True)
+    match_state = models.CharField(max_length=10, choices=MATCH_STATES, default='none')
+
+    # --- the image ---
+    image_prompt = models.TextField(blank=True)
+    image_asset = models.ForeignKey('ImageAsset', null=True, blank=True,
+                                    on_delete=models.SET_NULL, related_name='build_rows')
+    image_state = models.CharField(max_length=10, choices=IMAGE_STATES, default='none')
+    # Why an image is missing, in the reviewer's words rather than a log's.
+    image_error = models.CharField(max_length=300, blank=True)
+    # Which seed this row is on. `seed_for` advances with it, so a re-roll can
+    # never hand back the picture it was asked to replace.
+    image_attempts = models.PositiveSmallIntegerField(default=0)
+
+    # Whatever the sheet's Notes column said, plus anything the parser found.
+    # This is the ONLY signal for "a human should look at this row", so it must
+    # survive into review — a row that turns red without saying why is worse
+    # than a row that is not flagged at all.
+    notes = models.TextField(blank=True)
+
+    @property
+    def needs_check(self):
+        return bool(self.notes)
+
+    # --- after publish ---
+    published_item = models.ForeignKey('MenuItem', null=True, blank=True,
+                                       on_delete=models.SET_NULL,
+                                       related_name='build_rows')
+
+    class Meta:
+        ordering = ['section__display_order', 'display_order', 'pk']
 
     def __str__(self):
         return self.name
