@@ -63,39 +63,14 @@ lists every tenant on the platform.
 
   <div class="panel">
     <h3>The printed card</h3>
-    <div class="wz-hint">4–8 photos, or one PDF. Each page becomes its own extraction job, so
-      a bad photo is re-taken on its own.</div>
-    {% comment %}
-    A <label> forwards a CLICK to its input — that is why picking a file worked
-    all along — but a DROP is not a click. The browser only hands dropped files
-    to the input when the drop lands on the input ITSELF, and this one is 1×1px
-    and transparent, so a drop on the zone reached nothing and the form posted
-    empty. The handlers below are what make the promise in the copy true.
-
-    The file names are echoed back for the same reason: a staged file that the
-    zone still describes as empty reads exactly like a failed upload.
-    {% endcomment %}
-    <label class="wz-drop" :class="over && 'wz-drop--over'"
-           x-data="{ over: false, names: [] }"
-           @dragenter.prevent="over = true"
-           @dragover.prevent="over = true"
-           @dragleave.prevent="over = false"
-           @drop.prevent="over = false;
-                          $refs.docs.files = $event.dataTransfer.files;
-                          names = [...$refs.docs.files].map(f => f.name)">
-      <b x-text="names.length
-                 ? names.length + ' file' + (names.length > 1 ? 's' : '') + ' ready'
-                 : 'Drop photos or a PDF here'">Drop photos or a PDF here</b>
-      JPG · PNG · HEIC · PDF
-      <input type="file" name="documents" multiple accept="image/*,application/pdf"
-             class="wz-drop-input" x-ref="docs"
-             @change="names = [...$event.target.files].map(f => f.name)">
-      <div class="wz-drop-files" x-show="names.length" x-cloak>
-        <template x-for="n in names" :key="n">
-          <span class="wz-file" x-text="n"></span>
-        </template>
-      </div>
-    </label>
+    {% include 'ops/builds/_upload_errors.html' %}
+    <label class="block text-sm font-medium mb-1" for="sheet">Menu spreadsheet (.xlsx)</label>
+    <input id="sheet" type="file" name="sheet" accept=".xlsx" required
+           class="block w-full text-sm border rounded-lg p-2">
+    <p class="text-xs text-gray-500 mt-1">
+      One row per item per price. Use the Gaamos template — the platform adds the
+      photography style itself, so the sheet only needs the subject.
+    </p>
   </div>
 
   <div class="wz-bar">

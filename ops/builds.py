@@ -17,8 +17,8 @@ from django.views.decorators.http import require_POST
 from menu import builds as build_service
 from menu.models import (Branch, Company, MenuBuild, MenuBuildRow,
                          MenuBuildSection, MenuScan)
-from menu.pipeline import category_icons
-from menu.tasks import extract_menu_scan
+from menu.pipeline import category_icons, xlsx_import
+from menu.tasks import extract_menu_scan, generate_row_image
 
 from .permissions import platform_admin_required
 
@@ -113,21 +113,34 @@ def build_new(request):
         context['picked_company'] = company
         return render(request, 'ops/builds/new.html', context, status=200)
 
-    uploads = request.FILES.getlist('documents')
-    if not uploads:
-        context['error'] = 'Add at least one photograph or PDF of the printed card.'
+    upload = request.FILES.get('sheet')
+    if upload is None:
+        context['error'] = ('Add the menu spreadsheet (.xlsx). Use the template '
+                            'under Builds if you need one.')
+        context['picked_company'] = company
+        return render(request, 'ops/builds/new.html', context, status=200)
+
+    parsed = xlsx_import.parse(upload)
+    if not parsed.ok:
+        # Nothing is created on a rejection. The sheet is machine-produced, so a
+        # fault is usually the same fault on many rows: fix it once, upload once.
+        context['errors'] = parsed.errors
         context['picked_company'] = company
         return render(request, 'ops/builds/new.html', context, status=200)
 
     build = MenuBuild.objects.create(company=company, created_by=request.user,
-                                     status='extracting')
+                                     status='generating')
     # `.set()` would raise: it diffs against `.all()`, which goes through
     # Branch's fail-closed TenantManager. `.add()` writes through the auto
     # -created through model instead, and the build is new so there is nothing
-    # to clear. See `MenuBuild.branch_list` for the read side.
+    # to clear.
     build.branches.add(*branches)
-    for upload in uploads:
-        _store_document(build, upload)
+    build_service.rows_from_sheet(build, parsed.rows)
+    build.sheet_name = parsed.sheet_name
+    build.dashes_normalised = parsed.dashes
+    build.save(update_fields=['sheet_name', 'dashes_normalised'])
+    for row_id in build.rows.values_list('pk', flat=True):
+        generate_row_image.delay(row_id)
     return redirect('ops:build_detail', build_id=build.pk)
 
 

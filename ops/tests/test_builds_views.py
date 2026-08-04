@@ -3,6 +3,9 @@
 Every view here can reach any tenant's data, so the access test is not
 box-ticking: a leak is cross-tenant.
 """
+import io
+
+import openpyxl
 import pytest
 from django.contrib.auth.models import User
 from django.core.files.uploadedfile import SimpleUploadedFile
@@ -27,6 +30,11 @@ def company(db):
     c = Company.objects.create(name='Kailash Parbat', slug='kailash')
     Branch.all_objects.create(company=c, name='Lakeside', slug='lakeside')
     return c
+
+
+@pytest.fixture
+def branch(company):
+    return Branch.all_objects.get(company=company)
 
 
 @pytest.mark.django_db
@@ -72,7 +80,10 @@ def test_creating_a_build_records_its_company_and_branches(client, admin, compan
 
     resp = client.post(reverse('ops:build_new'),
                        {'company': company.pk, 'branches': [branch.pk],
-                        'documents': _card()})
+                        'sheet': sheet_upload([
+                            ['Veg Snacks', '', 'French Fries', '', '', 250,
+                             'fries', ''],
+                        ])})
 
     build = MenuBuild.objects.get()
     assert build.company_id == company.pk
@@ -371,3 +382,90 @@ def test_the_form_says_so_when_a_venue_has_no_branches(client, admin, db):
 
     assert MenuBuild.objects.count() == 0
     assert 'no branch' in body.lower()
+
+
+HEAD = ['Category', 'Sub_Category', 'Item', 'Variant', 'Description',
+        'Price', 'Image_Subject', 'Notes']
+
+
+def sheet_upload(rows, name='menu.xlsx'):
+    from django.core.files.uploadedfile import SimpleUploadedFile
+    wb = openpyxl.Workbook()
+    ws = wb.active
+    ws.title = 'Menu'
+    ws.append(HEAD)
+    for r in rows:
+        ws.append(list(r))
+    buf = io.BytesIO()
+    wb.save(buf)
+    return SimpleUploadedFile(
+        name, buf.getvalue(),
+        content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+
+
+@pytest.mark.django_db
+def test_uploading_a_sheet_creates_a_build_with_rows(admin_client, company, branch,
+                                                     monkeypatch):
+    queued = []
+    monkeypatch.setattr('ops.builds.generate_row_image.delay',
+                        lambda row_id: queued.append(row_id))
+
+    response = admin_client.post('/platform/builds/new/', {
+        'company': company.pk, 'branches': [branch.pk],
+        'sheet': sheet_upload([
+            ['Veg Snacks', '', 'French Fries', 'Plain', '', 250,
+             'golden crispy french fries', ''],
+            ['Veg Snacks', '', 'Papad', '', '', 60, 'crisp papad', ''],
+        ]),
+    })
+
+    from menu.models import MenuBuild
+    build = MenuBuild.objects.get()
+    assert response.status_code == 302
+    assert build.status == 'generating'
+    assert build.rows.count() == 2
+    assert len(queued) == 2          # one job per row, not one per build
+
+
+@pytest.mark.django_db
+def test_a_bad_sheet_reports_grouped_errors_and_creates_nothing(admin_client,
+                                                                company, branch):
+    response = admin_client.post('/platform/builds/new/', {
+        'company': company.pk, 'branches': [branch.pk],
+        'sheet': sheet_upload([
+            ['Veg Snacks', '', 'A', '', '', 'Rs 250', 'a dish', ''],
+            ['Veg Snacks', '', 'B', '', '', 'Rs 60', 'a dish', ''],
+        ]),
+    })
+
+    from menu.models import MenuBuild
+    assert response.status_code == 200
+    assert MenuBuild.objects.count() == 0
+    body = response.content.decode()
+    assert 'Price is not a whole number' in body
+    assert '2 rows' in body or 'rows 2, 3' in body
+
+
+@pytest.mark.django_db
+def test_the_dash_count_is_reported_back(admin_client, company, branch,
+                                         monkeypatch):
+    monkeypatch.setattr('ops.builds.generate_row_image.delay', lambda row_id: None)
+    admin_client.post('/platform/builds/new/', {
+        'company': company.pk, 'branches': [branch.pk],
+        'sheet': sheet_upload([
+            ['Veg Snacks', '—', 'French Fries', '—', '—', 250, 'fries', '—'],
+        ]),
+    })
+    from menu.models import MenuBuild
+    build = MenuBuild.objects.get()
+    # Sub_Category, Variant, Description and Notes each held a dash.
+    assert build.dashes_normalised == 4
+    assert build.rows.get().variant_label == ''
+
+
+@pytest.mark.django_db
+def test_a_sheet_is_required(admin_client, company, branch):
+    response = admin_client.post('/platform/builds/new/', {
+        'company': company.pk, 'branches': [branch.pk]})
+    assert response.status_code == 200
+    assert 'spreadsheet' in response.content.decode().lower()

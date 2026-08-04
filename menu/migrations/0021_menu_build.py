@@ -21,6 +21,8 @@ class Migration(migrations.Migration):
                 ('created_at', models.DateTimeField(auto_now_add=True)),
                 ('vision_model', models.CharField(blank=True, max_length=120)),
                 ('embed_model', models.CharField(blank=True, max_length=120)),
+                ('sheet_name', models.CharField(blank=True, max_length=120)),
+                ('dashes_normalised', models.PositiveIntegerField(default=0)),
                 ('branches', models.ManyToManyField(related_name='menu_builds', to='menu.branch')),
                 ('company', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='menu_builds', to='menu.company')),
                 ('created_by', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='menu_builds', to=settings.AUTH_USER_MODEL)),

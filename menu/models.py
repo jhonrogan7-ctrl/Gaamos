@@ -588,6 +588,10 @@ class MenuBuild(models.Model):
     # model swap is visible rather than silently changing what a rebuild means.
     vision_model = models.CharField(max_length=120, blank=True)
     embed_model = models.CharField(max_length=120, blank=True)
+    # What the parser did, kept so the build page can say it out loud rather
+    # than silently swallowing forty dashes.
+    sheet_name = models.CharField(max_length=120, blank=True)
+    dashes_normalised = models.PositiveIntegerField(default=0)
 
     class Meta:
         ordering = ['-created_at']
