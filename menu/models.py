@@ -691,6 +691,8 @@ class MenuBuildRow(models.Model):
     image_asset = models.ForeignKey('ImageAsset', null=True, blank=True,
                                     on_delete=models.SET_NULL, related_name='build_rows')
     image_state = models.CharField(max_length=10, choices=IMAGE_STATES, default='none')
+    # Why an image is missing, in the reviewer's words rather than a log's.
+    image_error = models.CharField(max_length=300, blank=True)
 
     # Whatever the sheet's Notes column said, plus anything the parser found.
     # This is the ONLY signal for "a human should look at this row", so it must

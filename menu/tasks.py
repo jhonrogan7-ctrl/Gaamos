@@ -5,9 +5,10 @@ from celery import shared_task
 from django.conf import settings
 from django.db import transaction
 
-from menu.models import Item, MenuScan
-from menu.pipeline import (extract, extract_nv, find_library, intake, item_embed,
-                           normalize, photo_search)
+from menu.models import Item, MenuBuild, MenuBuildRow, MenuScan
+from menu.pipeline import (extract, extract_nv, find_library, generate_flux,
+                           images, intake, item_embed, normalize,
+                           photo_search, throttle)
 
 
 @shared_task
@@ -140,3 +141,70 @@ def send_order_push(order_id):
         return 'gone'
     t = notify_new_order(order)
     return f"sent={t['sent']} failed={t['failed']} dropped={t['dropped']}"
+
+
+@shared_task
+def generate_row_image(row_id, attempt=0):
+    """Generate one build row's photograph. One row, one job.
+
+    Per row rather than per build because the image budget is 6 a minute: a
+    110-row card is 18+ minutes of wall clock, and a single looping task starts
+    again from nothing every time the worker restarts -- which it does, since
+    Celery has no autoreload. Independent jobs are resumable, let the shared
+    throttle order the queue, and are what lets the review screen fill in
+    progressively instead of showing a spinner for a third of an hour.
+
+    Never raises. A dead generation costs its own row and nothing else; the
+    reviewer sees the failure and re-rolls it by hand, which is the same
+    control they use on a picture that is merely wrong.
+    """
+    row = MenuBuildRow.objects.filter(pk=row_id).first()
+    if row is None:
+        return
+    row.image_state = 'generating'
+    row.image_error = ''
+    row.save(update_fields=['image_state', 'image_error'])
+
+    def fail(message):
+        row.image_state = 'failed'
+        row.image_error = message[:300]
+        row.save(update_fields=['image_state', 'image_error'])
+        _finish_generating(row.build_id)
+
+    # One budget for the image model, shared with every other caller.
+    throttle.acquire(settings.NVIDIA_IMAGE_MODEL)
+    try:
+        seed = generate_flux.seed_for(f'{row.build_id}-{row.pk}', attempt)
+        raw = generate_flux.generate_image(row.image_prompt, seed=seed)
+        webp = images.to_webp(raw)
+    except generate_flux.ContentFiltered as exc:
+        # Not retryable at any seed. Reword the prompt by hand instead.
+        return fail(f'The generator refused this prompt: {exc}')
+    except Exception as exc:                      # noqa: BLE001 — see docstring
+        return fail(f'{type(exc).__name__}: {exc}')
+
+    asset = intake.record(
+        source='flux', webp_bytes=webp, item_name=row.name,
+        found_for_slug=f'build-{row.build_id}-{row.pk}',
+        source_text=row.description, prompt=row.image_prompt, name=row.name)
+    if asset is None:
+        # `record` returns None only for a rejected tombstone: this exact image
+        # was reviewed and thrown out before. A re-roll gets a new seed.
+        return fail('This image was rejected before — re-roll for a new one.')
+
+    row.image_asset = asset
+    row.image_state = 'generated'
+    row.image_error = ''
+    row.save(update_fields=['image_asset', 'image_state', 'image_error'])
+    _finish_generating(row.build_id)
+
+
+def _finish_generating(build_id):
+    """Move the build to review once no row is still waiting on a picture."""
+    build = MenuBuild.objects.filter(pk=build_id).first()
+    if build is None or build.status != 'generating':
+        return
+    if build.rows.filter(image_state__in=('none', 'generating')).exists():
+        return
+    build.status = 'review'
+    build.save(update_fields=['status'])

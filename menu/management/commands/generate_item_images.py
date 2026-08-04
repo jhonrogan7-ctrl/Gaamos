@@ -21,7 +21,6 @@ Example:
 """
 import os
 import re
-import tempfile
 import time
 from pathlib import Path
 
@@ -69,15 +68,6 @@ def covered_slugs(listing_path):
         if stem:
             out.add(slugify(stem))
     return out
-
-
-def _to_webp(raw_bytes, size):
-    with tempfile.TemporaryDirectory() as tmp:
-        src = Path(tmp) / 'raw'
-        dest = Path(tmp) / 'out.webp'
-        src.write_bytes(raw_bytes)
-        images.to_thumbnail(str(src), str(dest), size)
-        return dest.read_bytes()
 
 
 class Command(BaseCommand):
@@ -202,7 +192,7 @@ class Command(BaseCommand):
             try:
                 seed = generate_flux.seed_for(row['key'], opts['reroll'])
                 raw = self._generate(prompt, opts, seed)
-                webp = _to_webp(raw, opts['size'])
+                webp = images.to_webp(raw, opts['size'])
             except generate_flux.ContentFiltered:
                 # Not retryable at any seed. Report it so the prompt can be
                 # reworded by hand, and keep going.
