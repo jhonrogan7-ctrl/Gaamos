@@ -317,6 +317,25 @@ def test_publishing_twice_does_not_duplicate_the_menu_or_the_usage(build):
 
 
 @pytest.mark.django_db
+def test_a_section_subcategory_reaches_the_published_placement(build):
+    """The plan's File Structure line for this module reads: add
+    `rows_from_sheet`, pass `sub_category` at publish. A section's `sub_name`
+    (Task 2) must reach the guest menu, or subcategories never survive
+    publishing (Task 3's whole point)."""
+    from menu.models import BranchItemPlacement, SubCategory
+    branch = Branch.all_objects.get(company=build.company)
+    build.branches.add(branch)
+    section = MenuBuildSection.objects.create(build=build, name='Nepali Foods',
+                                              sub_name='Momo')
+    MenuBuildRow.objects.create(build=build, section=section, name='Veg Momo', price=180)
+
+    builds.publish_build(build)
+
+    placement = BranchItemPlacement.objects.get(branch=branch, menu_item__name='Veg Momo')
+    assert placement.sub_category == SubCategory.all_objects.get(company=build.company, name='Momo')
+
+
+@pytest.mark.django_db
 def test_a_section_icon_reaches_the_published_category(build):
     from menu.models import Category
     branch = Branch.all_objects.get(company=build.company)

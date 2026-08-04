@@ -13,18 +13,21 @@ from menu.pipeline import category_icons, name_norm, normalize, prompts
 DEFAULT_SECTION = 'Menu'
 
 
-def section_for(build, name):
-    """This build's section called `name`, created on first sight.
+def section_for(build, name, sub_name=''):
+    """This build's section for a (category, subcategory) pair, made on sight.
 
     The venue's own wording is kept verbatim -- `KAILASH TOUCH` stays
-    `KAILASH TOUCH`. Only the icon is inferred.
+    `KAILASH TOUCH`. Only the icon is inferred, and it is inferred from the
+    category: a subcategory called `Momo` under `Nepali Foods` should not get a
+    different icon from `Noodles` beside it.
     """
     clean = (name or '').strip() or DEFAULT_SECTION
-    section = build.sections.filter(name=clean).first()
+    sub = (sub_name or '').strip()
+    section = build.sections.filter(name=clean, sub_name=sub).first()
     if section is not None:
         return section
     return MenuBuildSection.objects.create(
-        build=build, name=clean,
+        build=build, name=clean, sub_name=sub,
         display_order=build.sections.count(),
         icon_key=category_icons.for_section(clean))
 
@@ -65,6 +68,42 @@ def rows_from_scan(build, scan):
             # Composed now, not at gate 2: a re-roll must describe the dish the
             # card printed, and the row's name may have been edited by then.
             image_prompt=prompts.for_item(fields['name'], section.name))
+        written += 1
+    return written
+
+
+@transaction.atomic
+def rows_from_sheet(build, sheet_rows):
+    """Replace this build's rows from a parsed spreadsheet. -> how many.
+
+    Whole-build, not per document: a spreadsheet arrives complete, so there is
+    no equivalent of re-taking one unreadable photograph. Re-uploading a
+    corrected sheet replaces everything, which is the behaviour a person
+    expects from a file they just fixed.
+
+    The prompt is composed HERE rather than at generation time, so the operator
+    can read and edit it before a single image is spent -- and so a re-roll
+    describes the dish the sheet named even if the row's name was edited since.
+    """
+    MenuBuildRow.objects.filter(build=build).delete()
+    build.sections.all().delete()
+
+    written = 0
+    for order, sheet_row in enumerate(sheet_rows):
+        section = section_for(build, sheet_row.category, sheet_row.sub_category)
+        MenuBuildRow.objects.create(
+            build=build, section=section, display_order=order,
+            name=sheet_row.item, base_name=sheet_row.item,
+            variant_label=sheet_row.variant,
+            description=sheet_row.description,
+            price=sheet_row.price,
+            notes=sheet_row.notes,
+            # `for_item` takes the subject and appends the shared style block.
+            # Passing the subject is the whole reason the sheet carries one:
+            # with no subject the printed name would have to serve as its own
+            # description, which is what the photographed path had to do.
+            image_prompt=prompts.for_item(sheet_row.item, section.name,
+                                          subject=sheet_row.subject))
         written += 1
     return written
 
@@ -122,6 +161,7 @@ def publish_build(build):
             name=r.name, price=r.price, description=r.description,
             dietary_tags=list(r.dietary_tags or []),
             category=r.section.name, category_icon=r.section.icon_key,
+            sub_category=r.section.sub_name,
             image_asset=r.image_asset if r.image_asset_id else None)
         for r in rows])
 
