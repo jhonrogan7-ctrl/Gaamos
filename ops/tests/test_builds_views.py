@@ -136,8 +136,11 @@ def test_a_build_cannot_take_another_companys_branch(client, admin, company):
 
 @pytest.fixture
 def gate1_build(company):
+    """A two-section build. Named for the gate it was written for; the gate is
+    gone but a build with more than one section is still what a move and a
+    publish need."""
     from menu.models import MenuBuildRow, MenuBuildSection
-    build = MenuBuild.objects.create(company=company, status='gate1')
+    build = MenuBuild.objects.create(company=company, status='review')
     build.branches.add(Branch.all_objects.get(company=company))
     juice = MenuBuildSection.objects.create(build=build, name='JUICE', display_order=0)
     snacks = MenuBuildSection.objects.create(build=build, name='SNACKS', display_order=1)
@@ -147,166 +150,11 @@ def gate1_build(company):
 
 
 @pytest.mark.django_db
-def test_gate1_renders_the_rows_as_cards(client, admin, gate1_build):
-    client.login(username='root', password='pw')
-
-    html = client.get(reverse('ops:build_gate1',
-                              args=[gate1_build.pk])).content.decode()
-
-    assert 'Apple' in html
-    assert '<table' not in html.lower()
-
-
-@pytest.mark.django_db
-def test_a_row_can_be_edited(client, admin, gate1_build):
-    row = gate1_build.rows.get(name='Apple')
-    client.login(username='root', password='pw')
-
-    client.post(reverse('ops:build_row_edit', args=[gate1_build.pk, row.pk]),
-                {'name': 'Apple Juice', 'price': '260'})
-
-    row.refresh_from_db()
-    assert (row.name, row.price) == ('Apple Juice', 260)
-
-
-@pytest.mark.django_db
-def test_a_row_can_be_deleted(client, admin, gate1_build):
-    row = gate1_build.rows.get(name='Apple')
-    client.login(username='root', password='pw')
-
-    client.post(reverse('ops:build_row_delete', args=[gate1_build.pk, row.pk]))
-
-    assert not gate1_build.rows.filter(pk=row.pk).exists()
-
-
-@pytest.mark.django_db
-def test_a_row_can_be_added_to_a_section(client, admin, gate1_build):
-    section = gate1_build.sections.get(name='JUICE')
-    client.login(username='root', password='pw')
-
-    client.post(reverse('ops:build_row_add', args=[gate1_build.pk, section.pk]),
-                {'name': 'Papaya', 'price': '250'})
-
-    assert gate1_build.rows.filter(name='Papaya', section=section).exists()
-
-
-@pytest.mark.django_db
-def test_a_row_splits_into_two_variants(client, admin, gate1_build):
-    """`200/260` on one printed line is two products at two prices."""
-    row = gate1_build.rows.get(name='Apple')
-    client.login(username='root', password='pw')
-
-    client.post(reverse('ops:build_row_split', args=[gate1_build.pk, row.pk]),
-                {'labels': 'Half,Full', 'prices': '200,260'})
-
-    names = set(gate1_build.rows.values_list('name', flat=True))
-    assert 'Apple (Half)' in names and 'Apple (Full)' in names
-    assert gate1_build.rows.get(name='Apple (Full)').price == 260
-
-
-@pytest.mark.django_db
-def test_a_row_moves_to_another_section(client, admin, gate1_build):
-    row = gate1_build.rows.get(name='Apple')
-    target = gate1_build.sections.get(name='SNACKS')
-    client.login(username='root', password='pw')
-
-    client.post(reverse('ops:build_row_move', args=[gate1_build.pk, row.pk]),
-                {'section': target.pk})
-
-    row.refresh_from_db()
-    assert row.section_id == target.pk
-
-
-@pytest.mark.django_db
-def test_a_section_can_be_renamed_and_re_iconed(client, admin, gate1_build):
-    section = gate1_build.sections.get(name='JUICE')
-    client.login(username='root', password='pw')
-
-    client.post(reverse('ops:build_section_edit', args=[gate1_build.pk, section.pk]),
-                {'name': 'FRESH JUICE', 'icon_key': 'juice'})
-
-    section.refresh_from_db()
-    assert (section.name, section.icon_key) == ('FRESH JUICE', 'juice')
-
-
-@pytest.mark.django_db
-def test_confirming_a_section_marks_it(client, admin, gate1_build):
-    section = gate1_build.sections.get(name='JUICE')
-    client.login(username='root', password='pw')
-
-    client.post(reverse('ops:build_section_confirm',
-                        args=[gate1_build.pk, section.pk]))
-
-    section.refresh_from_db()
-    assert section.prices_confirmed is True
-
-
-@pytest.mark.django_db
-def test_the_build_cannot_advance_while_a_section_is_unconfirmed(client, admin,
-                                                                 gate1_build):
-    """THE gate. With MENU_PRICE_VERIFY off the extractor never emits a null
-    price -- it invented one for all 27 it could not read -- so a human
-    confirming each section against the photograph is the only thing standing
-    between a fabricated price and a paying guest."""
-    gate1_build.sections.filter(name='JUICE').update(prices_confirmed=True)
-    client.login(username='root', password='pw')
-
-    resp = client.post(reverse('ops:build_advance', args=[gate1_build.pk]))
-
-    gate1_build.refresh_from_db()
-    assert gate1_build.status == 'gate1'
-    assert resp.status_code in (200, 400)
-
-
-@pytest.mark.django_db
-def test_the_build_advances_once_every_section_is_confirmed(client, admin,
-                                                            gate1_build):
-    gate1_build.sections.update(prices_confirmed=True)
-    client.login(username='root', password='pw')
-
-    client.post(reverse('ops:build_advance', args=[gate1_build.pk]))
-
-    gate1_build.refresh_from_db()
-    assert gate1_build.status == 'publishing'
-
-
-@pytest.mark.django_db
-def test_renaming_a_section_does_not_disturb_its_confirmation(client, admin,
-                                                              gate1_build):
-    """A rename is cosmetic. Silently clearing the tick would send a reviewer
-    back through a section they already checked."""
-    section = gate1_build.sections.get(name='JUICE')
-    section.prices_confirmed = True
-    section.save(update_fields=['prices_confirmed'])
-    client.login(username='root', password='pw')
-
-    client.post(reverse('ops:build_section_edit', args=[gate1_build.pk, section.pk]),
-                {'name': 'FRESH JUICE', 'icon_key': 'juice'})
-
-    section.refresh_from_db()
-    assert section.prices_confirmed is True
-
-
-@pytest.mark.django_db
-def test_the_review_screen_counts_what_will_publish(client, admin, gate1_build):
-    gate1_build.status = 'publishing'
-    gate1_build.save(update_fields=['status'])
-    client.login(username='root', password='pw')
-
-    html = client.get(reverse('ops:build_review',
-                              args=[gate1_build.pk])).content.decode()
-
-    assert '2' in html                      # two rows
-    assert 'Lakeside' in html               # the branch it publishes to
-
-
-@pytest.mark.django_db
 def test_publishing_from_the_review_screen_writes_the_menu(client, admin,
                                                            gate1_build):
     from menu.models import MenuItem
     gate1_build.status = 'publishing'
     gate1_build.save(update_fields=['status'])
-    gate1_build.sections.update(prices_confirmed=True)
     client.login(username='root', password='pw')
 
     client.post(reverse('ops:build_publish', args=[gate1_build.pk]))
@@ -314,21 +162,6 @@ def test_publishing_from_the_review_screen_writes_the_menu(client, admin,
     gate1_build.refresh_from_db()
     assert gate1_build.status == 'published'
     assert MenuItem.all_objects.filter(company=gate1_build.company).count() == 2
-
-
-@pytest.mark.django_db
-def test_publishing_is_refused_while_a_section_is_unconfirmed(client, admin,
-                                                              gate1_build):
-    """The gate cannot be walked around by posting straight at publish."""
-    from menu.models import MenuItem
-    gate1_build.status = 'publishing'
-    gate1_build.save(update_fields=['status'])
-    gate1_build.sections.filter(name='JUICE').update(prices_confirmed=False)
-    client.login(username='root', password='pw')
-
-    client.post(reverse('ops:build_publish', args=[gate1_build.pk]))
-
-    assert MenuItem.all_objects.filter(company=gate1_build.company).count() == 0
 
 
 @pytest.mark.django_db
@@ -753,3 +586,166 @@ def test_a_settled_card_stops_watching(admin_client, generating_build):
         HTTP_HX_REQUEST='true').content.decode()
 
     assert 'hx-trigger' not in body
+
+
+# ── Task 9: the gate and the photograph path are gone ────────────────────────
+
+@pytest.mark.django_db
+def test_gate_one_is_gone(admin_client, generating_build):
+    response = admin_client.get(f'/platform/builds/{generating_build.pk}/gate1/')
+
+    assert response.status_code == 404
+
+
+@pytest.mark.django_db
+def test_publishing_is_never_blocked_by_an_unchecked_row(admin_client,
+                                                         generating_build):
+    """Gate 1 existed because a vision model invented a price for every price it
+    could not read. A spreadsheet is typed, so there is nothing to catch — and
+    `prices_confirmed` defaults False, so leaving the check in place made every
+    spreadsheet build unpublishable.
+    """
+    generating_build.rows.update(image_state='generated',
+                                 notes='Price unclear (inferred)')
+    generating_build.status = 'review'
+    generating_build.save(update_fields=['status'])
+
+    response = admin_client.post(
+        f'/platform/builds/{generating_build.pk}/publish/')
+
+    assert response.status_code in (200, 302)
+    generating_build.refresh_from_db()
+    assert generating_build.status == 'published'
+
+
+@pytest.mark.django_db
+def test_the_review_screen_counts_the_rows_needing_a_look(admin_client,
+                                                          generating_build):
+    generating_build.rows.update(image_state='generated')
+    rows = list(generating_build.rows.order_by('pk'))
+    generating_build.rows.filter(pk=rows[0].pk).update(notes='Duplicate of row 3')
+    generating_build.status = 'review'
+    generating_build.save(update_fields=['status'])
+
+    response = admin_client.get(f'/platform/builds/{generating_build.pk}/review/')
+
+    # Assert the context, not the markup: the digit 1 appears all over an HTML
+    # page and would pass whatever the screen actually said.
+    assert len(response.context['preview']['needs_check']) == 1
+    assert response.context['preview']['needs_check'][0].notes == 'Duplicate of row 3'
+
+
+@pytest.mark.django_db
+def test_the_photograph_routes_are_gone(admin_client, generating_build):
+    """A build has no documents any more, so the routes that re-took one are
+    not merely unreachable — they are absent."""
+    from django.urls import NoReverseMatch, reverse
+
+    for name in ('build_rescan', 'build_advance', 'build_section_confirm'):
+        with pytest.raises(NoReverseMatch):
+            reverse(f'ops:{name}', args=[generating_build.pk, 1])
+
+
+# ── Row editing lives on the tile now ────────────────────────────────────────
+
+@pytest.mark.django_db
+def test_a_row_can_be_renamed_and_repriced_from_its_tile(admin_client,
+                                                         generating_build):
+    """Re-uploading a corrected sheet builds a WHOLE NEW build and regenerates
+    every picture — 18+ minutes and 110 images to fix one typo. Editing in place
+    is what keeps a small correction small."""
+    row = generating_build.rows.get(name='Papad')
+
+    body = admin_client.post(
+        f'/platform/builds/{generating_build.pk}/rows/{row.pk}/edit/',
+        {'name': 'Masala Papad', 'price': '80'},
+        HTTP_HX_REQUEST='true').content.decode()
+
+    row.refresh_from_db()
+    assert (row.name, row.price) == ('Masala Papad', 80)
+    assert f'id="row-{row.pk}"' in body
+
+
+@pytest.mark.django_db
+def test_deleting_a_row_from_its_tile_refreshes_the_grid(admin_client,
+                                                         generating_build):
+    """A delete empties a section and changes its count, and a per-card swap
+    cannot express either. The page is the target that is always right."""
+    row = generating_build.rows.get(name='Papad')
+
+    response = admin_client.post(
+        f'/platform/builds/{generating_build.pk}/rows/{row.pk}/delete/',
+        HTTP_HX_REQUEST='true')
+
+    assert not generating_build.rows.filter(pk=row.pk).exists()
+    assert response['HX-Refresh'] == 'true'
+
+
+@pytest.mark.django_db
+def test_moving_a_row_to_another_section_refreshes_the_grid(admin_client,
+                                                            generating_build):
+    """`Apple` under JUICE is a different dish from `Apple` under MILK SHAKE, so
+    which section a row sits in is menu data. The tile has to leave one section
+    and appear in another, which no per-card swap can do."""
+    from menu.models import MenuBuildSection
+    row = generating_build.rows.get(name='Papad')
+    target = MenuBuildSection.objects.create(build=generating_build,
+                                             name='Hot Drinks', display_order=1)
+
+    response = admin_client.post(
+        f'/platform/builds/{generating_build.pk}/rows/{row.pk}/move/',
+        {'section': target.pk}, HTTP_HX_REQUEST='true')
+
+    row.refresh_from_db()
+    assert row.section_id == target.pk
+    assert response['HX-Refresh'] == 'true'
+
+
+@pytest.mark.django_db
+def test_a_row_cannot_be_moved_into_another_builds_section(admin_client,
+                                                           company,
+                                                           generating_build):
+    """A section id is guessable and this view can reach every tenant's data."""
+    from menu.models import MenuBuildSection
+    other = MenuBuild.objects.create(company=company, status='generating')
+    stranger = MenuBuildSection.objects.create(build=other, name='Elsewhere')
+    row = generating_build.rows.first()
+    origin = row.section_id
+
+    response = admin_client.post(
+        f'/platform/builds/{generating_build.pk}/rows/{row.pk}/move/',
+        {'section': stranger.pk}, HTTP_HX_REQUEST='true')
+
+    assert response.status_code == 404
+    row.refresh_from_db()
+    assert row.section_id == origin
+
+
+@pytest.mark.django_db
+def test_the_section_editing_routes_are_gone(admin_client):
+    """Split, add and section-rename go with gate 1: the sheet is where a menu
+    gains a row or a section changes its name, and a sheet re-upload replaces
+    everything anyway."""
+    from django.urls import NoReverseMatch, reverse
+
+    for name in ('build_row_split', 'build_row_add', 'build_section_edit'):
+        with pytest.raises(NoReverseMatch):
+            reverse(f'ops:{name}', args=[1, 1])
+
+
+@pytest.mark.django_db
+def test_the_pictures_stay_reachable_once_the_run_is_over(admin_client,
+                                                          generating_build):
+    """Every row control — rename, reprice, move, delete, re-roll — lives on
+    these tiles. While this screen bounced to review the moment the run
+    finished, all of them became unreachable exactly when a reviewer wanted
+    them, and review's own "back to the pictures" link bounced straight back.
+    """
+    generating_build.rows.update(image_state='generated')
+    generating_build.status = 'review'
+    generating_build.save(update_fields=['status'])
+
+    response = admin_client.get(f'/platform/builds/{generating_build.pk}/')
+
+    assert response.status_code == 200
+    assert 'French Fries' in response.content.decode()

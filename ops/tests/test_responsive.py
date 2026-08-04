@@ -128,36 +128,6 @@ class WizardResponsiveCssTest(SimpleTestCase):
                 f'.{cls} single-column override must come AFTER the auto-fill base '
                 'rule or the wizard stays multi-column on a phone')
 
-    def test_gate1_split_collapses_after_its_desktop_base(self):
-        # Gate 1 is ONE layout at both sizes: the photo-beside-rows split
-        # collapses to a stack under 900px. Same specificity, so if the
-        # override ever sorts before the base the phone gets a 340px photo
-        # pane beside the rows at 360px wide -- unusable, and invisible to
-        # every assertion that only checks the rule exists.
-        css = self._css()
-        base = re.search(r'[}{,]\.wz-split\{[^}]*grid-template-columns:\s*minmax[^}]*\}', css)
-        override = re.search(
-            r'[}{,]\.wz-split\{[^}]*grid-template-columns:\s*1fr[^}]*\}', css)
-        self.assertIsNotNone(base, 'desktop .wz-split two-column base missing')
-        self.assertIsNotNone(override, 'mobile .wz-split stack override missing')
-        self.assertGreater(override.start(), base.start(),
-                           '.wz-split stack override must come AFTER the two-column base')
-
-    def test_gate1_row_actions_are_not_hover_only(self):
-        # The founder rule this screen is most likely to lose: the wireframe
-        # reveals edit/delete on hover, and hover does not exist on touch. The
-        # price and the ... sheet are always-visible controls with real tap
-        # targets, so neither may be gated behind :hover.
-        css = self._css()
-        for cls in ['wz-row-pr', 'wz-row-more']:
-            rule = re.search(r'[}{,]\.' + cls + r'\{[^}]*\}', css)
-            self.assertIsNotNone(rule, f'.{cls} base rule missing')
-            self.assertIn('min-height:44px', rule.group(0).replace(' ', ''),
-                          f'.{cls} must be a real tap target')
-        self.assertIsNone(
-            re.search(r'\.wz-row[a-z-]*:hover\{[^}]*(display|visibility|opacity)', css),
-            'no wizard row control may be revealed by hover -- touch has none')
-
     def test_wizard_mobile_actions_are_thumb_sized(self):
         # Every wizard action is a real tap target under 900px. A control that
         # only appears on hover, or lands under 44px, is unusable on the phone
@@ -227,13 +197,16 @@ class OpsShellRunsItsJavascriptTest(TestCase):
         self.client.force_login(User.objects.create_superuser('boss', 'b@x.io', 'pw'))
 
     def _pages(self):
-        from menu.models import Branch, Company, MenuBuild, MenuBuildSection
+        from menu.models import (Branch, Company, MenuBuild, MenuBuildRow,
+                                 MenuBuildSection)
         company = Company.objects.create(name='Kailash Parbat', slug='kailash')
         Branch.all_objects.create(company=company, name='Lakeside', slug='lakeside')
-        build = MenuBuild.objects.create(company=company, status='gate1')
-        MenuBuildSection.objects.create(build=build, name='JUICE')
+        build = MenuBuild.objects.create(company=company, status='generating')
+        section = MenuBuildSection.objects.create(build=build, name='JUICE')
+        MenuBuildRow.objects.create(build=build, section=section, name='Apple',
+                                    price=250)
         return ['/platform/builds/', '/platform/builds/new/',
-                f'/platform/builds/{build.pk}/gate1/',
+                f'/platform/builds/{build.pk}/',
                 f'/platform/builds/{build.pk}/review/']
 
     def test_every_ops_page_using_alpine_also_loads_it(self):
@@ -251,3 +224,24 @@ class OpsShellRunsItsJavascriptTest(TestCase):
         # platform screens are staff tools that must work on a venue's wifi.
         html = self.client.get('/platform/builds/new/', **self.apex).content.decode()
         self.assertIn('vendor/alpine.min.js', html)
+
+
+class TileActionsFitTest(SimpleTestCase):
+    """The picture tile is 148px wide and its buttons are `nowrap`.
+
+    On one line they overflowed the tile and covered the tile beside it, which
+    then sat on top in paint order and swallowed every click meant for that
+    row's controls. Nothing in the markup shows this — a browser found it — so
+    the rule that prevents it is pinned here.
+    """
+
+    def _css(self):
+        return (Path(settings.BASE_DIR) / 'static/css/app.css').read_text()
+
+    def test_the_tile_action_row_wraps(self):
+        rule = re.search(r'[}{,]\.wz-tile-act\{([^}]*)\}', self._css())
+
+        self.assertIsNotNone(rule, '.wz-tile-act base rule missing')
+        self.assertIn('flex-wrap:wrap', rule.group(1).replace(' ', ''),
+                      'the tile action row must wrap, or its buttons overflow '
+                      'onto the neighbouring tile and block its clicks')

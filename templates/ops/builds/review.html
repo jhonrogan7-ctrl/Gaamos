@@ -17,7 +17,7 @@ the rows at read time, because this is the page a human decides on.
 <div class="wz-bar">
   <b style="font-size:15px">{{ build.company.name }}</b>
   <span class="wz-grow"></span>
-  <a class="btn ghost" href="{% url 'ops:build_gate1' build.pk %}">← Back to gate 1</a>
+  <a class="btn ghost" href="{% url 'ops:build_detail' build.pk %}">← Back to the pictures</a>
 </div>
 
 <div class="wz-grid">
@@ -60,11 +60,6 @@ the rows at read time, because this is the page a human decides on.
             <div class="wz-nm">{{ section.name }}</div>
             <div class="wz-dmsg">{{ count }} row{{ count|pluralize }}</div>
           </div>
-          {% if section.prices_confirmed %}
-            <span class="wz-st wz-st--done">✓</span>
-          {% else %}
-            <span class="wz-st wz-st--fail">unchecked</span>
-          {% endif %}
         </div>
       {% endfor %}
     </div>
@@ -80,20 +75,22 @@ the rows at read time, because this is the page a human decides on.
     {% endif %}
   </span>
   <span class="wz-grow"></span>
-  {% if preview.unconfirmed %}
-    {% comment %}
-    The gate is re-checked server-side on publish; this only stops a pointless
-    round trip and says which section is missing.
-    {% endcomment %}
-    <span class="wz-st wz-st--fail">{{ preview.unconfirmed|length }} section{{ preview.unconfirmed|length|pluralize }} unchecked</span>
-    <a class="btn ghost" href="{% url 'ops:build_gate1' build.pk %}">Finish gate 1 →</a>
-  {% else %}
-    <form method="post" action="{% url 'ops:build_publish' build.pk %}">
-      {% csrf_token %}
-      <button type="submit" class="btn primary">
-        {% if build.status == 'published' %}Publish again{% else %}Publish to the menu →{% endif %}
-      </button>
-    </form>
+  {% comment %}
+  A note does not block a publish. Nothing does any more — the sheet is typed by
+  the venue, so there is no fabricated price to gate on. This says how many rows
+  the sheet asked a human to look at and where to go and look at them.
+  {% endcomment %}
+  {% if preview.needs_check %}
+    <a class="wz-st wz-st--gate" href="{% url 'ops:build_detail' build.pk %}"
+       style="text-decoration:none">
+      {{ preview.needs_check|length }} row{{ preview.needs_check|length|pluralize }} flagged — check {{ preview.needs_check|length|pluralize:"it,them" }} first
+    </a>
   {% endif %}
+  <form method="post" action="{% url 'ops:build_publish' build.pk %}">
+    {% csrf_token %}
+    <button type="submit" class="btn primary">
+      {% if build.status == 'published' %}Publish again{% else %}Publish to the menu →{% endif %}
+    </button>
+  </form>
 </div>
 {% endblock %}

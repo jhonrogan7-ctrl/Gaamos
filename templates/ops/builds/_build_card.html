@@ -9,7 +9,6 @@ touch.
   <div class="wz-top">
     <h3>{{ item.build.company.name }}</h3>
     {% if item.build.status == 'published' %}<span class="wz-st wz-st--done">Published</span>
-    {% elif item.build.status == 'gate1' %}<span class="wz-st wz-st--gate">Gate 1</span>
     {% elif item.build.status == 'generating' %}<span class="wz-st wz-st--work">Generating</span>
     {% elif item.build.status == 'review' or item.build.status == 'publishing' %}<span class="wz-st wz-st--gate">Review</span>
     {% elif item.build.status == 'failed' %}<span class="wz-st wz-st--fail">Failed</span>
@@ -39,8 +38,6 @@ touch.
       <a class="btn btn-sm ghost" href="{% url 'ops:build_detail' item.build.pk %}">Watch progress</a>
     {% elif item.build.status == 'review' %}
       <a class="btn btn-sm primary" href="{% url 'ops:build_review' item.build.pk %}">Review &amp; publish →</a>
-    {% elif item.build.status == 'gate1' %}
-      <a class="btn btn-sm primary" href="{% url 'ops:build_gate1' item.build.pk %}">Continue →</a>
     {% elif item.build.status == 'publishing' %}
       <a class="btn btn-sm primary" href="{% url 'ops:build_review' item.build.pk %}">Review &amp; publish →</a>
     {% elif item.build.status == 'published' %}

@@ -17,7 +17,7 @@ them, and 110 cards each on their own timer would be 110 requests every five
 seconds on top of it.
 {% endcomment %}
 <div class="wz-tile {% if row.needs_check %}wz-tile--flag{% endif %}" id="row-{{ row.pk }}"
-     x-data="{ tuning: false }"
+     x-data="{ tuning: false, editing: false }"
      {% if row.image_state == 'generating' and build.status != 'generating' %}
      hx-get="{% url 'ops:build_row_card' build.pk row.pk %}"
      hx-trigger="every 5s" hx-swap="outerHTML"{% endif %}>
@@ -60,6 +60,56 @@ seconds on top of it.
       <button type="submit" class="wz-tile-btn">↻ Re-roll</button>
     </form>
     <button type="button" class="wz-tile-btn" @click="tuning = !tuning">✎ Prompt</button>
+    <button type="button" class="wz-tile-btn" @click="editing = !editing">⋯</button>
+  </div>
+
+  {% comment %}
+  Row editing lives here, on the tile, because gate 1 — where it used to live —
+  is gone. It has to live SOMEWHERE: re-uploading a corrected sheet builds a
+  whole new build and regenerates every picture, so "just fix the sheet" costs
+  18+ minutes and 110 images to repair one typo.
+
+  Actions are always visible, never hover-revealed: hover does not exist on
+  touch and a reviewer on a phone would have no way to reach them.
+  {% endcomment %}
+  <div class="wz-tile-edit" x-show="editing" x-cloak>
+    <form method="post" action="{% url 'ops:build_row_edit' build.pk row.pk %}"
+          hx-post="{% url 'ops:build_row_edit' build.pk row.pk %}"
+          hx-target="#row-{{ row.pk }}" hx-swap="outerHTML">
+      {% csrf_token %}
+      <input class="wz-fld" name="name" value="{{ row.name }}" aria-label="Name">
+      <div class="wz-tile-edit-r">
+        <input class="wz-fld wz-fld--pr" name="price" inputmode="numeric"
+               value="{{ row.price|default_if_none:'' }}"
+               aria-label="Price in rupees">
+        <button type="submit" class="btn btn-sm primary">Save</button>
+      </div>
+    </form>
+
+    {% comment %}
+    `Apple` printed under JUICE is a different dish from `Apple` under MILK
+    SHAKE, so which section a row sits in is menu data, not presentation.
+    {% endcomment %}
+    <form method="post" action="{% url 'ops:build_row_move' build.pk row.pk %}"
+          hx-post="{% url 'ops:build_row_move' build.pk row.pk %}"
+          class="wz-tile-edit-r">
+      {% csrf_token %}
+      <select class="wz-fld" name="section" aria-label="Move to section">
+        {% for s in all_sections %}
+          {% if s.pk != row.section_id %}
+            <option value="{{ s.pk }}">{{ s.name }}</option>
+          {% endif %}
+        {% endfor %}
+      </select>
+      <button type="submit" class="btn btn-sm ghost">Move</button>
+    </form>
+
+    <form method="post" action="{% url 'ops:build_row_delete' build.pk row.pk %}"
+          hx-post="{% url 'ops:build_row_delete' build.pk row.pk %}"
+          hx-confirm="Delete “{{ row.name }}”?">
+      {% csrf_token %}
+      <button type="submit" class="wz-tile-btn wz-tile-btn--alert">🗑 Delete row</button>
+    </form>
   </div>
 
   {% comment %}
