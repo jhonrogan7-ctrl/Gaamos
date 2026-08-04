@@ -43,6 +43,8 @@ urlpatterns = [
     # gate 1 — the prices gate
     path('builds/<int:build_id>/gate1/', builds.build_gate1, name='build_gate1'),
     path('builds/<int:build_id>/rows/<int:row_id>/edit/', builds.build_row_edit, name='build_row_edit'),
+    path('builds/<int:build_id>/rows/<int:row_id>/card/', builds.build_row_card, name='build_row_card'),
+    path('builds/<int:build_id>/rows/<int:row_id>/reroll/', builds.build_row_reroll, name='build_row_reroll'),
     path('builds/<int:build_id>/rows/<int:row_id>/delete/', builds.build_row_delete, name='build_row_delete'),
     path('builds/<int:build_id>/rows/<int:row_id>/split/', builds.build_row_split, name='build_row_split'),
     path('builds/<int:build_id>/rows/<int:row_id>/move/', builds.build_row_move, name='build_row_move'),

@@ -74,6 +74,7 @@ class Migration(migrations.Migration):
                 ('image_prompt', models.TextField(blank=True)),
                 ('image_state', models.CharField(choices=[('none', 'None'), ('matched', 'From the library'), ('generating', 'Generating'), ('generated', 'Generated'), ('failed', 'Failed')], default='none', max_length=10)),
                 ('image_error', models.CharField(blank=True, max_length=300)),
+                ('image_attempts', models.PositiveSmallIntegerField(default=0)),
                 ('notes', models.TextField(blank=True)),
                 ('build', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='rows', to='menu.menubuild')),
                 ('image_asset', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='build_rows', to='menu.imageasset')),

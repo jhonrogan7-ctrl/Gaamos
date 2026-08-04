@@ -699,6 +699,9 @@ class MenuBuildRow(models.Model):
     image_state = models.CharField(max_length=10, choices=IMAGE_STATES, default='none')
     # Why an image is missing, in the reviewer's words rather than a log's.
     image_error = models.CharField(max_length=300, blank=True)
+    # Which seed this row is on. `seed_for` advances with it, so a re-roll can
+    # never hand back the picture it was asked to replace.
+    image_attempts = models.PositiveSmallIntegerField(default=0)
 
     # Whatever the sheet's Notes column said, plus anything the parser found.
     # This is the ONLY signal for "a human should look at this row", so it must

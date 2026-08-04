@@ -311,6 +311,22 @@ def _render_section(request, build, section):
                   _section_context(build, section))
 
 
+def _render_row(request, build, row):
+    """Re-render ONE row card. A re-roll changes one picture, and swapping the
+    whole section under the reviewer's cursor moves everything they were
+    reading.
+
+    A card is a fragment, so it is only a useful answer to HTMX. Without it the
+    browser would navigate to a bare tile on a blank page — these controls carry
+    a plain `action` so they work with JavaScript unavailable, and that promise
+    is only kept if the no-HTMX path lands back on the build.
+    """
+    if not request.headers.get('HX-Request'):
+        return redirect('ops:build_detail', build_id=build.pk)
+    return render(request, 'ops/builds/_row_card.html',
+                  {'build': build, 'row': row})
+
+
 @platform_admin_required
 def build_gate1(request, build_id):
     """One section at a time — the same layout at 1440 px and at 360 px.
@@ -371,8 +387,47 @@ def build_row_edit(request, build_id, row_id):
     price = (request.POST.get('price') or '').strip()
     row.price = int(price) if price.isdigit() else None
     row.description = (request.POST.get('description') or row.description).strip()
-    row.save(update_fields=['name', 'price', 'description'])
-    return _render_section(request, build, row.section)
+    # The prompt is a field the operator edits like any other: a picture that is
+    # wrong is usually a prompt that is wrong, and the fix belongs where the
+    # mistake is visible.
+    prompt = (request.POST.get('image_prompt') or '').strip()
+    if prompt:
+        row.image_prompt = prompt
+    row.save(update_fields=['name', 'price', 'description', 'image_prompt'])
+    return _render_row(request, build, row)
+
+
+@platform_admin_required
+def build_row_card(request, build_id, row_id):
+    """One row card, for a card that is watching its own re-roll land.
+
+    The grid's poll only runs during the build's `generating` phase. A re-roll
+    happens after that, when nothing is polling any more, so without this the
+    new picture would sit in the database until somebody reloaded the page by
+    hand. The card polls itself instead of restarting the whole grid's poll:
+    re-rolling one row out of 110 must not put the other 109 back on a timer.
+    """
+    build = _build_or_404(build_id)
+    return _render_row(request, build, _row_or_404(build, row_id))
+
+
+@platform_admin_required
+@require_POST
+def build_row_reroll(request, build_id, row_id):
+    """Generate this row's picture again, with the prompt as it now reads.
+
+    The same control serves two cases on purpose: a picture that failed and a
+    picture that is simply wrong. A reviewer does not care which, and a second
+    mechanism would only be a second thing to learn.
+    """
+    build = _build_or_404(build_id)
+    row = _row_or_404(build, row_id)
+    row.image_attempts += 1
+    row.image_state = 'generating'
+    row.image_error = ''
+    row.save(update_fields=['image_attempts', 'image_state', 'image_error'])
+    generate_row_image.delay(row.pk, attempt=row.image_attempts)
+    return _render_row(request, build, row)
 
 
 @platform_admin_required

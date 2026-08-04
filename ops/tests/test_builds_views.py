@@ -545,3 +545,211 @@ def test_the_leads_dashboard_still_shows_the_kpi_strip(admin_client, company):
 
     assert 'ops-stat' in body
     assert 'active tenants' in body
+
+
+@pytest.mark.django_db
+def test_a_reroll_requeues_only_that_row(admin_client, generating_build,
+                                         monkeypatch):
+    queued = []
+    monkeypatch.setattr('ops.builds.generate_row_image.delay',
+                        lambda row_id, attempt=0: queued.append((row_id, attempt)))
+    row = generating_build.rows.first()
+    row.image_state = 'generated'
+    row.image_attempts = 1
+    row.save(update_fields=['image_state', 'image_attempts'])
+
+    admin_client.post(
+        f'/platform/builds/{generating_build.pk}/rows/{row.pk}/reroll/')
+
+    assert queued == [(row.pk, 2)]
+    row.refresh_from_db()
+    assert row.image_attempts == 2
+
+
+@pytest.mark.django_db
+def test_a_reroll_uses_the_prompt_as_edited(admin_client, generating_build,
+                                            monkeypatch):
+    """A picture that is wrong is usually a prompt that is wrong, so the fix
+    belongs on the card where the mistake is visible."""
+    monkeypatch.setattr('ops.builds.generate_row_image.delay',
+                        lambda row_id, attempt=0: None)
+    row = generating_build.rows.first()
+
+    admin_client.post(
+        f'/platform/builds/{generating_build.pk}/rows/{row.pk}/edit/',
+        {'name': row.name, 'price': row.price,
+         'image_prompt': 'plain boiled potatoes, no garnish'})
+
+    row.refresh_from_db()
+    assert row.image_prompt == 'plain boiled potatoes, no garnish'
+
+
+@pytest.mark.django_db
+def test_a_failed_row_can_be_rerolled(admin_client, generating_build,
+                                      monkeypatch):
+    """One control for two cases: a picture that failed and a picture that is
+    merely wrong. The reviewer does not care which."""
+    queued = []
+    monkeypatch.setattr('ops.builds.generate_row_image.delay',
+                        lambda row_id, attempt=0: queued.append(row_id))
+    row = generating_build.rows.first()
+    row.image_state, row.image_error = 'failed', 'The generator refused'
+    row.save(update_fields=['image_state', 'image_error'])
+
+    admin_client.post(
+        f'/platform/builds/{generating_build.pk}/rows/{row.pk}/reroll/')
+
+    assert queued == [row.pk]
+    row.refresh_from_db()
+    assert row.image_state == 'generating'
+    assert row.image_error == ''
+
+
+@pytest.mark.django_db
+def test_a_reroll_cannot_reach_another_builds_row(admin_client, company,
+                                                  branch, generating_build,
+                                                  monkeypatch):
+    """The row id is guessable and this view can reach every tenant's data."""
+    queued = []
+    monkeypatch.setattr('ops.builds.generate_row_image.delay',
+                        lambda row_id, attempt=0: queued.append(row_id))
+    other = MenuBuild.objects.create(company=company, status='generating')
+    row = generating_build.rows.first()
+
+    response = admin_client.post(
+        f'/platform/builds/{other.pk}/rows/{row.pk}/reroll/')
+
+    assert response.status_code == 404
+    assert queued == []
+
+
+@pytest.mark.django_db
+def test_a_reroll_without_htmx_lands_back_on_the_build(admin_client,
+                                                       generating_build,
+                                                       monkeypatch):
+    """The controls carry a plain `action` so they work with JavaScript
+    unavailable. A card is a fragment, so answering a full page load with one
+    would drop the operator on a bare tile against a blank page."""
+    monkeypatch.setattr('ops.builds.generate_row_image.delay',
+                        lambda row_id, attempt=0: None)
+    row = generating_build.rows.first()
+
+    response = admin_client.post(
+        f'/platform/builds/{generating_build.pk}/rows/{row.pk}/reroll/')
+
+    assert response.status_code == 302
+    assert response['Location'] == f'/platform/builds/{generating_build.pk}/'
+
+
+@pytest.mark.django_db
+def test_a_reroll_with_htmx_swaps_just_that_card(admin_client, generating_build,
+                                                 monkeypatch):
+    monkeypatch.setattr('ops.builds.generate_row_image.delay',
+                        lambda row_id, attempt=0: None)
+    row = generating_build.rows.first()
+
+    response = admin_client.post(
+        f'/platform/builds/{generating_build.pk}/rows/{row.pk}/reroll/',
+        HTTP_HX_REQUEST='true')
+    body = response.content.decode()
+
+    assert response.status_code == 200
+    assert f'id="row-{row.pk}"' in body
+    # One card, not the whole grid.
+    assert 'wz-tilegrid' not in body
+
+
+@pytest.mark.django_db
+def test_editing_a_prompt_does_not_blank_the_price(admin_client,
+                                                   generating_build):
+    """`build_row_edit` writes price from what it is posted, so the prompt form
+    carries the fields it is not changing. Without them a prompt edit would
+    silently clear the price the sheet gave."""
+    row = generating_build.rows.get(name='French Fries')
+
+    admin_client.post(
+        f'/platform/builds/{generating_build.pk}/rows/{row.pk}/edit/',
+        {'name': row.name, 'price': row.price, 'image_prompt': 'crisp fries'},
+        HTTP_HX_REQUEST='true')
+
+    row.refresh_from_db()
+    assert row.price == 250
+    assert row.image_prompt == 'crisp fries'
+
+
+@pytest.mark.django_db
+def test_a_reroll_keeps_the_picture_it_is_replacing(admin_client,
+                                                    generating_build,
+                                                    monkeypatch):
+    """A speculative re-roll must not be able to destroy a working photograph:
+    if the new generation fails, the row would be left with nothing. The old
+    picture stays and a badge says a new one is coming — without it the button
+    looked like it did nothing at all.
+    """
+    from menu.models import ImageAsset
+    monkeypatch.setattr('ops.builds.generate_row_image.delay',
+                        lambda row_id, attempt=0: None)
+    asset = ImageAsset.objects.create(name='Fries', source='flux',
+                                      file='imagelib/x.webp', status='approved')
+    row = generating_build.rows.first()
+    row.image_asset, row.image_state = asset, 'generated'
+    row.save(update_fields=['image_asset', 'image_state'])
+
+    body = admin_client.post(
+        f'/platform/builds/{generating_build.pk}/rows/{row.pk}/reroll/',
+        HTTP_HX_REQUEST='true').content.decode()
+
+    row.refresh_from_db()
+    assert row.image_asset_id == asset.pk
+    assert 'imagelib/x.webp' in body
+    assert 're-rolling' in body
+
+
+@pytest.mark.django_db
+def test_a_rerolled_card_watches_for_its_own_picture(admin_client,
+                                                     generating_build,
+                                                     monkeypatch):
+    """The grid's poll only runs during `generating`. A re-roll happens after
+    that, so the card has to watch for its own result or the new picture sits in
+    the database until somebody reloads by hand."""
+    monkeypatch.setattr('ops.builds.generate_row_image.delay',
+                        lambda row_id, attempt=0: None)
+    generating_build.status = 'review'
+    generating_build.save(update_fields=['status'])
+    row = generating_build.rows.first()
+
+    body = admin_client.post(
+        f'/platform/builds/{generating_build.pk}/rows/{row.pk}/reroll/',
+        HTTP_HX_REQUEST='true').content.decode()
+
+    assert 'hx-trigger' in body
+    assert f'/rows/{row.pk}/card/' in body
+
+
+@pytest.mark.django_db
+def test_a_card_does_not_poll_while_the_grid_already_is(admin_client,
+                                                        generating_build):
+    """110 cards each on their own timer, on top of the grid's own poll, is 110
+    extra requests every five seconds for no new information."""
+    row = generating_build.rows.first()
+    generating_build.rows.filter(pk=row.pk).update(image_state='generating')
+
+    body = admin_client.get(
+        f'/platform/builds/{generating_build.pk}/').content.decode()
+
+    assert f'/rows/{row.pk}/card/' not in body
+
+
+@pytest.mark.django_db
+def test_a_settled_card_stops_watching(admin_client, generating_build):
+    """A card that has its picture must take itself off the timer."""
+    generating_build.status = 'review'
+    generating_build.save(update_fields=['status'])
+    row = generating_build.rows.first()
+    generating_build.rows.filter(pk=row.pk).update(image_state='generated')
+
+    body = admin_client.get(
+        f'/platform/builds/{generating_build.pk}/rows/{row.pk}/card/',
+        HTTP_HX_REQUEST='true').content.decode()
+
+    assert 'hx-trigger' not in body

@@ -6,11 +6,34 @@ The text is rendered whether or not the picture exists — the row is real from 
 first second and the photograph is what takes the minutes. A slot that is still
 empty says so in words; a slot that failed says why, in the reviewer's language
 rather than a log's.
+
+The id is the swap target for a re-roll. `closest div` would work only until
+someone wraps the tile in another one.
 {% endcomment %}
-<div class="wz-tile {% if row.needs_check %}wz-tile--flag{% endif %}">
+{% comment %}
+A card watches its own re-roll land, but ONLY once the grid has stopped polling
+— during the build's `generating` phase the grid is already refreshing all of
+them, and 110 cards each on their own timer would be 110 requests every five
+seconds on top of it.
+{% endcomment %}
+<div class="wz-tile {% if row.needs_check %}wz-tile--flag{% endif %}" id="row-{{ row.pk }}"
+     x-data="{ tuning: false }"
+     {% if row.image_state == 'generating' and build.status != 'generating' %}
+     hx-get="{% url 'ops:build_row_card' build.pk row.pk %}"
+     hx-trigger="every 5s" hx-swap="outerHTML"{% endif %}>
   <div class="wz-tile-img">
     {% if row.image_asset %}
       <img src="{{ row.image_asset.image_url }}" alt="{{ row.name }}" loading="lazy">
+      {% comment %}
+      A re-roll keeps the picture it is replacing on screen. Clearing it would
+      leave the row with nothing at all if the new generation then failed — a
+      speculative re-roll must not be able to destroy a working photograph. The
+      badge is the feedback instead: without it the button appeared to do
+      nothing, because the old picture simply stayed where it was.
+      {% endcomment %}
+      {% if row.image_state == 'generating' %}
+        <span class="wz-tile-again"><span class="wz-spin"></span> re-rolling…</span>
+      {% endif %}
     {% elif row.image_state == 'failed' %}
       <span class="wz-tile-err">{{ row.image_error|default:'No picture' }}</span>
     {% else %}
@@ -23,4 +46,41 @@ rather than a log's.
   {% if row.needs_check %}
     <div class="wz-tile-note">⚠ {{ row.notes }}</div>
   {% endif %}
+
+  {% comment %}
+  One control for two cases: a picture that failed and a picture that is merely
+  wrong. Both carry a plain `action` as well as `hx-post`, so they still work
+  with JavaScript unavailable — the branch picker was fixed the same way.
+  {% endcomment %}
+  <div class="wz-tile-act">
+    <form method="post" action="{% url 'ops:build_row_reroll' build.pk row.pk %}"
+          hx-post="{% url 'ops:build_row_reroll' build.pk row.pk %}"
+          hx-target="#row-{{ row.pk }}" hx-swap="outerHTML">
+      {% csrf_token %}
+      <button type="submit" class="wz-tile-btn">↻ Re-roll</button>
+    </form>
+    <button type="button" class="wz-tile-btn" @click="tuning = !tuning">✎ Prompt</button>
+  </div>
+
+  {% comment %}
+  A wrong picture is usually a wrong prompt, so the prompt is editable right
+  where the mistake is visible. Saving returns this one card; the re-roll above
+  then uses the prompt as it now reads.
+  {% endcomment %}
+  <form class="wz-tile-tune" x-show="tuning" x-cloak
+        method="post" action="{% url 'ops:build_row_edit' build.pk row.pk %}"
+        hx-post="{% url 'ops:build_row_edit' build.pk row.pk %}"
+        hx-target="#row-{{ row.pk }}" hx-swap="outerHTML">
+    {% csrf_token %}
+    {% comment %}
+    `build_row_edit` writes name and price from what it is posted, so the fields
+    it is not being asked to change have to travel with the prompt — otherwise
+    editing a prompt would blank the price.
+    {% endcomment %}
+    <input type="hidden" name="name" value="{{ row.name }}">
+    <input type="hidden" name="price" value="{{ row.price|default_if_none:'' }}">
+    <textarea class="wz-fld wz-tile-prompt" name="image_prompt" rows="3"
+              aria-label="Image prompt for {{ row.name }}">{{ row.image_prompt }}</textarea>
+    <button type="submit" class="btn btn-sm primary">Save prompt</button>
+  </form>
 </div>

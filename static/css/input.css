@@ -843,7 +843,10 @@ h1,h2,h3 { font-family: var(--hd); }
   .wz-tile--flag { border-color: #fcd34d; background: #fffbeb; }
   /* A square slot, held from the first render: the picture lands into a space
      that is already there rather than shoving the grid down under the cursor. */
-  .wz-tile-img { aspect-ratio: 1 / 1; border-radius: 9px; background: #eef1f5; overflow: hidden; display: flex; align-items: center; justify-content: center; text-align: center; padding: 8px; }
+  .wz-tile-img { position: relative; aspect-ratio: 1 / 1; border-radius: 9px; background: #eef1f5; overflow: hidden; display: flex; align-items: center; justify-content: center; text-align: center; padding: 8px; }
+  /* Sits over the picture it is replacing, so a re-roll reads as "a new one is
+     coming" rather than "nothing happened". */
+  .wz-tile-again { position: absolute; inset: auto 0 0 0; background: rgba(20,23,31,.78); color: #fff; font-size: 10.5px; font-weight: 700; padding: 4px 6px; display: flex; align-items: center; justify-content: center; gap: 5px; }
   .wz-tile-img img { width: 100%; height: 100%; object-fit: cover; display: block; }
   .wz-tile-wait { font-size: 11px; color: var(--ink-3); }
   .wz-tile-err { font-size: 11px; color: #b91c1c; font-weight: 600; overflow-wrap: anywhere; }
@@ -851,6 +854,16 @@ h1,h2,h3 { font-family: var(--hd); }
   .wz-tile-var { font-size: 11.5px; color: var(--ink-3); margin-top: 1px; }
   .wz-tile-pr { font-family: var(--hd); font-size: 14px; font-weight: 800; margin-top: 3px; }
   .wz-tile-note { font-size: 11px; color: #92400e; font-weight: 700; margin-top: 5px; overflow-wrap: anywhere; }
+  /* Always visible, never hover-revealed: hover does not exist on touch, and a
+     reviewer on a phone would have no way to reach a re-roll at all. */
+  .wz-tile-act { display: flex; gap: 6px; margin-top: 7px; }
+  .wz-tile-act form { margin: 0; }
+  /* `nowrap` because the tile is only 148px wide and "Re-roll" was breaking
+     across two lines mid-word. */
+  .wz-tile-btn { font-family: var(--bd); font-size: 11px; font-weight: 700; white-space: nowrap; color: var(--ink-2); background: #fff; border: 1px solid var(--line-2); border-radius: 8px; padding: 5px 8px; cursor: pointer; }
+  .wz-tile-btn:hover { border-color: var(--ink-3); color: var(--ink); }
+  .wz-tile-tune { margin-top: 7px; }
+  .wz-tile-prompt { font-size: 11.5px; line-height: 1.4; width: 100%; resize: vertical; }
 
   /* ══════════════════════════════════════════
      MOBILE DASHBOARD SHELL — <900px overrides.
