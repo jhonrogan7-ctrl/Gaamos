@@ -70,7 +70,7 @@ class Migration(migrations.Migration):
                 ('match_method', models.CharField(blank=True, max_length=20)),
                 ('match_state', models.CharField(choices=[('none', 'No match'), ('auto', 'Auto'), ('suggested', 'Suggested'), ('accepted', 'Accepted'), ('rejected', 'Rejected')], default='none', max_length=10)),
                 ('image_prompt', models.TextField(blank=True)),
-                ('image_state', models.CharField(choices=[('none', 'None'), ('matched', 'From the library'), ('generated', 'Generated')], default='none', max_length=10)),
+                ('image_state', models.CharField(choices=[('none', 'None'), ('matched', 'From the library'), ('generating', 'Generating'), ('generated', 'Generated'), ('failed', 'Failed')], default='none', max_length=10)),
                 ('image_error', models.CharField(blank=True, max_length=300)),
                 ('notes', models.TextField(blank=True)),
                 ('build', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='rows', to='menu.menubuild')),

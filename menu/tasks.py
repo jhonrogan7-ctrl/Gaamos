@@ -171,9 +171,9 @@ def generate_row_image(row_id, attempt=0):
         row.save(update_fields=['image_state', 'image_error'])
         _finish_generating(row.build_id)
 
-    # One budget for the image model, shared with every other caller.
-    throttle.acquire(settings.NVIDIA_IMAGE_MODEL)
     try:
+        # One budget for the image model, shared with every other caller.
+        throttle.acquire(settings.NVIDIA_IMAGE_MODEL)
         seed = generate_flux.seed_for(f'{row.build_id}-{row.pk}', attempt)
         raw = generate_flux.generate_image(row.image_prompt, seed=seed)
         webp = images.to_webp(raw)

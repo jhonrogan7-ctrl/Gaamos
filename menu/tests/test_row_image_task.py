@@ -7,6 +7,10 @@ from menu.models import (Company, ImageAsset, MenuBuild, MenuBuildRow,
                          MenuBuildSection)
 from menu.pipeline import generate_flux
 
+# Every state `generate_row_image` can write, so a state added to the task and
+# forgotten in the model shows up here rather than downstream in a form/admin.
+_STATES_THE_TASK_WRITES = {'generating', 'generated', 'failed'}
+
 pytestmark = pytest.mark.django_db
 
 PNG = (b'\x89PNG\r\n\x1a\n' + b'\x00' * 64)     # enough for the fake to return
@@ -138,3 +142,26 @@ def test_the_shared_budget_is_taken_before_every_call(monkeypatch):
     tasks.generate_row_image(row.pk)
 
     assert len(taken) == 1
+
+
+def test_a_throttle_failure_fails_the_row_instead_of_hanging_it(monkeypatch):
+    row = _row()
+
+    def boom(*a, **k):
+        raise RuntimeError('redis down')
+
+    monkeypatch.setattr(tasks.throttle, 'acquire', boom)
+
+    tasks.generate_row_image(row.pk)                  # must not raise
+
+    row.refresh_from_db()
+    row.build.refresh_from_db()
+    assert row.image_state == 'failed'
+    assert row.image_error
+    assert row.build.status != 'generating'
+
+
+def test_every_state_the_task_writes_is_a_declared_image_state():
+    declared = dict(MenuBuildRow.IMAGE_STATES)
+    missing = _STATES_THE_TASK_WRITES - set(declared)
+    assert not missing, f'IMAGE_STATES is missing: {missing}'

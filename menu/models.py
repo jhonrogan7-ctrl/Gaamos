@@ -655,7 +655,9 @@ class MenuBuildRow(models.Model):
         ('accepted', 'Accepted'), ('rejected', 'Rejected'),
     ]
     IMAGE_STATES = [
-        ('none', 'None'), ('matched', 'From the library'), ('generated', 'Generated'),
+        ('none', 'None'), ('matched', 'From the library'),
+        ('generating', 'Generating'), ('generated', 'Generated'),
+        ('failed', 'Failed'),
     ]
 
     build = models.ForeignKey(MenuBuild, on_delete=models.CASCADE, related_name='rows')
