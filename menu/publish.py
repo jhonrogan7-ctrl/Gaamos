@@ -16,7 +16,7 @@ from django.utils.text import slugify
 
 from menu.imaging import compute_focal_point
 from menu.models import (BranchCategory, BranchItemPlacement, BranchMenuItem,
-                         Category, MenuItem)
+                         BranchSubCategory, Category, MenuItem, SubCategory)
 
 
 @dataclass
@@ -108,6 +108,27 @@ def ensure_categories(company, branches, names):
     return out, created
 
 
+def ensure_subcategories(company, branches, pairs):
+    """-> {(cat_name, sub_name): SubCategory}, create-if-missing, per (category, name).
+
+    Mirrors `ensure_categories`: a subcategory name is only meaningful within
+    its parent category, so the map is keyed on the pair, not the bare name —
+    two different categories are free to each have their own 'Momo'.
+    """
+    out = {}
+    for cat, sub_name in pairs:
+        if not sub_name or (cat.name, sub_name) in out:
+            continue
+        sub, _ = SubCategory.all_objects.get_or_create(
+            company=company, category=cat, name=sub_name,
+            defaults={'display_order': len(out)})
+        for b in branches:
+            BranchSubCategory.objects.get_or_create(
+                branch=b, sub_category=sub)
+        out[(cat.name, sub_name)] = sub
+    return out
+
+
 def copy_image_to_tenant(company, item_slug, src_path):
     """Copy an image into tenant media -> (image_url, focal_x, focal_y).
 
@@ -159,6 +180,9 @@ class PublishRow:
     description: str = ''
     dietary_tags: list = field(default_factory=list)
     category: str = 'Menu'
+    # The placement layer has always accepted a sub_category; PublishRow simply
+    # never carried one, so every publisher flattened two levels into one.
+    sub_category: str = ''
     category_icon: str = ''
     image_asset: object = None
     publishable: bool = True
@@ -198,6 +222,11 @@ def publish_rows(company, branches, rows):
         company, branches, [(r.category or '').strip() or 'Menu' for r in publishable])
     report.categories_created = created_names
 
+    subs = ensure_subcategories(
+        company, branches,
+        [(cats[(r.category or '').strip() or 'Menu'], (r.sub_category or '').strip())
+         for r in publishable])
+
     for row in publishable:
         icon = (row.category_icon or '').strip()
         if icon:
@@ -216,11 +245,13 @@ def publish_rows(company, branches, rows):
             report.zero_priced.append(row.name)
         slug = unique_item_slug(company, row.name, taken=used)
         used.add(slug)
+        label = (row.category or '').strip() or 'Menu'
         menu_item, created = upsert_menu_item(
             company, branches, slug=slug, name=row.name,
             description=row.description, price=price,
             dietary_tags=row.dietary_tags,
-            category=cats[(row.category or '').strip() or 'Menu'],
+            category=cats[label],
+            sub_category=subs.get((label, (row.sub_category or '').strip())),
             display_order=order)
         if created:
             report.created += 1
