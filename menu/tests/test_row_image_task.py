@@ -209,3 +209,29 @@ def test_the_task_never_asks_intake_to_call_gemini(monkeypatch):
     embedder = calls[0].get('embedder')
     assert embedder is not None                      # real Gemini path unreachable
     assert embedder('anything') is None               # and it is a genuine no-op
+
+
+def test_a_rejected_tombstone_fails_the_row_without_falling_through(monkeypatch):
+    """`intake.record` returns `None` for an image that was already reviewed and
+    thrown out. That branch's `return fail(...)` moved from outside the `try`
+    to inside it in fix round 2 -- exactly the kind of restructure that can
+    silently start falling through to the success path below it, or get
+    re-caught by the general `except Exception` and reported under the wrong
+    message. Assert on the exact tombstone message, not just `image_state`, so
+    either failure mode is visible here rather than passing by accident.
+    """
+    row = _row()
+    monkeypatch.setattr(tasks.throttle, 'acquire', lambda *a, **k: None)
+    monkeypatch.setattr(tasks.images, 'to_webp', lambda raw, size=800: b'webp')
+    monkeypatch.setattr(tasks.generate_flux, 'generate_image',
+                        lambda *a, **k: PNG)
+    monkeypatch.setattr(tasks.intake, 'record', lambda **kw: None)
+
+    tasks.generate_row_image(row.pk)                  # must not raise
+
+    row.refresh_from_db()
+    row.build.refresh_from_db()
+    assert row.image_state == 'failed'
+    assert row.image_asset_id is None
+    assert row.image_error == 'This image was rejected before — re-roll for a new one.'
+    assert row.build.status != 'generating'
