@@ -165,3 +165,47 @@ def test_every_state_the_task_writes_is_a_declared_image_state():
     declared = dict(MenuBuildRow.IMAGE_STATES)
     missing = _STATES_THE_TASK_WRITES - set(declared)
     assert not missing, f'IMAGE_STATES is missing: {missing}'
+
+
+def test_an_intake_failure_fails_the_row_instead_of_hanging_it(monkeypatch):
+    row = _row()
+    monkeypatch.setattr(tasks.throttle, 'acquire', lambda *a, **k: None)
+    monkeypatch.setattr(tasks.images, 'to_webp', lambda raw, size=800: b'webp')
+    monkeypatch.setattr(tasks.generate_flux, 'generate_image',
+                        lambda *a, **k: PNG)
+
+    def boom(**kw):
+        raise RuntimeError('gemini 429: prepayment credits depleted')
+
+    monkeypatch.setattr(tasks.intake, 'record', boom)
+
+    tasks.generate_row_image(row.pk)                  # must not raise
+
+    row.refresh_from_db()
+    row.build.refresh_from_db()
+    assert row.image_state == 'failed'
+    assert row.image_error
+    assert row.build.status != 'generating'
+
+
+def test_the_task_never_asks_intake_to_call_gemini(monkeypatch):
+    row = _row()
+    calls = []
+    monkeypatch.setattr(tasks.throttle, 'acquire', lambda *a, **k: None)
+    monkeypatch.setattr(tasks.images, 'to_webp', lambda raw, size=800: b'webp')
+    monkeypatch.setattr(tasks.generate_flux, 'generate_image',
+                        lambda *a, **k: PNG)
+
+    def record(**kw):
+        calls.append(kw)
+        return ImageAsset.objects.create(name=kw['item_name'], file='imagelib/v.webp',
+                                         source='flux', status='pending')
+
+    monkeypatch.setattr(tasks.intake, 'record', record)
+
+    tasks.generate_row_image(row.pk)
+
+    assert len(calls) == 1
+    embedder = calls[0].get('embedder')
+    assert embedder is not None                      # real Gemini path unreachable
+    assert embedder('anything') is None               # and it is a genuine no-op

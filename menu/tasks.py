@@ -177,25 +177,29 @@ def generate_row_image(row_id, attempt=0):
         seed = generate_flux.seed_for(f'{row.build_id}-{row.pk}', attempt)
         raw = generate_flux.generate_image(row.image_prompt, seed=seed)
         webp = images.to_webp(raw)
+        asset = intake.record(
+            source='flux', webp_bytes=webp, item_name=row.name,
+            found_for_slug=f'build-{row.build_id}-{row.pk}',
+            source_text=row.description, prompt=row.image_prompt, name=row.name,
+            # The image library's semantic reuse is unwired in this flow, so a
+            # caption embed would be a live Gemini call this task has no need
+            # to depend on -- skip it rather than let a captioning outage
+            # cost a row that already has its picture.
+            embedder=lambda text: None)
+        if asset is None:
+            # `record` returns None only for a rejected tombstone: this exact
+            # image was reviewed and thrown out before. A re-roll gets a new seed.
+            return fail('This image was rejected before — re-roll for a new one.')
+        row.image_asset = asset
+        row.image_state = 'generated'
+        row.image_error = ''
+        row.save(update_fields=['image_asset', 'image_state', 'image_error'])
     except generate_flux.ContentFiltered as exc:
         # Not retryable at any seed. Reword the prompt by hand instead.
         return fail(f'The generator refused this prompt: {exc}')
     except Exception as exc:                      # noqa: BLE001 — see docstring
         return fail(f'{type(exc).__name__}: {exc}')
 
-    asset = intake.record(
-        source='flux', webp_bytes=webp, item_name=row.name,
-        found_for_slug=f'build-{row.build_id}-{row.pk}',
-        source_text=row.description, prompt=row.image_prompt, name=row.name)
-    if asset is None:
-        # `record` returns None only for a rejected tombstone: this exact image
-        # was reviewed and thrown out before. A re-roll gets a new seed.
-        return fail('This image was rejected before — re-roll for a new one.')
-
-    row.image_asset = asset
-    row.image_state = 'generated'
-    row.image_error = ''
-    row.save(update_fields=['image_asset', 'image_state', 'image_error'])
     _finish_generating(row.build_id)
 
 
