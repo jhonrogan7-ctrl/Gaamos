@@ -84,12 +84,19 @@ def _price(value):
     if isinstance(value, bool):
         return None, 'Price is not a whole number'
     if isinstance(value, int):
+        if value < 0:
+            return None, 'Price cannot be negative'
         return value, ''
     if isinstance(value, float):
         # 250.0 written by a spreadsheet is a whole number; 12.5 is not.
-        return (int(value), '') if value.is_integer() else \
-            (None, 'Price is not a whole number')
+        if not value.is_integer():
+            return None, 'Price is not a whole number'
+        if value < 0:
+            return None, 'Price cannot be negative'
+        return int(value), ''
     text = str(value).strip()
+    if text.startswith('-') and text[1:].isdigit():
+        return None, 'Price cannot be negative'
     if text.isdigit():
         return int(text), ''
     return None, 'Price is not a whole number'
@@ -123,15 +130,18 @@ def parse(fileobj):
             'The header row must be exactly: ' + ' | '.join(HEADERS), []))
         return result
 
-    body = [r for r in grid[1:] if any(_clean(c)[0] for c in r[:len(HEADERS)])]
+    # Pair each row with its true 1-based worksheet line *before* dropping
+    # blank rows, so a blank row earlier in the sheet never shifts every
+    # line number reported after it.
+    body = [(offset + 2, r) for offset, r in enumerate(grid[1:])
+            if any(_clean(c)[0] for c in r[:len(HEADERS)])]
     if not body:
         result.errors.append(('The sheet has no data rows', []))
         return result
 
     problems = {}          # message -> [line numbers], so errors arrive grouped
     rows = []
-    for offset, raw in enumerate(body):
-        line = offset + 2                                   # 1-based, header is 1
+    for line, raw in body:
         cells = list(raw[:len(HEADERS)]) + [None] * (len(HEADERS) - len(raw))
         values = []
         for cell in cells:

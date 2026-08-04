@@ -126,6 +126,29 @@ def test_falls_back_to_the_first_sheet_and_says_which():
     assert result.sheet_name == 'Sheet1'
 
 
+def test_line_numbers_survive_a_blank_row():
+    result = xlsx_import.parse(book([
+        ['Soup', '', 'A', '', '', 120, 'a bowl of soup', ''],   # line 2, clean
+        ['', '', '', '', '', '', '', ''],                      # line 3, wholly blank
+        ['Soup', '', 'B', '', '', 'bad', 'a bowl of soup', ''],  # line 4, faulty
+    ]))
+    messages = dict(result.errors)
+    # The blank row at line 3 must not shift the fault on row B down to line 3;
+    # it is the true worksheet row, line 4, regardless of how many blank rows
+    # preceded it.
+    assert messages['Price is not a whole number'] == [4]
+
+
+def test_negative_price_in_a_numeric_cell_is_rejected():
+    result = xlsx_import.parse(book([
+        ['Soup', '', 'A', '', '', -50, 'a bowl of soup', ''],
+    ]))
+    messages = dict(result.errors)
+    assert any('negative' in m.lower() for m in messages)
+    assert [2] in messages.values()
+    assert result.rows == []
+
+
 def test_an_existing_note_is_preserved():
     result = xlsx_import.parse(book([
         ['Soup', '', 'A', '', '', 120, 'a bowl of soup', 'Price unclear (inferred)'],
