@@ -1,7 +1,7 @@
 import pytest
 
 from menu import builds as build_service
-from menu.models import Company, MenuBuild
+from menu.models import Company, MenuBuild, MenuBuildRow, MenuBuildSection
 from menu.pipeline.xlsx_import import SheetRow
 
 pytestmark = pytest.mark.django_db
@@ -88,6 +88,29 @@ def test_rewriting_a_build_replaces_its_rows():
                                                subject='crisp papad')])
     assert build.rows.count() == 1
     assert build.rows.get().name == 'Papad'
+
+
+def test_rewriting_a_build_across_categories_drops_the_stale_section():
+    """`test_rewriting_a_build_replaces_its_rows` reuses the same category on
+    both calls, so `section_for` finds and reuses the surviving section either
+    way -- it does not prove a stale section is gone. This does, by rewriting
+    under a different category entirely."""
+    build = _build()
+    build_service.rows_from_sheet(build, [_row(category='Veg Snacks')])
+    stale_section_id = build.sections.get(name='Veg Snacks').pk
+
+    build_service.rows_from_sheet(build, [_row(
+        category='Nepali Foods', item='Veg Momo',
+        subject='steamed vegetable momo dumplings')])
+
+    assert build.sections.filter(name='Veg Snacks').count() == 0
+    assert set(build.sections.values_list('name', flat=True)) == {'Nepali Foods'}
+    assert not MenuBuildSection.objects.filter(pk=stale_section_id).exists()
+    assert not MenuBuildRow.objects.filter(section_id=stale_section_id).exists()
+    assert build.rows.count() == 1
+    row = build.rows.get()
+    assert row.name == 'Veg Momo'
+    assert row.section.name == 'Nepali Foods'
 
 
 def test_display_order_follows_the_sheet():
