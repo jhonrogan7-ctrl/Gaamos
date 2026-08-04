@@ -48,21 +48,23 @@ def _venue_picker():
 
 def _card_stats(build):
     """The numbers on a build card. Derived, never stored — a count that is
-    written down is a count that can disagree with the rows."""
-    sections = build.sections.all()
-    confirmed = sum(1 for s in sections if s.prices_confirmed)
-    scans = list(build.scans.all())
+    written down is a count that can disagree with the rows.
+
+    The unit is the row, not the document: a build now starts from one
+    spreadsheet and the work that takes time is one photograph per row.
+    """
+    rows = list(build.rows.all())
+    with_image = sum(1 for r in rows if r.image_asset_id)
     return {
-        'rows': build.rows.count(),
-        'sections': len(sections),
-        'sections_confirmed': confirmed,
-        'with_image': build.rows.exclude(image_asset=None).count(),
-        'documents': len(scans),
-        'documents_done': sum(1 for s in scans if s.status in ('extracted', 'reviewed',
-                                                               'imported')),
-        'documents_failed': sum(1 for s in scans if s.status == 'failed'),
+        'rows': len(rows),
+        'sections': build.sections.count(),
+        'with_image': with_image,
+        'awaiting_image': sum(1 for r in rows
+                              if r.image_state in ('none', 'generating')),
+        'failed_image': sum(1 for r in rows if r.image_state == 'failed'),
+        'needs_check': sum(1 for r in rows if r.notes),
         'branches': list(build.branch_list()),
-        'percent': round(100 * confirmed / len(sections)) if sections else 0,
+        'percent': round(100 * with_image / len(rows)) if rows else 0,
     }
 
 
@@ -176,30 +178,49 @@ def build_detail(request, build_id):
     build = _build_or_404(build_id)
     if build.status == 'gate1':
         return redirect('ops:build_gate1', build_id=build.pk)
-    if build.status in ('publishing', 'published'):
+    if build.status in ('review', 'publishing', 'published'):
         return redirect('ops:build_review', build_id=build.pk)
-    scans = list(build.scans.all())
-    return render(request, 'ops/builds/extracting.html', {
+    return render(request, 'ops/builds/generating.html', {
         'active': 'builds', 'build': build, 'stats': _card_stats(build),
-        'scans': scans,
+        'sections': _sections_with_rows(build),
         # The full page and the polling fragment render the same partial, so
         # both must answer "is anything still moving?" the same way.
-        'running': any(s.status in RUNNING_SCAN_STATUSES for s in scans),
+        'running': _still_generating(build),
     })
+
+
+def _still_generating(build):
+    """A row is finished when it has a picture or has given up trying. `failed`
+    is finished — a picture that will never arrive must not strand the other
+    109 rows in `generating` for ever."""
+    return build.rows.filter(image_state__in=('none', 'generating')).exists()
+
+
+def _sections_with_rows(build):
+    """Sections in order, each with its rows. One query pair, not one per row —
+    a 110-row card would otherwise be 110 queries per poll, every five seconds.
+    """
+    rows = list(build.rows.select_related('section').order_by('display_order'))
+    sections = list(build.sections.order_by('display_order'))
+    return [(s, [r for r in rows if r.section_id == s.pk]) for s in sections]
 
 
 @platform_admin_required
 def build_progress(request, build_id):
-    """The HTMX polling target: one card per document, with its error if it has
-    one, and a re-upload control for a document that failed."""
+    """The HTMX polling target: the row grid, with each row's picture slot.
+
+    Rows are rendered from the first poll, because they exist from the first
+    second — 110 of them take 18+ minutes to photograph and nobody should watch
+    a spinner for that. The images arrive underneath them.
+    """
     build = _build_or_404(build_id)
-    scans = list(build.scans.all())
-    running = any(s.status in RUNNING_SCAN_STATUSES for s in scans)
-    if not running and build.status == 'extracting' and scans:
-        _finish_extraction(build, scans)
+    running = _still_generating(build)
+    if not running and build.status == 'generating':
+        build.status = 'review'
+        build.save(update_fields=['status'])
     return render(request, 'ops/builds/_progress.html', {
-        'build': build, 'scans': scans, 'running': running,
-        'stats': _card_stats(build),
+        'build': build, 'running': running, 'stats': _card_stats(build),
+        'sections': _sections_with_rows(build),
     })
 
 
@@ -314,13 +335,16 @@ def build_gate1(request, build_id):
         current = next((s for s in sections if not s.prices_confirmed), sections[0])
 
     index = sections.index(current)
+    confirmed = sum(1 for s in sections if s.prices_confirmed)
     return render(request, 'ops/builds/gate1.html', {
         'active': 'builds', 'build': build, 'sections': sections,
         'section': current, 'rows': list(current.rows.all()),
         'photo': _section_photo(current),
         'previous': sections[index - 1] if index else None,
         'next': sections[index + 1] if index + 1 < len(sections) else None,
-        'remaining': sum(1 for s in sections if not s.prices_confirmed),
+        'remaining': len(sections) - confirmed,
+        'confirmed': confirmed,
+        'confirmed_percent': round(100 * confirmed / len(sections)),
         'stats': _card_stats(build),
         'icon_keys': _icon_keys(),
     })

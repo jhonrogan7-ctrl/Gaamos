@@ -820,6 +820,30 @@ h1,h2,h3 { font-family: var(--hd); }
   .wz-foot { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-top: 16px; padding-top: 13px; border-top: 1px solid var(--line); }
   .wz-foot form { margin: 0; }
 
+  /* ── GENERATING — every row of the sheet, its picture arriving behind it.
+     The tile is sized so a 110-row card is scannable: the eye is looking for
+     the picture that is wrong, not reading the menu. ── */
+  .wz-sech { display: flex; align-items: baseline; gap: 9px; flex-wrap: wrap; margin: 18px 0 9px; }
+  .wz-sech h3 { font-family: var(--hd); font-size: 14.5px; font-weight: 800; margin: 0; }
+  .wz-sech-sub { font-size: 12px; color: var(--ink-2); font-weight: 700; }
+  /* Its own class, NOT `.wz-grid`: that name already lays out the build cards
+     on the list, review and published screens at minmax(290px). A second
+     `.wz-grid` here would win by source order and silently halve the card width
+     on all three. */
+  .wz-tilegrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(148px, 1fr)); gap: 11px; }
+  .wz-tile { background: var(--panel); border: 1px solid var(--line); border-radius: 13px; padding: 9px; }
+  .wz-tile--flag { border-color: #fcd34d; background: #fffbeb; }
+  /* A square slot, held from the first render: the picture lands into a space
+     that is already there rather than shoving the grid down under the cursor. */
+  .wz-tile-img { aspect-ratio: 1 / 1; border-radius: 9px; background: #eef1f5; overflow: hidden; display: flex; align-items: center; justify-content: center; text-align: center; padding: 8px; }
+  .wz-tile-img img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .wz-tile-wait { font-size: 11px; color: var(--ink-3); }
+  .wz-tile-err { font-size: 11px; color: #b91c1c; font-weight: 600; overflow-wrap: anywhere; }
+  .wz-tile-nm { font-size: 13px; font-weight: 700; margin-top: 8px; overflow-wrap: anywhere; }
+  .wz-tile-var { font-size: 11.5px; color: var(--ink-3); margin-top: 1px; }
+  .wz-tile-pr { font-family: var(--hd); font-size: 14px; font-weight: 800; margin-top: 3px; }
+  .wz-tile-note { font-size: 11px; color: #92400e; font-weight: 700; margin-top: 5px; overflow-wrap: anywhere; }
+
   /* ══════════════════════════════════════════
      MOBILE DASHBOARD SHELL — <900px overrides.
      MUST stay at the END of @layer components: .side/.top overrides share
@@ -863,6 +887,10 @@ h1,h2,h3 { font-family: var(--hd); }
        Must stay after the base .wz-* rules above: these share specificity
        with them, so source order is what decides. ── */
     .wz-grid { grid-template-columns: 1fr; gap: 10px; }
+    /* The tile grid stays multi-column on a phone on purpose — two thumbnails
+       abreast is how you scan 110 pictures for the wrong one. Only its floor
+       comes down, so a narrow screen still fits two. */
+    .wz-tilegrid { grid-template-columns: repeat(auto-fill, minmax(132px, 1fr)); gap: 9px; }
     .wz-card { padding: 13px 14px; }
     .wz-pickgrid { grid-template-columns: 1fr; }
     /* Every action is thumb-sized. There is no hover on touch, so nothing here

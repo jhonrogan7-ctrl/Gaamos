@@ -1,0 +1,9 @@
+{% extends 'ops/base.html' %}
+{% block title %}Generating — {{ build.company.name }}{% endblock %}
+{% block top %}Generating pictures{% endblock %}
+{% block content %}
+<p class="wz-hint" style="margin-bottom:14px">The rows are written already — they are readable
+  below right now. Each picture is its own job, so one that fails neither restarts the run nor
+  holds the rest up. Closing the tab loses nothing.</p>
+{% include 'ops/builds/_progress.html' %}
+{% endblock %}

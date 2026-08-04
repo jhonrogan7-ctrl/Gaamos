@@ -36,7 +36,7 @@ re-renders and there is one target that is always right.
   </div>
 
   <div class="wz-rows">
-    {% for row in rows %}{% include 'ops/builds/_row_card.html' %}{% endfor %}
+    {% for row in rows %}{% include 'ops/builds/_row_edit_card.html' %}{% endfor %}
 
     <form class="wz-row wz-row--add"
           hx-post="{% url 'ops:build_row_add' build.pk section.pk %}"

@@ -106,8 +106,8 @@ def test_a_build_needs_at_least_one_branch(client, admin, company):
 
 @pytest.mark.django_db
 def test_a_build_needs_at_least_one_document(client, admin, company):
-    """A build with no card enters `extracting` and can never leave it: there
-    is no document to finish, so nothing ever advances it to gate 1."""
+    """No sheet, no build. A build with nothing to read would sit in
+    `generating` for ever: there is no row, so nothing ever finishes it."""
     client.login(username='root', password='pw')
     branch = Branch.all_objects.get(company=company)
 
@@ -132,21 +132,6 @@ def test_a_build_cannot_take_another_companys_branch(client, admin, company):
                 {'company': company.pk, 'branches': [stolen.pk]})
 
     assert MenuBuild.objects.count() == 0
-
-
-@pytest.mark.django_db
-def test_the_progress_fragment_reports_each_document(client, admin, company):
-    from menu.models import MenuScan
-    build = MenuBuild.objects.create(company=company, status='extracting')
-    MenuScan.objects.create(file='scans/1.jpg', status='extracted', build=build)
-    MenuScan.objects.create(file='scans/2.jpg', status='failed', build=build,
-                            error='too blurred')
-    client.login(username='root', password='pw')
-
-    html = client.get(reverse('ops:build_progress',
-                              args=[build.pk])).content.decode()
-
-    assert 'too blurred' in html
 
 
 @pytest.fixture
@@ -469,3 +454,67 @@ def test_a_sheet_is_required(admin_client, company, branch):
         'company': company.pk, 'branches': [branch.pk]})
     assert response.status_code == 200
     assert 'spreadsheet' in response.content.decode().lower()
+
+
+@pytest.fixture
+def generating_build(company, branch):
+    """A build straight out of the upload: rows written, no picture taken yet."""
+    from menu import builds as build_service
+    from menu.pipeline.xlsx_import import SheetRow
+    build = MenuBuild.objects.create(company=company, status='generating')
+    build.branches.add(branch)
+    build_service.rows_from_sheet(build, [
+        SheetRow(line=2, category='Veg Snacks', item='French Fries',
+                 variant='Plain', price=250,
+                 subject='golden crispy french fries'),
+        SheetRow(line=3, category='Veg Snacks', item='Papad', price=60,
+                 subject='crisp papad'),
+    ])
+    return build
+
+
+@pytest.mark.django_db
+def test_rows_are_visible_before_any_image_exists(admin_client, generating_build):
+    """110 rows take 18+ minutes to photograph. Nobody watches a spinner for
+    that — the rows are readable from the first second and the pictures fill in
+    underneath them."""
+    response = admin_client.get(f'/platform/builds/{generating_build.pk}/')
+    body = response.content.decode()
+
+    assert response.status_code == 200
+    assert 'French Fries' in body
+    assert '250' in body
+
+
+@pytest.mark.django_db
+def test_progress_keeps_polling_while_a_row_is_unfinished(admin_client,
+                                                          generating_build):
+    response = admin_client.get(f'/platform/builds/{generating_build.pk}/progress/')
+
+    assert 'hx-trigger' in response.content.decode()
+
+
+@pytest.mark.django_db
+def test_progress_stops_and_the_build_moves_to_review(admin_client,
+                                                      generating_build):
+    generating_build.rows.update(image_state='generated')
+
+    response = admin_client.get(f'/platform/builds/{generating_build.pk}/progress/')
+
+    generating_build.refresh_from_db()
+    assert generating_build.status == 'review'
+    assert 'hx-trigger' not in response.content.decode()
+
+
+@pytest.mark.django_db
+def test_a_failed_row_does_not_hold_the_build_open(admin_client, generating_build):
+    """A picture that will never arrive must not strand the other 109 rows in
+    `generating` forever. Failed is finished — it is just finished badly."""
+    rows = list(generating_build.rows.order_by('pk'))
+    generating_build.rows.filter(pk=rows[0].pk).update(image_state='failed')
+    generating_build.rows.exclude(pk=rows[0].pk).update(image_state='generated')
+
+    admin_client.get(f'/platform/builds/{generating_build.pk}/progress/')
+
+    generating_build.refresh_from_db()
+    assert generating_build.status == 'review'

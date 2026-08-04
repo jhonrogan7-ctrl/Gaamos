@@ -82,11 +82,36 @@ class WizardResponsiveCssTest(SimpleTestCase):
         # `[}{]` anchored so a match inside a compound selector (.wz-doc .btn)
         # cannot stand in for the base rule actually being present.
         css = self._css()
-        for cls in ['wz-grid', 'wz-card', 'wz-pickgrid', 'wz-pick', 'wz-drop',
-                    'wz-doc', 'wz-docs', 'wz-st', 'wz-bar', 'wz-note']:
+        # `wz-drop` and `wz-docs` are deliberately absent: the build now starts
+        # from a spreadsheet, so the multi-file drop zone and the document list
+        # they styled are gone from the markup and Tailwind is right to purge
+        # them. Pinning a class no template uses would only ever fail.
+        # `wz-tile` replaces them — it is the generating screen's row card, and
+        # it is a single-class @layer rule, which is exactly what gets purged.
+        for cls in ['wz-grid', 'wz-card', 'wz-pickgrid', 'wz-pick', 'wz-tile',
+                    'wz-tilegrid', 'wz-doc', 'wz-st', 'wz-bar', 'wz-note']:
             self.assertIsNotNone(
                 re.search(r'[}{,]\.' + cls + r'[{,]', css),
                 f'missing standalone base rule for .{cls}')
+
+    def test_the_tile_grid_does_not_reuse_the_card_grid_class(self):
+        """`.wz-grid` lays out build cards at minmax(290px) on the list, review
+        and published screens. The generating screen's picture tiles are much
+        smaller, and when they were written as a second `.wz-grid` rule they won
+        by source order and silently halved the card width on all three.
+        """
+        css = self._css()
+
+        self.assertIsNone(
+            re.search(r'[}{,]\.wz-grid\{[^}]*minmax\(148px', css),
+            'the tile sizing is back on .wz-grid — it will shrink the build '
+            'cards on the list, review and published screens')
+        self.assertIsNotNone(
+            re.search(r'[}{,]\.wz-tilegrid\{[^}]*minmax\(148px', css),
+            'the tile grid lost its own sizing')
+        self.assertIsNotNone(
+            re.search(r'[}{,]\.wz-grid\{[^}]*minmax\(290px', css),
+            'the build-card grid lost its own sizing')
 
     def test_wizard_single_column_overrides_come_after_their_base(self):
         # Base lays the cards out in an auto-fill grid; <900px collapses both

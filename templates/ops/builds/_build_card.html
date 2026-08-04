@@ -10,29 +10,35 @@ touch.
     <h3>{{ item.build.company.name }}</h3>
     {% if item.build.status == 'published' %}<span class="wz-st wz-st--done">Published</span>
     {% elif item.build.status == 'gate1' %}<span class="wz-st wz-st--gate">Gate 1</span>
-    {% elif item.build.status == 'extracting' %}<span class="wz-st wz-st--work">Extracting</span>
-    {% elif item.build.status == 'publishing' %}<span class="wz-st wz-st--gate">Review</span>
+    {% elif item.build.status == 'generating' %}<span class="wz-st wz-st--work">Generating</span>
+    {% elif item.build.status == 'review' or item.build.status == 'publishing' %}<span class="wz-st wz-st--gate">Review</span>
     {% elif item.build.status == 'failed' %}<span class="wz-st wz-st--fail">Failed</span>
     {% else %}<span class="wz-st wz-st--draft">Draft</span>{% endif %}
   </div>
   <div class="wz-sub">
     {% for b in item.stats.branches %}{{ b.name }}{% if not forloop.last %}, {% endif %}{% empty %}No branch{% endfor %}
-    · {{ item.stats.documents }} document{{ item.stats.documents|pluralize }}
+    · {{ item.stats.sections }} section{{ item.stats.sections|pluralize }}
   </div>
-  {% if item.build.status == 'gate1' or item.build.status == 'publishing' %}
+  {% comment %}
+  The bar tracks photographs, because that is the part of a build that takes
+  time. It is only shown while there is something left to take.
+  {% endcomment %}
+  {% if item.stats.awaiting_image %}
     <div class="wz-prog"><i style="width:{{ item.stats.percent }}%"></i></div>
   {% endif %}
   <div class="wz-meta">
     <div><b>{{ item.stats.rows }}</b>rows</div>
-    <div><b>{{ item.stats.sections_confirmed }}/{{ item.stats.sections }}</b>sections ok</div>
     <div><b>{{ item.stats.with_image }}</b>with image</div>
+    <div><b>{{ item.stats.needs_check }}</b>to check</div>
   </div>
-  {% if item.stats.documents_failed %}
-    <div class="wz-note wz-note--bad">{{ item.stats.documents_failed }} document{{ item.stats.documents_failed|pluralize }} failed to read</div>
+  {% if item.stats.failed_image %}
+    <div class="wz-note wz-note--bad">{{ item.stats.failed_image }} picture{{ item.stats.failed_image|pluralize }} failed to generate</div>
   {% endif %}
   <div class="wz-cta">
-    {% if item.build.status == 'extracting' %}
+    {% if item.build.status == 'generating' %}
       <a class="btn btn-sm ghost" href="{% url 'ops:build_detail' item.build.pk %}">Watch progress</a>
+    {% elif item.build.status == 'review' %}
+      <a class="btn btn-sm primary" href="{% url 'ops:build_review' item.build.pk %}">Review &amp; publish →</a>
     {% elif item.build.status == 'gate1' %}
       <a class="btn btn-sm primary" href="{% url 'ops:build_gate1' item.build.pk %}">Continue →</a>
     {% elif item.build.status == 'publishing' %}

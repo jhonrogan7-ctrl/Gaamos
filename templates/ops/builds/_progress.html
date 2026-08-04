@@ -1,33 +1,72 @@
 {% comment %}
-The HTMX polling target. It stops polling itself once no document is still
-moving — `hx-trigger` is only emitted while `running`, so a finished build does
-not keep a browser tab hitting the server for the rest of the afternoon.
+The HTMX polling target: every row of the sheet, each with its picture slot.
+
+The rows render from the very first poll rather than after the run, because they
+exist from the first second — 110 of them take 18+ minutes to photograph and
+nobody should watch a spinner for that. The pictures fill in underneath.
+
+It stops polling itself once no row is still waiting — `hx-trigger` is only
+emitted while `running`, so a finished build does not keep a browser tab hitting
+the server for the rest of the afternoon.
 {% endcomment %}
 <div id="build-progress"
      {% if running %}hx-get="{% url 'ops:build_progress' build.pk %}"
-     hx-trigger="every 4s" hx-swap="outerHTML"{% endif %}>
+     hx-trigger="every 5s" hx-swap="outerHTML"{% endif %}>
   <div class="wz-bar">
     <b style="font-size:15px">{{ build.company.name }}</b>
-    {% if running %}<span class="wz-st wz-st--work">Extracting</span>
-    {% else %}<span class="wz-st wz-st--done">Read</span>{% endif %}
+    {% if running %}<span class="wz-st wz-st--work">Generating</span>
+    {% else %}<span class="wz-st wz-st--done">Done</span>{% endif %}
     <span class="wz-grow"></span>
     <span style="color:var(--ink-3);font-size:12.5px">
       {% if running %}<span class="wz-spin"></span> {% endif %}
-      {{ stats.documents_done }} of {{ stats.documents }} done
+      {{ stats.with_image }} of {{ stats.rows }} photographed
+      {% if stats.failed_image %}
+        · <span style="color:#b91c1c;font-weight:700">{{ stats.failed_image }} failed</span>
+      {% endif %}
     </span>
   </div>
 
-  <div class="wz-docs">
-    {% for scan in scans %}{% include 'ops/builds/_doc_card.html' %}{% endfor %}
-  </div>
+  {% if build.dashes_normalised or stats.needs_check %}
+    {% comment %}
+    Said out loud rather than swallowed: a dash the parser read as empty and a
+    note the sheet carried are both things the operator has to know about before
+    this menu reaches a guest.
+    {% endcomment %}
+    <p class="wz-hint" style="margin-top:9px">
+      {% if build.dashes_normalised %}
+        {{ build.dashes_normalised }} placeholder dash{{ build.dashes_normalised|pluralize:"es" }}
+        read as empty · sheet “{{ build.sheet_name }}”
+      {% endif %}
+      {% if stats.needs_check %}
+        {% if build.dashes_normalised %} · {% endif %}
+        {{ stats.needs_check }} row{{ stats.needs_check|pluralize }} flagged for a check
+      {% endif %}
+    </p>
+  {% endif %}
 
-  <div class="wz-bar" style="margin-top:14px">
-    <span style="color:var(--ink-3);font-size:12.5px">You can leave — it keeps running.</span>
+  {% for section, rows in sections %}
+    <div class="wz-sech">
+      <h3>{{ section.name }}</h3>
+      {% if section.sub_name %}<span class="wz-sech-sub">{{ section.sub_name }}</span>{% endif %}
+      <span class="wz-sect-cnt">{{ rows|length }} row{{ rows|length|pluralize }}</span>
+    </div>
+    <div class="wz-tilegrid">
+      {% for row in rows %}{% include 'ops/builds/_row_card.html' %}{% endfor %}
+    </div>
+  {% empty %}
+    <p class="wz-hint" style="margin-top:14px">This build has no rows.</p>
+  {% endfor %}
+
+  <div class="wz-bar" style="margin-top:16px">
+    <span style="color:var(--ink-3);font-size:12.5px">
+      {% if running %}You can leave — it keeps running.
+      {% else %}Every picture is in. Nothing is written to the venue until you publish.
+      {% endif %}</span>
     <span class="wz-grow"></span>
     {% if running %}
-      <button class="btn primary" disabled>Continue to gate 1 →</button>
+      <button class="btn primary" disabled>Continue to review →</button>
     {% else %}
-      <a class="btn primary" href="{% url 'ops:build_detail' build.pk %}">Continue to gate 1 →</a>
+      <a class="btn primary" href="{% url 'ops:build_review' build.pk %}">Continue to review →</a>
     {% endif %}
   </div>
 </div>

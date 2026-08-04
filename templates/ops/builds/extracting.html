@@ -1,8 +1,0 @@
-{% extends 'ops/base.html' %}
-{% block title %}Extracting — {{ build.company.name }}{% endblock %}
-{% block top %}Extracting{% endblock %}
-{% block content %}
-<p class="wz-hint" style="margin-bottom:14px">Every document is its own job. One failure does
-  not restart the run — you re-upload that page alone. Closing the tab loses nothing.</p>
-{% include 'ops/builds/_progress.html' %}
-{% endblock %}
