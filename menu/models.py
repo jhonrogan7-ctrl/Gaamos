@@ -568,8 +568,12 @@ class MenuBuild(models.Model):
     """
 
     STATUS_CHOICES = [
-        ('draft', 'Draft'), ('extracting', 'Extracting'), ('gate1', 'Gate 1'),
-        ('publishing', 'Publishing'), ('published', 'Published'), ('failed', 'Failed'),
+        ('draft', 'Draft'),
+        ('generating', 'Generating'),
+        ('review', 'Review'),
+        ('publishing', 'Publishing'),
+        ('published', 'Published'),
+        ('failed', 'Failed'),
     ]
 
     company = models.ForeignKey('Company', on_delete=models.CASCADE,
@@ -616,6 +620,11 @@ class MenuBuildSection(models.Model):
     build = models.ForeignKey(MenuBuild, on_delete=models.CASCADE,
                               related_name='sections')
     name = models.CharField(max_length=200)
+    # The sheet has two levels and so does a published menu (BranchCategory +
+    # BranchSubcategory). A section is therefore the PAIR: `Nepali Foods` alone
+    # holds six subcategories on the first real card, and flattening them would
+    # drop all six into one heap.
+    sub_name = models.CharField(max_length=200, blank=True)
     display_order = models.PositiveSmallIntegerField(default=0)
     icon_key = models.CharField(max_length=60, blank=True)
     # Gate 1's blocking rule. The spec's null-price rule can never fire -- the
@@ -626,7 +635,7 @@ class MenuBuildSection(models.Model):
     class Meta:
         ordering = ['display_order', 'pk']
         constraints = [
-            models.UniqueConstraint(fields=['build', 'name'],
+            models.UniqueConstraint(fields=['build', 'name', 'sub_name'],
                                     name='uniq_buildsection_build_name'),
         ]
 
@@ -682,6 +691,16 @@ class MenuBuildRow(models.Model):
     image_asset = models.ForeignKey('ImageAsset', null=True, blank=True,
                                     on_delete=models.SET_NULL, related_name='build_rows')
     image_state = models.CharField(max_length=10, choices=IMAGE_STATES, default='none')
+
+    # Whatever the sheet's Notes column said, plus anything the parser found.
+    # This is the ONLY signal for "a human should look at this row", so it must
+    # survive into review — a row that turns red without saying why is worse
+    # than a row that is not flagged at all.
+    notes = models.TextField(blank=True)
+
+    @property
+    def needs_check(self):
+        return bool(self.notes)
 
     # --- after publish ---
     published_item = models.ForeignKey('MenuItem', null=True, blank=True,

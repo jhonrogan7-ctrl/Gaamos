@@ -17,7 +17,7 @@ class Migration(migrations.Migration):
             name='MenuBuild',
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('status', models.CharField(choices=[('draft', 'Draft'), ('extracting', 'Extracting'), ('gate1', 'Gate 1'), ('publishing', 'Publishing'), ('published', 'Published'), ('failed', 'Failed')], default='draft', max_length=12)),
+                ('status', models.CharField(choices=[('draft', 'Draft'), ('generating', 'Generating'), ('review', 'Review'), ('publishing', 'Publishing'), ('published', 'Published'), ('failed', 'Failed')], default='draft', max_length=12)),
                 ('created_at', models.DateTimeField(auto_now_add=True)),
                 ('vision_model', models.CharField(blank=True, max_length=120)),
                 ('embed_model', models.CharField(blank=True, max_length=120)),
@@ -39,6 +39,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('name', models.CharField(max_length=200)),
+                ('sub_name', models.CharField(blank=True, max_length=200)),
                 ('display_order', models.PositiveSmallIntegerField(default=0)),
                 ('icon_key', models.CharField(blank=True, max_length=60)),
                 ('prices_confirmed', models.BooleanField(default=False)),
@@ -70,6 +71,7 @@ class Migration(migrations.Migration):
                 ('match_state', models.CharField(choices=[('none', 'No match'), ('auto', 'Auto'), ('suggested', 'Suggested'), ('accepted', 'Accepted'), ('rejected', 'Rejected')], default='none', max_length=10)),
                 ('image_prompt', models.TextField(blank=True)),
                 ('image_state', models.CharField(choices=[('none', 'None'), ('matched', 'From the library'), ('generated', 'Generated')], default='none', max_length=10)),
+                ('notes', models.TextField(blank=True)),
                 ('build', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='rows', to='menu.menubuild')),
                 ('image_asset', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='build_rows', to='menu.imageasset')),
                 ('matched_item', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='build_rows', to='menu.item')),
@@ -83,6 +85,6 @@ class Migration(migrations.Migration):
         ),
         migrations.AddConstraint(
             model_name='menubuildsection',
-            constraint=models.UniqueConstraint(fields=('build', 'name'), name='uniq_buildsection_build_name'),
+            constraint=models.UniqueConstraint(fields=('build', 'name', 'sub_name'), name='uniq_buildsection_build_name'),
         ),
     ]
