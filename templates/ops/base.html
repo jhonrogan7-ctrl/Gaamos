@@ -67,12 +67,17 @@
   <main class="main">
     <div class="top"><h2>{% block top %}Platform{% endblock %}</h2><div class="spacer"></div></div>
     <div class="body">
-      {% if stats %}
+      {% comment %}
+      `ops_stats`, not `stats`: the build screens pass their own per-build
+      numbers under `stats`, and while this strip was keyed on that name it
+      rendered on every build page with four blank figures in it.
+      {% endcomment %}
+      {% if ops_stats %}
       <div class="ops-stats">
-        <div class="ops-stat"><b>{{ stats.new_leads }}</b><span>new leads</span></div>
-        <div class="ops-stat"><b>{{ stats.total_leads }}</b><span>total leads</span></div>
-        <div class="ops-stat"><b>{{ stats.active_tenants }}</b><span>active tenants</span></div>
-        <div class="ops-stat"><b>{{ stats.suspended_tenants }}</b><span>suspended</span></div>
+        <div class="ops-stat"><b>{{ ops_stats.new_leads }}</b><span>new leads</span></div>
+        <div class="ops-stat"><b>{{ ops_stats.total_leads }}</b><span>total leads</span></div>
+        <div class="ops-stat"><b>{{ ops_stats.active_tenants }}</b><span>active tenants</span></div>
+        <div class="ops-stat"><b>{{ ops_stats.suspended_tenants }}</b><span>suspended</span></div>
       </div>
       {% endif %}
       {% block content %}{% endblock %}

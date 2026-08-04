@@ -518,3 +518,30 @@ def test_a_failed_row_does_not_hold_the_build_open(admin_client, generating_buil
 
     generating_build.refresh_from_db()
     assert generating_build.status == 'review'
+
+
+@pytest.mark.django_db
+def test_a_build_screen_does_not_show_the_platform_kpi_strip(admin_client,
+                                                             generating_build):
+    """The shell's leads/tenants strip is keyed on `ops_stats`, not `stats`.
+
+    Both names once meant `stats`, so every build screen rendered the strip with
+    four blank figures in it — a real browser showed NEW LEADS / TOTAL LEADS /
+    ACTIVE TENANTS / SUSPENDED with nothing under them. The build pages pass
+    their own per-build numbers under `stats` and must not collide with it.
+    """
+    body = admin_client.get(f'/platform/builds/{generating_build.pk}/').content.decode()
+
+    assert 'ops-stat' not in body
+    # The build's own numbers still reach the page it belongs to.
+    assert 'photographed' in body
+
+
+@pytest.mark.django_db
+def test_the_leads_dashboard_still_shows_the_kpi_strip(admin_client, company):
+    """The other half of the rename: the strip must still render where it
+    belongs, with real figures rather than blanks."""
+    body = admin_client.get('/platform/leads').content.decode()
+
+    assert 'ops-stat' in body
+    assert 'active tenants' in body

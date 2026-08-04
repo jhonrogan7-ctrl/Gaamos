@@ -149,6 +149,14 @@ h1,h2,h3 { font-family: var(--hd); }
   .btn.ghost { background: #fff; color: var(--ink); border: 1px solid var(--line-2); }
   .btn.ghost:hover { border-color: var(--ink-3); }
   .btn-sm { padding: 7px 12px; font-size: 11.5px; border-radius: 9px; }
+  /* A disabled button has to LOOK disabled. The generating screen holds
+     "Continue to review" disabled for the whole run, and while it rendered as a
+     full-strength primary it invited a click that did nothing. Follows the
+     modifiers above so it wins over `.btn.primary`'s background and shadow. */
+  .btn:disabled, .btn[disabled] {
+    background: var(--line); color: var(--ink-3); box-shadow: none;
+    cursor: not-allowed; opacity: .8;
+  }
 
   /* QR sheet preview: sheet on the left, actions on the right. Collapses to a
      single column on mobile (the mobile override lives with the other <900px
