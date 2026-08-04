@@ -72,3 +72,42 @@ def test_two_subcategories_under_the_same_category_do_not_collide():
     assert momo.category_id == sekuwa.category_id
     assert SubCategory.all_objects.filter(company=company,
                                            category=momo.category).count() == 2
+
+
+def test_differently_cased_category_labels_both_resolve_their_subcategory():
+    """Two rows whose `category` text differs only in case/whitespace resolve
+    to the SAME `Category` (it's unique on (company, slug), not on name — see
+    `ensure_category`). `subs` must therefore be keyed on the resolved
+    `Category`'s identity, not on either row's own raw label string, or the
+    second row's subcategory silently resolves to None instead of erroring."""
+    company, branch = _branch()
+    publish_mod.publish_rows(company, [branch], [
+        publish_mod.PublishRow(name='Buff Momo', price=250,
+                               category='Nepali Foods', sub_category='Momo'),
+        publish_mod.PublishRow(name='Chicken Sekuwa', price=300,
+                               category=' nepali foods ', sub_category='Sekuwa'),
+    ])
+    momo = BranchItemPlacement.objects.get(branch=branch,
+                                            menu_item__name='Buff Momo')
+    sekuwa = BranchItemPlacement.objects.get(branch=branch,
+                                              menu_item__name='Chicken Sekuwa')
+    # Same underlying Category despite the differing label text.
+    assert momo.category_id == sekuwa.category_id
+    assert momo.sub_category is not None
+    assert sekuwa.sub_category is not None
+    assert sekuwa.sub_category.name == 'Sekuwa'
+
+
+def test_the_branch_subcategory_link_is_created_for_every_branch():
+    company = Company.objects.create(name='Two Spot', slug='twospot')
+    b1 = Branch.all_objects.create(company=company, name='Lakeside', slug='lakeside')
+    b2 = Branch.all_objects.create(company=company, name='Thamel', slug='thamel')
+    publish_mod.publish_rows(company, [b1, b2], [
+        publish_mod.PublishRow(name='Buff Momo', price=250,
+                               category='Nepali Foods', sub_category='Momo'),
+    ])
+    sub = SubCategory.all_objects.get(company=company, name='Momo')
+    for b in (b1, b2):
+        assert BranchSubCategory.objects.filter(branch=b, sub_category=sub).exists()
+        placed = BranchItemPlacement.objects.get(branch=b, menu_item__name='Buff Momo')
+        assert placed.sub_category_id == sub.id

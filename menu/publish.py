@@ -109,15 +109,23 @@ def ensure_categories(company, branches, names):
 
 
 def ensure_subcategories(company, branches, pairs):
-    """-> {(cat_name, sub_name): SubCategory}, create-if-missing, per (category, name).
+    """-> {(cat.pk, sub_name): SubCategory}, create-if-missing, per (category, name).
 
     Mirrors `ensure_categories`: a subcategory name is only meaningful within
     its parent category, so the map is keyed on the pair, not the bare name —
     two different categories are free to each have their own 'Momo'.
+
+    Keyed on `cat.pk`, not `cat.name`: `Category` is unique on
+    `(company, slug)`, not on name, so two rows whose `category` strings
+    differ only in case/whitespace can resolve to the *same* `Category` via
+    `ensure_category`'s slug-keyed `get_or_create` while their raw label
+    strings still differ. Keying on the resolved instance's identity is
+    disagreement-proof by construction; keying on a re-derived label string
+    is not.
     """
     out = {}
     for cat, sub_name in pairs:
-        if not sub_name or (cat.name, sub_name) in out:
+        if not sub_name or (cat.pk, sub_name) in out:
             continue
         sub, _ = SubCategory.all_objects.get_or_create(
             company=company, category=cat, name=sub_name,
@@ -125,7 +133,7 @@ def ensure_subcategories(company, branches, pairs):
         for b in branches:
             BranchSubCategory.objects.get_or_create(
                 branch=b, sub_category=sub)
-        out[(cat.name, sub_name)] = sub
+        out[(cat.pk, sub_name)] = sub
     return out
 
 
@@ -246,12 +254,13 @@ def publish_rows(company, branches, rows):
         slug = unique_item_slug(company, row.name, taken=used)
         used.add(slug)
         label = (row.category or '').strip() or 'Menu'
+        category = cats[label]
         menu_item, created = upsert_menu_item(
             company, branches, slug=slug, name=row.name,
             description=row.description, price=price,
             dietary_tags=row.dietary_tags,
-            category=cats[label],
-            sub_category=subs.get((label, (row.sub_category or '').strip())),
+            category=category,
+            sub_category=subs.get((category.pk, (row.sub_category or '').strip())),
             display_order=order)
         if created:
             report.created += 1
