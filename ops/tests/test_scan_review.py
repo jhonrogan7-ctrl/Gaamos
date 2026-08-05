@@ -22,7 +22,7 @@ class ScanReviewTests(TestCase):
         self.tea = Item.objects.create(
             source_scan=self.scan, status='draft', name='Black Tea',
             description='hot milk tea', category='Hot Drinks', reference_price=50,
-            raw_name='Black Tea', source_page=1, embedding=[0.2] * 768)
+            raw_name='Black Tea', source_page=1, embedding=[0.2] * 1024)
         self.client.force_login(self.boss)
 
     def _url(self, item):
@@ -69,7 +69,7 @@ class ScanReviewTests(TestCase):
 
     def test_merge_links_to_the_active_item(self):
         keeper = Item.objects.create(name='Black Tea', category='Hot Drinks',
-                                     status='active', embedding=[1.0] + [0.0] * 767)
+                                     status='active', embedding=[1.0] + [0.0] * 1023)
         resp = self.client.post(self._url(self.tea),
                                 {'action': 'merge', 'merge_into': str(keeper.pk)},
                                 **self.apex)
@@ -113,7 +113,7 @@ class ScanReviewTests(TestCase):
 
     def test_review_offers_a_dedup_match(self):
         Item.objects.create(name='Black Tea', category='Hot Drinks', status='active',
-                            embedding=[0.2] * 768)
+                            embedding=[0.2] * 1024)
         body = self.client.get(f'/platform/scans/{self.scan.pk}/review/',
                                **self.apex).content.decode()
         self.assertIn('Merge', body)
@@ -130,7 +130,7 @@ class ScanReviewTests(TestCase):
     def test_approving_a_merged_row_clears_the_merge_pointer(self):
         """Undoing a merge must not leave an active row pointing at a keeper."""
         keeper = Item.objects.create(name='Keeper', status='active',
-                                     embedding=[0.5] * 768)
+                                     embedding=[0.5] * 1024)
         self.client.post(self._url(self.tea),
                          {'action': 'merge', 'merge_into': str(keeper.pk)}, **self.apex)
         resp = self.client.post(self._url(self.tea), {'action': 'approve'}, **self.apex)
@@ -151,8 +151,8 @@ class ScanReviewTests(TestCase):
         """Drafts already carry their vectors from extraction — rendering the
         review screen must not call Gemini once per row."""
         Item.objects.create(name='Black Tea', category='Hot Drinks', status='active',
-                            embedding=[0.2] * 768)
-        with patch('menu.pipeline.embed.embed',
+                            embedding=[0.2] * 1024)
+        with patch('menu.pipeline.item_embed.PROVIDER',
                    side_effect=AssertionError('embedded during render')):
             resp = self.client.get(f'/platform/scans/{self.scan.pk}/review/', **self.apex)
         self.assertEqual(resp.status_code, 200)
@@ -168,13 +168,13 @@ class ScanCombineTests(TestCase):
         self.coke, self.fanta, self.sprite = (
             Item.objects.create(source_scan=self.scan, status='draft', name=name,
                                 category='Soft Drinks', reference_price=100,
-                                raw_name=line, split_from=line, embedding=[0.1] * 768)
+                                raw_name=line, split_from=line, embedding=[0.1] * 1024)
             for name in ('Coke', 'Fanta', 'Sprite'))
         self.client.force_login(self.boss)
         self.url = f'/platform/scans/{self.scan.pk}/combine/'
 
     def test_combine_folds_siblings_into_the_keeper(self):
-        with patch('menu.pipeline.embed.embed', _emb([0.3] * 768)):
+        with patch('menu.pipeline.item_embed.PROVIDER', _emb([0.3] * 1024)):
             resp = self.client.post(
                 self.url, {'keep': str(self.coke.pk),
                            'sibling': [str(self.fanta.pk), str(self.sprite.pk)]},
@@ -186,7 +186,7 @@ class ScanCombineTests(TestCase):
         # the keeper takes back the full printed line
         self.assertEqual(self.coke.name, 'Coke/Fanta/Sprite/Dew/Slice')
         self.assertEqual(self.coke.variant_label, '')
-        self.assertEqual(list(self.coke.embedding), [0.3] * 768)   # re-embedded
+        self.assertEqual(list(self.coke.embedding), [0.3] * 1024)   # re-embedded
         self.assertEqual(self.fanta.status, 'merged')
         self.assertEqual(self.fanta.merged_into_id, self.coke.pk)
         self.assertEqual(self.sprite.merged_into_id, self.coke.pk)
@@ -206,7 +206,7 @@ class ScanCombineTests(TestCase):
     def test_siblings_from_another_scan_are_ignored(self):
         stranger = MenuScan.objects.create(file='scans/z.pdf')
         outsider = Item.objects.create(source_scan=stranger, status='draft', name='Outsider')
-        with patch('menu.pipeline.embed.embed', _emb([0.3] * 768)):
+        with patch('menu.pipeline.item_embed.PROVIDER', _emb([0.3] * 1024)):
             resp = self.client.post(
                 self.url, {'keep': str(self.coke.pk),
                            'sibling': [str(self.fanta.pk), str(outsider.pk)]}, **self.apex)

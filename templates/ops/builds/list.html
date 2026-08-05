@@ -1,0 +1,26 @@
+{% extends 'ops/base.html' %}
+{% block title %}Menu builds{% endblock %}
+{% block top %}Menu builds{% endblock %}
+{% block content %}
+<div class="wz-bar">
+  <b style="font-size:15px">Builds</b>
+  <span class="wz-grow"></span>
+  <a class="btn primary" href="{% url 'ops:build_new' %}">+ New build</a>
+</div>
+
+{% if builds %}
+  <div class="wz-grid">
+    {% for item in builds %}{% include 'ops/builds/_build_card.html' %}{% endfor %}
+    <a class="wz-card wz-card--new" href="{% url 'ops:build_new' %}">+ New build</a>
+  </div>
+{% else %}
+  <div class="panel">
+    <h3>No builds yet</h3>
+    <div class="wz-hint">A build takes a venue's photographed card and turns it into a live
+      menu. Nothing is written to a tenant until you publish at the end.</div>
+    <div style="margin-top:12px">
+      <a class="btn primary" href="{% url 'ops:build_new' %}">+ New build</a>
+    </div>
+  </div>
+{% endif %}
+{% endblock %}

@@ -15,31 +15,8 @@ import re
 
 from django.utils.text import slugify
 
-from menu.pipeline import dish_lexicon
-
-# A style block describes CAMERA AND LIGHT ONLY. It must never describe the
-# food or the drink — that is the item's job, and the item is the only thing
-# the printed card licenses us to claim. Two phrases here once did: `fresh
-# vibrant colours, appetising` put invented garnish on every pale dish, and
-# `condensation on the glass` served all 11 Chill Zone hot drinks cold.
-FOOD_STYLE = (", professional food photography, 45-degree angle, natural "
-              "window light, shallow depth of field, dark rustic wood table, "
-              "high detail, the dish only, no garnish, no herbs, no sauce, "
-              "no side dishes, no props")
-DRINK_STYLE = (", professional beverage photography, straight-on angle, soft "
-               "natural light, clean neutral background, high detail, "
-               "the drink only, no garnish, no props")
-
-# Section-name keywords that make a section a drink section. Matched on the
-# section, never the item: "Can Juice" sits in Soft Drinks, and "Hard Drinks"
-# must land on the drink block too.
-_DRINK_WORDS = ('drink', 'juice', 'lassi', 'shake', 'beer', 'cocktail', 'wine',
-                'whisky', 'whiskey', 'vodka', 'brandy')
-
-# Spirits whose name is a substring of a food's: `rum` sits inside `Rumali
-# Roti` and `gin` inside `Ginger Chicken`. A bar card names these as the whole
-# section, so they are matched on the section slug exactly.
-_DRINK_SECTIONS = frozenset({'rum', 'gin'})
+from menu.pipeline.prompts import (DRINK_STYLE, FOOD_STYLE, compose,  # noqa: F401
+                                   is_drink)
 
 _SEPARATOR = re.compile(r'^:?-+:?$')
 _NO_DESCRIPTION = ('', '-', '—', '–')
@@ -65,12 +42,6 @@ def _cells(line):
 
 def _is_separator(cells):
     return all(_SEPARATOR.match(c) for c in cells)
-
-
-def is_drink(section):
-    low = section.lower()
-    return slugify(section) in _DRINK_SECTIONS \
-        or any(w in low for w in _DRINK_WORDS)
 
 
 def _column(header, *prefixes, default=None):
@@ -150,14 +121,10 @@ def _is_directive(prompt):
 
 
 def full_prompt(row):
-    """Subject line, expanded through the dish lexicon, then the style block.
-
-    The lexicon goes in the middle deliberately: the style block must stay last
-    so its negative clauses ("no garnish", "no props") are the final thing the
-    model reads.
-    """
-    subject = dish_lexicon.expand(row['prompt'], row['item'], drink=row['drink'])
-    return subject + (DRINK_STYLE if row['drink'] else FOOD_STYLE)
+    """This sheet row's prompt. Composition lives in `prompts`; re-exported here
+    because `generate_item_images`, `review_images` and `build_venue_fixture`
+    have always reached for it on the parser."""
+    return compose(row['prompt'], name=row['item'], drink=row['drink'])
 
 
 def parse_venue(text):

@@ -1,0 +1,662 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Gaamos — menu-build wizard, Gate 1 (structure &amp; prices)</title>
+<style>
+:root{
+  --accent:#E8760C; --accent-2:#F59E0B; --accent-soft:#FFF4E6;
+  --ink:#14181F; --ink-2:#4A5361; --ink-3:#78828F;
+  --panel:#FFFFFF; --page:#F4F5F7; --line:#E3E6EB;
+  --ok:#0F8A5F; --ok-soft:#E7F6EF;
+  --warn:#B45309; --warn-soft:#FEF3C7;
+  --bad:#C0392B; --bad-soft:#FDECEA;
+  --r:10px;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--page);color:var(--ink);
+  font:14px/1.5 ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+h1,h2,h3,h4{margin:0;font-weight:650;letter-spacing:-.01em}
+code{font:12px/1.4 ui-monospace,SFMono-Regular,Menlo,monospace;background:#EEF0F3;
+  padding:1px 5px;border-radius:4px}
+
+/* ---------- page chrome ---------- */
+.wrap{max-width:1500px;margin:0 auto;padding:24px 20px 80px}
+.note{background:#fff;border:1px solid var(--line);border-left:4px solid var(--accent);
+  border-radius:var(--r);padding:16px 18px;margin:0 0 22px}
+.note h1{font-size:19px;margin-bottom:6px}
+.note p{margin:6px 0 0;color:var(--ink-2);max-width:95ch}
+.note b{color:var(--ink)}
+.tabs{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 20px}
+.tab{appearance:none;border:1px solid var(--line);background:#fff;color:var(--ink-2);
+  padding:9px 15px;border-radius:999px;cursor:pointer;font-size:13px;font-weight:600}
+.tab.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+.variant{display:none}
+.variant.on{display:block}
+.vhead{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;margin:0 0 14px}
+.vhead h2{font-size:17px}
+.vhead p{margin:0;color:var(--ink-3);font-size:13px}
+
+/* ---------- shared bits ---------- */
+.bar{background:#fff;border:1px solid var(--line);border-radius:var(--r);
+  padding:12px 16px;display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:14px}
+.steps{display:flex;align-items:center;gap:6px;font-size:12.5px;color:var(--ink-3)}
+.steps .s{padding:5px 11px;border-radius:999px;background:#F0F2F5}
+.steps .s.on{background:var(--accent);color:#fff;font-weight:650}
+.steps .s.done{background:var(--ok-soft);color:var(--ok);font-weight:600}
+.grow{flex:1}
+.btn{appearance:none;border:1px solid var(--line);background:#fff;color:var(--ink);
+  padding:8px 14px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer}
+.btn:hover{border-color:#C9CFD8}
+.btn-p{background:var(--accent);border-color:var(--accent);color:#fff}
+.btn-p[disabled]{background:#E7E9ED;border-color:#E7E9ED;color:#A6ADB8;cursor:not-allowed}
+.btn-s{font-size:12px;padding:5px 9px}
+.chips{display:flex;gap:7px;flex-wrap:wrap}
+.chip{border:1px solid var(--line);background:#fff;border-radius:999px;padding:5px 11px;
+  font-size:12px;color:var(--ink-2);cursor:pointer;font-weight:600}
+.chip.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+.chip .n{opacity:.65;margin-left:4px;font-weight:500}
+.chip.alert{border-color:#F3C6C0;background:var(--bad-soft);color:var(--bad)}
+
+/* ---------- photo pane ---------- */
+.photo{background:#fff;border:1px solid var(--line);border-radius:var(--r);overflow:hidden}
+.photo .ph-top{display:flex;align-items:center;gap:8px;padding:9px 12px;border-bottom:1px solid var(--line)}
+.photo .ph-top b{font-size:12.5px}
+.shot{aspect-ratio:3/4;background:
+  repeating-linear-gradient(180deg,#F7F8FA 0 26px,#EFF1F4 26px 27px),#F7F8FA;
+  display:flex;align-items:center;justify-content:center;color:var(--ink-3);font-size:12.5px;
+  text-align:center;padding:16px}
+.thumbs{display:flex;gap:6px;padding:9px 12px;border-top:1px solid var(--line);overflow-x:auto}
+.thumb{flex:0 0 auto;width:38px;height:50px;border-radius:5px;border:1px solid var(--line);
+  background:#F4F6F8;display:grid;place-items:center;font-size:11px;color:var(--ink-3);cursor:pointer}
+.thumb.on{border-color:var(--accent);box-shadow:0 0 0 2px var(--accent-soft)}
+
+/* ---------- section ---------- */
+.sect{background:#fff;border:1px solid var(--line);border-radius:var(--r);margin-bottom:14px}
+.sect-h{display:flex;align-items:center;gap:11px;padding:12px 14px;border-bottom:1px solid var(--line);
+  flex-wrap:wrap}
+.sect-h .ic{width:26px;height:26px;border-radius:7px;background:var(--accent-soft);
+  display:grid;place-items:center;font-size:14px;cursor:pointer}
+.sect-h h3{font-size:14.5px}
+.sect-h .cnt{color:var(--ink-3);font-size:12.5px}
+.confirm{display:inline-flex;align-items:center;gap:7px;border:1px solid var(--line);
+  background:#fff;border-radius:8px;padding:6px 11px;font-size:12.5px;font-weight:650;
+  color:var(--ink-2);cursor:pointer}
+.confirm.done{background:var(--ok-soft);border-color:#BFE6D4;color:var(--ok)}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:11px;padding:13px}
+
+/* ---------- the row card ---------- */
+.card{border:1px solid var(--line);border-radius:9px;padding:11px 12px;background:#fff;
+  position:relative;transition:border-color .12s,box-shadow .12s}
+.card:hover{border-color:#C9CFD8;box-shadow:0 1px 3px rgba(20,24,31,.06)}
+.card .nm{font-weight:650;font-size:13.5px;line-height:1.35;padding-right:52px}
+.card .raw{color:var(--ink-3);font-size:11.5px;margin-top:2px;font-style:italic}
+.card .pr{margin-top:9px;display:flex;align-items:baseline;gap:6px}
+.card .pr b{font-size:17px;letter-spacing:-.02em}
+.card .pr span{color:var(--ink-3);font-size:11.5px}
+.card .tags{display:flex;gap:4px;flex-wrap:wrap;margin-top:9px}
+.tg{font-size:10.5px;font-weight:700;letter-spacing:.03em;text-transform:uppercase;
+  padding:2px 6px;border-radius:4px;background:#EEF0F3;color:var(--ink-2)}
+.tg.veg{background:var(--ok-soft);color:var(--ok)}
+.tg.non{background:var(--bad-soft);color:var(--bad)}
+.card .acts{position:absolute;top:9px;right:9px;display:flex;gap:3px;opacity:0;transition:opacity .12s}
+.card:hover .acts{opacity:1}
+.iconbtn{width:24px;height:24px;border-radius:6px;border:1px solid var(--line);background:#fff;
+  display:grid;place-items:center;cursor:pointer;font-size:12px;color:var(--ink-2);padding:0}
+.iconbtn:hover{border-color:#C9CFD8;color:var(--ink)}
+.iconbtn.del:hover{border-color:#F3C6C0;background:var(--bad-soft);color:var(--bad)}
+.card.flag{border-color:#F0C9A0;background:#FFFCF7}
+.card.flag::before{content:"";position:absolute;inset:0 auto 0 0;width:3px;background:var(--warn);
+  border-radius:9px 0 0 9px}
+.flagnote{margin-top:8px;font-size:11.5px;color:var(--warn);font-weight:600;
+  display:flex;align-items:center;gap:5px}
+.card.editing{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
+.fld{width:100%;border:1px solid var(--line);border-radius:6px;padding:6px 8px;font:inherit;
+  font-size:13px;margin-top:6px}
+.fld:focus{outline:none;border-color:var(--accent)}
+.editrow{display:flex;gap:6px;margin-top:9px}
+.card.add{border-style:dashed;display:grid;place-items:center;min-height:112px;color:var(--ink-3);
+  cursor:pointer;font-weight:600;font-size:13px}
+.card.add:hover{border-color:var(--accent);color:var(--accent);background:var(--accent-soft)}
+
+/* ---------- layouts ---------- */
+.split{display:grid;grid-template-columns:340px 1fr;gap:16px;align-items:start}
+.split .left{position:sticky;top:16px}
+.stack .photo{margin-bottom:14px}
+.strip{display:grid;grid-template-columns:1fr 210px;gap:16px;align-items:start}
+.focusbar{display:flex;align-items:center;gap:12px;background:#fff;border:1px solid var(--line);
+  border-radius:var(--r);padding:11px 14px;margin-bottom:14px}
+.focusbar .pill{background:var(--accent-soft);color:var(--accent);font-weight:700;
+  padding:4px 10px;border-radius:999px;font-size:12.5px}
+.prog{height:5px;background:#EDEFF2;border-radius:99px;overflow:hidden;flex:1;max-width:260px}
+.prog i{display:block;height:100%;background:var(--accent);border-radius:99px}
+.foot{position:sticky;bottom:0;background:#fff;border:1px solid var(--line);border-radius:var(--r);
+  padding:12px 16px;display:flex;align-items:center;gap:14px;margin-top:16px;
+  box-shadow:0 -2px 12px rgba(20,24,31,.05);flex-wrap:wrap}
+.foot .blocked{color:var(--bad);font-weight:650;font-size:13px}
+.legend{margin-top:22px;background:#fff;border:1px solid var(--line);border-radius:var(--r);padding:16px 18px}
+.legend h4{font-size:13.5px;margin-bottom:9px}
+.legend ul{margin:0;padding-left:18px;color:var(--ink-2);font-size:13px}
+.legend li{margin:5px 0}
+/* ---------- phone frame + mobile layout ---------- */
+.phone{width:360px;border:9px solid #1B2029;border-radius:30px;overflow:hidden;background:var(--page);
+  display:flex;flex-direction:column;height:660px;box-shadow:0 8px 26px rgba(20,24,31,.16)}
+.ph-bar{background:#fff;border-bottom:1px solid var(--line);padding:11px 13px;display:flex;
+  align-items:center;gap:10px;font-size:13px;flex:0 0 auto}
+.ph-bar b{flex:1;text-align:center;font-size:13px}
+.ph-body{flex:1;overflow-y:auto;padding-bottom:8px}
+.ph-foot{background:#fff;border-top:1px solid var(--line);padding:10px 12px;display:flex;
+  align-items:center;gap:10px;flex:0 0 auto}
+.peek{display:flex;align-items:center;gap:9px;background:#fff;border-bottom:1px solid var(--line);
+  padding:9px 12px;cursor:pointer}
+.pk-ic{width:30px;height:30px;border-radius:7px;background:var(--accent-soft);display:grid;
+  place-items:center;font-size:14px}
+.msect{background:#fff;border-bottom:1px solid var(--line);margin-bottom:8px}
+.msect-h{display:flex;align-items:center;gap:8px;padding:10px 12px;position:sticky;top:0;
+  background:#fff;border-bottom:1px solid var(--line);z-index:2}
+.okpill{background:var(--ok-soft);color:var(--ok);font-weight:700;font-size:11px;
+  padding:2px 7px;border-radius:999px}
+.mcards{padding:9px 10px;display:flex;flex-direction:column;gap:8px}
+.mcard{border:1px solid var(--line);border-radius:9px;background:#fff;padding:10px 11px;
+  display:flex;align-items:flex-start;gap:9px}
+.mcard.flag{border-color:#F0C9A0;background:#FFFCF7}
+.mcard.sheetopen{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft);display:block}
+.mc-main{flex:1;min-width:0}
+.mc-nm{font-weight:650;font-size:13.5px;line-height:1.3}
+.mc-pr{flex:0 0 auto;border:1px solid var(--line);background:#F8F9FB;border-radius:8px;
+  padding:7px 11px;font:inherit;font-weight:700;font-size:15px;cursor:pointer;letter-spacing:-.02em}
+.mc-pr.warn{border-color:#F0C9A0;background:var(--warn-soft);color:var(--warn)}
+.mc-more{flex:0 0 auto;width:30px;height:30px;border-radius:8px;border:1px solid var(--line);
+  background:#fff;cursor:pointer;font-size:15px;color:var(--ink-2);padding:0;line-height:1}
+.mcard.add{justify-content:center;border-style:dashed;color:var(--ink-3);font-weight:600;
+  font-size:13px;padding:13px;cursor:pointer}
+.mconfirm{display:block;width:calc(100% - 20px);margin:0 10px 11px;padding:11px;
+  border:1px solid var(--line);background:#fff;border-radius:9px;font:inherit;font-weight:650;
+  font-size:12.5px;color:var(--ink-2);cursor:pointer}
+.mconfirm.done{background:var(--ok-soft);border-color:#BFE6D4;color:var(--ok)}
+
+@media(max-width:1000px){
+  .split,.strip{grid-template-columns:1fr}
+  .split .left{position:static}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<div class="note">
+  <h1>Menu-build wizard — Gate 1: structure &amp; prices</h1>
+  <p>Three layouts for the same screen. Cards throughout, no tables. Every card edits in place,
+  deletes, and moves; sections rename, reorder and take an icon.</p>
+  <p><b>The gate:</b> a section must be ticked <i>prices confirmed</i> against the photo before the
+  build advances — sections, not rows, so a 159-item card is ~10 ticks. This exists because the
+  extractor <b>never emits a null price</b>: it invented one for all 27 prices it could not read, so
+  blocking on missing prices would block on nothing.</p>
+  <p><b>Pick a layout</b> — or tell me what to change in one.</p>
+</div>
+
+<div class="tabs">
+  <button class="tab on" data-v="a">A · Split screen</button>
+  <button class="tab" data-v="b">B · Photo strip, wide grid</button>
+  <button class="tab" data-v="c">C · One section at a time</button>
+  <button class="tab" data-v="m">📱 Mobile</button>
+</div>
+
+<!-- ============ A ============ -->
+<section class="variant on" id="v-a">
+  <div class="vhead">
+    <h2>A · Split screen — photo always visible</h2>
+    <p>Closest to the original spec. The card never leaves your sight; the grid narrows to ~3 cards.</p>
+  </div>
+
+  <div class="bar">
+    <div class="steps">
+      <span class="s done">Upload ✓</span><span>›</span>
+      <span class="s on">1 · Prices</span><span>›</span>
+      <span class="s">2 · Images</span><span>›</span>
+      <span class="s">3 · Review</span>
+    </div>
+    <span class="grow"></span>
+    <span style="color:var(--ink-3);font-size:12.5px">Kailash Parbat · Lakeside · 159 rows / 5 pages</span>
+  </div>
+
+  <div class="chips" style="margin-bottom:14px">
+    <button class="chip on">All <span class="n">159</span></button>
+    <button class="chip alert">Needs a look <span class="n">12</span></button>
+    <button class="chip">Split from one line <span class="n">15</span></button>
+    <button class="chip">No description <span class="n">143</span></button>
+    <button class="chip">Unconfirmed sections <span class="n">2</span></button>
+  </div>
+
+  <div class="split">
+    <div class="left">
+      <div class="photo">
+        <div class="ph-top"><b>Page 1</b><span class="grow"></span>
+          <button class="iconbtn">−</button><button class="iconbtn">+</button>
+        </div>
+        <div class="shot">the printed card<br>(sticky · zoomable)</div>
+        <div class="thumbs">
+          <div class="thumb on">1</div><div class="thumb">2</div><div class="thumb">3</div>
+          <div class="thumb">4</div><div class="thumb">5</div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="sect">
+        <div class="sect-h">
+          <span class="ic">🥤</span>
+          <h3>MILK SHAKE / LASSI</h3>
+          <span class="cnt">16 rows</span>
+          <span class="grow"></span>
+          <button class="btn btn-s">Rename</button>
+          <button class="btn btn-s">Move ↑↓</button>
+          <button class="confirm">☐ Confirm prices</button>
+        </div>
+        <div class="cards">
+          <div class="card">
+            <div class="acts">
+              <button class="iconbtn" title="Edit">✎</button>
+              <button class="iconbtn" title="Split into variants">⧉</button>
+              <button class="iconbtn del" title="Delete">🗑</button>
+            </div>
+            <div class="nm">Apple</div>
+            <div class="pr"><b>250</b><span>Rs</span></div>
+            <div class="tags"><span class="tg veg">veg</span></div>
+          </div>
+          <div class="card flag">
+            <div class="acts">
+              <button class="iconbtn">✎</button><button class="iconbtn">⧉</button>
+              <button class="iconbtn del">🗑</button>
+            </div>
+            <div class="nm">Banana</div>
+            <div class="raw">printed: “Banana / Mango”</div>
+            <div class="pr"><b>200</b><span>Rs</span></div>
+            <div class="flagnote">⚑ split from one printed line</div>
+          </div>
+          <div class="card editing">
+            <div class="nm">Oreo Shake</div>
+            <input class="fld" value="Oreo Shake">
+            <input class="fld" value="320">
+            <div class="editrow">
+              <button class="btn btn-s btn-p">Save</button>
+              <button class="btn btn-s">Cancel</button>
+            </div>
+          </div>
+          <div class="card add">+ Add row</div>
+        </div>
+      </div>
+
+      <div class="sect">
+        <div class="sect-h">
+          <span class="ic">🧃</span><h3>JUICE</h3><span class="cnt">12 rows</span>
+          <span class="grow"></span>
+          <button class="btn btn-s">Rename</button>
+          <button class="confirm done">✓ Prices confirmed</button>
+        </div>
+        <div class="cards">
+          <div class="card">
+            <div class="acts"><button class="iconbtn">✎</button><button class="iconbtn del">🗑</button></div>
+            <div class="nm">Apple</div><div class="pr"><b>250</b><span>Rs</span></div>
+            <div class="tags"><span class="tg veg">veg</span></div>
+          </div>
+          <div class="card">
+            <div class="acts"><button class="iconbtn">✎</button><button class="iconbtn del">🗑</button></div>
+            <div class="nm">Papaya</div><div class="pr"><b>250</b><span>Rs</span></div>
+          </div>
+          <div class="card add">+ Add row</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="foot">
+    <span class="blocked">2 sections still need their prices confirmed</span>
+    <span class="grow"></span>
+    <button class="btn">Save &amp; close</button>
+    <button class="btn btn-p" disabled>Continue to images →</button>
+  </div>
+</section>
+
+<!-- ============ B ============ -->
+<section class="variant" id="v-b">
+  <div class="vhead">
+    <h2>B · Photo as a side strip, grid gets the width</h2>
+    <p>~5 cards per row instead of 3. The photo is smaller but click-to-enlarge.</p>
+  </div>
+
+  <div class="bar">
+    <div class="steps">
+      <span class="s done">Upload ✓</span><span>›</span><span class="s on">1 · Prices</span>
+      <span>›</span><span class="s">2 · Images</span><span>›</span><span class="s">3 · Review</span>
+    </div>
+    <span class="grow"></span>
+    <div class="chips">
+      <button class="chip on">All <span class="n">159</span></button>
+      <button class="chip alert">Needs a look <span class="n">12</span></button>
+    </div>
+  </div>
+
+  <div class="strip">
+    <div>
+      <div class="sect">
+        <div class="sect-h">
+          <span class="ic">🍟</span><h3>SNACKS</h3><span class="cnt">21 rows</span>
+          <span class="grow"></span>
+          <button class="btn btn-s">Rename</button><button class="btn btn-s">Move ↑↓</button>
+          <button class="confirm">☐ Confirm prices</button>
+        </div>
+        <div class="cards">
+          <div class="card"><div class="acts"><button class="iconbtn">✎</button><button class="iconbtn del">🗑</button></div>
+            <div class="nm">Chicken Sandwich</div><div class="pr"><b>380</b><span>Rs</span></div>
+            <div class="tags"><span class="tg non">chicken</span></div></div>
+          <div class="card"><div class="acts"><button class="iconbtn">✎</button><button class="iconbtn del">🗑</button></div>
+            <div class="nm">Veg Sandwich</div><div class="pr"><b>290</b><span>Rs</span></div>
+            <div class="tags"><span class="tg veg">veg</span></div></div>
+          <div class="card flag"><div class="acts"><button class="iconbtn">✎</button><button class="iconbtn del">🗑</button></div>
+            <div class="nm">French Fries</div><div class="pr"><b>100</b><span>Rs</span></div>
+            <div class="flagnote">⚑ price unreadable on the photo</div></div>
+          <div class="card"><div class="acts"><button class="iconbtn">✎</button><button class="iconbtn del">🗑</button></div>
+            <div class="nm">Chilli Potato</div><div class="pr"><b>260</b><span>Rs</span></div>
+            <div class="tags"><span class="tg veg">veg</span></div></div>
+          <div class="card"><div class="acts"><button class="iconbtn">✎</button><button class="iconbtn del">🗑</button></div>
+            <div class="nm">Buff Sekuwa</div><div class="pr"><b>350</b><span>Rs</span></div>
+            <div class="tags"><span class="tg non">buff</span></div></div>
+          <div class="card add">+ Add row</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="photo" style="position:sticky;top:16px">
+      <div class="ph-top"><b>Page 3</b><span class="grow"></span><button class="iconbtn">⤢</button></div>
+      <div class="shot" style="aspect-ratio:3/4.4">tap to enlarge</div>
+      <div class="thumbs">
+        <div class="thumb">1</div><div class="thumb">2</div><div class="thumb on">3</div>
+        <div class="thumb">4</div><div class="thumb">5</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="foot">
+    <span class="blocked">2 sections still need their prices confirmed</span>
+    <span class="grow"></span>
+    <button class="btn">Save &amp; close</button>
+    <button class="btn btn-p" disabled>Continue to images →</button>
+  </div>
+</section>
+
+<!-- ============ C ============ -->
+<section class="variant" id="v-c">
+  <div class="vhead">
+    <h2>C · One section at a time</h2>
+    <p>The gate is per-section, so the screen is too. You confirm and it moves you on — hardest to
+    skim, easiest to actually finish.</p>
+  </div>
+
+  <div class="focusbar">
+    <span class="pill">Section 3 of 11</span>
+    <b>SNACKS</b>
+    <span style="color:var(--ink-3);font-size:12.5px">21 rows · page 3</span>
+    <span class="grow"></span>
+    <div class="prog"><i style="width:27%"></i></div>
+    <span style="color:var(--ink-3);font-size:12.5px">3 / 11 confirmed</span>
+  </div>
+
+  <div class="split">
+    <div class="left">
+      <div class="photo">
+        <div class="ph-top"><b>Page 3</b><span class="grow"></span>
+          <button class="iconbtn">−</button><button class="iconbtn">+</button></div>
+        <div class="shot">auto-scrolled to<br><b>SNACKS</b></div>
+      </div>
+    </div>
+    <div>
+      <div class="sect">
+        <div class="sect-h">
+          <span class="ic">🍟</span><h3>SNACKS</h3><span class="cnt">21 rows</span>
+          <span class="grow"></span>
+          <button class="btn btn-s">Rename</button>
+          <button class="btn btn-s">Change icon</button>
+        </div>
+        <div class="cards">
+          <div class="card"><div class="acts"><button class="iconbtn">✎</button><button class="iconbtn del">🗑</button></div>
+            <div class="nm">Chicken Sandwich</div><div class="pr"><b>380</b><span>Rs</span></div>
+            <div class="tags"><span class="tg non">chicken</span></div></div>
+          <div class="card"><div class="acts"><button class="iconbtn">✎</button><button class="iconbtn del">🗑</button></div>
+            <div class="nm">Veg Sandwich</div><div class="pr"><b>290</b><span>Rs</span></div>
+            <div class="tags"><span class="tg veg">veg</span></div></div>
+          <div class="card flag"><div class="acts"><button class="iconbtn">✎</button><button class="iconbtn del">🗑</button></div>
+            <div class="nm">French Fries</div><div class="pr"><b>100</b><span>Rs</span></div>
+            <div class="flagnote">⚑ price unreadable on the photo</div></div>
+          <div class="card add">+ Add row</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="foot">
+    <button class="btn">← Previous section</button>
+    <span class="grow"></span>
+    <span style="color:var(--ink-3);font-size:12.5px">8 sections left</span>
+    <button class="btn btn-p">✓ Prices correct — next section →</button>
+  </div>
+</section>
+
+<!-- ============ MOBILE ============ -->
+<section class="variant" id="v-m">
+  <div class="vhead">
+    <h2>📱 Mobile — 360 px</h2>
+    <p>Two treatments of the same gate. Both are real layouts, not the desktop grid squeezed.</p>
+  </div>
+
+  <div class="note" style="border-left-color:var(--warn);margin-bottom:20px">
+    <p style="margin:0"><b>What changes on touch, and why.</b> The desktop cards reveal edit and
+    delete <i>on hover</i> — and <b>hover does not exist on a phone</b>. So on mobile every card
+    carries a visible <code>⋯</code>, the price is tappable on its own (the one field actually
+    being checked), and the photo becomes a peek bar rather than a pane, because a side-by-side
+    split at 360 px gives neither half enough room.</p>
+  </div>
+
+  <div style="display:flex;gap:28px;flex-wrap:wrap;align-items:flex-start">
+
+    <!-- ---- M1 ---- -->
+    <div>
+      <h3 style="font-size:14.5px;margin-bottom:4px">M1 · Continuous, photo peeks</h3>
+      <p style="margin:0 0 10px;color:var(--ink-3);font-size:12.5px;max-width:360px">
+        Scroll everything. Sections collapse. Photo opens over the top when you need it.</p>
+      <div class="phone">
+        <div class="ph-bar">
+          <span>‹</span><b>Gate 1 · Prices</b><span style="opacity:.6">3/11</span>
+        </div>
+        <div class="ph-body">
+          <div class="peek">
+            <span class="pk-ic">🖼</span>
+            <div style="flex:1"><b style="font-size:12.5px">Page 3</b>
+              <div style="font-size:11px;color:var(--ink-3)">tap to open over the list</div></div>
+            <span style="color:var(--ink-3)">▾</span>
+          </div>
+
+          <div class="msect">
+            <div class="msect-h">
+              <span class="ic" style="width:22px;height:22px;font-size:12px">🍟</span>
+              <b style="font-size:13px">SNACKS</b>
+              <span style="color:var(--ink-3);font-size:11.5px">21</span>
+              <span class="grow"></span>
+              <span style="color:var(--ink-3)">▾</span>
+            </div>
+            <div class="mcards">
+              <div class="mcard">
+                <div class="mc-main">
+                  <div class="mc-nm">Chicken Sandwich</div>
+                  <div class="tags" style="margin-top:5px"><span class="tg non">chicken</span></div>
+                </div>
+                <button class="mc-pr">380</button>
+                <button class="mc-more">⋯</button>
+              </div>
+              <div class="mcard flag">
+                <div class="mc-main">
+                  <div class="mc-nm">French Fries</div>
+                  <div class="flagnote" style="margin-top:5px;font-size:11px">⚑ price not readable</div>
+                </div>
+                <button class="mc-pr warn">100</button>
+                <button class="mc-more">⋯</button>
+              </div>
+              <div class="mcard">
+                <div class="mc-main">
+                  <div class="mc-nm">Veg Sandwich</div>
+                  <div class="tags" style="margin-top:5px"><span class="tg veg">veg</span></div>
+                </div>
+                <button class="mc-pr">290</button>
+                <button class="mc-more">⋯</button>
+              </div>
+              <div class="mcard sheetopen">
+                <div class="mc-main">
+                  <div class="mc-nm">Chilli Potato</div>
+                  <input class="fld" style="margin-top:6px" value="Chilli Potato">
+                  <div style="display:flex;gap:6px;margin-top:6px">
+                    <input class="fld" style="margin:0;width:88px" value="260">
+                    <button class="btn btn-s btn-p" style="flex:1">Save</button>
+                    <button class="btn btn-s">✕</button>
+                  </div>
+                  <div style="display:flex;gap:6px;margin-top:7px;flex-wrap:wrap">
+                    <button class="chip" style="font-size:11px;padding:3px 8px">⧉ Split</button>
+                    <button class="chip" style="font-size:11px;padding:3px 8px">→ Move</button>
+                    <button class="chip alert" style="font-size:11px;padding:3px 8px">🗑 Delete</button>
+                  </div>
+                </div>
+              </div>
+              <div class="mcard add">+ Add row</div>
+            </div>
+            <button class="mconfirm">☐ Confirm the 21 prices in SNACKS</button>
+          </div>
+
+          <div class="msect">
+            <div class="msect-h">
+              <span class="ic" style="width:22px;height:22px;font-size:12px">🧃</span>
+              <b style="font-size:13px">JUICE</b>
+              <span style="color:var(--ink-3);font-size:11.5px">12</span>
+              <span class="grow"></span>
+              <span class="okpill">✓</span>
+              <span style="color:var(--ink-3)">▸</span>
+            </div>
+          </div>
+        </div>
+        <div class="ph-foot">
+          <div style="flex:1">
+            <div class="prog" style="max-width:none"><i style="width:27%"></i></div>
+            <div style="font-size:11px;color:var(--ink-3);margin-top:4px">3 of 11 confirmed</div>
+          </div>
+          <button class="btn btn-p btn-s" disabled>Next →</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ---- M2 ---- -->
+    <div>
+      <h3 style="font-size:14.5px;margin-bottom:4px">M2 · One section at a time</h3>
+      <p style="margin:0 0 10px;color:var(--ink-3);font-size:12.5px;max-width:360px">
+        The gate is per section, so the phone shows one. Confirm advances you.</p>
+      <div class="phone">
+        <div class="ph-bar">
+          <span>‹</span><b>SNACKS · 3 of 11</b><span style="opacity:.6">⋯</span>
+        </div>
+        <div class="ph-body">
+          <div class="shot" style="aspect-ratio:16/9;border-radius:0;border-bottom:1px solid var(--line)">
+            page 3 — scrolled to SNACKS<br><span style="font-size:11px">pinch to zoom · tap to fill screen</span>
+          </div>
+          <div style="padding:11px 12px 0;display:flex;align-items:center;gap:8px">
+            <span class="ic" style="width:24px;height:24px;font-size:13px">🍟</span>
+            <b style="font-size:13.5px">SNACKS</b>
+            <span style="color:var(--ink-3);font-size:12px">21 rows</span>
+            <span class="grow"></span>
+            <button class="btn btn-s">Rename</button>
+          </div>
+          <div class="mcards">
+            <div class="mcard">
+              <div class="mc-main"><div class="mc-nm">Chicken Sandwich</div>
+                <div class="tags" style="margin-top:5px"><span class="tg non">chicken</span></div></div>
+              <button class="mc-pr">380</button><button class="mc-more">⋯</button>
+            </div>
+            <div class="mcard flag">
+              <div class="mc-main"><div class="mc-nm">French Fries</div>
+                <div class="flagnote" style="margin-top:5px;font-size:11px">⚑ price not readable</div></div>
+              <button class="mc-pr warn">100</button><button class="mc-more">⋯</button>
+            </div>
+            <div class="mcard">
+              <div class="mc-main"><div class="mc-nm">Veg Sandwich</div>
+                <div class="tags" style="margin-top:5px"><span class="tg veg">veg</span></div></div>
+              <button class="mc-pr">290</button><button class="mc-more">⋯</button>
+            </div>
+            <div class="mcard">
+              <div class="mc-main"><div class="mc-nm">Buff Sekuwa</div>
+                <div class="tags" style="margin-top:5px"><span class="tg non">buff</span></div></div>
+              <button class="mc-pr">350</button><button class="mc-more">⋯</button>
+            </div>
+            <div class="mcard add">+ Add row</div>
+          </div>
+        </div>
+        <div class="ph-foot">
+          <button class="btn btn-s">←</button>
+          <button class="btn btn-p" style="flex:1">✓ Prices correct — next</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="legend" style="margin-top:24px">
+    <h4>Mobile decisions worth your opinion</h4>
+    <ul>
+      <li><b>The price is its own tap target.</b> It is the one field gate 1 exists to check, so it
+        is a button, not text — tap it, a number pad opens, done. Everything else is behind
+        <code>⋯</code>.</li>
+      <li><b>One card per row.</b> Two would fit at 360 px but the name would truncate, and a
+        truncated dish name is exactly what you cannot verify against a photo.</li>
+      <li><b>M1 keeps the photo out of the way</b> until you ask; <b>M2 keeps it on screen</b> and
+        pays for it with vertical room.</li>
+      <li><b>M2 is the better phone design and the worse desktop one</b> — so mobile and desktop
+        need not be the same variant. Picking B for desktop and M2 for phone is a legitimate answer.</li>
+    </ul>
+  </div>
+</section>
+
+<div class="legend">
+  <h4>What every card does, in all three</h4>
+  <ul>
+    <li><b>Edit in place</b> — name, price, description, dietary tags. No modal, no separate page.</li>
+    <li><b>Delete</b> — the row is scratch space; nothing has touched the tenant yet.</li>
+    <li><b>Split into variants</b> — <code>200/260</code> becomes two cards sharing a base name.</li>
+    <li><b>Move to another section</b> — drag, or pick from the card's menu.</li>
+    <li><b>Add a row</b> — the dashed card at the end of every section.</li>
+    <li><b>Printed text kept</b> — where the read name differs from the card, the original shows
+      under it, so a correction is never guesswork.</li>
+    <li><b>Flagged cards</b> earn the warm border: split from a shared line, low confidence, or a
+      price the model could not actually read.</li>
+  </ul>
+  <h4 style="margin-top:16px">Sections</h4>
+  <ul>
+    <li>Rename, reorder, change the suggested icon, or confirm prices — the icon comes from
+      <code>category_icons.for_section()</code> and the venue's own wording is never rewritten.</li>
+  </ul>
+</div>
+
+</div>
+<script>
+document.querySelectorAll('.tab').forEach(function(t){
+  t.addEventListener('click',function(){
+    document.querySelectorAll('.tab').forEach(function(x){x.classList.remove('on')});
+    document.querySelectorAll('.variant').forEach(function(x){x.classList.remove('on')});
+    t.classList.add('on');
+    document.getElementById('v-'+t.dataset.v).classList.add('on');
+    window.scrollTo({top:0,behavior:'smooth'});
+  });
+});
+document.querySelectorAll('.confirm').forEach(function(c){
+  c.addEventListener('click',function(){
+    c.classList.toggle('done');
+    c.textContent = c.classList.contains('done') ? '✓ Prices confirmed' : '☐ Confirm prices';
+  });
+});
+</script>
+</body>
+</html>

@@ -112,7 +112,7 @@ class ItemTagEditTests(TestCase):
         self.scan = MenuScan.objects.create(file='scans/x.pdf', status='extracted')
         self.item = Item.objects.create(
             source_scan=self.scan, status='draft', name='Veg Mo:Mo',
-            raw_name='Veg. Mo:Mo', tags=['veg'], embedding=[0.4] * 768)
+            raw_name='Veg. Mo:Mo', tags=['veg'], embedding=[0.4] * 1024)
         self.client.force_login(self.boss)
         self.url = f'/platform/scans/items/{self.item.pk}/tags/'
 
@@ -138,12 +138,12 @@ class ItemTagEditTests(TestCase):
 
     def test_editing_tags_does_not_re_embed(self):
         """The vector derives from name + description; tags do not touch it."""
-        with patch('menu.pipeline.embed.embed',
+        with patch('menu.pipeline.item_embed.PROVIDER',
                    side_effect=AssertionError('embedded on a tag edit')):
             resp = self.client.post(self.url, {'tags': 'veg'}, **self.apex)
         self.assertEqual(resp.status_code, 200)
         self.item.refresh_from_db()
-        self.assertEqual(list(self.item.embedding), [0.4] * 768)
+        self.assertEqual(list(self.item.embedding), [0.4] * 1024)
 
     def test_clearing_the_box_clears_the_tags(self):
         self.client.post(self.url, {'tags': ''}, **self.apex)

@@ -1,0 +1,15 @@
+{% extends 'ops/base.html' %}
+{% block title %}Pictures — {{ build.company.name }}{% endblock %}
+{% block top %}{% if running %}Generating pictures{% else %}The pictures{% endif %}{% endblock %}
+{% block content %}
+{% if running %}
+  <p class="wz-hint" style="margin-bottom:14px">The rows are written already — they are readable
+    below right now. Each picture is its own job, so one that fails neither restarts the run nor
+    holds the rest up. Closing the tab loses nothing.</p>
+{% else %}
+  <p class="wz-hint" style="margin-bottom:14px">Every row of the sheet, with the picture it will
+    publish. Rename, reprice, move or delete a row here, or re-roll a picture that came out wrong —
+    nothing reaches the venue until you publish.</p>
+{% endif %}
+{% include 'ops/builds/_progress.html' %}
+{% endblock %}

@@ -1,0 +1,58 @@
+{% extends 'ops/base.html' %}
+{% block title %}Published{% endblock %}
+{% block top %}Published{% endblock %}
+{% block content %}
+{% comment %}
+Screen 5. What actually happened, in the two places it happened: the tenant's
+live menu, and the global library this run fed back into.
+{% endcomment %}
+<div class="wz-note" style="background:var(--green-soft);border:1px solid var(--green);color:var(--green)">
+  <b>{{ build.company.name }} is live.</b>
+  {% for b in branches %}{{ b.name }}{% if not forloop.last %}, {% endif %}{% endfor %}
+</div>
+
+<div class="wz-grid">
+  <div class="wz-card">
+    <div class="wz-top"><h3>The menu</h3></div>
+    <div class="wz-meta">
+      <div><b>{{ report.created }}</b>items created</div>
+      <div><b>{{ report.updated }}</b>items updated</div>
+      <div><b>{{ report.categories_created|length }}</b>new sections</div>
+    </div>
+    {% if report.zero_priced %}
+      <div class="wz-note wz-note--bad">
+        {{ report.zero_priced|length }} item{{ report.zero_priced|pluralize }} published at Rs 0:
+        {% for n in report.zero_priced %}{{ n }}{% if not forloop.last %} · {% endif %}{% endfor %}
+      </div>
+    {% endif %}
+    {% if report.skipped %}
+      <div class="wz-note wz-note--bad">
+        {{ report.skipped|length }} row{{ report.skipped|pluralize }} skipped:
+        {% for n in report.skipped %}{{ n }}{% if not forloop.last %} · {% endif %}{% endfor %}
+      </div>
+    {% endif %}
+  </div>
+
+  <div class="wz-card">
+    <div class="wz-top"><h3>The library</h3></div>
+    {% comment %}
+    A build does not only consume the library, it grows it — which is what
+    makes the next venue's onboarding cheaper than this one's.
+    {% endcomment %}
+    <div class="wz-meta">
+      <div><b>{{ report.library_created }}</b>new entries</div>
+      <div><b>{{ report.library_reused }}</b>reused</div>
+    </div>
+    <div class="wz-hint">A reused entry is a dish another venue already prints — this run put
+      its photograph to work instead of paying to make another one.</div>
+  </div>
+</div>
+
+<div class="wz-foot">
+  <span style="color:var(--ink-3);font-size:12.5px">Re-publishing is safe: it updates the same
+    items rather than duplicating them.</span>
+  <span class="wz-grow"></span>
+  <a class="btn ghost" href="{% url 'ops:build_review' build.pk %}">Back to the build</a>
+  <a class="btn primary" href="{% url 'ops:builds' %}">Done</a>
+</div>
+{% endblock %}

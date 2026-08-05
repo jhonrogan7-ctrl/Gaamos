@@ -16,6 +16,12 @@ def service_worker(request):
     content = sw_path.read_text()
     response = HttpResponse(content, content_type="application/javascript")
     response["Service-Worker-Allowed"] = "/"
+    # The worker must be able to replace itself. Served with no cache headers
+    # the browser applies heuristic caching to the worker SCRIPT, so a client
+    # keeps running an old worker indefinitely -- a phone sat on v5 while v7
+    # was live, and two fixes never reached it. `no-cache` is revalidate, not
+    # "don't store": the 304 path still works, only stale-without-asking goes.
+    response["Cache-Control"] = "no-cache, max-age=0, must-revalidate"
     return response
 
 

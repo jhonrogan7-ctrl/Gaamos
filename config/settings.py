@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.sessions",
     "django.contrib.staticfiles",
+    "django.contrib.postgres",     # pg_trgm lookups + GIN opclass indexes
     "core",
     "menu",
     "ops",
@@ -126,6 +127,57 @@ SCAN_IMAGE_SOURCE = os.environ.get("SCAN_IMAGE_SOURCE", "pexels")
 NVIDIA_API_KEY = os.environ.get("NVIDIA_API_KEY", "")
 NVIDIA_IMAGE_MODEL = os.environ.get("NVIDIA_IMAGE_MODEL",
                                     "black-forest-labs/flux.2-klein-4b")
+NVIDIA_BASE_URL = os.environ.get(
+    "NVIDIA_BASE_URL", "https://integrate.api.nvidia.com/v1")
+# Probed 2026-07-30 against the live key. Do not change a model ID without
+# re-running `probe_models` — listing a model is not the same as being able to
+# invoke it (two embedding models are listed and 404 for this account).
+NVIDIA_VISION_MODEL = os.environ.get(
+    "NVIDIA_VISION_MODEL", "nvidia/nemotron-nano-12b-v2-vl")
+NVIDIA_EMBED_MODEL = os.environ.get(
+    "NVIDIA_EMBED_MODEL", "nvidia/nv-embedqa-e5-v5")
+NVIDIA_TEXT_MODEL = os.environ.get(
+    "NVIDIA_TEXT_MODEL", "meta/llama-3.3-70b-instruct")
+
+# Requests per minute and a floor between consecutive calls, per model ID.
+# `default` applies to any model not named here. Image generation keeps its
+# ~10 s pacing; text and embed run at whatever the tier allows.
+NVIDIA_RATE_LIMITS = {
+    "default": {"rpm": 40, "min_interval": 0.0},
+    NVIDIA_IMAGE_MODEL: {"rpm": 6, "min_interval": 10.0},
+    NVIDIA_VISION_MODEL: {"rpm": 6, "min_interval": 2.0},
+    NVIDIA_EMBED_MODEL: {"rpm": 60, "min_interval": 0.0},
+    NVIDIA_TEXT_MODEL: {"rpm": 20, "min_interval": 0.0},
+}
+
+# Which vision backend `extract_menu_scan` uses: "nvidia" or "gemini".
+MENU_EXTRACT_BACKEND = os.environ.get("MENU_EXTRACT_BACKEND", "nvidia")
+
+# Second-look price verification in `extract_nv` (rule 6). OFF by default: it
+# has only ever run against a stub verifier, so the number that matters — how
+# many TRUE printed prices it nulls as collateral — does not exist yet. Turning
+# it on doubles the vision calls per page. Measure on a real card first.
+MENU_PRICE_VERIFY = os.environ.get("MENU_PRICE_VERIFY", "") == "1"
+
+# --- Matcher thresholds (menu/matching.py) ---------------------------------
+# Untuned by choice, not by neglect. `match_report --holdout` measures false
+# matches against a truth set derived from the same key function layer 1
+# (exact) uses -- so a fuzzy (trigram/vector) true positive is structurally
+# impossible in that harness, and its false-match count for layers 2-3 does
+# not measure what it appears to. Task 8 (phase-3 plan) evaluated this and
+# explicitly declined to tune against it.
+#
+# What actually bounds the risk here is `AUTO_LAYERS` in menu/matching.py:
+# layers 2-3 can only ever produce `suggested`, never `auto`, so a wrong fuzzy
+# match costs one human click at the review gate, not a wrong photo reaching a
+# paying guest. Do NOT tune `MENU_MATCH_HIGH` / `MENU_MATCH_MID` against
+# `match_report`'s false-match number -- that requires human-judged ground
+# truth on the rows layer 1 misses, which does not exist yet.
+MENU_MATCH_HIGH = float(os.environ.get("MENU_MATCH_HIGH", "0.90"))
+MENU_MATCH_MID = float(os.environ.get("MENU_MATCH_MID", "0.55"))
+# Below this a trigram candidate is not worth a database row, let alone a
+# human's attention. Spec §4 layer 2.
+MENU_MATCH_TRIGRAM_FLOOR = float(os.environ.get("MENU_MATCH_TRIGRAM_FLOOR", "0.35"))
 
 # Free stock-photo APIs for the image 'find' path (all from .env, never committed).
 PEXELS_API_KEY = os.environ.get("PEXELS_API_KEY", "")

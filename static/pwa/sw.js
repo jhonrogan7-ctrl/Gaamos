@@ -8,15 +8,16 @@
  *   GET navigations -> network-first, offline fallback page; HTML never cached
  *   GET /static/    -> stale-while-revalidate (ignoreSearch tolerates ?v=)
  *   anything else (POSTs, /media/, SSE streams, cross-origin) -> untouched
- *
- * The navigation branch is deliberately GET-only. A form submit is also a
- * navigation, and re-issuing one through fetch(req) cannot replay a
- * file-backed multipart body — the fetch rejects, the offline fallback
- * swallows it, and the upload never reaches the network. That silently broke
- * the branch promotion image upload (the dashboard's only multipart form)
- * while small urlencoded POSTs kept working.
  */
-const VERSION = "v6";
+/* v7 (2026-08-03): navigations are now GET-only — a POST form submission was
+ * being re-issued inside the worker and lost, which in an installed PWA reads
+ * as the submit button doing nothing.
+ * v6 (2026-08-03): the menu-build wizard added ~120 `.wz-*` rules to the
+ * precached app.css. `?v=` does NOT defeat this cache -- /static/ is matched
+ * with `ignoreSearch: true` against the bare precache key -- so without this
+ * bump every returning client keeps serving the OLD app.css indefinitely and
+ * sees the wizard unstyled. */
+const VERSION = "v7";
 const CACHE = `gaamos-shell-${VERSION}`;
 
 const PRECACHE = [
@@ -45,6 +46,12 @@ self.addEventListener("activate", (e) => {
 self.addEventListener("fetch", (e) => {
   const req = e.request;
 
+  // GET only. A form submission is ALSO `mode === "navigate"`, and re-issuing
+  // a POST through `fetch(req)` in here can lose it — a multipart upload (the
+  // wizard posts an 8 MB PDF) is the case that actually breaks — after which
+  // the `.catch()` below quietly serves the offline page and the request never
+  // reaches the server at all. In an installed PWA that reads as the submit
+  // button doing nothing. Let the browser own its own form posts.
   if (req.mode === "navigate" && req.method === "GET") {
     e.respondWith(
       fetch(req).catch(() =>

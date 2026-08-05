@@ -149,6 +149,14 @@ h1,h2,h3 { font-family: var(--hd); }
   .btn.ghost { background: #fff; color: var(--ink); border: 1px solid var(--line-2); }
   .btn.ghost:hover { border-color: var(--ink-3); }
   .btn-sm { padding: 7px 12px; font-size: 11.5px; border-radius: 9px; }
+  /* A disabled button has to LOOK disabled. The generating screen holds
+     "Continue to review" disabled for the whole run, and while it rendered as a
+     full-strength primary it invited a click that did nothing. Follows the
+     modifiers above so it wins over `.btn.primary`'s background and shadow. */
+  .btn:disabled, .btn[disabled] {
+    background: var(--line); color: var(--ink-3); box-shadow: none;
+    cursor: not-allowed; opacity: .8;
+  }
 
   /* QR sheet preview: sheet on the left, actions on the right. Collapses to a
      single column on mobile (the mobile override lives with the other <900px
@@ -698,6 +706,117 @@ h1,h2,h3 { font-family: var(--hd); }
   .imp-bar button { font: inherit; font-size: 12px; padding: 3px 12px; border: 1px solid var(--accent-deep); border-radius: 8px; background: transparent; color: var(--accent-deep); cursor: pointer; }
 
   /* ══════════════════════════════════════════
+     MENU-BUILD WIZARD (ops/builds/*) — phase 4a.
+     Namespaced `wz-` on purpose: the wireframe calls these .bcard/.cta/.st,
+     and .bcard and .cta ALREADY EXIST above with dashboard meanings. Reusing
+     them would have inherited .bcard .bh / .bcard.add and silently restyled
+     the venue dashboard. Buttons and .panel are the project's own, not the
+     wireframe's — one button idiom, not two.
+     Mobile overrides live in the <900px block at the end of this layer.
+  ══════════════════════════════════════════ */
+  .wz-bar { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 14px; }
+  .wz-grow { flex: 1; }
+  .wz-hint { font-size: 12.5px; color: var(--ink-3); line-height: 1.5; margin-top: 4px; }
+
+  .wz-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(290px, 1fr)); gap: 14px; }
+  .wz-card { background: var(--panel); border: 1px solid var(--line); border-radius: 16px; padding: 16px; display: flex; flex-direction: column; }
+  .wz-card--new { border-style: dashed; border-color: var(--line-2); align-items: center; justify-content: center; color: var(--accent-deep); font-weight: 800; font-size: 13px; min-height: 160px; text-decoration: none; }
+  .wz-top { display: flex; align-items: center; gap: 8px; }
+  .wz-top h3 { font-family: var(--hd); font-weight: 800; font-size: 15px; margin: 0; flex: 1; min-width: 0; overflow-wrap: anywhere; }
+  .wz-sub { font-size: 11.5px; color: var(--ink-3); font-weight: 600; margin-top: 3px; }
+  .wz-meta { display: flex; gap: 16px; margin: 13px 0 12px; flex-wrap: wrap; }
+  .wz-meta div { font-size: 10px; color: var(--ink-3); font-weight: 700; }
+  .wz-meta b { display: block; font-family: var(--hd); font-size: 18px; color: var(--ink); }
+  .wz-cta { display: flex; gap: 8px; margin-top: auto; flex-wrap: wrap; }
+  .wz-prog { height: 5px; background: #edeff2; border-radius: 99px; overflow: hidden; margin-top: 10px; }
+  .wz-prog i { display: block; height: 100%; background: var(--accent-grad); border-radius: 99px; }
+
+  .wz-st { font-size: 10.5px; font-weight: 800; padding: 3px 9px; border-radius: 999px; white-space: nowrap; }
+  .wz-st--done { background: var(--green-soft); color: var(--green); }
+  .wz-st--gate { background: var(--accent-soft); color: var(--accent-deep); }
+  .wz-st--work { background: #dbeafe; color: #1e40af; }
+  .wz-st--fail { background: #fee2e2; color: #b91c1c; }
+  .wz-st--draft { background: #f1f5f9; color: #64748b; }
+
+  .wz-note { border-radius: 10px; padding: 10px 14px; font-size: 12.5px; font-weight: 600; margin-bottom: 12px; }
+  .wz-note--bad { background: #fee2e2; border: 1px solid #fca5a5; color: #b91c1c; }
+
+  .wz-pickgrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 9px; margin-top: 11px; }
+  .wz-pick { display: block; border: 1px solid var(--line-2); border-radius: 12px; padding: 11px 13px; cursor: pointer; background: #fff; min-height: 44px; }
+  .wz-pick b { display: block; font-size: 13px; font-weight: 700; }
+  .wz-pick span { font-size: 11px; color: var(--ink-3); font-weight: 600; }
+  /* The native control is the accessible one and stays focusable — it is moved
+     out of sight, never `display:none`, which would drop it from the tab order
+     and from the label's own click target. */
+  .wz-pick-input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+  .wz-pick:has(.wz-pick-input:checked), .wz-pick.on { border-color: var(--accent); background: var(--accent-soft); }
+  .wz-pick:focus-within { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+  .wz-doc { display: flex; align-items: center; gap: 12px; background: var(--panel); border: 1px solid var(--line); border-radius: 13px; padding: 12px 14px; }
+  .wz-docbody { flex: 1; min-width: 0; }
+  .wz-nm { font-size: 13px; font-weight: 700; overflow-wrap: anywhere; }
+  .wz-dmsg { font-size: 12px; color: var(--ink-3); margin-top: 2px; }
+
+  .wz-spin { display: inline-block; width: 11px; height: 11px; border: 2px solid currentColor; border-right-color: transparent; border-radius: 50%; animation: wz-spin .7s linear infinite; vertical-align: -1px; }
+  @keyframes wz-spin { to { transform: rotate(360deg); } }
+
+  /* ── Kept from gate 1, which is gone: the section count, the row list and
+     the fields are all re-homed on the review screen and the picture tile. ── */
+  .wz-sect-cnt { font-size: 11.5px; color: var(--ink-3); font-weight: 700; }
+  .wz-rows { display: flex; flex-direction: column; gap: 8px; margin-top: 11px; }
+  .wz-fld { width: 100%; font: inherit; font-size: 13px; padding: 9px 11px; min-height: 40px; border: 1px solid var(--line-2); border-radius: 9px; background: #fff; color: var(--ink); }
+  .wz-fld--pr { width: 92px; flex: none; }
+  .wz-foot { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-top: 16px; padding-top: 13px; border-top: 1px solid var(--line); }
+  .wz-foot form { margin: 0; }
+
+  /* ── GENERATING — every row of the sheet, its picture arriving behind it.
+     The tile is sized so a 110-row card is scannable: the eye is looking for
+     the picture that is wrong, not reading the menu. ── */
+  .wz-sech { display: flex; align-items: baseline; gap: 9px; flex-wrap: wrap; margin: 18px 0 9px; }
+  .wz-sech h3 { font-family: var(--hd); font-size: 14.5px; font-weight: 800; margin: 0; }
+  .wz-sech-sub { font-size: 12px; color: var(--ink-2); font-weight: 700; }
+  /* Its own class, NOT `.wz-grid`: that name already lays out the build cards
+     on the list, review and published screens at minmax(290px). A second
+     `.wz-grid` here would win by source order and silently halve the card width
+     on all three. */
+  .wz-tilegrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(148px, 1fr)); gap: 11px; }
+  .wz-tile { background: var(--panel); border: 1px solid var(--line); border-radius: 13px; padding: 9px; }
+  .wz-tile--flag { border-color: #fcd34d; background: #fffbeb; }
+  /* A square slot, held from the first render: the picture lands into a space
+     that is already there rather than shoving the grid down under the cursor. */
+  .wz-tile-img { position: relative; aspect-ratio: 1 / 1; border-radius: 9px; background: #eef1f5; overflow: hidden; display: flex; align-items: center; justify-content: center; text-align: center; padding: 8px; }
+  /* Sits over the picture it is replacing, so a re-roll reads as "a new one is
+     coming" rather than "nothing happened". */
+  .wz-tile-again { position: absolute; inset: auto 0 0 0; background: rgba(20,23,31,.78); color: #fff; font-size: 10.5px; font-weight: 700; padding: 4px 6px; display: flex; align-items: center; justify-content: center; gap: 5px; }
+  .wz-tile-img img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .wz-tile-wait { font-size: 11px; color: var(--ink-3); }
+  .wz-tile-err { font-size: 11px; color: #b91c1c; font-weight: 600; overflow-wrap: anywhere; }
+  .wz-tile-nm { font-size: 13px; font-weight: 700; margin-top: 8px; overflow-wrap: anywhere; }
+  .wz-tile-var { font-size: 11.5px; color: var(--ink-3); margin-top: 1px; }
+  .wz-tile-pr { font-family: var(--hd); font-size: 14px; font-weight: 800; margin-top: 3px; }
+  .wz-tile-note { font-size: 11px; color: #92400e; font-weight: 700; margin-top: 5px; overflow-wrap: anywhere; }
+  /* Always visible, never hover-revealed: hover does not exist on touch, and a
+     reviewer on a phone would have no way to reach a re-roll at all. */
+  /* MUST wrap. The tile is 148px wide and these buttons are `nowrap`, so on one
+     line they overflowed the tile and covered its neighbour — which then sat on
+     top in paint order and swallowed every click meant for the row underneath.
+     Invisible to any markup assertion; a browser found it. */
+  .wz-tile-act { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 7px; }
+  .wz-tile-act form { margin: 0; }
+  /* `nowrap` because the tile is only 148px wide and "Re-roll" was breaking
+     across two lines mid-word. */
+  .wz-tile-btn { font-family: var(--bd); font-size: 11px; font-weight: 700; white-space: nowrap; color: var(--ink-2); background: #fff; border: 1px solid var(--line-2); border-radius: 8px; padding: 5px 8px; cursor: pointer; }
+  .wz-tile-btn:hover { border-color: var(--ink-3); color: var(--ink); }
+  .wz-tile-btn--alert { color: #b91c1c; border-color: #fecaca; width: 100%; }
+  .wz-tile-btn--alert:hover { border-color: #b91c1c; color: #b91c1c; }
+  .wz-tile-edit { margin-top: 7px; display: flex; flex-direction: column; gap: 6px; }
+  .wz-tile-edit form { margin: 0; display: flex; flex-direction: column; gap: 6px; }
+  .wz-tile-edit-r { display: flex; gap: 6px; }
+  .wz-tile-edit-r .wz-fld { min-width: 0; flex: 1; }
+  .wz-tile-tune { margin-top: 7px; }
+  .wz-tile-prompt { font-size: 11.5px; line-height: 1.4; width: 100%; resize: vertical; }
+
+  /* ══════════════════════════════════════════
      MOBILE DASHBOARD SHELL — <900px overrides.
      MUST stay at the END of @layer components: .side/.top overrides share
      specificity with their base rules above, so source order decides
@@ -735,6 +854,26 @@ h1,h2,h3 { font-family: var(--hd); }
     .ops-table { display: none; }
     .ops-form fieldset { max-width: none; }
     .ops-card .actions .btn, .ops-card .actions .ops-status { min-height: 44px; }
+
+    /* ── MENU-BUILD WIZARD MOBILE — one card per row, real tap targets.
+       Must stay after the base .wz-* rules above: these share specificity
+       with them, so source order is what decides. ── */
+    .wz-grid { grid-template-columns: 1fr; gap: 10px; }
+    /* The tile grid stays multi-column on a phone on purpose — two thumbnails
+       abreast is how you scan 110 pictures for the wrong one. Only its floor
+       comes down, so a narrow screen still fits two. */
+    .wz-tilegrid { grid-template-columns: repeat(auto-fill, minmax(132px, 1fr)); gap: 9px; }
+    .wz-card { padding: 13px 14px; }
+    .wz-pickgrid { grid-template-columns: 1fr; }
+    /* Every action is thumb-sized. There is no hover on touch, so nothing here
+       may be hover-revealed and nothing may be smaller than a fingertip. */
+    .wz-cta .btn, .wz-doc .btn, .wz-bar .btn { min-height: 44px; flex: 1; }
+    .wz-meta { gap: 12px; }
+    .wz-doc { flex-wrap: wrap; }
+    /* The tile's own controls are the smallest things on the screen, so they
+       are the ones that have to grow to a fingertip. */
+    .wz-tile-btn { min-height: 40px; padding: 7px 10px; }
+    .wz-tile-edit .btn { min-height: 44px; }
   }
 }
 

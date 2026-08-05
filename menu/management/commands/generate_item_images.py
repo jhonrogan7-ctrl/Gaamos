@@ -21,16 +21,17 @@ Example:
 """
 import os
 import re
-import tempfile
 import time
 from pathlib import Path
 
+from django.conf import settings
 from django.core.management.base import BaseCommand, CommandError
 from django.utils.text import slugify
 
 from menu.models import ImageAsset
 # Imported as modules, not names, so tests can patch the collaborators.
-from menu.pipeline import dish_lexicon, generate_flux, images, intake, prompt_sheet
+from menu.pipeline import (dish_lexicon, generate_flux, images, intake,
+                           prompt_sheet, throttle)
 
 
 def _tags(row):
@@ -69,15 +70,6 @@ def covered_slugs(listing_path):
     return out
 
 
-def _to_webp(raw_bytes, size):
-    with tempfile.TemporaryDirectory() as tmp:
-        src = Path(tmp) / 'raw'
-        dest = Path(tmp) / 'out.webp'
-        src.write_bytes(raw_bytes)
-        images.to_thumbnail(str(src), str(dest), size)
-        return dest.read_bytes()
-
-
 class Command(BaseCommand):
     help = ("Generate menu images from a markdown prompt sheet via FLUX and "
             "deposit them as pending ImageAssets (resumable, idempotent).")
@@ -104,7 +96,9 @@ class Command(BaseCommand):
         parser.add_argument('--skip-key', action='append', default=[],
                             help='Never generate this key (repeatable).')
         parser.add_argument('--delay', type=float, default=10.0,
-                            help='Seconds to wait between calls (default: 10).')
+                            help='Advisory only since 2026-08-01: pacing now '
+                                 'comes from the shared throttle budget for '
+                                 'NVIDIA_IMAGE_MODEL.')
         parser.add_argument('--retries', type=int, default=3,
                             help='Retries per item on failure (default: 3).')
         parser.add_argument('--backoff', type=float, default=30.0,
@@ -141,13 +135,15 @@ class Command(BaseCommand):
                 if _is_rate_limited(exc):
                     if limited_used >= opts['retries']:
                         raise
-                    wait = opts['backoff'] * (2 ** limited_used)
+                    wait = throttle.backoff_seconds(limited_used,
+                                                    base=opts['backoff'])
                     limited_used += 1
                     kind = f"rate-limit {limited_used}/{opts['retries']}"
                 else:
                     if error_used >= opts['error_retries']:
                         raise
-                    wait = opts['error_backoff'] * (2 ** error_used)
+                    wait = throttle.backoff_seconds(error_used,
+                                                    base=opts['error_backoff'])
                     error_used += 1
                     kind = f"error {error_used}/{opts['error_retries']}"
                 self.stderr.write(f"    retry ({kind}) in {wait:.0f}s "
@@ -171,11 +167,9 @@ class Command(BaseCommand):
                         .values_list('found_for_slug', flat=True))
         covered = covered_slugs(opts['skip_names']) if opts['skip_names'] else set()
         include, skip_keys = set(opts['include_key']), set(opts['skip_key'])
-        delay = opts['delay']
 
         generated = skipped = failed = deduped = elsewhere = 0
         filtered = []
-        waited = False
         for row in todo:
             if limit is not None and generated >= limit:
                 break
@@ -190,13 +184,15 @@ class Command(BaseCommand):
                 self.stdout.write(f"  would generate {row['key']}: {prompt[:70]}…")
                 generated += 1
                 continue
-            if waited and delay:
-                time.sleep(delay)                     # pace the hosted endpoint
-            waited = True
+            # One budget for the image model, shared with every other caller.
+            # The old `--delay` sleep only knew about this process, so a worker
+            # generating at the same time doubled the real rate. No "skip the
+            # first" guard is needed: an empty bucket returns 0 immediately.
+            throttle.acquire(settings.NVIDIA_IMAGE_MODEL)
             try:
                 seed = generate_flux.seed_for(row['key'], opts['reroll'])
                 raw = self._generate(prompt, opts, seed)
-                webp = _to_webp(raw, opts['size'])
+                webp = images.to_webp(raw, opts['size'])
             except generate_flux.ContentFiltered:
                 # Not retryable at any seed. Report it so the prompt can be
                 # reworded by hand, and keep going.

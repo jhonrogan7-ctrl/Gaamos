@@ -24,7 +24,7 @@ from menu.models import Branch, Company, ImageAsset, Item, Membership, MenuScan
 from menu.tenancy import reset_current_company, set_current_company
 from menu.tasks import extract_menu_scan, find_images_for_scan
 from menu.pipeline import embed as image_embed
-from menu.pipeline import embed as item_embed
+from menu.pipeline import item_embed
 from menu.pipeline import intake as pipeline_intake
 from menu.pipeline import normalize
 from menu.pipeline import photo_search
@@ -84,7 +84,7 @@ def leads(request):
     if status in valid:
         qs = qs.filter(status=status)
     return render(request, 'ops/leads.html', {
-        'stats': _stats(), 'active': 'leads',
+        'ops_stats': _stats(), 'active': 'leads',
         'leads': qs, 'status_filter': status,
         'statuses': Lead.STATUS_CHOICES,
     })
@@ -114,7 +114,7 @@ def tenants(request):
                  .annotate(branch_count=Count('branches')))
     password_note = request.session.pop('ops_password_note', None)
     return render(request, 'ops/tenants.html', {
-        'stats': _stats(), 'active': 'tenants',
+        'ops_stats': _stats(), 'active': 'tenants',
         'companies': companies, 'base_domain': settings.BASE_DOMAIN,
         'password_note': password_note,
     })
@@ -187,7 +187,7 @@ def tenant_new(request):
                        'email': lead.email}
         form = TenantCreateForm(initial=initial)
     return render(request, 'ops/tenant_form.html', {
-        'stats': _stats(), 'active': 'new', 'form': form, 'lead': lead,
+        'ops_stats': _stats(), 'active': 'new', 'form': form, 'lead': lead,
     })
 
 
@@ -198,7 +198,7 @@ def tenant_created(request, company_id):
     if note and note.get('company_id') != company.id:
         note = None
     return render(request, 'ops/tenant_created.html', {
-        'stats': _stats(), 'active': 'tenants', 'company': company,
+        'ops_stats': _stats(), 'active': 'tenants', 'company': company,
         'base_domain': settings.BASE_DOMAIN, 'note': note,
     })
 
@@ -339,7 +339,8 @@ def scan_combine(request, scan_id):
         return HttpResponseBadRequest('combine needs at least one other draft row')
     keeper.name = keeper.split_from or keeper.name
     keeper.variant_label = ''
-    keeper.embedding = item_embed.embed(f"{keeper.name} {keeper.description}".strip())
+    keeper.embedding = item_embed.embed_text(
+        f"{keeper.name} {keeper.description}".strip())
     keeper.save(update_fields=['name', 'variant_label', 'embedding'])
     for sibling in siblings:
         sibling.status = 'merged'
@@ -522,7 +523,7 @@ def image_review(request):
     """Staff review queue: every pending library asset awaiting verification."""
     assets = ImageAsset.objects.filter(status='pending').order_by('-created_at')
     return render(request, 'ops/images_review.html', {
-        'stats': _stats(), 'active': 'images', 'assets': assets,
+        'ops_stats': _stats(), 'active': 'images', 'assets': assets,
     })
 
 
@@ -569,7 +570,7 @@ def image_browse(request):
     if tag:
         assets = assets.filter(tags__contains=[tag])
     return render(request, 'ops/images_browse.html', {
-        'stats': _stats(), 'active': 'images',
+        'ops_stats': _stats(), 'active': 'images',
         'assets': assets, 'q': q, 'tag': tag,
     })
 

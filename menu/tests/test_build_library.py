@@ -1,0 +1,682 @@
+"""The backfill that turns four live tenants into a library.
+
+Two rules are load-bearing and each has its own test: a rejected asset is never
+adopted (two of them are live on a real menu today), and a venue's own
+photograph never leaks to another tenant.
+"""
+import hashlib
+from pathlib import Path
+
+import pytest
+from django.conf import settings
+
+from menu import library, matching
+from menu.models import (Branch, BranchCategory, BranchItemPlacement,
+                         BranchMenuItem, Category, Company, ImageAsset, Item,
+                         MenuItem)
+
+
+def _png(marker):
+    """Distinct bytes per marker, so each item hashes to its own asset."""
+    return b'\x89PNG\r\n\x1a\n' + marker.encode()
+
+
+def _asset(marker, *, status='verified', prompt='', source='flux'):
+    body = _png(marker)
+    rel = f'imagelib/{marker}.webp'
+    path = Path(settings.MEDIA_ROOT) / rel
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_bytes(body)
+    return ImageAsset.objects.create(
+        name=marker, source=source, file=rel, status=status, prompt=prompt,
+        content_hash=hashlib.sha256(body).hexdigest())
+
+
+def _venue(slug, name='Venue'):
+    company = Company.objects.create(name=name, slug=slug)
+    branch = Branch.all_objects.create(company=company, name='Main', slug='main')
+    return company, branch
+
+
+def _item(company, branch, *, name, section, price=100, description='',
+          dietary_tags=None, body=None):
+    """A tenant menu item, placed in a category, optionally with a live image."""
+    category, _ = Category.all_objects.get_or_create(
+        company=company, slug=section.lower().replace(' ', '-'),
+        defaults={'name': section})
+    BranchCategory.objects.get_or_create(branch=branch, category=category)
+    # Suffixed with the category slug: a printed name is not unique within one
+    # company's card (`Apple` under both JUICE and MILK SHAKE / LASSI), and the
+    # menu item slug is unique per company.
+    slug = (name.lower().replace(' ', '-').replace('(', '').replace(')', '')
+            + '-' + category.slug)
+    image_url = ''
+    if body is not None:
+        rel = f'items/{company.slug}/{slug}.webp'
+        path = Path(settings.MEDIA_ROOT) / rel
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_bytes(body)
+        image_url = f'{settings.MEDIA_URL}{rel}'
+    menu_item = MenuItem.all_objects.create(
+        company=company, name=name, slug=slug, price=price,
+        description=description, dietary_tags=list(dietary_tags or []),
+        image_url=image_url)
+    BranchMenuItem.objects.create(branch=branch, menu_item=menu_item)
+    BranchItemPlacement.objects.create(branch=branch, menu_item=menu_item,
+                                       category=category)
+    return menu_item
+
+
+@pytest.mark.django_db
+def test_a_tenant_item_becomes_a_library_entry():
+    company, branch = _venue('chillzone', 'Chill Zone')
+    asset = _asset('tea', prompt='black tea in a glass, STYLE')
+    _item(company, branch, name='Black Tea', section='Hot Drinks', price=60,
+          description='strong milk tea', body=_png('tea'))
+
+    report = library.backfill([company])
+
+    entry = Item.objects.get(name='Black Tea')
+    assert report.created == 1
+    assert entry.status == 'active'
+    assert entry.search_name == 'black tea'
+    assert entry.category == 'Hot Drinks'
+    assert entry.reference_price == 60
+    assert entry.description == 'strong milk tea'
+    assert entry.image_asset_id == asset.pk
+    assert entry.image_prompt == 'black tea in a glass, STYLE'
+    assert entry.origin_company_id == company.pk
+    assert entry.shareable is True
+    assert entry.use_count == 1
+
+
+@pytest.mark.django_db
+def test_an_entry_with_no_asset_prompt_gets_one_composed():
+    """Every entry carries a prompt, so a matched item can be re-rolled at gate
+    2 without re-deriving anything."""
+    company, branch = _venue('chillzone')
+    _item(company, branch, name='Veg Momo', section='Snacks')
+
+    report = library.backfill([company])
+
+    entry = Item.objects.get(name='Veg Momo')
+    assert report.prompts_composed == 1
+    assert entry.image_prompt.startswith('Veg Momo,')
+    assert 'steamed pleated dumplings' in entry.image_prompt
+    assert 'no garnish' in entry.image_prompt
+
+
+@pytest.mark.django_db
+def test_two_venues_serving_one_dish_share_one_entry():
+    one, branch_one = _venue('chillzone')
+    two, branch_two = _venue('metro')
+    _asset('tea', prompt='black tea, STYLE')
+    _item(one, branch_one, name='Black Tea', section='Hot Drinks', price=60,
+          body=_png('tea'))
+    _item(two, branch_two, name='BLACK TEA', section='Beverages', price=80)
+
+    report = library.backfill([one, two])
+
+    assert Item.objects.filter(status='active').count() == 1
+    entry = Item.objects.get(status='active')
+    assert report.created == 1 and report.merged == 1
+    assert entry.use_count == 2
+    assert entry.reference_price == 60          # the first contributor's, not overwritten
+    assert entry.image_asset is not None        # the second venue inherits the image
+
+
+@pytest.mark.django_db
+def test_the_spellings_of_one_dish_share_one_entry():
+    one, branch_one = _venue('chillzone')
+    two, branch_two = _venue('metro')
+    _item(one, branch_one, name='Chicken Chow Mein', section='Noodles')
+    _item(two, branch_two, name='Chicken Chowmin', section='Noodles')
+
+    library.backfill([one, two])
+
+    assert Item.objects.filter(status='active').count() == 1
+    assert Item.objects.get(status='active').search_name == 'chicken chowmein'
+
+
+@pytest.mark.django_db
+def test_two_proteins_of_one_dish_stay_two_entries():
+    """The failure that reaches a guest as a dietary or religious violation, not
+    merely a wrong picture. It must not even be possible to merge them."""
+    company, branch = _venue('chillzone')
+    _item(company, branch, name='Steam Momo (Veg)', section='Momo')
+    _item(company, branch, name='Steam Momo (Buff)', section='Momo')
+
+    library.backfill([company])
+
+    entries = Item.objects.filter(status='active').order_by('variant_label')
+    assert entries.count() == 2
+    assert [e.variant_label for e in entries] == ['Buff', 'Veg']
+    assert {e.search_name for e in entries} == {'steam momo'}
+    assert {e.base_name for e in entries} == {'Steam Momo'}
+
+
+@pytest.mark.django_db
+def test_a_rejected_asset_is_never_adopted_and_is_reported():
+    """Two of these are live on Tranquility Inn's menu right now. An entry that
+    adopted one would hand that picture to the next venue too."""
+    company, branch = _venue('tranquility-inn')
+    _asset('lemon', status='rejected', prompt='lemon soda, STYLE')
+    _item(company, branch, name='Lemon Soda', section='Soft Drinks',
+          body=_png('lemon'))
+
+    report = library.backfill([company])
+
+    entry = Item.objects.get(name='Lemon Soda')
+    assert entry.image_asset_id is None
+    assert entry.image_prompt.startswith('Lemon Soda,')     # composed, not the rejected one's
+    assert entry.shareable is True                          # rejected != a venue photograph
+    assert len(report.rejected_live) == 1
+    assert 'lemon-soda' in report.rejected_live[0]
+
+
+@pytest.mark.django_db
+def test_a_venue_supplied_photograph_is_not_shareable():
+    """Founder, spec D2: it is the venue's property. Its entry is scoped to that
+    venue and never matches for another tenant."""
+    company, branch = _venue('tranquility-inn')
+    _item(company, branch, name='Simple Breakfast', section='Breakfast',
+          body=_png('their-own-photo'))       # no pool asset hashes to this
+
+    report = library.backfill([company])
+
+    entry = Item.objects.get(name='Simple Breakfast')
+    assert report.venue_photos == 1
+    assert entry.shareable is False
+    assert entry.origin_company_id == company.pk
+
+
+@pytest.mark.django_db
+def test_a_non_shareable_entry_is_never_merged_with_another_venues_row():
+    one, branch_one = _venue('tranquility-inn')
+    two, branch_two = _venue('chillzone')
+    _item(one, branch_one, name='Simple Breakfast', section='Breakfast',
+          body=_png('their-own-photo'))
+    _item(two, branch_two, name='Simple Breakfast', section='Breakfast')
+
+    library.backfill([one, two])
+
+    entries = Item.objects.filter(status='active', search_name='simple breakfast')
+    assert entries.count() == 2
+    assert sorted(e.shareable for e in entries) == [False, True]
+    assert all(e.use_count == 1 for e in entries)
+
+
+@pytest.mark.django_db
+def test_an_item_with_no_image_still_becomes_an_entry():
+    company, branch = _venue('chillzone')
+    _item(company, branch, name='Plain Rice', section='Rice')
+
+    library.backfill([company])
+
+    entry = Item.objects.get(name='Plain Rice')
+    assert entry.image_asset_id is None
+    assert entry.shareable is True         # nothing to leak
+    assert entry.image_prompt
+
+
+@pytest.mark.django_db
+def test_running_twice_changes_nothing():
+    """The backfill is resumable and re-runnable: it must not grow the library
+    or double a count."""
+    company, branch = _venue('chillzone')
+    _asset('tea', prompt='black tea, STYLE')
+    _item(company, branch, name='Black Tea', section='Hot Drinks', body=_png('tea'))
+
+    library.backfill([company])
+    before = list(Item.objects.filter(status='active')
+                  .values_list('pk', 'use_count', 'image_asset_id'))
+    second = library.backfill([company])
+
+    assert second.created == 0
+    assert list(Item.objects.filter(status='active')
+                .values_list('pk', 'use_count', 'image_asset_id')) == before
+
+
+@pytest.mark.django_db
+def test_a_merge_fills_gaps_but_never_overwrites():
+    one, branch_one = _venue('chillzone')
+    two, branch_two = _venue('metro')
+    _item(one, branch_one, name='Veg Thali', section='Thali', price=250)
+    _asset('thali', prompt='veg thali, STYLE')
+    _item(two, branch_two, name='Veg Thali', section='Thali', price=300,
+          description='rice, dal and two curries', dietary_tags=['veg'],
+          body=_png('thali'))
+
+    library.backfill([one, two])
+
+    entry = Item.objects.get(status='active')
+    assert entry.reference_price == 250                       # first venue's, kept
+    assert entry.description == 'rice, dal and two curries'    # gap, filled
+    assert entry.dietary_tags == ['veg']                       # gap, filled
+    assert entry.image_asset is not None                       # gap, filled
+    assert entry.image_prompt == 'veg thali, STYLE'            # gap, filled
+
+
+@pytest.mark.django_db
+def test_an_item_with_no_placement_is_reported_not_guessed_at():
+    company = Company.objects.create(name='Odd', slug='odd')
+    MenuItem.all_objects.create(company=company, name='Orphan', slug='orphan', price=10)
+
+    report = library.backfill([company])
+
+    assert Item.objects.filter(status='active').count() == 0
+    assert report.no_placement == ['odd/orphan']
+
+
+@pytest.mark.django_db
+def test_draft_rows_from_the_scan_flow_are_not_treated_as_library_entries():
+    """126 stale drafts sit in this table. They are not the library and must
+    not absorb a venue's item."""
+    Item.objects.create(name='Black Tea', status='draft', search_name='black tea')
+    company, branch = _venue('chillzone')
+    _item(company, branch, name='Black Tea', section='Hot Drinks')
+
+    library.backfill([company])
+
+    assert Item.objects.filter(status='active').count() == 1
+    assert Item.objects.filter(status='draft').count() == 1
+
+
+from io import StringIO
+
+from django.core.management import call_command
+from django.core.management.base import CommandError
+
+
+@pytest.mark.django_db
+def test_the_command_backfills_the_named_companies():
+    company, branch = _venue('chillzone')
+    _item(company, branch, name='Black Tea', section='Hot Drinks')
+    out = StringIO()
+
+    call_command('build_library', '--company', 'chillzone', stdout=out)
+
+    assert Item.objects.filter(status='active').count() == 1
+    assert 'created 1' in out.getvalue()
+
+
+@pytest.mark.django_db
+def test_an_unknown_company_slug_is_an_error_not_a_silent_no_op():
+    with pytest.raises(CommandError, match='nosuchvenue'):
+        call_command('build_library', '--company', 'nosuchvenue')
+
+
+@pytest.mark.django_db
+def test_dry_run_writes_nothing():
+    company, branch = _venue('chillzone')
+    _item(company, branch, name='Black Tea', section='Hot Drinks')
+    out = StringIO()
+
+    call_command('build_library', '--company', 'chillzone', '--dry-run', stdout=out)
+
+    assert Item.objects.filter(status='active').count() == 0
+    assert 'created 1' in out.getvalue()
+    assert 'rolled back' in out.getvalue()
+
+
+@pytest.mark.django_db
+def test_embed_refuses_to_run_under_dry_run():
+    """The combination is a contradiction, not a request to skip half the work:
+    a dry run would spend one live API call per entry and then roll every
+    vector back."""
+    _venue('venue', 'Venue')
+    with pytest.raises(CommandError, match='cannot be combined'):
+        call_command('build_library', '--company', 'venue', '--embed', '--dry-run')
+
+
+@pytest.mark.django_db
+def test_prune_drafts_removes_the_scan_flows_stale_rows_only():
+    Item.objects.create(name='Stale Draft', status='draft')
+    Item.objects.create(name='Live Entry', status='active')
+    out = StringIO()
+    company, branch = _venue('chillzone')
+
+    call_command('build_library', '--company', 'chillzone', '--prune-drafts', stdout=out)
+
+    assert Item.objects.filter(status='draft').count() == 0
+    assert Item.objects.filter(name='Live Entry').exists()
+    assert 'pruned 1 draft' in out.getvalue()
+
+
+@pytest.mark.django_db
+def test_clear_rejected_live_takes_the_rejected_picture_off_the_live_menu():
+    """A wrong photograph is a claim the guest orders from. Blank beats wrong."""
+    company, branch = _venue('tranquility-inn')
+    _asset('lemon', status='rejected')
+    menu_item = _item(company, branch, name='Lemon Soda', section='Soft Drinks',
+                      body=_png('lemon'))
+    out = StringIO()
+
+    call_command('build_library', '--company', 'tranquility-inn',
+                 '--clear-rejected-live', stdout=out)
+
+    menu_item.refresh_from_db()
+    assert menu_item.image_url == ''
+    assert 'cleared 1' in out.getvalue()
+
+
+@pytest.mark.django_db
+def test_without_the_flag_the_rejected_picture_is_reported_but_left_alone():
+    company, branch = _venue('tranquility-inn')
+    _asset('lemon', status='rejected')
+    menu_item = _item(company, branch, name='Lemon Soda', section='Soft Drinks',
+                      body=_png('lemon'))
+    out = StringIO()
+
+    call_command('build_library', '--company', 'tranquility-inn', stdout=out)
+
+    menu_item.refresh_from_db()
+    assert menu_item.image_url != ''
+    assert 'rejected asset' in out.getvalue()
+
+
+@pytest.mark.django_db
+def test_a_row_that_predates_the_library_gets_the_key_the_matcher_compares_on():
+    """The scan-review flow could approve an item into this table before it was
+    a library, so those rows carry no search_name and the matcher cannot see
+    them."""
+    stray = Item.objects.create(name='Ruslan Vodka 60ml', base_name='Ruslan Vodka',
+                                variant_label='60ml', category='HARD DRINKS',
+                                status='active', reference_price=300)
+    company, branch = _venue('chillzone')
+    _item(company, branch, name='Black Tea', section='Hot Drinks')
+
+    report = library.backfill([company])
+
+    stray.refresh_from_db()
+    assert stray.status == 'active'
+    assert stray.search_name == 'ruslan vodka'
+    assert stray.image_prompt                       # composed from its own name
+    assert 'Ruslan Vodka 60ml -> keyed' in report.reconciled[0]
+
+
+@pytest.mark.django_db
+def test_a_stray_row_that_duplicates_a_real_entry_is_merged_not_left_active():
+    """Two active rows on one key would make the matcher return an arbitrary one
+    of them. The venue-grounded entry keeps the key; the older row is folded in
+    with the model's own vocabulary, and nothing is deleted."""
+    stray = Item.objects.create(name='8848 Vodka 60ml', base_name='8848 Vodka',
+                                variant_label='60ml', category='HARD DRINKS',
+                                status='active', reference_price=300)
+    company, branch = _venue('chillzone')
+    _item(company, branch, name='8848 Vodka (60ml)', section='Hard Drinks', price=300)
+
+    library.backfill([company])
+
+    stray.refresh_from_db()
+    keeper = Item.objects.get(status='active', search_name='8848 vodka')
+    assert stray.status == 'merged'
+    assert stray.merged_into_id == keeper.pk
+    assert keeper.name == '8848 Vodka (60ml)'       # the one a real venue prints
+    assert Item.objects.filter(status='active', search_name='8848 vodka').count() == 1
+
+
+@pytest.mark.django_db
+def test_a_stray_row_fills_the_keepers_gaps_before_it_is_merged_away():
+    """Its image is the only copy of that picture the library has."""
+    asset = _asset('vodka', prompt='a shot of vodka, STYLE')
+    stray = Item.objects.create(name='8848 Vodka 60ml', variant_label='60ml',
+                                status='active', image_asset=asset,
+                                description='a nip of the local vodka')
+    company, branch = _venue('chillzone')
+    _item(company, branch, name='8848 Vodka (60ml)', section='Hard Drinks')
+
+    library.backfill([company])
+
+    stray.refresh_from_db()
+    keeper = Item.objects.get(status='active', search_name='8848 vodka')
+    assert stray.status == 'merged'
+    assert keeper.image_asset_id == asset.pk
+    assert keeper.description == 'a nip of the local vodka'
+
+
+@pytest.mark.django_db
+def test_reconciling_leaves_a_healthy_library_alone():
+    """Every entry the backfill writes already has a search_name, so a second
+    run must find nothing to reconcile."""
+    company, branch = _venue('chillzone')
+    _item(company, branch, name='Black Tea', section='Hot Drinks')
+
+    library.backfill([company])
+    second = library.backfill([company])
+
+    assert second.reconciled == []
+
+
+@pytest.mark.django_db
+def test_one_printed_name_in_two_sections_forms_two_entries():
+    """The Kailash Parbat card prints `Apple` at 250 under MILK SHAKE / LASSI
+    and `Apple` at 250 under JUICE. Before section completion these merged into
+    one entry and the lassi inherited the juice's photograph."""
+    company, branch = _venue('kailash-parbat', 'Kailash Parbat')
+    _item(company, branch, name='Apple', section='Juice', price=250)
+    _item(company, branch, name='Apple', section='Milk Shake / Lassi', price=250)
+
+    library.backfill([company])
+
+    keys = set(Item.objects.filter(status='active').values_list('search_name', flat=True))
+    assert keys == {'apple juice', 'apple shake'}
+
+
+@pytest.mark.django_db
+def test_one_dish_under_two_venues_differently_named_sections_stays_one_entry():
+    """`Hot Drinks` and `Beverages` are the same section by another name. This
+    is the 72-key case that putting the section INTO the key would destroy."""
+    company_a, branch_a = _venue('venue-a', 'Venue A')
+    company_b, branch_b = _venue('venue-b', 'Venue B')
+    _item(company_a, branch_a, name='Black Tea', section='Hot Drinks', price=50)
+    _item(company_b, branch_b, name='Black Tea', section='Beverages', price=60)
+
+    library.backfill([company_a, company_b])
+
+    entries = Item.objects.filter(status='active', search_name='black tea')
+    assert entries.count() == 1
+    assert entries.first().use_count == 2
+
+
+@pytest.mark.django_db
+def test_a_stray_entry_is_rekeyed_through_its_own_section():
+    """`reconcile_stray_entries` derives a key for a pre-library row. It reads
+    the row's `category`, which is where the backfill wrote its section."""
+    Item.objects.create(name='Apple', category='Juice', status='active',
+                        search_name='', image_prompt='')
+
+    library.reconcile_stray_entries(library.BackfillReport())
+
+    assert Item.objects.get(name='Apple').search_name == 'apple juice'
+
+
+@pytest.mark.django_db
+def test_embed_entries_gives_every_active_entry_a_vector():
+    company, branch = _venue('venue', 'Venue')
+    _item(company, branch, name='Black Tea', section='Hot Drinks')
+    library.backfill([company])
+
+    report = library.embed_entries(embedder=lambda text: [0.5] * 1024)
+
+    assert report.embedded == 1
+    assert Item.objects.get(search_name='black tea').embedding is not None
+
+
+@pytest.mark.django_db
+def test_embed_entries_embeds_the_text_the_matcher_will_query_with():
+    """The entry is a `passage` and the incoming row is a `query`; if the two
+    are built from different strings the vectors are quietly incomparable."""
+    company, branch = _venue('venue', 'Venue')
+    _item(company, branch, name='Black Tea', section='Hot Drinks')
+    library.backfill([company])
+    seen = []
+
+    library.embed_entries(embedder=lambda text: seen.append(text) or [0.5] * 1024)
+
+    assert seen == [matching.index_text('Black Tea', 'Hot Drinks')]
+
+
+@pytest.mark.django_db
+def test_embed_entries_skips_an_entry_that_already_has_one():
+    """517 calls is two minutes; re-running must not spend them again."""
+    company, branch = _venue('venue', 'Venue')
+    _item(company, branch, name='Black Tea', section='Hot Drinks')
+    library.backfill([company])
+    library.embed_entries(embedder=lambda text: [0.5] * 1024)
+
+    report = library.embed_entries(embedder=lambda text: [0.5] * 1024)
+
+    assert report.embedded == 0
+    assert report.skipped == 1
+
+
+@pytest.mark.django_db
+def test_embed_entries_reports_a_failure_rather_than_abandoning_the_run():
+    """A 500 on entry 200 of 517 must not cost the 199 already written."""
+    company, branch = _venue('venue', 'Venue')
+    _item(company, branch, name='Black Tea', section='Hot Drinks')
+    _item(company, branch, name='Veg Momo', section='Momo')
+    library.backfill([company])
+    calls = []
+
+    def _flaky(text):
+        calls.append(text)
+        if len(calls) == 1:
+            raise ValueError('endpoint said no')
+        return [0.5] * 1024
+
+    report = library.embed_entries(embedder=_flaky)
+
+    assert report.embedded == 1
+    assert len(report.failed) == 1
+
+
+@pytest.mark.django_db
+def test_a_recompleted_key_supersedes_the_stale_entry():
+    """Section completion re-keys `apple` to `apple juice`. Re-running the
+    backfill after that change must fold the old key into the new one rather
+    than leaving it beside it as a second live candidate."""
+    company, branch = _venue('kailash-parbat', 'Kailash Parbat')
+    _item(company, branch, name='Apple', section='Juice', price=250)
+    library.backfill([company])
+    stale = Item.objects.create(name='Apple', variant_label='', category='Juice',
+                                status='active', search_name='apple')
+
+    report = library.backfill([company])
+
+    stale.refresh_from_db()
+    successor = Item.objects.get(status='active', search_name='apple juice')
+    assert stale.status == 'merged'
+    assert stale.merged_into_id == successor.pk
+    assert report.superseded
+    assert f'#{stale.pk} Apple' in report.superseded[0]
+
+
+@pytest.mark.django_db
+def test_an_entry_with_no_successor_is_left_untouched():
+    """The rule that protects a scan-approved catalog row with no venue behind
+    it (the `8848 Vodka` case): no run can ever produce a successor for it, so
+    it must never be touched."""
+    stray = Item.objects.create(name='8848 Vodka', variant_label='',
+                                category='HARD DRINKS', status='active',
+                                search_name='8848 vodka', image_prompt='kept')
+    company, branch = _venue('chillzone')
+    _item(company, branch, name='Black Tea', section='Hot Drinks')
+
+    report = library.backfill([company])
+
+    stray.refresh_from_db()
+    assert stray.status == 'active'
+    assert stray.merged_into_id is None
+    assert stray.search_name == '8848 vodka'
+    assert stray.image_prompt == 'kept'
+    assert report.superseded == []
+
+
+@pytest.mark.django_db
+def test_the_successor_inherits_the_stale_entrys_gaps_but_never_overwrites():
+    company, branch = _venue('kailash-parbat', 'Kailash Parbat')
+    _item(company, branch, name='Apple', section='Juice', price=250,
+          description='fresh apple juice')
+    library.backfill([company])
+    asset = _asset('apple', prompt='a glass of apple juice, STYLE')
+    Item.objects.create(name='Apple', variant_label='', category='Juice',
+                        status='active', search_name='apple', image_asset=asset,
+                        description='an old note', dietary_tags=['veg'],
+                        reference_price=999)
+
+    library.backfill([company])
+
+    successor = Item.objects.get(status='active', search_name='apple juice')
+    assert successor.image_asset_id == asset.pk           # gap, filled
+    assert successor.dietary_tags == ['veg']               # gap, filled
+    assert successor.description == 'fresh apple juice'    # already had one, kept
+    assert successor.reference_price == 250                # already had one, kept
+
+
+@pytest.mark.django_db
+def test_a_not_shareable_stale_entry_is_never_superseded_by_another_companys_entry():
+    """A private entry (founder, spec D2) must never be handed to another
+    venue's row, superseding included."""
+    owner, _ = _venue('tranquility-inn')
+    other, other_branch = _venue('chillzone')
+    stale = Item.objects.create(name='Apple', variant_label='', category='Juice',
+                                status='active', search_name='apple',
+                                shareable=False, origin_company=owner)
+    _item(other, other_branch, name='Apple', section='Juice', price=250)
+
+    report = library.backfill([other])
+
+    stale.refresh_from_db()
+    assert stale.status == 'active'
+    assert stale.merged_into_id is None
+    assert report.superseded == []
+
+
+@pytest.mark.django_db
+def test_a_shareable_stale_entry_is_never_superseded_into_a_private_successor():
+    """A shared entry (spec D2) belongs to every tenant. Superseding it into
+    another venue's private (`shareable=False`) successor would pull it out
+    of every other tenant's candidate pool (it goes `merged`) and hand its
+    image to one venue's private entry -- which a pk tie can win even at
+    `use_count=1` (`min(-use_count, pk)`). Verified 0 occurrences in live
+    data, but the boundary must hold regardless.
+    """
+    company, branch = _venue('kailash-parbat', 'Kailash Parbat')
+    stale = Item.objects.create(name='Apple', variant_label='', category='Juice',
+                                status='active', search_name='apple',
+                                shareable=True)
+    _item(company, branch, name='Apple', section='Juice', price=250,
+          body=_png('own-apple-photo'))
+
+    report = library.backfill([company])
+
+    stale.refresh_from_db()
+    private_successor = Item.objects.get(status='active', search_name='apple juice')
+    assert private_successor.shareable is False
+    assert stale.status == 'active'
+    assert stale.merged_into_id is None
+    assert report.superseded == []
+
+
+@pytest.mark.django_db
+def test_superseding_a_second_time_changes_nothing():
+    company, branch = _venue('kailash-parbat', 'Kailash Parbat')
+    _item(company, branch, name='Apple', section='Juice', price=250)
+    library.backfill([company])
+    stale = Item.objects.create(name='Apple', variant_label='', category='Juice',
+                                status='active', search_name='apple')
+    library.backfill([company])
+    stale.refresh_from_db()
+    before = (stale.status, stale.merged_into_id)
+    before_active = set(Item.objects.filter(status='active')
+                        .values_list('pk', flat=True))
+
+    second = library.backfill([company])
+    stale.refresh_from_db()
+
+    assert second.superseded == []
+    assert (stale.status, stale.merged_into_id) == before
+    assert set(Item.objects.filter(status='active')
+              .values_list('pk', flat=True)) == before_active
