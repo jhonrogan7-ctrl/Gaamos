@@ -414,12 +414,15 @@
 .orn-clients-inner { max-width: 1180px; margin: 0 auto; }
 .orn-clients-head { text-align: center; }
 .orn-clients-sub { font-size: 16.5px; color: var(--ink-75); margin-top: 12px; }
+/* Centred flex-wrap, not a fixed grid. The roster is five — an odd count against
+   any even column count strands the last row against the left edge. Cards keep a
+   column's width via flex-basis, so rows that are full look identical to a grid
+   and only the short row differs: it centres instead of hanging. */
 .orn-clients-grid {
-  display: grid; grid-template-columns: repeat(3, 1fr); gap: 22px; margin-top: 44px;
+  display: flex; flex-wrap: wrap; justify-content: center;
+  gap: 22px; margin-top: 44px;
 }
-/* Five cards over three columns leave the last row short by one. That is the
-   real roster — a filler card to square the grid would be a fake client. */
-.orn-client { padding: 26px 24px; text-align: center; }
+.orn-client { flex: 0 1 calc((100% - 44px) / 3); padding: 26px 24px; text-align: center; }
 .orn-client-mark { width: 30px; height: 30px; margin: 0 auto 14px; opacity: .55; }
 .orn-client-name { font-family: Marcellus, serif; font-size: 23px; line-height: 1.2; }
 .orn-client-type {
@@ -601,8 +604,8 @@ textarea.orn-input { resize: vertical; }
   .orn-branch h3 { font-size: 28px; }
   .orn-branch-figures { width: 140px; height: 140px; }
   .orn-clients { padding: 0 18px 56px; }
-  .orn-clients-grid { grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 32px; }
-  .orn-client { padding: 22px 18px; }
+  .orn-clients-grid { gap: 14px; margin-top: 32px; }
+  .orn-client { flex-basis: calc((100% - 14px) / 2); padding: 22px 18px; }
   .orn-client-name { font-size: 20px; }
   .orn-pricing { padding: 0 18px 64px; }
   .orn-plans { grid-template-columns: 1fr; margin-top: 32px; }
@@ -633,7 +636,7 @@ textarea.orn-input { resize: vertical; }
   .orn-form { padding: 22px; }
   .orn-form-grid { grid-template-columns: 1fr; }
   .orn-field.orn-span-2 { grid-column: span 1; }
-  .orn-clients-grid { grid-template-columns: 1fr; }
+  .orn-client { flex-basis: 100%; }
   .orn-switch { width: 100%; }
   .orn-switch button { min-width: 0; padding: 11px 8px; }
   .orn-contact-steps { flex-direction: column; gap: 10px; }

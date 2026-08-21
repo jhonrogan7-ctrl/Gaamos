@@ -82,12 +82,15 @@ TABLE_QRS = ["1", "2", "3", "4", "5", "6", "7", "8"]
 # literals in every locale; only the type caption beside them is a translated
 # string. Five strings don't need a model — a Client table would cost a
 # migration and an admin for content that changes a few times a year.
+# Each venue carries a different ornament mark. One mark repeated five times
+# reads as a placeholder logo wall — the thing the typographic cards exist to
+# avoid. The five variants are the full set defined in landing.css.
 CLIENTS = [
-    {"name": "Pokhara Metro Eco Hotel", "type": _("Hotel")},
-    {"name": "Chill Zone Restaurant & Bar", "type": _("Restaurant & Bar")},
-    {"name": "Kailash Prabat Cafe", "type": _("Café")},
-    {"name": "The Tranquility Inn", "type": _("Inn")},
-    {"name": "The Juicery Cafe", "type": _("Café")},
+    {"name": "Pokhara Metro Eco Hotel", "type": _("Hotel"), "mark": "medallion"},
+    {"name": "Chill Zone Restaurant & Bar", "type": _("Restaurant & Bar"), "mark": "birds"},
+    {"name": "Kailash Prabat Cafe", "type": _("Café"), "mark": "corner"},
+    {"name": "The Tranquility Inn", "type": _("Inn"), "mark": "figures"},
+    {"name": "The Juicery Cafe", "type": _("Café"), "mark": "tile"},
 ]
 
 

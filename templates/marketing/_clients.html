@@ -10,13 +10,14 @@
     {% comment %}
       No logo files exist for these venues, so the cards are typographic: the
       name in the display face over a mono type caption. A wall of same-sized
-      text boxes pretending to be logos reads as a placeholder.
+      text boxes pretending to be logos reads as a placeholder — hence a
+      distinct ornament mark per venue, set in CLIENTS.
       Venue names are literals — proper nouns aren't translated.
     {% endcomment %}
     <div class="orn-clients-grid">
       {% for c in clients %}
       <div class="orn-card orn-client orn-reveal">
-        <span class="orn-m orn-m-tile orn-client-mark" aria-hidden="true"></span>
+        <span class="orn-m orn-m-{{ c.mark }} orn-client-mark" aria-hidden="true"></span>
         <div class="orn-client-name">{{ c.name }}</div>
         <div class="orn-client-type">{{ c.type }}</div>
       </div>
