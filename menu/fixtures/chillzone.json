@@ -22,7 +22,7 @@
       "slug": "hot-drinks",
       "name": "Hot Drinks",
       "display_order": 1,
-      "icon_key": "",
+      "icon_key": "coffee",
       "hours_note": "",
       "subcategories": []
     },
@@ -30,7 +30,7 @@
       "slug": "breakfast",
       "name": "Breakfast",
       "display_order": 2,
-      "icon_key": "",
+      "icon_key": "brunch",
       "hours_note": "",
       "subcategories": []
     },
@@ -38,7 +38,7 @@
       "slug": "toast",
       "name": "Toast",
       "display_order": 3,
-      "icon_key": "",
+      "icon_key": "subToast",
       "hours_note": "",
       "subcategories": []
     },
@@ -46,7 +46,7 @@
       "slug": "egg-2eggs",
       "name": "Egg (2Eggs)",
       "display_order": 4,
-      "icon_key": "",
+      "icon_key": "subEggs",
       "hours_note": "",
       "subcategories": []
     },
@@ -54,7 +54,7 @@
       "slug": "muesli-porridge",
       "name": "Muesli / Porridge",
       "display_order": 5,
-      "icon_key": "",
+      "icon_key": "subPoke",
       "hours_note": "",
       "subcategories": []
     },
@@ -62,7 +62,7 @@
       "slug": "sandwich-burger",
       "name": "Sandwich & Burger",
       "display_order": 6,
-      "icon_key": "",
+      "icon_key": "subBurger",
       "hours_note": "",
       "subcategories": []
     },
@@ -70,7 +70,7 @@
       "slug": "soft-drinks",
       "name": "Soft Drinks",
       "display_order": 7,
-      "icon_key": "",
+      "icon_key": "subSoda",
       "hours_note": "",
       "subcategories": []
     },
@@ -78,7 +78,7 @@
       "slug": "soups",
       "name": "Soups",
       "display_order": 8,
-      "icon_key": "",
+      "icon_key": "subSoup",
       "hours_note": "",
       "subcategories": []
     },
@@ -86,7 +86,7 @@
       "slug": "rice",
       "name": "Rice",
       "display_order": 9,
-      "icon_key": "",
+      "icon_key": "rice",
       "hours_note": "",
       "subcategories": []
     },
@@ -94,7 +94,7 @@
       "slug": "biryani",
       "name": "Biryani",
       "display_order": 10,
-      "icon_key": "",
+      "icon_key": "subMains",
       "hours_note": "",
       "subcategories": []
     },
@@ -102,7 +102,7 @@
       "slug": "indian-style",
       "name": "Indian Style",
       "display_order": 11,
-      "icon_key": "",
+      "icon_key": "subEntree",
       "hours_note": "",
       "subcategories": []
     },
@@ -110,7 +110,7 @@
       "slug": "nepali-thali",
       "name": "Nepali Thali",
       "display_order": 12,
-      "icon_key": "",
+      "icon_key": "dinner",
       "hours_note": "",
       "subcategories": []
     },
@@ -118,7 +118,7 @@
       "slug": "khaja-set",
       "name": "Khaja Set",
       "display_order": 13,
-      "icon_key": "",
+      "icon_key": "snack",
       "hours_note": "",
       "subcategories": []
     },
@@ -126,7 +126,7 @@
       "slug": "momo",
       "name": "Mo:Mo",
       "display_order": 14,
-      "icon_key": "",
+      "icon_key": "bowl",
       "hours_note": "",
       "subcategories": []
     },
@@ -134,7 +134,7 @@
       "slug": "pakoda",
       "name": "Pakoda",
       "display_order": 15,
-      "icon_key": "",
+      "icon_key": "subBucket",
       "hours_note": "",
       "subcategories": []
     },
@@ -142,7 +142,7 @@
       "slug": "rice-roti-chapati",
       "name": "Rice & Roti (Chapati)",
       "display_order": 16,
-      "icon_key": "",
+      "icon_key": "subAll",
       "hours_note": "",
       "subcategories": []
     },
@@ -150,7 +150,7 @@
       "slug": "pasta-spaghetti",
       "name": "Pasta & Spaghetti",
       "display_order": 17,
-      "icon_key": "",
+      "icon_key": "subPasta",
       "hours_note": "",
       "subcategories": []
     },
@@ -158,7 +158,7 @@
       "slug": "snacks",
       "name": "Snacks",
       "display_order": 18,
-      "icon_key": "",
+      "icon_key": "meat",
       "hours_note": "",
       "subcategories": []
     },
@@ -166,7 +166,7 @@
       "slug": "chowmin-thukpa",
       "name": "Chowmin / Thukpa",
       "display_order": 19,
-      "icon_key": "",
+      "icon_key": "noodles",
       "hours_note": "",
       "subcategories": []
     },
@@ -174,7 +174,7 @@
       "slug": "wrap",
       "name": "Wrap",
       "display_order": 20,
-      "icon_key": "",
+      "icon_key": "subWrap",
       "hours_note": "",
       "subcategories": []
     },
@@ -182,7 +182,7 @@
       "slug": "salad",
       "name": "Salad",
       "display_order": 21,
-      "icon_key": "",
+      "icon_key": "subSalad",
       "hours_note": "",
       "subcategories": []
     },
@@ -190,7 +190,7 @@
       "slug": "chill-zone-special",
       "name": "Chill Zone Special",
       "display_order": 22,
-      "icon_key": "",
+      "icon_key": "special",
       "hours_note": "",
       "subcategories": []
     },
@@ -198,7 +198,7 @@
       "slug": "fresh-juice",
       "name": "Fresh Juice",
       "display_order": 23,
-      "icon_key": "",
+      "icon_key": "juice",
       "hours_note": "",
       "subcategories": []
     },
@@ -206,7 +206,7 @@
       "slug": "lassi-shake",
       "name": "Lassi / Shake",
       "display_order": 24,
-      "icon_key": "",
+      "icon_key": "smoothie",
       "hours_note": "",
       "subcategories": []
     },

@@ -22,7 +22,7 @@
       "slug": "milk-shake-lassi",
       "name": "Milk Shake / Lassi",
       "display_order": 1,
-      "icon_key": "",
+      "icon_key": "smoothie",
       "hours_note": "",
       "subcategories": []
     },
@@ -30,7 +30,7 @@
       "slug": "juice",
       "name": "Juice",
       "display_order": 2,
-      "icon_key": "",
+      "icon_key": "juice",
       "hours_note": "",
       "subcategories": []
     },
@@ -38,7 +38,7 @@
       "slug": "iced-coffee-tea",
       "name": "Iced Coffee & Tea",
       "display_order": 3,
-      "icon_key": "",
+      "icon_key": "subFrappe",
       "hours_note": "",
       "subcategories": []
     },
@@ -46,7 +46,7 @@
       "slug": "beer",
       "name": "Beer",
       "display_order": 4,
-      "icon_key": "",
+      "icon_key": "subBeer",
       "hours_note": "",
       "subcategories": []
     },
@@ -54,7 +54,7 @@
       "slug": "hard-drinks",
       "name": "Hard Drinks",
       "display_order": 5,
-      "icon_key": "",
+      "icon_key": "subSpirits",
       "hours_note": "",
       "subcategories": []
     },
@@ -62,7 +62,7 @@
       "slug": "after-wake-up",
       "name": "After Wake-Up",
       "display_order": 6,
-      "icon_key": "",
+      "icon_key": "coffee",
       "hours_note": "",
       "subcategories": []
     },
@@ -70,7 +70,7 @@
       "slug": "breakfast",
       "name": "Breakfast",
       "display_order": 7,
-      "icon_key": "",
+      "icon_key": "brunch",
       "hours_note": "",
       "subcategories": []
     },
@@ -78,7 +78,7 @@
       "slug": "toast",
       "name": "Toast",
       "display_order": 8,
-      "icon_key": "",
+      "icon_key": "subToast",
       "hours_note": "",
       "subcategories": []
     },
@@ -86,7 +86,7 @@
       "slug": "muesli-porridge-corn-flakes",
       "name": "Muesli, Porridge, Corn Flakes",
       "display_order": 9,
-      "icon_key": "",
+      "icon_key": "subPoke",
       "hours_note": "",
       "subcategories": []
     },
@@ -94,7 +94,7 @@
       "slug": "sandwich",
       "name": "Sandwich",
       "display_order": 10,
-      "icon_key": "",
+      "icon_key": "subSandwich",
       "hours_note": "",
       "subcategories": []
     },
@@ -102,7 +102,7 @@
       "slug": "burger",
       "name": "Burger",
       "display_order": 11,
-      "icon_key": "",
+      "icon_key": "subBurger",
       "hours_note": "",
       "subcategories": []
     },
@@ -110,7 +110,7 @@
       "slug": "dinner-lunch",
       "name": "Dinner / Lunch",
       "display_order": 12,
-      "icon_key": "",
+      "icon_key": "dinner",
       "hours_note": "",
       "subcategories": []
     },
@@ -118,7 +118,7 @@
       "slug": "rice",
       "name": "Rice",
       "display_order": 13,
-      "icon_key": "",
+      "icon_key": "rice",
       "hours_note": "",
       "subcategories": []
     },
@@ -126,7 +126,7 @@
       "slug": "pasta",
       "name": "Pasta",
       "display_order": 14,
-      "icon_key": "",
+      "icon_key": "subPasta",
       "hours_note": "",
       "subcategories": []
     },
@@ -134,7 +134,7 @@
       "slug": "momo",
       "name": "Mo:Mo",
       "display_order": 15,
-      "icon_key": "",
+      "icon_key": "bowl",
       "hours_note": "",
       "subcategories": []
     },
@@ -142,7 +142,7 @@
       "slug": "chowmein",
       "name": "Chowmein",
       "display_order": 16,
-      "icon_key": "",
+      "icon_key": "noodles",
       "hours_note": "",
       "subcategories": []
     },
@@ -150,7 +150,7 @@
       "slug": "thukpa",
       "name": "Thukpa",
       "display_order": 17,
-      "icon_key": "",
+      "icon_key": "subNoodle",
       "hours_note": "",
       "subcategories": []
     },
@@ -158,7 +158,7 @@
       "slug": "soup",
       "name": "Soup",
       "display_order": 18,
-      "icon_key": "",
+      "icon_key": "subSoup",
       "hours_note": "",
       "subcategories": []
     },
@@ -166,7 +166,7 @@
       "slug": "salad",
       "name": "Salad",
       "display_order": 19,
-      "icon_key": "",
+      "icon_key": "subSalad",
       "hours_note": "",
       "subcategories": []
     },
@@ -174,7 +174,7 @@
       "slug": "kailash-touch",
       "name": "Kailash Touch",
       "display_order": 20,
-      "icon_key": "",
+      "icon_key": "snack",
       "hours_note": "",
       "subcategories": []
     },
@@ -182,7 +182,7 @@
       "slug": "pancake",
       "name": "Pancake",
       "display_order": 21,
-      "icon_key": "",
+      "icon_key": "cake",
       "hours_note": "",
       "subcategories": []
     },
@@ -190,7 +190,7 @@
       "slug": "soft-drinks",
       "name": "Soft Drinks",
       "display_order": 22,
-      "icon_key": "",
+      "icon_key": "subSoda",
       "hours_note": "",
       "subcategories": []
     }

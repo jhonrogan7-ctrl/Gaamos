@@ -6,7 +6,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.environ.get("SECRET_KEY", "django-insecure-dev-only")
 DEBUG = os.environ.get("DEBUG", "0") == "1"
 ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS", "*").split(",")
-BASE_DOMAIN = os.environ.get("BASE_DOMAIN", "zxyn.online")
+BASE_DOMAIN = os.environ.get("BASE_DOMAIN", "gaamos.io")
 RESERVED_SUBDOMAINS = {"app", "www", "menu", "admin", "api", "static", "media", "gaamos"}
 
 # Behind Cloudflare Tunnel — TLS terminated at the edge, forwarded as plain HTTP.
@@ -16,6 +16,19 @@ SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 CSRF_TRUSTED_ORIGINS = os.environ.get(
     "CSRF_TRUSTED_ORIGINS", f"https://{BASE_DOMAIN},https://*.{BASE_DOMAIN}"
 ).split(",")
+
+# Production-only hardening. Skipped under DEBUG (local dev over plain HTTP),
+# so these never break the dev login flow. In prod, TLS is terminated at the
+# Cloudflare edge and forwarded as HTTP — SECURE_PROXY_SSL_HEADER (above) makes
+# request.is_secure() True, so SECURE_SSL_REDIRECT does NOT loop.
+if not DEBUG:
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
+    SECURE_SSL_REDIRECT = True
+    SECURE_CONTENT_TYPE_NOSNIFF = True
+    SECURE_HSTS_SECONDS = 31536000  # 1 year
+    SECURE_HSTS_INCLUDE_SUBDOMAINS = True  # all *.gaamos.io tenants are HTTPS via CF
+    SECURE_HSTS_PRELOAD = False  # flip True only after submitting to hstspreload.org
 
 INSTALLED_APPS = [
     "django.contrib.contenttypes",

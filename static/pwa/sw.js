@@ -5,8 +5,8 @@
  * activate.
  *
  * Strategy:
- *   navigations  -> network-first, offline fallback page; HTML never cached
- *   GET /static/ -> stale-while-revalidate (ignoreSearch tolerates ?v=)
+ *   GET navigations -> network-first, offline fallback page; HTML never cached
+ *   GET /static/    -> stale-while-revalidate (ignoreSearch tolerates ?v=)
  *   anything else (POSTs, /media/, SSE streams, cross-origin) -> untouched
  */
 /* v7 (2026-08-03): navigations are now GET-only — a POST form submission was
