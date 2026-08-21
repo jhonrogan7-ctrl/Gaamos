@@ -5,3 +5,8 @@ __pycache__/
 staticfiles/
 .pytest_cache/
 .env
+# Runtime tenant media (logos, item images, QR PNGs) must NOT be baked into the
+# image — it is per-environment data and lives in the `media` volume. Baking
+# stage's item images would ship them to prod, which must only carry the media
+# the live prod stack accumulated.
+media/
