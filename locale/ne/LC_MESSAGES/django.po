@@ -99,6 +99,9 @@ msgstr "बिजनेस"
 msgid "/month"
 msgstr "/महिना"
 
+msgid "/year"
+msgstr "/वर्ष"
+
 #: core/views.py:58
 msgid ""
 "The whole product — everything your venue needs to run QR menus and live "
@@ -372,8 +375,8 @@ msgid "It's their phone. Put your menu on it tonight — live in minutes."
 msgstr "त्यो उनीहरूकै फोन हो। आजै राति आफ्नो मेनु त्यसमा राख्नुहोस् — मिनेटमै लाइभ।"
 
 #: templates/marketing/_final_cta.html:8
-msgid "Plans from Rs 4,000 a month — cancel anytime"
-msgstr "योजना महिनाको रु ४,००० देखि — जहिले पनि रद्द गर्न सकिन्छ"
+msgid "Plans from Rs 1,550 a month — cancel anytime"
+msgstr "योजना महिनाको रु १,५५० देखि — जहिले पनि रद्द गर्न सकिन्छ"
 
 #: templates/marketing/_footer.html:8
 msgid ""
@@ -483,8 +486,8 @@ msgid "Simple pricing that grows with you"
 msgstr "तपाईंसँगै बढ्ने सरल मूल्य"
 
 #: templates/marketing/_pricing.html:7
-msgid "Simple monthly pricing in NPR. Cancel anytime."
-msgstr "नेपाली रुपैयाँमा सरल मासिक मूल्य। जहिले पनि रद्द गर्न सकिन्छ।"
+msgid "Simple pricing in NPR. Cancel anytime."
+msgstr "नेपाली रुपैयाँमा सरल मूल्य। जहिले पनि रद्द गर्न सकिन्छ।"
 
 #: templates/marketing/_pricing.html:21
 msgid "Billing period"
@@ -504,8 +507,8 @@ msgstr "सबैभन्दा लोकप्रिय"
 
 #: templates/marketing/_pricing.html:51
 #, python-format
-msgid "billed annually — save 20%%"
-msgstr "वार्षिक बिलिङ — २०%% बचत"
+msgid "billed annually — save 19%%"
+msgstr "वार्षिक बिलिङ — १९%% बचत"
 
 #: templates/marketing/_pricing.html:51
 msgid "billed monthly"
@@ -513,5 +516,5 @@ msgstr "मासिक बिलिङ"
 
 #: templates/marketing/_pricing.html:66
 msgid ""
-"Both plans include the branded guest menu, QR generation, and live orders."
-msgstr "दुवै योजनामा ब्रान्डेड गेस्ट मेनु, QR निर्माण र लाइभ अर्डर समावेश छन्।"
+"Every plan includes the branded guest menu, QR generation, and live orders."
+msgstr "हरेक योजनामा ब्रान्डेड गेस्ट मेनु, QR निर्माण र लाइभ अर्डर समावेश छ।"

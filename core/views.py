@@ -58,9 +58,13 @@ STEPS = [
     {"n": "2", "title": _("Print your QRs"), "body": _("Generate one code for the counter or a numbered code per table. Download the whole set as a print-ready PDF.")},
     {"n": "3", "title": _("Receive orders"), "body": _("Guests scan, browse, and order from their own phone. Orders appear in your live queue the moment they're placed.")},
 ]
+# One plan — the whole product. Annual is billed as a yearly total (Rs 15,000),
+# not a discounted monthly rate, so the per-label switches /month ↔ /year with
+# the toggle. 12 × Rs 1,550 = Rs 18,600, so the annual price saves ~19%.
 TIERS = [
     {"name": _("Business"),
-     "price_monthly": "Rs 4,000", "price_annual": "Rs 3,200", "per": _("/month"),
+     "price_monthly": "Rs 1,550", "price_annual": "Rs 15,000",
+     "per_monthly": _("/month"), "per_annual": _("/year"),
      "blurb": _("The whole product — everything your venue needs to run QR menus and live orders."),
      "cta": _("Get started"), "highlighted": True, "features": [
         _("Unlimited branches & menu items"),
@@ -71,17 +75,6 @@ TIERS = [
         _("Photos, badges & promo banner"),
         _("Installable app (PWA) for guests & staff"),
         _("3 team members"),
-    ]},
-    {"name": _("VIP"),
-     "price_monthly": "Rs 5,500", "price_annual": "Rs 4,400", "per": _("/month"),
-     "blurb": _("For venues that want full brand ownership and a bigger team."),
-     "cta": _("Talk to us"), "highlighted": False, "features": [
-        _("Everything in Business"),
-        _("Unlimited tables — no cap"),
-        _("Custom domain — menu.yourrestaurant.com"),
-        _("Your venue as its own branded app"),
-        _("Unlimited team + branch-scoped managers"),
-        _("Priority WhatsApp support"),
     ]},
 ]
 TABLE_QRS = ["1", "2", "3", "4", "5", "6", "7", "8"]

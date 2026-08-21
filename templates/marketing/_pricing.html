@@ -4,7 +4,7 @@
     <span class="orn-m orn-m-medallion orn-pricing-medallion" aria-hidden="true"></span>
     <div class="orn-eyebrow">{% translate "Pricing" %}</div>
     <h2 class="orn-h2">{% translate "Simple pricing that grows with you" %}</h2>
-    <p class="orn-pricing-sub">{% translate "Simple monthly pricing in NPR. Cancel anytime." %}</p>
+    <p class="orn-pricing-sub">{% translate "Simple pricing in NPR. Cancel anytime." %}</p>
 
     {% comment %}
       The switcher is one bordered block split into two equal halves — square
@@ -23,7 +23,7 @@
               :class="{ 'is-on': !annual }">{% translate "Monthly" %}</button>
       <button type="button" @click="annual = true"
               :aria-pressed="annual ? 'true' : 'false'"
-              class="is-on" :class="{ 'is-on': annual }">{% translate "Annual" %} &minus;20%</button>
+              class="is-on" :class="{ 'is-on': annual }">{% translate "Annual" %} &minus;19%</button>
     </div>
   </div>
 
@@ -34,7 +34,7 @@
       <div class="orn-plan-inner">
         <div class="orn-plan-head">
           <div class="orn-plan-name">{{ t.name }}</div>
-          {% if t.highlighted %}<span class="orn-plan-flag">{% translate "Most popular" %}</span>{% endif %}
+          {% if t.highlighted and tiers|length > 1 %}<span class="orn-plan-flag">{% translate "Most popular" %}</span>{% endif %}
         </div>
         {% comment %}
           Both prices are rendered server-side and swapped with x-show, so the
@@ -43,10 +43,10 @@
         {% endcomment %}
         <div class="orn-price-row">
           <span class="orn-price"><span x-show="annual">{{ t.price_annual }}</span><span x-show="!annual" x-cloak>{{ t.price_monthly }}</span></span>
-          <span class="orn-per">{{ t.per }}</span>
+          <span class="orn-per"><span x-show="annual">{{ t.per_annual }}</span><span x-show="!annual" x-cloak>{{ t.per_monthly }}</span></span>
         </div>
         <div class="orn-bill">
-          <span x-show="annual">{% translate "billed annually — save 20%" %}</span><span x-show="!annual" x-cloak>{% translate "billed monthly" %}</span>
+          <span x-show="annual">{% translate "billed annually — save 19%" %}</span><span x-show="!annual" x-cloak>{% translate "billed monthly" %}</span>
         </div>
         <p>{{ t.blurb }}</p>
         <div class="orn-feats">
@@ -61,5 +61,5 @@
     </div>
     {% endfor %}
   </div>
-  <p class="orn-plan-foot">{% translate "Both plans include the branded guest menu, QR generation, and live orders." %}</p>
+  <p class="orn-plan-foot">{% translate "Every plan includes the branded guest menu, QR generation, and live orders." %}</p>
 </section>

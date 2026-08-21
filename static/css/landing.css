@@ -2,9 +2,16 @@
    GAAMOS LANDING — printed-ornament design (founder design 2026-07-31)
 
    Everything here is scoped under `.orn`. The landing runs its own palette
-   (Madder Red: red ink on cream, deep-teal accent) which must NOT reach the
-   dashboard or the guest menu — those keep the house Saffron tokens in
-   input.css. Scoping on a wrapper class, not :root, is what keeps them apart.
+   (Georgian "ლურჯი სუფრა" / blue tablecloth: indigo ink on a white cloth,
+   with a royal-blue accent) which must NOT reach the dashboard or the guest
+   menu — those keep the house Saffron tokens in input.css. Scoping on a
+   wrapper class, not :root, is what keeps them apart.
+
+   Recolour note (2026-08-12, Rati's request): the palette was Madder Red on
+   cream. Because every ornament is a *mask* tinted by `--ink`, and every dark
+   section / button flips between `--ink` and `--cream`, the whole design is
+   driven by the four tokens below — so the red→blue change is a token swap,
+   not a per-element repaint.
 
    The ornaments are one photographed block-print cloth cut into seven pieces.
    Each piece is used as a *mask*, never as a coloured image: the element
@@ -13,10 +20,10 @@
    ═══════════════════════════════════════════════════════════════════════ */
 
 .orn {
-  --ink: #8E2B23;
-  --cream: #F8F1E6;
-  --paper: #FFFBF4;
-  --accent: #1F4E4A;
+  --ink: #1C3F73;      /* deep indigo — the "printed" blue of the cloth */
+  --cream: #F4F7FC;    /* soft blue-white — the cloth ground */
+  --paper: #FFFFFF;    /* pure white — cards lifted off the cloth */
+  --accent: #2F66AA;   /* royal blue — links, hovers, eyebrows */
 
   --ink-16: color-mix(in srgb, var(--ink) 16%, transparent);
   --ink-24: color-mix(in srgb, var(--ink) 24%, transparent);
@@ -450,6 +457,8 @@
   max-width: 1000px; margin: 44px auto 0;
   display: grid; grid-template-columns: 1fr 1fr; gap: 22px; align-items: start;
 }
+/* A single plan shouldn't stretch to full width — cap it and centre it. */
+.orn-plans:has(.orn-plan:only-child) { grid-template-columns: minmax(0, 460px); justify-content: center; }
 .orn-plan { border-radius: 3px; padding: 36px; position: relative; overflow: hidden; }
 .orn-plan-dark { background: var(--ink); color: var(--cream); }
 .orn-plan-birds {

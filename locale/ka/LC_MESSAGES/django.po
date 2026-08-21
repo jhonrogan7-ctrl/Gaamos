@@ -99,6 +99,9 @@ msgstr "Business"
 msgid "/month"
 msgstr "/თვე"
 
+msgid "/year"
+msgstr "/წელი"
+
 #: core/views.py:58
 msgid ""
 "The whole product — everything your venue needs to run QR menus and live "
@@ -388,8 +391,8 @@ msgstr ""
 "ტელეფონია. განათავსეთ თქვენი მენიუ მასზე დღესვე — ლაივში წუთებში."
 
 #: templates/marketing/_final_cta.html:8
-msgid "Plans from Rs 4,000 a month — cancel anytime"
-msgstr "გეგმები თვეში 4,000 რუპიიდან — გააუქმეთ ნებისმიერ დროს"
+msgid "Plans from Rs 1,550 a month — cancel anytime"
+msgstr "გეგმები თვეში 1,550 რუპიიდან — გააუქმეთ ნებისმიერ დროს"
 
 #: templates/marketing/_footer.html:8
 msgid ""
@@ -501,8 +504,8 @@ msgid "Simple pricing that grows with you"
 msgstr "მარტივი ფასები, რომლებიც თქვენთან ერთად იზრდება"
 
 #: templates/marketing/_pricing.html:7
-msgid "Simple monthly pricing in NPR. Cancel anytime."
-msgstr "მარტივი ყოველთვიური ფასები NPR-ში. გააუქმეთ ნებისმიერ დროს."
+msgid "Simple pricing in NPR. Cancel anytime."
+msgstr "მარტივი ფასები NPR-ში. გააუქმეთ ნებისმიერ დროს."
 
 #: templates/marketing/_pricing.html:21
 msgid "Billing period"
@@ -522,8 +525,8 @@ msgstr "ყველაზე პოპულარული"
 
 #: templates/marketing/_pricing.html:51
 #, python-format
-msgid "billed annually — save 20%%"
-msgstr "წლიური გადახდა — დაზოგეთ 20%%"
+msgid "billed annually — save 19%%"
+msgstr "წლიური გადახდა — დაზოგეთ 19%%"
 
 #: templates/marketing/_pricing.html:51
 msgid "billed monthly"
@@ -531,6 +534,6 @@ msgstr "ყოველთვიური გადახდა"
 
 #: templates/marketing/_pricing.html:66
 msgid ""
-"Both plans include the branded guest menu, QR generation, and live orders."
+"Every plan includes the branded guest menu, QR generation, and live orders."
 msgstr ""
-"ორივე გეგმა მოიცავს ბრენდირებულ მენიუს, QR გენერაციას და ლაივ შეკვეთებს."
+"ყველა გეგმა მოიცავს ბრენდირებულ მენიუს, QR გენერაციას და ლაივ შეკვეთებს."
