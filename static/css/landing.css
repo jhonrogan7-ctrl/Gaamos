@@ -485,6 +485,19 @@
   letter-spacing: .06em; text-transform: uppercase; opacity: .7; margin-top: 6px;
 }
 .orn-plan-light .orn-bill { opacity: 1; color: var(--ink-60); }
+/* Setup fee — a clear sub-price under the headline number, not the tiny mono
+   caption used for billing notes. Amount carries the weight. */
+.orn-setup {
+  font-size: 14.5px; margin-top: 8px; opacity: .95;
+  display: inline-flex; align-items: baseline; gap: 5px;
+  padding: 4px 11px; border-radius: 20px;
+  background: color-mix(in srgb, var(--cream) 12%, transparent);
+}
+.orn-setup b { font-weight: 800; font-size: 15.5px; }
+.orn-plan-light .orn-setup {
+  color: var(--ink); opacity: 1;
+  background: color-mix(in srgb, var(--ink) 8%, transparent);
+}
 .orn-plan p { font-size: 15px; line-height: 1.6; opacity: .82; margin-top: 18px; }
 .orn-plan-light p { opacity: 1; color: var(--ink-75); }
 .orn-feats { display: flex; flex-direction: column; gap: 10px; margin-top: 22px; }

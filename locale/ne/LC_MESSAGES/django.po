@@ -489,6 +489,15 @@ msgstr "तपाईंसँगै बढ्ने सरल मूल्य"
 msgid "Simple pricing in NPR. Cancel anytime."
 msgstr "नेपाली रुपैयाँमा सरल मूल्य। जहिले पनि रद्द गर्न सकिन्छ।"
 
+msgid "One simple price in NPR. Cancel anytime."
+msgstr "नेपाली रुपैयाँमा एउटै सरल मूल्य। जहिले पनि रद्द गर्न सकिन्छ।"
+
+msgid "one-time setup"
+msgstr "एक-पटकको सेटअप"
+
+msgid "Rs 15,000 a year + Rs 1,000 one-time setup — cancel anytime"
+msgstr "वार्षिक रु १५,००० + रु १,००० एक-पटकको सेटअप — जहिले पनि रद्द गर्न सकिन्छ"
+
 #: templates/marketing/_pricing.html:21
 msgid "Billing period"
 msgstr "बिलिङ अवधि"

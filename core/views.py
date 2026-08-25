@@ -58,13 +58,12 @@ STEPS = [
     {"n": "2", "title": _("Print your QRs"), "body": _("Generate one code for the counter or a numbered code per table. Download the whole set as a print-ready PDF.")},
     {"n": "3", "title": _("Receive orders"), "body": _("Guests scan, browse, and order from their own phone. Orders appear in your live queue the moment they're placed.")},
 ]
-# One plan — the whole product. Annual is billed as a yearly total (Rs 15,000),
-# not a discounted monthly rate, so the per-label switches /month ↔ /year with
-# the toggle. 12 × Rs 1,550 = Rs 18,600, so the annual price saves ~19%.
+# One plan, one fixed price: Rs 15,000 / year plus a Rs 1,000 one-time setup
+# fee charged to every venue at onboarding (founder decision 2026-08-25). No
+# monthly option — a single annual price keeps the offer simple.
 TIERS = [
     {"name": _("Business"),
-     "price_monthly": "Rs 1,550", "price_annual": "Rs 15,000",
-     "per_monthly": _("/month"), "per_annual": _("/year"),
+     "price": "Rs 15,000", "per": _("/year"), "setup_fee": "Rs 1,000",
      "blurb": _("The whole product — everything your venue needs to run QR menus and live orders."),
      "cta": _("Get started"), "highlighted": True, "features": [
         _("Unlimited branches & menu items"),
@@ -86,9 +85,7 @@ TABLE_QRS = ["1", "2", "3", "4", "5", "6", "7", "8"]
 # reads as a placeholder logo wall — the thing the typographic cards exist to
 # avoid. The five variants are the full set defined in landing.css.
 CLIENTS = [
-    {"name": "Pokhara Metro Eco Hotel", "type": _("Hotel"), "mark": "medallion"},
     {"name": "Chill Zone Restaurant & Bar", "type": _("Restaurant & Bar"), "mark": "birds"},
-    {"name": "Kailash Prabat Cafe", "type": _("Café"), "mark": "corner"},
     {"name": "The Tranquility Inn", "type": _("Inn"), "mark": "figures"},
     {"name": "The Juicery Cafe", "type": _("Café"), "mark": "tile"},
 ]

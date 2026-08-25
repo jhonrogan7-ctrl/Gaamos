@@ -507,6 +507,15 @@ msgstr "მარტივი ფასები, რომლებიც თ�
 msgid "Simple pricing in NPR. Cancel anytime."
 msgstr "მარტივი ფასები NPR-ში. გააუქმეთ ნებისმიერ დროს."
 
+msgid "One simple price in NPR. Cancel anytime."
+msgstr "ერთი მარტივი ფასი NPR-ში. გააუქმეთ ნებისმიერ დროს."
+
+msgid "one-time setup"
+msgstr "ერთჯერადი დანერგვა"
+
+msgid "Rs 15,000 a year + Rs 1,000 one-time setup — cancel anytime"
+msgstr "15,000 რუპია წელი + 1,000 რუპია ერთჯერადი დანერგვა — გააუქმეთ ნებისმიერ დროს"
+
 #: templates/marketing/_pricing.html:21
 msgid "Billing period"
 msgstr "ბილინგის პერიოდი"
