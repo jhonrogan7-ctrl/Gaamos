@@ -8,10 +8,9 @@ print_url}) or `combined_lines` + `combined_total` (combine). Copies the
 B3/B4 wireframe's .tcard/.sub2/.total markup (gaamos-orders/billing.html).
 
 Non-POS boundary: this screen only computes and previews a bill summary.
-close_url / preview_url / each guest's print_url point at routes Tasks 3.5
-(close-table) and 3.4 (PDF export) add later — they 404 until those tasks
-land. Nothing on this page takes payment, stores a receipt, or mutates an
-order/session.
+preview_url / each guest's print_url render a read-only PDF (Task 3.4).
+close_url (Task 3.5) POSTs to end the table's open guest sessions — it does
+not take payment, store a receipt, or touch any order.
 {% endcomment %}
 
 {% block page_title %}Bill · {% if is_takeaway %}Takeaway{% else %}Table {{ table.label }}{% endif %}{% endblock %}
@@ -67,7 +66,10 @@ order/session.
 {% endif %}
 
 <div class="row2">
-  <a class="btn primary" href="{{ close_url }}">Close table</a>
+  <form method="post" action="{{ close_url }}">
+    {% csrf_token %}
+    <button type="submit" class="btn primary">Close table</button>
+  </form>
   <a class="btn ghost" href="{{ preview_url }}">Preview receipt</a>
 </div>
 

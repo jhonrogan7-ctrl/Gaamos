@@ -1090,11 +1090,10 @@ def orders_table_takeaway(request):
 
 
 def _bill_context(request, table, sessions):
-    """Shared context for the Split/Combine bill preview. `close_url` and
-    `print_url` are placeholders for Tasks 3.5 (close-table) and 3.4 (PDF
-    export) — those routes don't exist yet, so the links 404 until then; they
-    are plain hrefs here (not {% url %}) so this page never 500s in the
-    meantime."""
+    """Shared context for the Split/Combine bill preview. `close_url` posts to
+    Task 3.5's table_close/table_close_takeaway; `print_url` is Task 3.4's PDF
+    export. Both routes exist now — these are plain hrefs (not {% url %}) so
+    this page keeps working unchanged if either path is ever renamed."""
     mode = _bill_mode(request)
     table_path = f'table/{table.pk}' if table else 'table/takeaway'
     close_url = f'/dashboard/orders/{table_path}/close/'
@@ -1229,6 +1228,37 @@ def orders_table_bill_pdf_takeaway(request, session_id=None):
     """Task 3.4 print — read-only bill-summary PDF for Takeaway."""
     sessions = _takeaway_sessions(visible_branches(request))
     return _bill_pdf_response(request, None, sessions, session_id)
+
+
+def _close_sessions(sessions):
+    """Task 3.5 — close a table: sets closed_at on its open guest sessions.
+
+    Non-POS boundary: this only closes sessions (frees the table + resets the
+    label pool for the next guest). No payment, no receipt, and no Order row
+    is created, deleted, or mutated here.
+    """
+    ids = [s.pk for s in sessions]
+    if ids:
+        GuestSession.objects.filter(pk__in=ids).update(closed_at=timezone.now())
+
+
+@require_membership
+@require_POST
+def table_close(request, table_id):
+    """Task 3.5 / B4 — "Close table": ends every open guest session at this
+    table. Fail-closed: the table is resolved only within visible_branches,
+    so a foreign-company table 404s rather than leaking existence."""
+    table = get_object_or_404(Table, pk=table_id, branch__in=visible_branches(request))
+    _close_sessions(table_sessions(table.branch, table))
+    return redirect('dashboard:orders')
+
+
+@require_membership
+@require_POST
+def table_close_takeaway(request):
+    """Task 3.5 — "Close table" for the Takeaway group (table IS NULL)."""
+    _close_sessions(_takeaway_sessions(visible_branches(request)))
+    return redirect('dashboard:orders')
 
 
 @require_membership
