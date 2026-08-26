@@ -415,10 +415,13 @@ document.addEventListener('alpine:init', () => {
       }
       this.identityBusy = true;
       const url = (evt && evt.target && evt.target.getAttribute('action')) || '/api/identity/';
+      // branch/table sent the same way placeOrder() sends them — identity_submit
+      // (fix round 1) needs these to create the GuestSession itself when the
+      // guest has no gaamos_gs cookie yet (true first visit, before any order).
       fetch(url, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCookie('csrftoken') },
-        body: JSON.stringify({ name, phone }),
+        body: JSON.stringify({ name, phone, branch: this.branch.slug, table: this.table ? this.table.code : null }),
       })
         .then(r => r.json().then(data => ({ ok: r.ok, data })))
         .then(({ ok, data }) => {

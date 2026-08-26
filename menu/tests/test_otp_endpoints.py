@@ -4,7 +4,7 @@ from unittest.mock import patch
 from django.conf import settings
 
 from menu.guest_sessions import COOKIE
-from menu.models import Branch, GuestSession, OtpChallenge
+from menu.models import Branch, GuestSession, OtpChallenge, Table
 from menu.otp import issue_code
 from menu.tests.base import TenantTestCase
 
@@ -66,17 +66,55 @@ class IdentityOtpEndpointsTest(TenantTestCase):
         r = self._post('/api/identity/', {'name': 'Rita'})
         self.assertEqual(r.status_code, 400)
 
-    # -- identity_submit: cookie resolution --
+    # -- identity_submit: cookie resolution / first-visit session creation --
+    # Fix round 1 (2026-08-26): a guest's true first visit has no gaamos_gs
+    # cookie yet (only place_order used to create one). identity_submit now
+    # creates the GuestSession itself in that case — mirroring place_order's
+    # own branch/table resolution — instead of 400ing. It still 400s if no
+    # branch can be resolved at all (nothing to attach a session to).
 
-    def test_identity_submit_no_cookie_returns_400(self):
+    def test_identity_submit_no_cookie_no_branch_returns_400(self):
         self.client.cookies.pop(COOKIE, None)
+        self.branch.delete()
         r = self._post('/api/identity/', {'name': 'Rita'})
         self.assertEqual(r.status_code, 400)
 
-    def test_identity_submit_invalid_cookie_returns_400(self):
+    def test_identity_submit_invalid_cookie_no_branch_returns_400(self):
         self.client.cookies[COOKIE] = 'does-not-exist'
+        self.branch.delete()
         r = self._post('/api/identity/', {'name': 'Rita'})
         self.assertEqual(r.status_code, 400)
+
+    def test_identity_submit_no_cookie_with_branch_creates_session_and_sets_cookie(self):
+        self.client.cookies.pop(COOKIE, None)
+        r = self._post('/api/identity/', {'name': 'Rita', 'branch': self.branch.slug})
+        self.assertEqual(r.status_code, 200)
+        self.assertEqual(r.json(), {'ok': True})
+        gs = (GuestSession.objects.filter(branch=self.branch, name='Rita')
+              .exclude(pk=self.session.pk).first())
+        self.assertIsNotNone(gs)
+        self.assertIn(COOKIE, r.cookies)
+        self.assertEqual(r.cookies[COOKIE].value, gs.token)
+
+    @patch('menu.tasks.send_otp_sms.delay')
+    def test_identity_submit_no_cookie_phone_mode_with_branch_and_table_creates_session_and_otp(self, delay):
+        self.company.identity_mode = 'phone'
+        self.company.save()
+        table = Table.objects.create(company=self.company, branch=self.branch, label='T1', code='t1')
+        self.client.cookies.pop(COOKIE, None)
+        r = self._post('/api/identity/', {
+            'name': 'Rita', 'phone': '9800000000',
+            'branch': self.branch.slug, 'table': table.code,
+        })
+        self.assertEqual(r.status_code, 200)
+        self.assertEqual(r.json(), {'ok': True, 'otp': True})
+        gs = (GuestSession.objects.filter(branch=self.branch, table=table)
+              .exclude(pk=self.session.pk).first())
+        self.assertIsNotNone(gs)
+        self.assertTrue(OtpChallenge.objects.filter(session=gs, phone='9800000000').exists())
+        self.assertTrue(delay.called)
+        self.assertIn(COOKIE, r.cookies)
+        self.assertEqual(r.cookies[COOKIE].value, gs.token)
 
     # -- otp_verify --
 

@@ -225,10 +225,13 @@ def _resolve_active_session(request):
     """The active GuestSession for this browser, or None.
 
     Mirrors the cookie contract from menu/guest_sessions.py without going
-    through get_or_create_session: these endpoints act on a session that must
-    already exist (created by place_order) — a missing/invalid/stale cookie
-    means there is nothing to attach identity or OTP to, which is a client
-    error, not a fresh session to silently create.
+    through get_or_create_session: a missing/invalid/stale cookie means there
+    is no existing session to resolve. otp_verify/otp_resend treat that as a
+    client error (nothing to verify against). identity_submit is the one
+    exception (fix round 1, 2026-08-26): on a None here, it creates a fresh
+    session itself via get_or_create_session, so a guest's true first visit
+    — before place_order has ever run — still has somewhere to attach a
+    name/phone/OTP.
 
     menu/urls.py is mounted globally, so this can be reached on an apex/
     reserved/unknown host where TenantMiddleware sets request.company = None.
@@ -259,17 +262,43 @@ def _queue_otp_sms(phone, code):
 
 @require_POST
 def identity_submit(request):
-    """Guest identity capture. Body: {name, phone?}. Branches on
-    request.company.identity_mode: name/room/auto save straight to the
-    session (no OTP); phone issues a code and enqueues its SMS."""
-    gs = _resolve_active_session(request)
-    if gs is None:
+    """Guest identity capture. Body: {name, phone?, branch?, table?}. Branches
+    on request.company.identity_mode: name/room/auto save straight to the
+    session (no OTP); phone issues a code and enqueues its SMS.
+
+    Fix round 1 (2026-08-26): on a guest's true first visit there is no
+    gaamos_gs cookie yet — historically only place_order created one, so the
+    identity step shown *before* the first order had nothing to attach to
+    and this endpoint 400'd. Now, when _resolve_active_session finds no
+    existing session (cookie missing, or stale/invalid), this creates one
+    itself the same way place_order does: resolve branch/table from the
+    body, then get_or_create_session + attach_cookie on the response.
+    otp_verify/otp_resend are unchanged — by the time they run, this has
+    already created the session and set the cookie.
+
+    The request.company is-None guard stays first and short-circuits before
+    any GuestSession query, exactly as before (apex/reserved/unknown host →
+    400, never a TenantContextRequired 500)."""
+    if getattr(request, 'company', None) is None:
         return JsonResponse({'error': 'no active session'}, status=400)
 
     try:
         body = json.loads(request.body or '{}')
     except (json.JSONDecodeError, TypeError):
         return JsonResponse({'error': 'invalid body'}, status=400)
+
+    gs = _resolve_active_session(request)
+    new_token = None
+    if gs is None:
+        branch = Branch.objects.filter(slug=body.get('branch', '')).first()
+        if branch is None:
+            branch = Branch.objects.first()
+        if branch is None:
+            return JsonResponse({'error': 'no active session'}, status=400)
+        table = None
+        if body.get('table'):
+            table = Table.objects.filter(code=body['table'], branch=branch).first()
+        gs, new_token, _ = get_or_create_session(request, branch, table)
 
     name = (body.get('name') or '').strip()
     phone = (body.get('phone') or '').strip()
@@ -283,7 +312,8 @@ def identity_submit(request):
             gs.save(update_fields=['name'])
         code = issue_code(gs, phone)
         _queue_otp_sms(phone, code)
-        return JsonResponse({'ok': True, 'otp': True})
+        resp = JsonResponse({'ok': True, 'otp': True})
+        return attach_cookie(resp, new_token) if new_token else resp
 
     update_fields = []
     if name:
@@ -294,7 +324,8 @@ def identity_submit(request):
         update_fields.append('contact')
     if update_fields:
         gs.save(update_fields=update_fields)
-    return JsonResponse({'ok': True})
+    resp = JsonResponse({'ok': True})
+    return attach_cookie(resp, new_token) if new_token else resp
 
 
 @require_POST
