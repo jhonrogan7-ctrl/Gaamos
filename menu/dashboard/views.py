@@ -19,8 +19,9 @@ from django.db.models.functions import TruncDate
 from menu.models import (
     Company, Branch, Category, SubCategory, MenuItem, BranchMenuItem,
     BranchCategory, BranchSubCategory, BranchItemPlacement, Membership, Table, Order,
-    BranchAd, BranchVisit, OrderItem,
+    BranchAd, BranchVisit, OrderItem, GuestSession,
 )
+from menu.dashboard.billing import table_sessions, table_total, session_subtotal
 from menu.permissions import (
     require_membership, require_owner, ensure_can_manage_branch, forbidden,
     visible_branches,
@@ -275,13 +276,21 @@ def overview(request):
 @require_membership
 def orders(request):
     status = request.GET.get('status', 'all')
-    return render(request, 'dashboard/orders.html', {
+    group = request.GET.get('group', 'flat')
+    if group not in ('flat', 'table'):
+        group = 'flat'
+    branches = visible_branches(request)
+    context = {
         'active_tab': 'orders',
-        'orders': _orders_for(Order.objects.filter(branch__in=visible_branches(request)), status),
-        'show_branch': True, 'status_filter': status,
+        'show_branch': True, 'status_filter': status, 'group': group,
         # Empty when push isn't configured — the toggle then renders nothing.
         'vapid_public_key': django_settings.VAPID_PUBLIC_KEY,
-    })
+    }
+    if group == 'table':
+        context['table_cards'], context['takeaway_card'] = _table_card_groups(branches)
+    else:
+        context['orders'] = _orders_for(Order.objects.filter(branch__in=branches), status)
+    return render(request, 'dashboard/orders.html', context)
 
 
 @require_membership
@@ -973,6 +982,42 @@ def _orders_for(qs, status):
     if status in (Order.STATUS_NEW, Order.STATUS_SERVED):
         qs = qs.filter(status=status)
     return list(qs)
+
+
+def _table_card_groups(branches):
+    """Group open guest sessions into per-table cards for the orders queue's
+    '?group=table' view (Task 3.2), plus a Takeaway card for sessions with no
+    table when at least one exists. Guest counts + running totals reuse the
+    Task 3.1 billing helpers (table_sessions / table_total).
+    """
+    branches = list(branches)
+    table_ids = (
+        GuestSession.objects
+        .filter(branch__in=branches, table__isnull=False, closed_at__isnull=True)
+        .values_list('table', flat=True).distinct()
+    )
+    tables = (
+        Table.objects.filter(pk__in=table_ids).select_related('branch')
+        .order_by('branch__name', 'display_order', 'created_at')
+    )
+    cards = [{
+        'table': table,
+        'branch': table.branch,
+        'guests': len(table_sessions(table.branch, table)),
+        'total': table_total(table.branch, table),
+    } for table in tables]
+
+    takeaway_sessions = list(
+        GuestSession.objects
+        .filter(branch__in=branches, table__isnull=True, closed_at__isnull=True)
+    )
+    takeaway = None
+    if takeaway_sessions:
+        takeaway = {
+            'guests': len(takeaway_sessions),
+            'total': sum(session_subtotal(s) for s in takeaway_sessions),
+        }
+    return cards, takeaway
 
 
 @require_membership

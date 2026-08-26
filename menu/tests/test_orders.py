@@ -245,3 +245,63 @@ class OrdersScreenTest(TenantTestCase):
         self.assertIn(f'#{self.order.number}', body)
         self.assertNotIn('#JC-2847', body)
         self.assertIn('/dashboard/orders/stream/', body)
+
+
+class OrdersGroupByTableTest(TenantTestCase):
+    """Task 3.2 — '?group=table' turns the flat queue into per-table cards."""
+
+    def setUp(self):
+        super().setUp()
+        U = get_user_model()
+        self.owner = U.objects.create_user('boss2', password='pass')
+        self.make_owner(self.owner)
+        self.branch = Branch.objects.create(company=self.company, name='Lake', slug='lake')
+
+        self.table4 = Table.objects.create(branch=self.branch, label='4')
+        self.table2 = Table.objects.create(branch=self.branch, label='2')
+
+        # Table 4: two open guest sessions -> guests=2, total=200
+        g1 = GuestSession.objects.create(branch=self.branch, table=self.table4,
+                                          token='tok-g1', label='Guest A')
+        g2 = GuestSession.objects.create(branch=self.branch, table=self.table4,
+                                          token='tok-g2', label='Guest B')
+        o1 = Order.objects.create(branch=self.branch, table=self.table4, guest_session=g1)
+        OrderItem.objects.create(order=o1, name='Coffee', unit_price=100, qty=1)
+        o2 = Order.objects.create(branch=self.branch, table=self.table4, guest_session=g2)
+        OrderItem.objects.create(order=o2, name='Tea', unit_price=50, qty=2)
+
+        # Table 2: one open guest session -> guests=1, total=300
+        g3 = GuestSession.objects.create(branch=self.branch, table=self.table2,
+                                          token='tok-g3', label='Guest A')
+        o3 = Order.objects.create(branch=self.branch, table=self.table2, guest_session=g3)
+        OrderItem.objects.create(order=o3, name='Juice', unit_price=150, qty=2)
+
+        self.login_as(self.owner)
+
+    def test_group_table_shows_per_table_cards_with_counts_and_totals(self):
+        body = self.client.get('/dashboard/orders/?group=table').content.decode()
+        self.assertIn('Table 4', body)
+        self.assertIn('2 guests', body)
+        self.assertIn('Rs 200', body)
+        self.assertIn('Table 2', body)
+        self.assertIn('1 guest', body)
+        self.assertIn('Rs 300', body)
+
+    def test_group_table_excludes_closed_sessions_from_counts(self):
+        from django.utils import timezone
+        g2 = GuestSession.objects.get(token='tok-g2')
+        g2.closed_at = timezone.now()
+        g2.save()
+        body = self.client.get('/dashboard/orders/?group=table').content.decode()
+        self.assertIn('1 guest', body)  # Table 4 now down to one open guest
+        self.assertIn('Rs 100', body)   # Table 4 total now just Guest A's order
+
+    def test_group_flat_is_default_and_keeps_flat_list(self):
+        body = self.client.get('/dashboard/orders/').content.decode()
+        self.assertIn('class="tbl"', body)
+        self.assertNotIn('tcard', body)
+
+    def test_group_flat_explicit_keeps_flat_list(self):
+        body = self.client.get('/dashboard/orders/?group=flat').content.decode()
+        self.assertNotIn('tcard', body)
+        self.assertIn('class="tbl"', body)

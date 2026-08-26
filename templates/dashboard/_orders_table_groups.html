@@ -1,0 +1,31 @@
+{% comment %}
+Per-table order cards for the '?group=table' queue view (Task 3.2).
+Expects: table_cards (list of {table, branch, guests, total}), takeaway_card
+(None, or {guests, total}). Copies the B1 wireframe's .tcard/.pill markup
+(gaamos-orders/billing.html). Cards link toward the per-table detail route
+(Task 3.3); that route doesn't exist yet, so the link 404s until then.
+{% endcomment %}
+{% for card in table_cards %}
+<a class="tcard" href="{% url 'dashboard:orders' %}table/{{ card.table.pk }}/">
+  <div class="th">
+    Table {{ card.table.label }}
+    <span class="pill">{{ card.guests }} guest{{ card.guests|pluralize }}</span>
+    <span class="pill g">Rs {{ card.total }}</span>
+    <span class="chev">&rsaquo;</span>
+  </div>
+</a>
+{% empty %}
+{% if not takeaway_card %}
+<p style="color:var(--ink-3);padding:16px;">No open tables right now.</p>
+{% endif %}
+{% endfor %}
+{% if takeaway_card %}
+<a class="tcard" href="{% url 'dashboard:orders' %}table/takeaway/">
+  <div class="th">
+    Takeaway
+    <span class="pill">{{ takeaway_card.guests }} guest{{ takeaway_card.guests|pluralize }}</span>
+    <span class="pill g">Rs {{ takeaway_card.total }}</span>
+    <span class="chev">&rsaquo;</span>
+  </div>
+</a>
+{% endif %}
