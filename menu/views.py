@@ -6,6 +6,7 @@ from django.http import JsonResponse
 from django.shortcuts import redirect, render
 from django.views.decorators.csrf import ensure_csrf_cookie
 from django.views.decorators.http import require_POST
+from .guest_sessions import attach_cookie, get_or_create_session
 from .models import Branch, BranchAd, BranchVisit, Category, BranchItemPlacement, BranchMenuItem, MenuItem, Table, Order, OrderItem, Company
 from .socials import social_link
 from .themes import DEFAULT_THEME, THEMES
@@ -177,6 +178,8 @@ def place_order(request):
     if body.get('table'):
         table = Table.objects.filter(code=body['table'], branch=branch).first()
 
+    gs, token, _ = get_or_create_session(request, branch, table)
+
     lines, total = [], 0
     for entry in raw_items:
         try:
@@ -199,7 +202,7 @@ def place_order(request):
     order = Order.objects.create(
         branch=branch, table=table,
         table_label=table.label if table else '',
-        total=total,
+        total=total, guest_session=gs,
     )
     for item, qty in lines:
         OrderItem.objects.create(order=order, menu_item=item,
@@ -207,7 +210,8 @@ def place_order(request):
         MenuItem.objects.filter(pk=item.pk).update(order_count=F('order_count') + qty)
 
     _queue_order_push(order.pk)
-    return JsonResponse({'ok': True, 'number': order.number})
+    resp = JsonResponse({'ok': True, 'number': order.number})
+    return attach_cookie(resp, token)
 
 
 @ensure_csrf_cookie
