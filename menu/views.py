@@ -121,6 +121,10 @@ def menu(request):
             'instagram': social_link('instagram', restaurant.instagram) if restaurant else None,
             'facebook': social_link('facebook', restaurant.facebook) if restaurant else None,
             'tiktok': social_link('tiktok', restaurant.tiktok) if restaurant else None,
+            # Task 2.4: drives the client-side identity/OTP step gating —
+            # mirrors the server-side conditional in index.html below.
+            'identity_mode': restaurant.identity_mode if restaurant else 'auto',
+            'identity_skippable': restaurant.identity_skippable if restaurant else True,
         },
         'branches': branches,
         'branch': {
@@ -139,7 +143,7 @@ def menu(request):
         BranchVisit.objects.create(branch=branch)
 
     return render(request, 'menu/index.html',
-                  {'payload': payload, 'ad': ad, 'theme': theme})
+                  {'payload': payload, 'ad': ad, 'theme': theme, 'restaurant': restaurant})
 
 
 def _queue_order_push(order_id):

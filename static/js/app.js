@@ -104,6 +104,22 @@ document.addEventListener('alpine:init', () => {
     openedOrder: null,   // order shown in the detail modal
     lastOrder: null,     // order just placed, shown on the 'placed' screen (F11)
 
+    // ── Identity / OTP (Task 2.4 — first order only) ───
+    // 'pending' (not asked yet) | 'otp' (code sent, awaiting verify) |
+    // 'done' (name/phone captured, phone verified if required) | 'skipped'.
+    // Persisted on this device so a returning guest isn't asked again — the
+    // real per-venue "remembered on this phone" behaviour is server-side
+    // (GuestSession), this is just the client not re-showing the step.
+    identity: 'pending',
+    identityName: '',
+    identityPhone: '',
+    identityBusy: false,
+    identityError: '',
+    otpDigits: ['', '', '', ''],
+    otpBusy: false,
+    otpError: '',
+    otpResendCooldown: 0,
+
     // ── Init ──────────────────────────────────────────
     init() {
       const raw = document.getElementById('menu-data');
@@ -128,6 +144,15 @@ document.addEventListener('alpine:init', () => {
       const savedOrders = localStorage.getItem('jc_orders');
       if (savedOrders) {
         try { this.orders = JSON.parse(savedOrders); } catch (e) { this.orders = []; }
+      }
+      const savedIdentity = localStorage.getItem('jc_identity');
+      if (savedIdentity) {
+        try {
+          const parsed = JSON.parse(savedIdentity);
+          this.identity = parsed.identity || 'pending';
+          this.identityName = parsed.name || '';
+          this.identityPhone = parsed.phone || '';
+        } catch (e) { /* keep defaults */ }
       }
       this.initSpy();
     },
@@ -237,6 +262,14 @@ document.addEventListener('alpine:init', () => {
     },
     get cartCount() {
       return this.cart.reduce((n, c) => n + c.qty, 0);
+    },
+    // Task 2.4: true while the guest's first-order identity step still needs
+    // to be shown (venue's identity_mode isn't 'auto' and the guest hasn't
+    // finished it or skipped it yet). Drives attemptPlaceOrder() below.
+    get identityRequired() {
+      const mode = this.restaurant.identity_mode;
+      if (!mode || mode === 'auto') return false;
+      return this.identity !== 'done' && this.identity !== 'skipped';
     },
     get detailTotal() {
       if (!this.selectedDish) return 0;
@@ -356,6 +389,108 @@ document.addEventListener('alpine:init', () => {
         })
         .catch(() => { this.showToast('Could not place order — try again'); })
         .finally(() => { this.placing = false; });
+    },
+
+    // ── Identity / OTP (Task 2.4) ──────────────────────
+    // Gate on the "Place order" CTA: routes to the identity step on the
+    // guest's first order (per venue identity_mode) instead of ordering
+    // straight away; a no-op detour once identity is 'done'/'skipped'.
+    attemptPlaceOrder() {
+      if (this.identityRequired) { this.screen = 'identity'; return; }
+      this.placeOrder();
+    },
+    saveIdentity() {
+      localStorage.setItem('jc_identity', JSON.stringify({
+        identity: this.identity, name: this.identityName, phone: this.identityPhone,
+      }));
+    },
+    submitIdentity(evt) {
+      if (this.identityBusy) return;
+      this.identityError = '';
+      const name = this.identityName.trim();
+      const phone = this.identityPhone.trim();
+      if (!name) { this.identityError = 'Please enter your name.'; return; }
+      if (this.restaurant.identity_mode === 'phone' && !phone) {
+        this.identityError = 'Please enter your phone number.'; return;
+      }
+      this.identityBusy = true;
+      const url = (evt && evt.target && evt.target.getAttribute('action')) || '/api/identity/';
+      fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCookie('csrftoken') },
+        body: JSON.stringify({ name, phone }),
+      })
+        .then(r => r.json().then(data => ({ ok: r.ok, data })))
+        .then(({ ok, data }) => {
+          if (!ok || data.error) { this.identityError = 'Could not save your details — try again.'; return; }
+          if (data.otp) {
+            this.identity = 'otp';
+            this.startOtpCooldown();
+          } else {
+            this.identity = 'done';
+            this.saveIdentity();
+            this.screen = 'cart';
+          }
+        })
+        .catch(() => { this.identityError = 'Could not save your details — try again.'; })
+        .finally(() => { this.identityBusy = false; });
+    },
+    skipIdentity() {
+      this.identity = 'skipped';
+      this.saveIdentity();
+      this.screen = 'cart';
+    },
+    otpAdvance(i, evt) {
+      const val = (evt.target.value || '').replace(/\D/g, '').slice(0, 1);
+      this.otpDigits[i] = val;
+      if (val && i < this.otpDigits.length - 1) {
+        const next = evt.target.nextElementSibling;
+        if (next) next.focus();
+      }
+    },
+    submitOtp(evt) {
+      if (this.otpBusy) return;
+      this.otpError = '';
+      const code = this.otpDigits.join('');
+      if (code.length !== this.otpDigits.length) { this.otpError = 'Enter the full code.'; return; }
+      this.otpBusy = true;
+      const url = (evt && evt.target && evt.target.getAttribute('action')) || '/api/otp/verify/';
+      fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCookie('csrftoken') },
+        body: JSON.stringify({ code }),
+      })
+        .then(r => r.json())
+        .then((data) => {
+          if (data.ok && data.verified) {
+            this.identity = 'done';
+            this.saveIdentity();
+            this.screen = 'cart';
+          } else {
+            this.otpError = 'Incorrect code — try again.';
+            this.otpDigits = ['', '', '', ''];
+          }
+        })
+        .catch(() => { this.otpError = 'Could not verify — try again.'; })
+        .finally(() => { this.otpBusy = false; });
+    },
+    resendOtp() {
+      if (this.otpResendCooldown > 0) return;
+      fetch('/api/otp/resend/', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCookie('csrftoken') },
+        body: '{}',
+      })
+        .then(() => this.startOtpCooldown())
+        .catch(() => {});
+    },
+    startOtpCooldown() {
+      this.otpResendCooldown = 30;
+      clearInterval(this._otpTimer);
+      this._otpTimer = setInterval(() => {
+        this.otpResendCooldown -= 1;
+        if (this.otpResendCooldown <= 0) clearInterval(this._otpTimer);
+      }, 1000);
     },
     orderTime(o) {
       if (!o || !o.placed_at) return '';

@@ -1,0 +1,38 @@
+{% comment %}
+Task 2.4 — first-order identity capture (screens 1 of identity.html wireframe).
+Rendered only when the parent include-site is inside
+{% if restaurant.identity_mode != 'auto' %}. Visibility of pending/otp/done is
+then handled client-side by Alpine's `identity` state (see static/js/app.js).
+The <form action> is the real endpoint (Task 2.3) — JS reads it off the event
+so the URL lives in one place (this template), not duplicated in app.js.
+{% endcomment %}
+<form class="identity-step" x-show="identity === 'pending'" x-cloak
+      action="{% url 'identity_submit' %}" method="post"
+      @submit.prevent="submitIdentity($event)">
+  <div class="id-h2">Almost done</div>
+  <div class="id-muted">
+    Add your name
+    {% if restaurant.identity_mode == 'phone' %}&amp; number{% endif %}
+    so staff know whose order this is.
+  </div>
+
+  <div class="lbl">Name</div>
+  <input class="inp" type="text" name="name" x-model="identityName"
+         placeholder="Your name" autocomplete="name">
+
+  {% if restaurant.identity_mode == 'phone' %}
+  <div class="lbl">Phone / WhatsApp</div>
+  <input class="inp" type="tel" name="phone" x-model="identityPhone"
+         placeholder="+977 98…" autocomplete="tel" inputmode="tel">
+  {% endif %}
+
+  <p class="id-error" x-show="identityError" x-text="identityError" x-cloak></p>
+
+  <button type="submit" class="btn solid" :disabled="identityBusy">
+    <span x-text="identityBusy ? 'Please wait…' : (restaurant.identity_mode === 'phone' ? 'Send code' : 'Continue')"></span>
+  </button>
+
+  {% if restaurant.identity_skippable %}
+  <a href="#" class="skip" @click.prevent="skipIdentity()">Skip — order as guest</a>
+  {% endif %}
+</form>

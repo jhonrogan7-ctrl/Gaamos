@@ -1387,6 +1387,70 @@ html { scroll-behavior: smooth; }
 .sm.tot .am { color: var(--brand-deep); }
 .sm.disc { color: var(--brand-deep); }
 
+/* ── Identity / OTP (Task 2.4 — first order only) ──
+   Markup/classes ported from the identity.html wireframe (screens 1–3):
+   name+phone capture, OTP boxes, and the "Ordering as <name>" badge. Scoped
+   under their own wrapper classes (not bare .btn/.skip/.badge) so they never
+   collide with the dashboard's own component classes in this shared sheet;
+   themed with this venue's guest tokens rather than the wireframe's fixed
+   #1C3F73, so it always matches the picked menu theme. */
+.identity-step, .otp-step {
+  display: flex; flex-direction: column; background: #fff;
+  border: 1px solid var(--line); border-radius: 16px; padding: 18px;
+  box-shadow: var(--shadow-card); margin-bottom: 14px;
+}
+.identity-step .id-h2, .otp-step .id-h2 {
+  font-family: 'Bricolage Grotesque', serif; font-size: 17px; font-weight: 800;
+  color: var(--ink); margin: 0 0 4px;
+}
+.identity-step .id-muted, .otp-step .id-muted {
+  font-size: 12px; color: var(--ink-3); line-height: 1.5;
+}
+.identity-step .lbl, .otp-step .lbl {
+  font-size: 11px; color: var(--ink-3); text-transform: uppercase;
+  letter-spacing: .04em; font-weight: 700; margin: 14px 0 5px;
+}
+.identity-step .inp {
+  width: 100%; border: 1px solid var(--line); border-radius: 10px;
+  padding: 12px 13px; font-size: 13.5px; color: var(--ink); background: #fff;
+}
+.identity-step .btn.solid, .otp-step .btn.solid {
+  border: none; width: 100%; text-align: center; border-radius: 12px;
+  padding: 13px; font-weight: 700; font-size: 13.5px; margin-top: 16px;
+  background: var(--grad, var(--brand)); color: var(--brand-ink, #fff); cursor: pointer;
+}
+.identity-step .btn.solid:disabled, .otp-step .btn.solid:disabled { opacity: .6; cursor: default; }
+.identity-step .skip {
+  text-align: center; color: var(--ink-3); font-size: 12px; margin-top: 12px;
+  text-decoration: underline; display: block; cursor: pointer;
+}
+.identity-step .id-error, .otp-step .id-error {
+  color: #b91c1c; font-size: 12px; margin: 10px 0 0;
+}
+.otp-step .otp {
+  display: flex; gap: 9px; justify-content: center; margin: 16px 0 6px;
+}
+.otp-step .otp .d {
+  width: 44px; height: 52px; border: 1.5px solid var(--line); border-radius: 10px;
+  text-align: center; font-weight: 800; font-size: 20px; color: var(--brand-deep);
+  background: #fff;
+}
+.otp-step .otp .d.on { border-color: var(--brand); background: var(--brand-soft); }
+.otp-step .otp-resend {
+  text-align: center; color: var(--brand-deep); font-size: 12px; margin-top: 12px;
+  text-decoration: underline; display: block; cursor: pointer;
+}
+.identity-badge {
+  display: flex; align-items: center; gap: 9px; background: var(--brand-soft);
+  border: 1px solid var(--line); border-radius: 12px; padding: 10px 12px;
+  font-size: 12.5px; color: var(--ink); margin-bottom: 12px;
+}
+.identity-badge .av {
+  width: 26px; height: 26px; border-radius: 50%; background: var(--brand);
+  color: var(--brand-ink, #fff); display: flex; align-items: center; justify-content: center;
+  font-weight: 800; font-size: 12px; flex: 0 0 26px;
+}
+
 /* ── Contact modal ── */
 .scrim {
   position: absolute; inset: 0; background: rgba(28,26,23,0.5);

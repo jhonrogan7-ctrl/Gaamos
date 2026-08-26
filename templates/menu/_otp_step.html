@@ -1,0 +1,30 @@
+{% comment %}
+Task 2.4 — OTP verification (screen 2 of identity.html wireframe). Only
+included by the caller when restaurant.identity_mode == 'phone'. The 4 boxes
+bind to identityOtp digits in app.js; the form's action is the real Task 2.3
+verify endpoint.
+{% endcomment %}
+<form class="otp-step" x-show="identity === 'otp'" x-cloak
+      action="{% url 'otp_verify' %}" method="post"
+      @submit.prevent="submitOtp($event)">
+  <div class="id-h2">Enter the code</div>
+  <div class="id-muted">We sent a 4-digit code by SMS to <b x-text="identityPhone"></b></div>
+
+  <div class="otp">
+    <template x-for="(digit, i) in otpDigits" :key="i">
+      <input class="d" :class="{ on: otpDigits[i] !== '' }" type="text"
+             inputmode="numeric" pattern="[0-9]*" maxlength="1"
+             x-model="otpDigits[i]" @input="otpAdvance(i, $event)">
+    </template>
+  </div>
+
+  <p class="id-error" x-show="otpError" x-text="otpError" x-cloak></p>
+
+  <button type="submit" class="btn solid" :disabled="otpBusy">
+    <span x-text="otpBusy ? 'Verifying…' : 'Verify & continue'"></span>
+  </button>
+
+  <a href="#" class="otp-resend" x-show="otpResendCooldown === 0" @click.prevent="resendOtp()">Resend code</a>
+  <div class="id-muted" style="text-align:center" x-show="otpResendCooldown > 0"
+       x-text="'Resend code in ' + otpResendCooldown + 's'"></div>
+</form>
