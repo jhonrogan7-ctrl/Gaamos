@@ -1,13 +1,16 @@
 import json
 import logging
 
+from django.conf import settings
+from django.core.cache import cache
 from django.db.models import F
-from django.http import JsonResponse
+from django.http import HttpResponse, JsonResponse
 from django.shortcuts import redirect, render
 from django.views.decorators.csrf import ensure_csrf_cookie
 from django.views.decorators.http import require_POST
-from .guest_sessions import attach_cookie, get_or_create_session
-from .models import Branch, BranchAd, BranchVisit, Category, BranchItemPlacement, BranchMenuItem, MenuItem, Table, Order, OrderItem, Company
+from .guest_sessions import COOKIE, attach_cookie, get_or_create_session
+from .models import Branch, BranchAd, BranchVisit, Category, BranchItemPlacement, BranchMenuItem, GuestSession, MenuItem, Table, Order, OrderItem, Company
+from .otp import issue_code, verify_code
 from .socials import social_link
 from .themes import DEFAULT_THEME, THEMES
 
@@ -212,6 +215,118 @@ def place_order(request):
     _queue_order_push(order.pk)
     resp = JsonResponse({'ok': True, 'number': order.number})
     return attach_cookie(resp, token)
+
+
+def _resolve_active_session(request):
+    """The active GuestSession for this browser, or None.
+
+    Mirrors the cookie contract from menu/guest_sessions.py without going
+    through get_or_create_session: these endpoints act on a session that must
+    already exist (created by place_order) — a missing/invalid/stale cookie
+    means there is nothing to attach identity or OTP to, which is a client
+    error, not a fresh session to silently create."""
+    token = request.COOKIES.get(COOKIE, '')
+    if not token:
+        return None
+    return GuestSession.objects.filter(token=token, closed_at__isnull=True).first()
+
+
+def _queue_otp_sms(phone, code):
+    """Hand the OTP text to the worker for delivery. Swallows everything, same
+    as _queue_order_push above: the code was already written to the DB by
+    issue_code() before this is called, so a dead broker costs the guest an
+    SMS, never the ability to be verified."""
+    try:
+        from .tasks import send_otp_sms
+        send_otp_sms.delay(phone, code)
+    except Exception:                                    # noqa: BLE001
+        logger.exception('could not queue otp sms for phone=%s', phone)
+
+
+@require_POST
+def identity_submit(request):
+    """Guest identity capture. Body: {name, phone?}. Branches on
+    request.company.identity_mode: name/room/auto save straight to the
+    session (no OTP); phone issues a code and enqueues its SMS."""
+    gs = _resolve_active_session(request)
+    if gs is None:
+        return JsonResponse({'error': 'no active session'}, status=400)
+
+    try:
+        body = json.loads(request.body or '{}')
+    except (json.JSONDecodeError, TypeError):
+        return JsonResponse({'error': 'invalid body'}, status=400)
+
+    name = (body.get('name') or '').strip()
+    phone = (body.get('phone') or '').strip()
+    mode = request.company.identity_mode if request.company else 'auto'
+
+    if mode == 'phone':
+        if not phone:
+            return JsonResponse({'error': 'phone required'}, status=400)
+        if name:
+            gs.name = name
+            gs.save(update_fields=['name'])
+        code = issue_code(gs, phone)
+        _queue_otp_sms(phone, code)
+        return JsonResponse({'ok': True, 'otp': True})
+
+    update_fields = []
+    if name:
+        gs.name = name
+        update_fields.append('name')
+    if phone:
+        gs.contact = phone
+        update_fields.append('contact')
+    if update_fields:
+        gs.save(update_fields=update_fields)
+    return JsonResponse({'ok': True})
+
+
+@require_POST
+def otp_verify(request):
+    """Verify a submitted OTP code against the active session. Body: {code}."""
+    gs = _resolve_active_session(request)
+    if gs is None:
+        return JsonResponse({'error': 'no active session'}, status=400)
+
+    try:
+        body = json.loads(request.body or '{}')
+    except (json.JSONDecodeError, TypeError):
+        return JsonResponse({'error': 'invalid body'}, status=400)
+
+    ok = verify_code(gs, str(body.get('code', '')))
+    return JsonResponse({'ok': ok, 'verified': gs.verified})
+
+
+@require_POST
+def otp_resend(request):
+    """Re-issue and re-send an OTP code for the active session's phone.
+
+    Rate-limited by reusing the same GUEST_RATE_LIMIT/GUEST_RATE_WINDOW knobs
+    RateLimitMiddleware already uses for guest reads (see menu/middleware.py),
+    keyed per-session rather than per-IP so one guest resending repeatedly
+    can't be masked by (or itself trip) the shared IP counter."""
+    gs = _resolve_active_session(request)
+    if gs is None:
+        return JsonResponse({'error': 'no active session'}, status=400)
+
+    last = gs.otp_challenges.order_by('-id').first()
+    phone = last.phone if last else gs.contact
+    if not phone:
+        return JsonResponse({'error': 'no phone on file'}, status=400)
+
+    limit = getattr(settings, 'GUEST_RATE_LIMIT', 120)
+    window = getattr(settings, 'GUEST_RATE_WINDOW', 60)
+    key = f'otp-resend:{gs.pk}'
+    cache.add(key, 0, window)
+    count = cache.incr(key)
+    if count > limit:
+        return HttpResponse('Too Many Requests', status=429)
+
+    code = issue_code(gs, phone)
+    _queue_otp_sms(phone, code)
+    return JsonResponse({'ok': True})
 
 
 @ensure_csrf_cookie
