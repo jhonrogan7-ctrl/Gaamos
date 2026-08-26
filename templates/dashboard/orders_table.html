@@ -1,0 +1,51 @@
+{% extends 'dashboard/base.html' %}
+
+{% comment %}
+Task 3.3 / B2 — table detail: a table's open guest sessions with their items.
+Expects: table (Table or None for Takeaway), is_takeaway (bool), guests
+(list of {session, lines, subtotal}). Copies the B2 wireframe's .tcard/.guest/.li
+markup (gaamos-orders/billing.html).
+{% endcomment %}
+
+{% block page_title %}{% if is_takeaway %}Takeaway{% else %}Table {{ table.label }}{% endif %}{% endblock %}
+{% block subtitle %}{{ guests|length }} open guest session{{ guests|length|pluralize }}{% endblock %}
+
+{% block header_action %}
+{% if is_takeaway %}
+<a class="btn primary" href="{% url 'dashboard:orders_table_bill_takeaway' %}">Bill</a>
+{% else %}
+<a class="btn primary" href="{% url 'dashboard:orders_table_bill' table.pk %}">Bill</a>
+{% endif %}
+{% endblock %}
+
+{% block content %}
+<div class="sec-h">
+  <h3>
+    {% if is_takeaway %}Takeaway orders{% else %}Table {{ table.label }} · guests &amp; their orders{% endif %}
+    <span class="mini">Open guest sessions only</span>
+  </h3>
+</div>
+
+<div class="panel bill-tcard-wrap">
+  {% for g in guests %}
+  <div class="tcard bill-tcard">
+    <div class="guest">
+      <div class="gh">
+        <span class="av">{{ g.session.display_name|slice:":1"|upper }}</span>
+        {{ g.session.display_name }}{% if g.session.contact %} <span class="mini">· {{ g.session.contact }}</span>{% endif %}
+      </div>
+      {% for name, qty, line_total in g.lines %}
+      <div class="li"><span>{{ name }} ×{{ qty }}</span><span>Rs {{ line_total }}</span></div>
+      {% empty %}
+      <div class="li"><span class="mini">No items yet.</span></div>
+      {% endfor %}
+      <div class="sub2"><span>Subtotal</span><span>Rs {{ g.subtotal }}</span></div>
+    </div>
+  </div>
+  {% empty %}
+  <p style="color:var(--ink-3);padding:16px;">
+    No open guest sessions {% if is_takeaway %}for takeaway{% else %}at this table{% endif %} right now.
+  </p>
+  {% endfor %}
+</div>
+{% endblock %}

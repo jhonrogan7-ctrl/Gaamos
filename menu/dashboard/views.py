@@ -21,7 +21,7 @@ from menu.models import (
     BranchCategory, BranchSubCategory, BranchItemPlacement, Membership, Table, Order,
     BranchAd, BranchVisit, OrderItem, GuestSession,
 )
-from menu.dashboard.billing import table_sessions, table_total, session_subtotal
+from menu.dashboard.billing import table_sessions, table_total, session_subtotal, session_lines
 from menu.permissions import (
     require_membership, require_owner, ensure_can_manage_branch, forbidden,
     visible_branches,
@@ -1018,6 +1018,127 @@ def _table_card_groups(branches):
             'total': sum(session_subtotal(s) for s in takeaway_sessions),
         }
     return cards, takeaway
+
+
+def _takeaway_sessions(branches):
+    """Open guest sessions with no table (Takeaway), oldest first — the same
+    filter _table_card_groups uses for its Takeaway card, since table_sessions
+    (Task 3.1) takes a single branch+table and doesn't cover this case."""
+    return list(
+        GuestSession.objects
+        .filter(branch__in=branches, table__isnull=True, closed_at__isnull=True)
+        .order_by('created_at')
+    )
+
+
+def _bill_mode(request):
+    mode = request.GET.get('mode', 'split')
+    return mode if mode in ('split', 'combine') else 'split'
+
+
+def _merge_session_lines(sessions):
+    """Combine-mode display helper: merge every session's session_lines() into
+    one itemised list, summing qty/line_total for items that share a name
+    across guests. Presentation-only aggregation on top of the Task 3.1
+    helpers — table_total (not this) remains the source of truth for the total.
+    """
+    merged = {}
+    order = []
+    for session in sessions:
+        for name, qty, line_total in session_lines(session):
+            if name not in merged:
+                merged[name] = [0, 0]
+                order.append(name)
+            merged[name][0] += qty
+            merged[name][1] += line_total
+    return [(name, merged[name][0], merged[name][1]) for name in order]
+
+
+def _guest_rows(sessions):
+    return [{
+        'session': s,
+        'lines': session_lines(s),
+        'subtotal': session_subtotal(s),
+    } for s in sessions]
+
+
+@require_membership
+def orders_table(request, table_id):
+    """Task 3.3 / B2 — a table's open guest sessions with their items."""
+    table = get_object_or_404(Table, pk=table_id, branch__in=visible_branches(request))
+    sessions = table_sessions(table.branch, table)
+    return render(request, 'dashboard/orders_table.html', {
+        'active_tab': 'orders',
+        'table': table,
+        'branch': table.branch,
+        'is_takeaway': False,
+        'guests': _guest_rows(sessions),
+    })
+
+
+@require_membership
+def orders_table_takeaway(request):
+    """Task 3.3 / B2 — the Takeaway "table": open guest sessions with no table."""
+    sessions = _takeaway_sessions(visible_branches(request))
+    return render(request, 'dashboard/orders_table.html', {
+        'active_tab': 'orders',
+        'table': None,
+        'branch': None,
+        'is_takeaway': True,
+        'guests': _guest_rows(sessions),
+    })
+
+
+def _bill_context(request, table, sessions):
+    """Shared context for the Split/Combine bill preview. `close_url` and
+    `print_url` are placeholders for Tasks 3.5 (close-table) and 3.4 (PDF
+    export) — those routes don't exist yet, so the links 404 until then; they
+    are plain hrefs here (not {% url %}) so this page never 500s in the
+    meantime."""
+    mode = _bill_mode(request)
+    table_path = f'table/{table.pk}' if table else 'table/takeaway'
+    close_url = f'/dashboard/orders/{table_path}/close/'
+    print_base_url = f'/dashboard/orders/{table_path}/bill/print/'
+    context = {
+        'active_tab': 'orders',
+        'table': table,
+        'branch': table.branch if table else None,
+        'is_takeaway': table is None,
+        'mode': mode,
+        'close_url': close_url,
+        'preview_url': print_base_url,
+    }
+    if mode == 'combine':
+        context['combined_lines'] = _merge_session_lines(sessions)
+        context['combined_total'] = (
+            table_total(table.branch, table) if table
+            else sum(session_subtotal(s) for s in sessions)
+        )
+    else:
+        guests = _guest_rows(sessions)
+        for row in guests:
+            row['print_url'] = f'{print_base_url}{row["session"].pk}/'
+        context['guests'] = guests
+    return context
+
+
+@require_membership
+def orders_table_bill(request, table_id):
+    """Task 3.3 / B3-B4 — Split/Combine bill preview for one table.
+
+    Non-POS boundary: this only computes and previews a summary. No payment,
+    no receipt storage, no order/session mutation happens here.
+    """
+    table = get_object_or_404(Table, pk=table_id, branch__in=visible_branches(request))
+    sessions = table_sessions(table.branch, table)
+    return render(request, 'dashboard/orders_bill.html', _bill_context(request, table, sessions))
+
+
+@require_membership
+def orders_table_bill_takeaway(request):
+    """Task 3.3 / B3-B4 — Split/Combine bill preview for Takeaway."""
+    sessions = _takeaway_sessions(visible_branches(request))
+    return render(request, 'dashboard/orders_bill.html', _bill_context(request, None, sessions))
 
 
 @require_membership

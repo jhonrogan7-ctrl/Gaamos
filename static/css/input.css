@@ -267,6 +267,25 @@ h1,h2,h3 { font-family: var(--hd); }
   .tcard .pill.g { background: var(--green-soft); border-color: var(--green); color: var(--green); }
   .tcard .chev { margin-left: auto; color: var(--ink-3); font-size: 16px; }
   .who { @apply inline-flex items-center gap-1; font-size: 11px; font-weight: 700; color: var(--accent-deep); background: var(--accent-soft); border: 1px solid var(--line-2); border-radius: 14px; padding: 1px 8px; margin-left: 6px; }
+
+  /* Table detail (B2) + Split/Combine bill preview (B3/B4) — Task 3.3. */
+  .bill-tcard-wrap { padding: 14px; }
+  .bill-tcard { margin: 0 0 10px; }
+  .bill-tcard:last-child { margin-bottom: 0; }
+  .bill-split-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; }
+  .bill-split-grid .bill-tcard { margin: 0; }
+  .guest { border-top: 1px solid var(--line); padding: 9px 0; font-size: 12.5px; }
+  .guest:first-child { border-top: 0; padding-top: 0; }
+  .gh { @apply flex items-center gap-2; font-weight: 700; }
+  .gh .av, .guest .av { width: 22px; height: 22px; border-radius: 50%; background: var(--accent); color: #fff; @apply flex items-center justify-center; font-size: 10px; font-weight: 800; flex: 0 0 22px; }
+  .li { display: flex; justify-content: space-between; font-size: 12px; color: var(--ink-2); padding: 2px 0 2px 30px; }
+  .bill-split-grid .li, .bill-tcard > .li { padding-left: 0; }
+  .sub2 { display: flex; justify-content: space-between; font-weight: 800; font-size: 12.5px; padding: 3px 0 0 30px; color: var(--accent-deep); }
+  .bill-split-grid .sub2, .bill-tcard > .sub2 { padding-left: 0; }
+  .total { display: flex; justify-content: space-between; font-weight: 800; font-size: 15px; margin-top: 8px; padding-top: 8px; border-top: 2px solid var(--accent); }
+  .bill-print-btn { margin-top: 8px; width: 100%; justify-content: center; }
+  .row2 { display: flex; gap: 10px; margin-top: 14px; }
+  .note { background: var(--amber-soft, #fff7ed); border: 1px solid var(--line-2); border-left: 4px solid var(--amber, #b45309); border-radius: 8px; padding: 11px 14px; font-size: 13px; margin: 14px 0 0; color: var(--ink-2); }
   .status { @apply inline-flex items-center gap-1.5; font-size: 11px; font-weight: 800; border-radius: 999px; padding: 4px 11px; }
   .status::before { content: ''; width: 7px; height: 7px; border-radius: 50%; background: currentColor; }
   .status.new { color: var(--accent-deep); background: var(--accent-soft); }
