@@ -359,6 +359,19 @@ class GuestSession(TenantScopedModel):
         return f"{self.display_name} @ {self.table_id or 'takeaway'}"
 
 
+class OtpChallenge(models.Model):
+    """A single issued one-time code for a GuestSession's phone verification.
+    Always queried via its session, so it does not need tenant scoping itself."""
+    session = models.ForeignKey(GuestSession, on_delete=models.CASCADE, related_name='otp_challenges')
+    phone = models.CharField(max_length=40)
+    code_hash = models.CharField(max_length=128)
+    expires_at = models.DateTimeField()
+    attempts = models.PositiveSmallIntegerField(default=0)
+
+    def __str__(self):
+        return f"OTP for {self.phone} @ session {self.session_id}"
+
+
 class PushSubscription(TenantScopedModel):
     """One browser's Web Push registration for one dashboard user.
 
