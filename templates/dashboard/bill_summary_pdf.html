@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Bill summary</title>
+<style>
+  body { font-family: sans-serif; font-size: 12px; color: #111111; }
+  h1 { font-size: 18px; margin: 0 0 4px 0; }
+  .banner {
+    font-size: 10px; font-weight: bold; border: 1px solid #111111;
+    padding: 4px 8px; margin-bottom: 10px;
+  }
+  .meta { font-size: 11px; color: #444444; margin-bottom: 14px; }
+  .guest-h { font-size: 13px; font-weight: bold; margin: 16px 0 4px 0; }
+  table { width: 100%; border-collapse: collapse; margin-bottom: 10px; }
+  th, td { padding: 4px 6px; text-align: left; border-bottom: 1px solid #dddddd; }
+  th.amount, td.amount { text-align: right; }
+  tr.total-row td { font-weight: bold; border-top: 2px solid #111111; }
+  .footer {
+    margin-top: 24px; font-size: 10px; color: #444444;
+    border-top: 1px solid #cccccc; padding-top: 6px;
+  }
+</style>
+</head>
+<body>
+
+<div class="banner">Bill summary &mdash; not a tax receipt</div>
+
+<h1>{{ venue_name }}{% if branch %} &middot; {{ branch.name }}{% endif %}</h1>
+<div class="meta">
+  Table: {% if is_takeaway %}Takeaway{% elif table %}{{ table.label }}{% endif %}
+  &middot; {{ generated_at|date:"Y-m-d H:i" }}
+  &middot;
+  {% if mode == 'combine' %}Combined bill &mdash; whole table
+  {% elif single_guest %}Guest bill
+  {% else %}Split bill &mdash; per guest
+  {% endif %}
+</div>
+
+{% if mode == 'combine' %}
+<table>
+  <thead>
+    <tr><th>Item</th><th class="amount">Qty</th><th class="amount">Amount (Rs)</th></tr>
+  </thead>
+  <tbody>
+    {% for name, qty, line_total in combined_lines %}
+    <tr><td>{{ name }}</td><td class="amount">{{ qty }}</td><td class="amount">{{ line_total }}</td></tr>
+    {% empty %}
+    <tr><td colspan="3">No items.</td></tr>
+    {% endfor %}
+    <tr class="total-row"><td colspan="2">Table total</td><td class="amount">Rs {{ combined_total }}</td></tr>
+  </tbody>
+</table>
+{% else %}
+  {% for g in guests %}
+  <div class="guest-h">{{ g.session.display_name }}</div>
+  <table>
+    <thead>
+      <tr><th>Item</th><th class="amount">Qty</th><th class="amount">Amount (Rs)</th></tr>
+    </thead>
+    <tbody>
+      {% for name, qty, line_total in g.lines %}
+      <tr><td>{{ name }}</td><td class="amount">{{ qty }}</td><td class="amount">{{ line_total }}</td></tr>
+      {% empty %}
+      <tr><td colspan="3">No items.</td></tr>
+      {% endfor %}
+      <tr class="total-row"><td colspan="2">Subtotal</td><td class="amount">Rs {{ g.subtotal }}</td></tr>
+    </tbody>
+  </table>
+  {% empty %}
+  <p>No open guest sessions to bill.</p>
+  {% endfor %}
+{% endif %}
+
+<div class="footer">
+  Bill summary &mdash; not a tax receipt. Gaamos is non-POS: this document does not record a
+  payment and is not a fiscal invoice. The venue settles independently (cash / its own POS /
+  credit book).
+</div>
+
+</body>
+</html>

@@ -1141,6 +1141,96 @@ def orders_table_bill_takeaway(request):
     return render(request, 'dashboard/orders_bill.html', _bill_context(request, None, sessions))
 
 
+def _bill_pdf_context(table, sessions, mode, session_id=None):
+    """Pure (request-free) context builder for the bill-summary PDF template
+    (Task 3.4). Mirrors ``_bill_context``'s combine/split shapes so the PDF
+    matches the on-screen preview, plus a ``single_guest`` shape for printing
+    one guest's bill — Task 3.3's per-guest Print button links to
+    ``<print_base_url><session.pk>/`` (a path segment, not a query param; see
+    ``_bill_context``), so ``session_id`` here is resolved against this
+    table's/takeaway's own already-scoped ``sessions`` list. That list is
+    always produced by ``table_sessions``/``_takeaway_sessions``, which are
+    themselves filtered to ``visible_branches`` by the caller — so a session
+    id from another table or another company simply isn't in ``sessions``
+    and this returns None (the view turns that into a 404), keeping the
+    fail-closed tenancy boundary without a second lookup here.
+
+    Returns None when ``session_id`` doesn't match any session in scope.
+    """
+    context = {
+        'table': table,
+        'branch': table.branch if table else None,
+        'is_takeaway': table is None,
+    }
+    if session_id is not None:
+        session = next((s for s in sessions if s.pk == session_id), None)
+        if session is None:
+            return None
+        context['mode'] = 'split'
+        context['single_guest'] = True
+        context['guests'] = [{
+            'session': session,
+            'lines': session_lines(session),
+            'subtotal': session_subtotal(session),
+        }]
+        if table is None:
+            context['branch'] = session.branch
+        return context
+
+    context['mode'] = mode
+    context['single_guest'] = False
+    if mode == 'combine':
+        context['combined_lines'] = _merge_session_lines(sessions)
+        context['combined_total'] = (
+            table_total(table.branch, table) if table
+            else sum(session_subtotal(s) for s in sessions)
+        )
+    else:
+        context['guests'] = _guest_rows(sessions)
+    return context
+
+
+def _bill_pdf_response(request, table, sessions, session_id):
+    """Task 3.4 — render the bill-summary PDF and return it.
+
+    Non-POS boundary: this only renders and returns a PDF from the same
+    read-only billing helpers as the on-screen preview. No payment is taken,
+    nothing is mutated, and no receipt is stored anywhere.
+    """
+    from django.http import HttpResponse
+    from django.template.loader import render_to_string
+    from .utils import render_html_to_pdf
+
+    mode = _bill_mode(request)
+    context = _bill_pdf_context(table, sessions, mode, session_id)
+    if context is None:
+        raise Http404('Guest session not found for this table.')
+    context['venue_name'] = request.company.name
+    context['generated_at'] = timezone.now()
+
+    html = render_to_string('dashboard/bill_summary_pdf.html', context)
+    pdf = render_html_to_pdf(html)
+    resp = HttpResponse(pdf, content_type='application/pdf')
+    label = table.label if table else 'takeaway'
+    resp['Content-Disposition'] = f'inline; filename="bill-{label}.pdf"'
+    return resp
+
+
+@require_membership
+def orders_table_bill_pdf(request, table_id, session_id=None):
+    """Task 3.4 / B3-B4 print — read-only bill-summary PDF for one table."""
+    table = get_object_or_404(Table, pk=table_id, branch__in=visible_branches(request))
+    sessions = table_sessions(table.branch, table)
+    return _bill_pdf_response(request, table, sessions, session_id)
+
+
+@require_membership
+def orders_table_bill_pdf_takeaway(request, session_id=None):
+    """Task 3.4 print — read-only bill-summary PDF for Takeaway."""
+    sessions = _takeaway_sessions(visible_branches(request))
+    return _bill_pdf_response(request, None, sessions, session_id)
+
+
 @require_membership
 def orders_queue(request):
     status = request.GET.get('status', 'all')
