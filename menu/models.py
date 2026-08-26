@@ -328,6 +328,32 @@ class OrderItem(models.Model):
         return f"{self.name} ×{self.qty}"
 
 
+class GuestSession(TenantScopedModel):
+    """A browser-scoped diner at a table. Not an account — anonymous-friendly,
+    carried by a cookie token. Groups a guest's repeat orders so the venue can
+    attribute orders and split bills. Closed at checkout (frees the table)."""
+    company = models.ForeignKey(Company, on_delete=models.CASCADE, related_name='guest_sessions')
+    branch = models.ForeignKey(Branch, on_delete=models.CASCADE, related_name='guest_sessions')
+    table = models.ForeignKey(Table, on_delete=models.SET_NULL, null=True, blank=True, related_name='guest_sessions')
+    token = models.CharField(max_length=64, unique=True, db_index=True)
+    label = models.CharField(max_length=40)            # auto "Guest A/B/C" within a table
+    name = models.CharField(max_length=80, blank=True)  # optional, guest-entered
+    contact = models.CharField(max_length=40, blank=True)  # phone or room no.
+    verified = models.BooleanField(default=False)       # phone confirmed via OTP
+    created_at = models.DateTimeField(auto_now_add=True)
+    closed_at = models.DateTimeField(null=True, blank=True)
+
+    class Meta(TenantScopedModel.Meta):
+        ordering = ['created_at']
+
+    @property
+    def display_name(self):
+        return self.name or self.label
+
+    def __str__(self):
+        return f"{self.display_name} @ {self.table_id or 'takeaway'}"
+
+
 class PushSubscription(TenantScopedModel):
     """One browser's Web Push registration for one dashboard user.
 
