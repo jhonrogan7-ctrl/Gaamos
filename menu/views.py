@@ -224,7 +224,17 @@ def _resolve_active_session(request):
     through get_or_create_session: these endpoints act on a session that must
     already exist (created by place_order) — a missing/invalid/stale cookie
     means there is nothing to attach identity or OTP to, which is a client
-    error, not a fresh session to silently create."""
+    error, not a fresh session to silently create.
+
+    menu/urls.py is mounted globally, so this can be reached on an apex/
+    reserved/unknown host where TenantMiddleware sets request.company = None.
+    GuestSession.objects is the fail-closed TenantManager: querying it with no
+    company in context raises TenantContextRequired rather than returning no
+    rows. Guarding on request.company here — before the query — turns that
+    into the same 400 the caller already gets for a missing/invalid cookie,
+    never an uncaught 500."""
+    if getattr(request, 'company', None) is None:
+        return None
     token = request.COOKIES.get(COOKIE, '')
     if not token:
         return None
@@ -259,7 +269,7 @@ def identity_submit(request):
 
     name = (body.get('name') or '').strip()
     phone = (body.get('phone') or '').strip()
-    mode = request.company.identity_mode if request.company else 'auto'
+    mode = request.company.identity_mode
 
     if mode == 'phone':
         if not phone:

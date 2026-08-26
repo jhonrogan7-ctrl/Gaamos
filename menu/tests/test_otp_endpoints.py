@@ -1,6 +1,8 @@
 import json
 from unittest.mock import patch
 
+from django.conf import settings
+
 from menu.guest_sessions import COOKIE
 from menu.models import Branch, GuestSession, OtpChallenge
 from menu.otp import issue_code
@@ -18,8 +20,9 @@ class IdentityOtpEndpointsTest(TenantTestCase):
             company=self.company, branch=self.branch, token='tok123', label='Guest A')
         self.client.cookies[COOKIE] = self.session.token
 
-    def _post(self, path, body):
-        return self.client.post(path, data=json.dumps(body), content_type='application/json')
+    def _post(self, path, body, **extra):
+        return self.client.post(path, data=json.dumps(body),
+                                 content_type='application/json', **extra)
 
     # -- identity_submit: name/room mode (no OTP) --
 
@@ -97,6 +100,11 @@ class IdentityOtpEndpointsTest(TenantTestCase):
         r = self._post('/api/otp/verify/', {'code': '1234'})
         self.assertEqual(r.status_code, 400)
 
+    def test_otp_verify_invalid_cookie_returns_400(self):
+        self.client.cookies[COOKIE] = 'does-not-exist'
+        r = self._post('/api/otp/verify/', {'code': '1234'})
+        self.assertEqual(r.status_code, 400)
+
     # -- otp_resend --
 
     @patch('menu.tasks.send_otp_sms.delay')
@@ -111,4 +119,26 @@ class IdentityOtpEndpointsTest(TenantTestCase):
     def test_otp_resend_no_cookie_returns_400(self):
         self.client.cookies.pop(COOKIE, None)
         r = self._post('/api/otp/resend/', {})
+        self.assertEqual(r.status_code, 400)
+
+    def test_otp_resend_invalid_cookie_returns_400(self):
+        self.client.cookies[COOKIE] = 'does-not-exist'
+        r = self._post('/api/otp/resend/', {})
+        self.assertEqual(r.status_code, 400)
+
+    # -- no tenant context (apex/reserved/unknown host): 400, never 500 --
+
+    def test_identity_submit_non_empty_cookie_no_tenant_context_returns_400_not_500(self):
+        # TenantMiddleware sets request.company = None on the apex host (no
+        # subdomain label to resolve). The gaamos_gs cookie is still present
+        # and valid for the tenant that issued it — this must 400, not 500.
+        r = self._post('/api/identity/', {'name': 'Rita'}, HTTP_HOST=settings.BASE_DOMAIN)
+        self.assertEqual(r.status_code, 400)
+
+    def test_otp_verify_non_empty_cookie_no_tenant_context_returns_400_not_500(self):
+        r = self._post('/api/otp/verify/', {'code': '1234'}, HTTP_HOST=settings.BASE_DOMAIN)
+        self.assertEqual(r.status_code, 400)
+
+    def test_otp_resend_non_empty_cookie_no_tenant_context_returns_400_not_500(self):
+        r = self._post('/api/otp/resend/', {}, HTTP_HOST=settings.BASE_DOMAIN)
         self.assertEqual(r.status_code, 400)
