@@ -102,3 +102,11 @@ def test_attach_cookie():
     assert COOKIE in response.cookies
     assert response.cookies[COOKIE]['httponly'] is True
     assert response.cookies[COOKIE]['samesite'] == 'Lax'
+
+
+@pytest.mark.django_db
+def test_company_identity_mode_defaults():
+    """A new Company defaults to identity_mode='auto' and identity_skippable=True."""
+    co = Company.objects.create(name="Test Venue", slug="test-venue")
+    assert co.identity_mode == 'auto'
+    assert co.identity_skippable is True

@@ -46,6 +46,10 @@ class Company(models.Model):
 
     logo_url = models.CharField(max_length=200, blank=True)
 
+    IDENTITY_MODES = [('auto', 'Guest A/B/C'), ('name', 'Name'), ('phone', 'Phone + OTP'), ('room', 'Room number')]
+    identity_mode = models.CharField(max_length=8, choices=IDENTITY_MODES, default='auto')
+    identity_skippable = models.BooleanField(default=True)
+
     objects = models.Manager()   # plain — Company is the tenant root, not scoped
 
     def __str__(self):
