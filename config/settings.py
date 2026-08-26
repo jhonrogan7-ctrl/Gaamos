@@ -109,6 +109,11 @@ STORAGES = {
 MEDIA_URL = "/media/"
 MEDIA_ROOT = os.environ.get("MEDIA_ROOT", str(BASE_DIR / "media"))
 
+# Telegram lead alerts — ping the team chat when a new landing lead is captured.
+# Both live only in .env (gitignored). Unset = feature off (stage stays quiet).
+TELEGRAM_BOT_TOKEN = os.environ.get("TELEGRAM_BOT_TOKEN", "")
+LEAD_NOTIFY_CHAT_ID = os.environ.get("LEAD_NOTIFY_CHAT_ID", "")
+
 # Google Gemini / Imagen — image generation for the menu-from-pdf pipeline.
 # Key lives only in .env (gitignored); never commit it.
 GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY", "")
