@@ -1,7 +1,7 @@
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
 
-from menu.models import Branch, Company, Table, MenuItem, Order, OrderItem
+from menu.models import Branch, Company, Table, MenuItem, Order, OrderItem, GuestSession
 from menu.tenancy import set_current_company, reset_current_company
 from menu.tests.base import TenantTestCase
 
@@ -122,6 +122,26 @@ class OrdersQueueTest(TenantTestCase):
         self.order.refresh_from_db()
         self.assertEqual(self.order.status, Order.STATUS_SERVED)
 
+    def test_queue_shows_named_guest(self):
+        gs = GuestSession.objects.create(branch=self.branch, token='t-named',
+                                          label='Guest A', name='Bikash', contact='+977 98…')
+        o = Order.objects.create(branch=self.branch, guest_session=gs, total=90)
+        body = self.client.get('/dashboard/orders/queue/').content.decode()
+        self.assertIn(f'#{o.number}', body)
+        self.assertIn('Bikash', body)
+
+    def test_queue_shows_anonymous_guest_label(self):
+        gs = GuestSession.objects.create(branch=self.branch, token='t-anon', label='Guest A')
+        o = Order.objects.create(branch=self.branch, guest_session=gs, total=90)
+        body = self.client.get('/dashboard/orders/queue/').content.decode()
+        self.assertIn(f'#{o.number}', body)
+        self.assertIn('Guest A', body)
+
+    def test_queue_shows_fallback_when_no_guest_session(self):
+        body = self.client.get('/dashboard/orders/queue/').content.decode()
+        # self.order (from setUp) has no guest_session attached.
+        self.assertIn('—', body)
+
     def test_serve_forbidden_other_company(self):
         other = Company.objects.create(name='Other', slug='other')
         tok = set_current_company(other)
@@ -157,6 +177,27 @@ class OrderStreamTest(TenantTestCase):
         # after_id at o.pk → nothing new
         events, _ = orders_payload(self.company.id, [self.branch.id], o.pk)
         self.assertEqual(events, [])
+
+    def test_orders_payload_includes_named_guest_label(self):
+        from menu.dashboard.views import orders_payload
+        gs = GuestSession.objects.create(branch=self.branch, token='t-named2',
+                                          label='Guest A', name='Bikash')
+        o = Order.objects.create(branch=self.branch, guest_session=gs, total=0)
+        events, _ = orders_payload(self.company.id, None, 0)
+        self.assertTrue(any('Bikash' in e for e in events))
+
+    def test_orders_payload_includes_anonymous_guest_label(self):
+        from menu.dashboard.views import orders_payload
+        gs = GuestSession.objects.create(branch=self.branch, token='t-anon2', label='Guest A')
+        o = Order.objects.create(branch=self.branch, guest_session=gs, total=0)
+        events, _ = orders_payload(self.company.id, None, 0)
+        self.assertTrue(any('Guest A' in e for e in events))
+
+    def test_orders_payload_fallback_when_no_guest_session(self):
+        from menu.dashboard.views import orders_payload
+        o = Order.objects.create(branch=self.branch, total=0)
+        events, _ = orders_payload(self.company.id, None, 0)
+        self.assertTrue(any('—' in e for e in events))
 
     def test_stream_content_type(self):
         r = self.client.get('/dashboard/orders/stream/?once=1')

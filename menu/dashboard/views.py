@@ -969,7 +969,7 @@ def branch_theme_save(request, slug):
 
 
 def _orders_for(qs, status):
-    qs = qs.select_related('branch', 'table').prefetch_related('items')
+    qs = qs.select_related('branch', 'table', 'guest_session').prefetch_related('items')
     if status in (Order.STATUS_NEW, Order.STATUS_SERVED):
         qs = qs.filter(status=status)
     return list(qs)
@@ -998,13 +998,14 @@ def branch_orders_queue(request, slug):
 
 def orders_payload(company_id, branch_ids, after_id):
     """Sync, async-safe: explicit company filter (no contextvar reliance)."""
-    qs = Order.all_objects.filter(company_id=company_id, pk__gt=after_id)
+    qs = Order.all_objects.filter(company_id=company_id, pk__gt=after_id).select_related('guest_session')
     if branch_ids is not None:
         qs = qs.filter(branch_id__in=branch_ids)
     qs = qs.order_by('pk')
     events, max_id = [], after_id
     for o in qs:
-        events.append(f"data: #{o.number} {o.status}\n\n")
+        guest_label = o.guest_session.display_name if o.guest_session else '—'
+        events.append(f"data: #{o.number} {o.status} {guest_label}\n\n")
         max_id = o.pk
     return events, max_id
 
