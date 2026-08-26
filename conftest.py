@@ -6,6 +6,31 @@ from django.conf import settings
 from django.core.cache import cache
 from django.test import override_settings
 
+from menu.tenancy import set_current_company
+
+
+@pytest.fixture(autouse=True)
+def _reset_tenant_context():
+    """Clear the active-company context after every test.
+
+    Some pytest-style tests (e.g. menu/tests/test_guest_sessions.py,
+    menu/tests/test_attribution.py) call `set_current_company()` directly to
+    exercise tenant-scoped models, without pairing it with
+    `reset_current_company()`. `_current_company` is a `contextvars.ContextVar`
+    (menu/tenancy.py) that otherwise keeps whatever company was last set for
+    every subsequent test run in the same worker/thread — so collection-order-
+    dependent tests expecting *no* active company (or a fresh middleware-driven
+    one) started failing depending on what ran just before them.
+
+    Clearing to None after every test — regardless of how the context got set —
+    keeps each test's tenant context isolated from the next. This is harmless
+    for `TenantTestCase`-based tests (menu/tests/base.py): their own `tearDown`
+    already resets the context to its pre-test value (None, since nothing else
+    runs before `setUp`) before this fixture's teardown runs, so setting None
+    again here is a no-op."""
+    yield
+    set_current_company(None)
+
 
 @pytest.fixture(autouse=True)
 def _clear_cache():
