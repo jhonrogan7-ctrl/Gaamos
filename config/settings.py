@@ -114,6 +114,12 @@ MEDIA_ROOT = os.environ.get("MEDIA_ROOT", str(BASE_DIR / "media"))
 TELEGRAM_BOT_TOKEN = os.environ.get("TELEGRAM_BOT_TOKEN", "")
 LEAD_NOTIFY_CHAT_ID = os.environ.get("LEAD_NOTIFY_CHAT_ID", "")
 
+# NepalOTP — SMS delivery for guest phone verification.
+# All three live only in .env (gitignored); unset = feature off (fail-soft no-op).
+NEPALOTP_API_KEY = os.environ.get("NEPALOTP_API_KEY", "")
+NEPALOTP_SENDER_ID = os.environ.get("NEPALOTP_SENDER_ID", "")
+NEPALOTP_URL = os.environ.get("NEPALOTP_URL", "")
+
 # Google Gemini / Imagen — image generation for the menu-from-pdf pipeline.
 # Key lives only in .env (gitignored); never commit it.
 GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY", "")
