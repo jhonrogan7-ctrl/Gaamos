@@ -280,6 +280,7 @@ class Order(TenantScopedModel):
     company = models.ForeignKey(Company, on_delete=models.CASCADE, related_name='orders')
     branch = models.ForeignKey(Branch, on_delete=models.CASCADE, related_name='orders')
     table = models.ForeignKey(Table, on_delete=models.SET_NULL, null=True, blank=True, related_name='orders')
+    guest_session = models.ForeignKey('GuestSession', on_delete=models.SET_NULL, null=True, blank=True, related_name='orders')
     table_label = models.CharField(max_length=40, blank=True)  # snapshot; "" => Takeaway
     number = models.PositiveIntegerField(default=0)
     status = models.CharField(max_length=12, choices=STATUS_CHOICES, default=STATUS_NEW)
