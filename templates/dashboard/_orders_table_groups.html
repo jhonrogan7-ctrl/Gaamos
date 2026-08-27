@@ -1,31 +1,65 @@
 {% comment %}
-Per-table order cards for the '?group=table' queue view (Task 3.2).
-Expects: table_cards (list of {table, branch, guests, total}), takeaway_card
-(None, or {guests, total}). Copies the B1 wireframe's .tcard/.pill markup
-(gaamos-orders/billing.html). Cards link toward the per-table detail route
-(Task 3.3); that route doesn't exist yet, so the link 404s until then.
+Per-table order cards for the '?group=table' queue view. Shared by the full
+Orders page and the dashboard:orders_table_groups / branch_orders_table_groups
+partial endpoints. Expects: table_cards (Task 2 dicts — table, branch, guests,
+total, new_count, served_count, guest_names, lead_contact, opened_at,
+last_order_at), takeaway_card (None, or the same keys minus table/branch).
+
+The card container is a <div class="tcard">, NOT an <a>. Inside it, an
+<a class="tcard-body"> links to the table detail; the Bill link is a SIBLING
+of that anchor (no nested <a>). Presentation only — no CSS ships here.
 {% endcomment %}
 {% for card in table_cards %}
-<a class="tcard" href="{% url 'dashboard:orders' %}table/{{ card.table.pk }}/">
-  <div class="th">
-    Table {{ card.table.label }}
-    <span class="pill">{{ card.guests }} guest{{ card.guests|pluralize }}</span>
-    <span class="pill g">Rs {{ card.total }}</span>
-    <span class="chev">&rsaquo;</span>
+<div class="tcard">
+  <a class="tcard-body" href="{% url 'dashboard:orders_table' card.table.pk %}">
+    <div class="th">
+      Table {{ card.table.label }}
+      <span class="pill">{{ card.guests }} guest{{ card.guests|pluralize }}</span>
+      <span class="pill g">Rs {{ card.total }}</span>
+    </div>
+    <div class="tsub">
+      {% if card.new_count %}{{ card.new_count }} new{% endif %}
+      {% if card.new_count and card.served_count %} · {% endif %}
+      {% if card.served_count %}{{ card.served_count }} served{% endif %}
+      {% if card.opened_at %}{% if card.new_count or card.served_count %} · {% endif %}opened {{ card.opened_at|time:"H:i" }}{% endif %}
+    </div>
+    <div class="tnames">
+      {% for name in card.guest_names|slice:":2" %}{% if not forloop.first %} · {% endif %}{{ name }}{% if forloop.first and card.lead_contact %} <span class="ph">· {{ card.lead_contact }}</span>{% endif %}{% endfor %}
+      {% if card.guest_names|length > 2 %} · +{{ card.guest_names|length|add:"-2" }}{% endif %}
+    </div>
+  </a>
+  <div class="tmeta">
+    {% if card.last_order_at %}<span class="muted">Last order {{ card.last_order_at|timesince }} ago</span>{% endif %}
+    <a class="billbtn" href="{% url 'dashboard:orders_table_bill' card.table.pk %}">Bill</a>
   </div>
-</a>
+</div>
 {% empty %}
 {% if not takeaway_card %}
 <p style="color:var(--ink-3);padding:16px;">No open tables right now.</p>
 {% endif %}
 {% endfor %}
 {% if takeaway_card %}
-<a class="tcard" href="{% url 'dashboard:orders' %}table/takeaway/">
-  <div class="th">
-    Takeaway
-    <span class="pill">{{ takeaway_card.guests }} guest{{ takeaway_card.guests|pluralize }}</span>
-    <span class="pill g">Rs {{ takeaway_card.total }}</span>
-    <span class="chev">&rsaquo;</span>
+<div class="tcard">
+  <a class="tcard-body" href="{% url 'dashboard:orders_table_takeaway' %}">
+    <div class="th">
+      Takeaway
+      <span class="pill">{{ takeaway_card.guests }} guest{{ takeaway_card.guests|pluralize }}</span>
+      <span class="pill g">Rs {{ takeaway_card.total }}</span>
+    </div>
+    <div class="tsub">
+      {% if takeaway_card.new_count %}{{ takeaway_card.new_count }} new{% endif %}
+      {% if takeaway_card.new_count and takeaway_card.served_count %} · {% endif %}
+      {% if takeaway_card.served_count %}{{ takeaway_card.served_count }} served{% endif %}
+      {% if takeaway_card.opened_at %}{% if takeaway_card.new_count or takeaway_card.served_count %} · {% endif %}opened {{ takeaway_card.opened_at|time:"H:i" }}{% endif %}
+    </div>
+    <div class="tnames">
+      {% for name in takeaway_card.guest_names|slice:":2" %}{% if not forloop.first %} · {% endif %}{{ name }}{% if forloop.first and takeaway_card.lead_contact %} <span class="ph">· {{ takeaway_card.lead_contact }}</span>{% endif %}{% endfor %}
+      {% if takeaway_card.guest_names|length > 2 %} · +{{ takeaway_card.guest_names|length|add:"-2" }}{% endif %}
+    </div>
+  </a>
+  <div class="tmeta">
+    {% if takeaway_card.last_order_at %}<span class="muted">Last order {{ takeaway_card.last_order_at|timesince }} ago</span>{% endif %}
+    <a class="billbtn" href="{% url 'dashboard:orders_table_bill_takeaway' %}">Bill</a>
   </div>
-</a>
+</div>
 {% endif %}

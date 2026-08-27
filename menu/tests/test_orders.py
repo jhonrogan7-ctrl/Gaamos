@@ -299,6 +299,24 @@ class OrdersGroupByTableTest(TenantTestCase):
         self.assertIn('1 guest', body)  # Table 4 now down to one open guest
         self.assertIn('Rs 100', body)   # Table 4 total now just Guest A's order
 
+    def test_card_shows_guest_names_counts_and_bill_link(self):
+        GuestSession.objects.filter(token="tok-g1").update(
+            name="Bikash", contact="+977 9812 34567")
+        body = self.client.get('/dashboard/orders/?group=table').content.decode()
+        self.assertIn('Bikash', body)
+        self.assertIn('+977 9812 34567', body)
+        # Table 4's two orders both default to STATUS_NEW -> sub-line "2 new".
+        # '2 new' is unambiguous: it appears nowhere in the page chrome and
+        # 'new' alone is a substring of class names / other words.
+        self.assertIn('2 new', body)
+        self.assertIn(f'/dashboard/orders/table/{self.table4.pk}/bill/', body)
+
+    def test_table_card_body_is_not_a_nested_anchor(self):
+        body = self.client.get('/dashboard/orders/?group=table').content.decode()
+        self.assertNotIn('<a class="tcard"', body)   # the old card WAS an anchor
+        self.assertIn('<a class="tcard-body"', body)  # detail link lives inside a div
+        self.assertIn('class="billbtn"', body)        # Bill is its own sibling link
+
     def test_group_flat_is_default_and_renders_order_cards(self):
         body = self.client.get('/dashboard/orders/').content.decode()
         self.assertIn('ocard', body)
