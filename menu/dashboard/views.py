@@ -1427,6 +1427,38 @@ def branch_orders_queue(request, slug):
     })
 
 
+@require_membership
+def orders_table_groups(request):
+    """Partial-render endpoint for by-table card groups. Honours ?tables= only."""
+    branches = visible_branches(request)
+    table_ids, want_takeaway = _parse_table_filter(request)
+    cards, takeaway = _table_card_groups(branches)
+    if table_ids or want_takeaway:
+        cards = [c for c in cards if c["table"].pk in table_ids]
+        if not want_takeaway:
+            takeaway = None
+    return render(request, "dashboard/_orders_table_groups.html", {
+        "table_cards": cards, "takeaway_card": takeaway,
+    })
+
+
+@require_membership
+def branch_orders_table_groups(request, slug):
+    """Partial-render endpoint for by-table card groups on a specific branch. Honours ?tables= only."""
+    branch = get_object_or_404(Branch, slug=slug)
+    if not ensure_can_manage_branch(request, branch):
+        return forbidden(request)
+    table_ids, want_takeaway = _parse_table_filter(request)
+    cards, takeaway = _table_card_groups([branch])
+    if table_ids or want_takeaway:
+        cards = [c for c in cards if c["table"].pk in table_ids]
+        if not want_takeaway:
+            takeaway = None
+    return render(request, "dashboard/_orders_table_groups.html", {
+        "table_cards": cards, "takeaway_card": takeaway,
+    })
+
+
 def orders_payload(company_id, branch_ids, after_id):
     """Sync, async-safe: explicit company filter (no contextvar reliance)."""
     qs = Order.all_objects.filter(company_id=company_id, pk__gt=after_id).select_related('guest_session')

@@ -187,3 +187,37 @@ class TableFilterParsingTest(TenantTestCase):
             f"/dashboard/orders/?tables={self.t4.pk},²,abc")
         self.assertEqual(r.status_code, 200)
         self.assertEqual({o.number for o in r.context["orders"]}, {self.o4.number})
+
+
+class TableGroupsPartialTest(TenantTestCase):
+    def setUp(self):
+        super().setUp()
+        U = get_user_model()
+        self.owner = U.objects.create_user("boss4", password="pass")
+        self.make_owner(self.owner)
+        self.branch = Branch.objects.create(company=self.company, name="Lake", slug="lake")
+        self.t4 = Table.objects.create(branch=self.branch, label="4")
+        g = GuestSession.objects.create(branch=self.branch, table=self.t4, token="p-g4", label="Guest A")
+        o = Order.objects.create(branch=self.branch, table=self.t4, guest_session=g)
+        OrderItem.objects.create(order=o, name="Coffee", unit_price=100, qty=1)
+        self.login_as(self.owner)
+
+    def test_partial_renders_only_the_cards_fragment(self):
+        r = self.client.get("/dashboard/orders/table-groups/")
+        self.assertEqual(r.status_code, 200)
+        body = r.content.decode()
+        self.assertIn("Table 4", body)
+        self.assertNotIn("<aside class=\"side\"", body)  # no full page chrome
+
+    def test_partial_honours_table_filter(self):
+        t9 = Table.objects.create(branch=self.branch, label="9")
+        GuestSession.objects.create(branch=self.branch, table=t9, token="p-g9", label="Guest A")
+        body = self.client.get(
+            f"/dashboard/orders/table-groups/?tables={self.t4.pk}").content.decode()
+        self.assertIn("Table 4", body)
+        self.assertNotIn("Table 9", body)
+
+    def test_partial_requires_membership(self):
+        self.client.logout()
+        r = self.client.get("/dashboard/orders/table-groups/")
+        self.assertIn(r.status_code, (302, 403))
