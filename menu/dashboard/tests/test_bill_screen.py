@@ -142,11 +142,18 @@ class OrdersTableDetailAndBillTest(TenantTestCase):
         self.assertIn('>Print Sita<', body)
 
     def test_takeaway_table_detail_has_action_bar(self):
-        GuestSession.objects.create(
+        ram = GuestSession.objects.create(
             branch=self.branch, table=None, token='tok-ta-8', label='Guest A', name='Ram')
+        ram_order = Order.objects.create(branch=self.branch, table=None, guest_session=ram)
+        OrderItem.objects.create(order=ram_order, name='Momo', unit_price=180, qty=2)
+        OrderItem.objects.create(order=ram_order, name='Chiya', unit_price=40, qty=1)
         body = self.client.get('/dashboard/orders/table/takeaway/').content.decode()
         self.assertIn('actionbar', body)
-        self.assertIn('Bill · Rs', body)
+        # Pin the actual takeaway total the fixture produces (2*180 + 40 = 400):
+        # a bare 'Bill · Rs' would still pass if table_total silently rendered empty.
+        self.assertIn('Bill · Rs 400', body)
+        self.assertEqual(
+            self.client.get('/dashboard/orders/table/takeaway/').context['table_total'], 400)
         self.assertIn('/dashboard/orders/table/takeaway/bill/', body)
 
     def test_takeaway_bill_screen_has_action_bar(self):

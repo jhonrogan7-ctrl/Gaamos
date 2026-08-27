@@ -6,26 +6,26 @@
     <div class="oc-top">
       <span class="oc-no">#{{ o.number }}</span>
       <span class="st {% if o.status == 'served' %}done{% else %}new{% endif %}">{{ o.get_status_display }}</span>
-      <span class="oc-when"><b>{{ o.created_at|smart_datetime }}</b>{{ o.created_at|timesince }} ago</span>
+      <span class="oc-when"><time datetime="{{ o.created_at|date:'c' }}"><b>{{ o.created_at|smart_datetime }}</b>{{ o.created_at|timesince }} ago</time></span>
     </div>
     <div class="oc-who">
       {% if o.table_label %}
-        <span class="tchip">Table {{ o.table_label }}</span>
+        <span class="tchip" aria-label="Table {{ o.table_label }}">Table {{ o.table_label }}</span>
       {% else %}
-        <span class="tchip away">Takeaway</span>
+        <span class="tchip away" aria-label="Takeaway order">Takeaway</span>
       {% endif %}
       {% if o.guest_session %}
-        <span class="who"><span class="av">{{ o.guest_session.display_name|slice:":1"|upper }}</span>
+        <span class="who" aria-label="Guest {{ o.guest_session.display_name }}{% if o.guest_session.contact %}, phone {{ o.guest_session.contact }}{% endif %}"><span class="av" aria-hidden="true">{{ o.guest_session.display_name|slice:":1"|upper }}</span>
           {{ o.guest_session.display_name }}{% if o.guest_session.contact %} <span class="ph">· {{ o.guest_session.contact }}</span>{% endif %}</span>
       {% else %}
-        <span class="who anon"><span class="av">·</span> Walk-in</span>
+        <span class="who anon" aria-label="Walk-in guest, no session"><span class="av" aria-hidden="true">·</span> Walk-in</span>
       {% endif %}
     </div>
     <div class="oc-items">
       {% for i in o.items.all %}{{ i.name }} ×{{ i.qty }}{% if not forloop.last %} · {% endif %}{% endfor %}
     </div>
     <div class="oc-foot">
-      <span class="oc-tot">Rs {{ o.total }}</span>
+      <span class="oc-tot" aria-label="Order total Rs {{ o.total }}">Rs {{ o.total }}</span>
       {% if show_branch %}<span class="oc-br">{{ o.branch.name }}</span>{% endif %}
       {% if o.status == 'new' %}
       <form method="post" action="{% url 'dashboard:order_serve' o.pk %}" class="oc-serve">
