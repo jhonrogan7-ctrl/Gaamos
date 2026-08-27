@@ -7,28 +7,27 @@
 {% block content %}
 <div class="sec-h">
   <h3>Live order queue <span class="mini">All branches · updates in real time</span></h3>
-  <div class="sp"></div>
-  <div class="toggle">
-    <a href="?group=flat{% if status_filter and status_filter != 'all' %}&status={{ status_filter }}{% endif %}"
-       class="{% if group != 'table' %}on{% endif %}">Flat list</a>
-    <a href="?group=table{% if status_filter and status_filter != 'all' %}&status={{ status_filter }}{% endif %}"
-       class="{% if group == 'table' %}on{% endif %}">Group by table</a>
-  </div>
-  {% include 'dashboard/_push_toggle.html' %}
 </div>
 
-{% if group == 'table' %}
-<div class="panel" style="padding:14px;">
-  {% include 'dashboard/_orders_table_groups.html' %}
-</div>
-{% else %}
-<div class="panel"
-     x-data="{ init() { const es = new EventSource('{% url 'dashboard:orders_stream' %}'); es.onmessage = () => { fetch('{% url 'dashboard:orders_queue' %}').then(r => r.text()).then(h => { this.$refs.queue.innerHTML = h; }); }; } }">
-  <div x-ref="queue">
-    {% include 'dashboard/_orders_queue.html' %}
+<div x-data="{ filterOpen: {{ active_filter_count }} > 0, tableQuery: '' }">
+  {% include 'dashboard/_orders_controls.html' %}
+
+  {% if group == 'table' %}
+  <div class="panel" style="padding:14px;"
+       x-data="{ init() { const es = new EventSource('{% url 'dashboard:orders_stream' %}'); es.onmessage = () => { fetch('{% url 'dashboard:orders_table_groups' %}?status={{ status_filter }}&tables={{ tables_param }}').then(r => r.text()).then(h => { this.$refs.groups.innerHTML = h; }); }; } }">
+    <div x-ref="groups">
+      {% include 'dashboard/_orders_table_groups.html' %}
+    </div>
   </div>
+  {% else %}
+  <div class="panel"
+       x-data="{ init() { const es = new EventSource('{% url 'dashboard:orders_stream' %}'); es.onmessage = () => { fetch('{% url 'dashboard:orders_queue' %}?status={{ status_filter }}&tables={{ tables_param }}').then(r => r.text()).then(h => { this.$refs.queue.innerHTML = h; }); }; } }">
+    <div x-ref="queue">
+      {% include 'dashboard/_orders_queue.html' %}
+    </div>
+  </div>
+  {% endif %}
 </div>
-{% endif %}
 {% endblock %}
 
 {% block extra_scripts %}

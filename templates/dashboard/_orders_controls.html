@@ -1,0 +1,47 @@
+{% comment %}
+Shared orders-queue controls: status segment, flat/by-table view toggle, active
+table-filter chips, the collapsible table-filter panel and the per-device push
+toggle. Used by dashboard/orders.html and dashboard/branch/orders.html so both
+pages carry the identical shell.
+
+Every link URL is precomputed in _orders_shell_context (status_urls / group_urls
+/ opt.toggle_url / takeaway_toggle_url / clear_filter_url) so switching the
+status never drops the table filter and switching the view never drops the
+status — the querystring template tag renders a dead empty href when the param
+it clears was the only one present, so it is not used here.
+
+Must sit inside an x-data that exposes `filterOpen` (bool) and `tableQuery` (str).
+{% endcomment %}
+<div class="orders-controls">
+  <div class="fbar">
+    <div class="seg">
+      <a href="{{ status_urls.all }}" class="{% if status_filter != 'new' and status_filter != 'served' %}on{% endif %}">All</a>
+      <a href="{{ status_urls.new }}" class="{% if status_filter == 'new' %}on{% endif %}">New</a>
+      <a href="{{ status_urls.served }}" class="{% if status_filter == 'served' %}on{% endif %}">Served</a>
+    </div>
+    <button type="button" class="filters-btn" :class="{ 'open': filterOpen }" @click="filterOpen = !filterOpen">
+      <span>Filter by table</span>
+      {% if active_filter_count %}<span class="filters-count">{{ active_filter_count }}</span>{% endif %}
+    </button>
+  </div>
+
+  <div class="fbar">
+    <div class="seg">
+      <a href="{{ group_urls.flat }}" class="{% if group != 'table' %}on{% endif %}">Flat list</a>
+      <a href="{{ group_urls.table }}" class="{% if group == 'table' %}on{% endif %}">By table</a>
+    </div>
+  </div>
+
+  {% if active_filter_count %}
+  <div class="chips">
+    {% for opt in table_filter_options %}{% if opt.selected %}
+    <a class="chip" href="{{ opt.toggle_url }}">Table {{ opt.table.label }} ✕</a>
+    {% endif %}{% endfor %}
+    {% if selected_takeaway %}<a class="chip" href="{{ takeaway_toggle_url }}">Takeaway ✕</a>{% endif %}
+    <a class="chip clear" href="{{ clear_filter_url }}">Clear</a>
+  </div>
+  {% endif %}
+
+  {% include 'dashboard/_orders_table_filter.html' %}
+  {% include 'dashboard/_push_toggle.html' %}
+</div>

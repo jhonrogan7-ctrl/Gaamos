@@ -1,0 +1,58 @@
+{% comment %}
+Table filter panel for the orders queue (all-branches page + per-branch tab).
+
+Expects:
+  table_filter_options — list of {table, guests, total, selected, toggle_url}
+  takeaway_available   — bool (an open tableless session exists in scope)
+  selected_takeaway    — bool
+  takeaway_toggle_url  — str (current filter with the takeaway token flipped)
+  active_filter_count  — int
+  clear_filter_url     — str (current URL with ?tables= dropped, everything else kept)
+
+Rendered inside an x-data that exposes `filterOpen` (bool) and `tableQuery`
+(str). Alpine only shows/hides rows client-side as you type; the filter itself
+is applied server-side by following a row's toggle_url. On mobile the CSS task
+presents `.table-filter` as a `.sheet`; the markup carries the `.sheet-handle`
+hook now so no re-templating is needed then.
+{% endcomment %}
+<div class="filter-panel table-filter" x-show="filterOpen" x-cloak
+     x-transition:enter="fp-enter" x-transition:enter-start="fp-enter-start"
+     x-transition:enter-end="fp-enter-end">
+  <div class="sheet-handle"></div>
+  <div class="search-bar">
+    <span>🔍</span>
+    <input type="text" x-model="tableQuery" placeholder="Search table…" autocomplete="off">
+    <button type="button" x-show="tableQuery.length" @click="tableQuery=''" x-cloak
+            aria-label="Clear search"
+            style="background:none;border:none;color:#9ca3af;font-size:16px;cursor:pointer;line-height:1;padding:0 2px;">✕</button>
+  </div>
+
+  <div class="table-opts">
+    {% for opt in table_filter_options %}
+    <a class="table-opt {% if opt.selected %}on{% endif %}"
+       href="{{ opt.toggle_url }}"
+       x-show="!tableQuery || 'table {{ opt.table.label|lower }}'.includes(tableQuery.toLowerCase())">
+      <span class="cbx">{% if opt.selected %}✓{% endif %}</span>
+      Table {{ opt.table.label }}
+      <span class="rt">{{ opt.guests }} · Rs {{ opt.total }}</span>
+    </a>
+    {% empty %}
+    <p class="mini" style="padding:10px;">No open tables right now.</p>
+    {% endfor %}
+
+    {% if takeaway_available %}
+    <a class="table-opt {% if selected_takeaway %}on{% endif %}"
+       href="{{ takeaway_toggle_url }}"
+       x-show="!tableQuery || 'takeaway'.includes(tableQuery.toLowerCase())">
+      <span class="cbx">{% if selected_takeaway %}✓{% endif %}</span>
+      Takeaway
+    </a>
+    {% endif %}
+  </div>
+
+  {% if active_filter_count %}
+  <div class="filter-panel-foot">
+    <a class="clear-all" href="{{ clear_filter_url }}">✕ Clear table filter</a>
+  </div>
+  {% endif %}
+</div>

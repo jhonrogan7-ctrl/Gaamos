@@ -273,19 +273,21 @@ def overview(request):
     })
 
 
-@require_membership
-def orders(request):
+def _orders_shell_context(request, branches):
+    """Shared shell context for the orders queue — the all-branches page and the
+    per-branch tab render the same segment / table-filter / chip controls. Both
+    queue modes ('flat' + 'table') are resolved here so the template only picks
+    which panel to show. ``branches`` is the scope: every visible branch, or
+    ``[branch]`` for the per-branch tab."""
     status = request.GET.get('status', 'all')
     group = request.GET.get('group', 'flat')
     if group not in ('flat', 'table'):
         group = 'flat'
-    branches = visible_branches(request)
     table_ids, want_takeaway = _parse_table_filter(request)
     takeaway_available = GuestSession.objects.filter(
         branch__in=branches, table__isnull=True, closed_at__isnull=True).exists()
     context = {
-        'active_tab': 'orders',
-        'show_branch': True, 'status_filter': status, 'group': group,
+        'status_filter': status, 'group': group,
         # Empty when push isn't configured — the toggle then renders nothing.
         'vapid_public_key': django_settings.VAPID_PUBLIC_KEY,
         'table_filter_options': _open_table_options(request, branches),
@@ -295,7 +297,25 @@ def orders(request):
         'active_filter_count': len(table_ids) + (1 if want_takeaway else 0),
         'tables_param': request.GET.get('tables', ''),
         'takeaway_toggle_url': _toggle_takeaway_url(request),
+        'clear_filter_url': _replace_params(request, tables=None),
+        'status_urls': {
+            'all': _replace_params(request, status=None),
+            'new': _replace_params(request, status='new'),
+            'served': _replace_params(request, status='served'),
+        },
+        'group_urls': {
+            'flat': _replace_params(request, group=None),
+            'table': _replace_params(request, group='table'),
+        },
     }
+    return context, status, group, table_ids, want_takeaway
+
+
+@require_membership
+def orders(request):
+    branches = visible_branches(request)
+    context, status, group, table_ids, want_takeaway = _orders_shell_context(request, branches)
+    context.update({'active_tab': 'orders', 'show_branch': True})
     if group == 'table':
         cards, takeaway = _filtered_table_groups(branches, table_ids, want_takeaway)
         context['table_cards'], context['takeaway_card'] = cards, takeaway
@@ -892,13 +912,18 @@ def branch_orders(request, slug):
     branch = get_object_or_404(Branch, slug=slug)
     if not ensure_can_manage_branch(request, branch):
         return forbidden(request)
-    status = request.GET.get('status', 'all')
-    return render(request, 'dashboard/branch/orders.html', {
+    branches = [branch]
+    context, status, group, table_ids, want_takeaway = _orders_shell_context(request, branches)
+    context.update({
         'active_tab': 'branches', 'branch_tab': 'orders', 'branch': branch,
-        'has_tables': branch.tables.exists(),
-        'orders': _orders_for(branch.orders.all(), status),
-        'show_branch': False, 'status_filter': status,
+        'has_tables': branch.tables.exists(), 'show_branch': False,
     })
+    if group == 'table':
+        cards, takeaway = _filtered_table_groups(branches, table_ids, want_takeaway)
+        context['table_cards'], context['takeaway_card'] = cards, takeaway
+    else:
+        context['orders'] = _orders_for(branch.orders.all(), status, table_ids, want_takeaway)
+    return render(request, 'dashboard/branch/orders.html', context)
 
 
 @require_membership
@@ -1049,6 +1074,24 @@ def _tables_url(request, table_ids, want_takeaway):
     return f'{request.path}?{query}' if query else request.path
 
 
+def _replace_params(request, **changes):
+    """Current URL with the given single-value query params replaced (a value of
+    ``None`` drops that param) and every OTHER param on the request preserved.
+
+    The status segment and the flat/by-table toggle use this so switching one
+    never drops the table filter (or vice versa). Django's ``{% querystring %}``
+    can't stand in here: when the param it clears is the only one on the request
+    it renders an empty ``href=""`` — a dead "All" / "Flat list" link."""
+    params = request.GET.copy()
+    for key, value in changes.items():
+        if value is None:
+            params.pop(key, None)
+        else:
+            params[key] = value
+    query = params.urlencode(safe=',')
+    return f'{request.path}?{query}' if query else request.path
+
+
 def _toggle_table_url(request, pk):
     """Current filter with this table's pk flipped in/out of ``?tables=``."""
     table_ids, want_takeaway = _parse_table_filter(request)
@@ -1144,6 +1187,7 @@ def _table_card_groups(branches):
     takeaway_sessions = list(
         GuestSession.objects
         .filter(branch__in=branches, table__isnull=True, closed_at__isnull=True)
+        .order_by('created_at')
     )
     takeaway = None
     if takeaway_sessions:

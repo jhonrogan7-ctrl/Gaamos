@@ -129,15 +129,20 @@ class TableFilterParsingTest(TenantTestCase):
         self.assertNotIn(self.o4.number, nums)
 
     def test_group_table_unfiltered_shows_every_open_table(self):
+        # Task 7 added a table-filter panel to the shell that lists every open
+        # table's LABEL regardless of the active filter, so a bare "Table 7"
+        # match no longer discriminates a rendered card. The card body links to
+        # /dashboard/orders/table/<pk>/ — the filter-panel row links to
+        # /dashboard/orders/?...tables=... — so the card link is the tell.
         body = self.client.get("/dashboard/orders/?group=table").content.decode()
-        self.assertIn("Table 4", body)
-        self.assertIn("Table 7", body)
+        self.assertIn(f"/dashboard/orders/table/{self.t4.pk}/", body)
+        self.assertIn(f"/dashboard/orders/table/{self.t7.pk}/", body)
 
     def test_group_table_respects_table_filter(self):
         body = self.client.get(
             f"/dashboard/orders/?group=table&tables={self.t4.pk}").content.decode()
-        self.assertIn("Table 4", body)
-        self.assertNotIn("Table 7", body)
+        self.assertIn(f"/dashboard/orders/table/{self.t4.pk}/", body)      # card present
+        self.assertNotIn(f"/dashboard/orders/table/{self.t7.pk}/", body)   # card filtered out
 
     def test_table_option_toggle_urls_add_and_remove(self):
         # No filter yet: each option's toggle URL ADDS its own table.
@@ -188,6 +193,83 @@ class TableFilterParsingTest(TenantTestCase):
             f"/dashboard/orders/?tables={self.t4.pk},²,abc")
         self.assertEqual(r.status_code, 200)
         self.assertEqual({o.number for o in r.context["orders"]}, {self.o4.number})
+
+
+class OrdersShellTest(TenantTestCase):
+    def setUp(self):
+        super().setUp()
+        U = get_user_model()
+        self.owner = U.objects.create_user("shellboss", password="pass")
+        self.make_owner(self.owner)
+        self.branch = Branch.objects.create(company=self.company, name="Lake", slug="lake")
+        self.t4 = Table.objects.create(branch=self.branch, label="4")
+        GuestSession.objects.create(branch=self.branch, table=self.t4, token="s-g4", label="Guest A")
+        self.login_as(self.owner)
+
+    def test_status_segment_and_view_toggle_present(self):
+        # `?status=new` / `?group=table` are produced only by the shell's status
+        # segment and view toggle — they appear nowhere in page chrome.
+        b = self.client.get("/dashboard/orders/").content.decode()
+        self.assertIn("?status=new", b)
+        self.assertIn("?group=table", b)
+
+    def test_table_filter_panel_lists_open_table(self):
+        # "Filter by table" is the panel's trigger label (unique string);
+        # "Table 4" is the open-table row inside the filter panel.
+        b = self.client.get("/dashboard/orders/").content.decode()
+        self.assertIn("Filter by table", b)
+        self.assertIn("Table 4", b)
+
+    def test_selected_table_renders_removable_chip_and_count(self):
+        b = self.client.get(f"/dashboard/orders/?tables={self.t4.pk}").content.decode()
+        # `filters-count` is the badge class on .filters-btn — used nowhere else.
+        self.assertIn("filters-count", b)
+        # bare `chip` is a substring of tchip / fchip / ochip / ops-chip, so
+        # assert on the exact removable-chip class token instead.
+        self.assertIn('class="chip"', b)
+        self.assertIn(f"Table {self.t4.label} ✕", b)
+
+    def test_flat_panel_sse_fetch_targets_orders_queue_with_params(self):
+        b = self.client.get(f"/dashboard/orders/?tables={self.t4.pk}&status=new").content.decode()
+        self.assertIn("/dashboard/orders/queue/", b)
+        self.assertIn(f"tables={self.t4.pk}", b)
+
+    def test_table_mode_sse_fetch_targets_table_groups(self):
+        b = self.client.get("/dashboard/orders/?group=table").content.decode()
+        self.assertIn("/dashboard/orders/table-groups/", b)
+
+    def test_status_link_keeps_active_table_filter(self):
+        # The "New" status link must carry the live ?tables= filter in the SAME
+        # URL — adjacency proves it is one href, not two unrelated links.
+        b = self.client.get(f"/dashboard/orders/?tables={self.t4.pk}").content.decode()
+        self.assertIn(f'href="/dashboard/orders/?tables={self.t4.pk}&amp;status=new"', b)
+
+    def test_view_toggle_keeps_active_status(self):
+        # Switching to "By table" must not drop ?status=.
+        b = self.client.get("/dashboard/orders/?status=new").content.decode()
+        self.assertIn('href="/dashboard/orders/?status=new&amp;group=table"', b)
+
+    def test_all_status_link_is_not_a_dead_href(self):
+        # Regression: {% querystring status=None %} renders href="" when status is
+        # the only param — the precomputed status_urls.all must be a real path.
+        resp = self.client.get("/dashboard/orders/?status=new")
+        self.assertEqual(resp.context["status_urls"]["all"], "/dashboard/orders/")
+        # flat toggle keeps the status it does not touch
+        self.assertEqual(resp.context["group_urls"]["flat"], "/dashboard/orders/?status=new")
+        self.assertIn('href="/dashboard/orders/" class="">All</a>', resp.content.decode())
+
+    def test_branch_orders_page_has_the_same_shell(self):
+        b = self.client.get(f"/dashboard/branch/{self.branch.slug}/orders/").content.decode()
+        self.assertIn("Filter by table", b)
+        self.assertIn("?group=table", b)
+        # gate copy that existing tests assert on must survive the rewrite
+        self.assertIn("Table ordering active", b)
+
+    def test_branch_orders_table_mode_uses_branch_scoped_endpoints(self):
+        b = self.client.get(
+            f"/dashboard/branch/{self.branch.slug}/orders/?group=table").content.decode()
+        self.assertIn(f"/dashboard/branch/{self.branch.slug}/orders/table-groups/", b)
+        self.assertIn("Table 4", b)
 
 
 class TableGroupsPartialTest(TenantTestCase):
