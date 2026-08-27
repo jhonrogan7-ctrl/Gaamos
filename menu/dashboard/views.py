@@ -14,7 +14,7 @@ from django.conf import settings as django_settings
 from django.utils import timezone
 
 from django.db import models
-from django.db.models import Count, Sum
+from django.db.models import Count, Sum, Max
 from django.db.models.functions import TruncDate
 from menu.models import (
     Company, Branch, Category, SubCategory, MenuItem, BranchMenuItem,
@@ -984,6 +984,22 @@ def _orders_for(qs, status):
     return list(qs)
 
 
+def _annotate_table_card(sessions):
+    """Shared card fields for a set of open GuestSessions (a table's, or
+    the takeaway pool's): status counts, guest names, lead contact, timing."""
+    session_ids = [s.pk for s in sessions]
+    orders = Order.objects.filter(guest_session_id__in=session_ids)
+    lead_contact = next((s.contact for s in sessions if s.contact), "")
+    return {
+        "new_count": orders.filter(status=Order.STATUS_NEW).count(),
+        "served_count": orders.filter(status=Order.STATUS_SERVED).count(),
+        "guest_names": [s.display_name for s in sessions],
+        "lead_contact": lead_contact,
+        "opened_at": min((s.created_at for s in sessions), default=None),
+        "last_order_at": orders.aggregate(m=Max("created_at"))["m"],
+    }
+
+
 def _table_card_groups(branches):
     """Group open guest sessions into per-table cards for the orders queue's
     '?group=table' view (Task 3.2), plus a Takeaway card for sessions with no
@@ -1000,12 +1016,16 @@ def _table_card_groups(branches):
         Table.objects.filter(pk__in=table_ids).select_related('branch')
         .order_by('branch__name', 'display_order', 'created_at')
     )
-    cards = [{
-        'table': table,
-        'branch': table.branch,
-        'guests': len(table_sessions(table.branch, table)),
-        'total': table_total(table.branch, table),
-    } for table in tables]
+    cards = []
+    for table in tables:
+        sessions = table_sessions(table.branch, table)
+        cards.append({
+            "table": table,
+            "branch": table.branch,
+            "guests": len(sessions),
+            "total": table_total(table.branch, table),
+            **_annotate_table_card(sessions),
+        })
 
     takeaway_sessions = list(
         GuestSession.objects
@@ -1014,8 +1034,9 @@ def _table_card_groups(branches):
     takeaway = None
     if takeaway_sessions:
         takeaway = {
-            'guests': len(takeaway_sessions),
-            'total': sum(session_subtotal(s) for s in takeaway_sessions),
+            "guests": len(takeaway_sessions),
+            "total": sum(session_subtotal(s) for s in takeaway_sessions),
+            **_annotate_table_card(takeaway_sessions),
         }
     return cards, takeaway
 
