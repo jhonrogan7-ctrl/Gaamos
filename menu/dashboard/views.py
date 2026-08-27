@@ -993,14 +993,29 @@ def branch_theme_save(request, slug):
     return redirect('dashboard:branch_theme', slug=branch.slug)
 
 
+# Postgres ``integer`` column ceiling — a ``?tables=`` token above this would
+# reach the DB as an out-of-range value (DataError), so it is dropped at parse
+# time exactly like non-numeric junk.
+_PG_INT_MAX = 2147483647
+
+
 def _parse_table_filter(request):
     """Read ``?tables=`` — a comma-joined list of ``Table.pk`` ints plus the
     literal token ``takeaway``. Junk tokens are ignored; an empty/absent param
-    means no filter, returned as ``([], False)``."""
+    means no filter, returned as ``([], False)``.
+
+    Hostile input never raises: ``str.isdigit()`` is True for exotic Unicode
+    digits (e.g. ``'²'``) that ``int()`` rejects, so tokens are also required to
+    be ASCII, and anything past the Postgres integer ceiling is discarded."""
     raw = request.GET.get('tables', '')
     tokens = [t.strip() for t in raw.split(',') if t.strip()]
     want_takeaway = 'takeaway' in tokens
-    table_ids = [int(t) for t in tokens if t.isdigit()]
+    table_ids = []
+    for t in tokens:
+        if t.isascii() and t.isdigit():
+            val = int(t)
+            if 0 < val <= _PG_INT_MAX:
+                table_ids.append(val)
     return table_ids, want_takeaway
 
 
@@ -1017,29 +1032,38 @@ def _apply_table_filter(qs, table_ids, want_takeaway):
     return qs.filter(cond)
 
 
-def _tables_query(table_ids, want_takeaway):
-    """The ``?tables=`` fragment for a filter state: sorted int ids then the
-    literal ``takeaway`` token, comma-joined. Empty state ⇒ ``''``."""
-    tokens = [str(i) for i in sorted(table_ids)]
-    if want_takeaway:
-        tokens.append('takeaway')
-    return ('?tables=' + ','.join(tokens)) if tokens else ''
-
-
-def _toggle_table_url(request, pk):
-    """Current filter with this table's pk flipped in/out of ``?tables=``.
+def _tables_url(request, table_ids, want_takeaway):
+    """A URL for the current page with ``?tables=`` set to this filter state and
+    every OTHER query param on the request preserved (so the by-table view and
+    the status filter survive a chip click). Sorted int ids then the literal
+    ``takeaway`` token, comma-joined; an empty token list drops ``tables``
+    entirely — a bare path when nothing else is set.
 
     Built in Python because Django's ``{% querystring %}`` REPLACES a param and
     cannot append to a comma list."""
+    tokens = [str(i) for i in sorted(table_ids)]
+    if want_takeaway:
+        tokens.append('takeaway')
+    params = request.GET.copy()
+    if tokens:
+        params['tables'] = ','.join(tokens)
+    else:
+        params.pop('tables', None)
+    query = params.urlencode(safe=',')
+    return f'{request.path}?{query}' if query else request.path
+
+
+def _toggle_table_url(request, pk):
+    """Current filter with this table's pk flipped in/out of ``?tables=``."""
     table_ids, want_takeaway = _parse_table_filter(request)
     ids = set(table_ids) ^ {pk}
-    return request.path + _tables_query(ids, want_takeaway)
+    return _tables_url(request, ids, want_takeaway)
 
 
 def _toggle_takeaway_url(request):
     """Current filter with the ``takeaway`` token flipped, selected ids kept."""
     table_ids, want_takeaway = _parse_table_filter(request)
-    return request.path + _tables_query(table_ids, not want_takeaway)
+    return _tables_url(request, table_ids, not want_takeaway)
 
 
 def _open_table_options(request, branches):

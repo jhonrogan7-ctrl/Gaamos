@@ -91,8 +91,11 @@ class TableFilterParsingTest(TenantTestCase):
         self.login_as(self.owner)
 
     def test_flat_filtered_to_one_table(self):
-        body = self.client.get(f"/dashboard/orders/?tables={self.t4.pk}").content.decode()
-        self.assertIn(f"#{self.o4.number}", body)
+        resp = self.client.get(f"/dashboard/orders/?tables={self.t4.pk}")
+        # ``#{o4.number}`` == ``#1`` is a substring of chrome (``#15171d`` theme
+        # colour in base.html), so the positive check reads the order set.
+        self.assertIn(self.o4.number, {o.number for o in resp.context["orders"]})
+        body = resp.content.decode()
         self.assertNotIn(f"#{self.o7.number}", body)
         self.assertNotIn(f"#{self.oT.number}", body)
 
@@ -105,16 +108,17 @@ class TableFilterParsingTest(TenantTestCase):
         self.assertNotIn(self.o4.number, nums)
 
     def test_table_and_takeaway_compose(self):
-        body = self.client.get(
-            f"/dashboard/orders/?tables={self.t4.pk},takeaway").content.decode()
-        self.assertIn(f"#{self.o4.number}", body)
-        self.assertIn(f"#{self.oT.number}", body)
-        self.assertNotIn(f"#{self.o7.number}", body)
+        resp = self.client.get(f"/dashboard/orders/?tables={self.t4.pk},takeaway")
+        nums = {o.number for o in resp.context["orders"]}
+        self.assertIn(self.o4.number, nums)
+        self.assertIn(self.oT.number, nums)
+        self.assertNotIn(f"#{self.o7.number}", resp.content.decode())
 
     def test_junk_tokens_ignored_and_empty_is_unfiltered(self):
-        body = self.client.get("/dashboard/orders/?tables=abc,").content.decode()
-        self.assertIn(f"#{self.o4.number}", body)
-        self.assertIn(f"#{self.o7.number}", body)
+        nums = {o.number for o in
+                self.client.get("/dashboard/orders/?tables=abc,").context["orders"]}
+        self.assertIn(self.o4.number, nums)
+        self.assertIn(self.o7.number, nums)
 
     def test_status_and_table_filter_compose(self):
         self.o4.status = Order.STATUS_SERVED
@@ -154,3 +158,32 @@ class TableFilterParsingTest(TenantTestCase):
         self.assertEqual(
             resp.context["takeaway_toggle_url"],
             f"/dashboard/orders/?tables={self.t4.pk},takeaway")
+
+    def test_toggle_urls_preserve_other_query_params(self):
+        resp = self.client.get("/dashboard/orders/?group=table&status=new")
+        opts = {o["table"].pk: o for o in resp.context["table_filter_options"]}
+        url = opts[self.t4.pk]["toggle_url"]
+        self.assertIn("group=table", url)
+        self.assertIn("status=new", url)
+        self.assertIn(f"tables={self.t4.pk}", url)
+        tk = resp.context["takeaway_toggle_url"]
+        self.assertIn("group=table", tk)
+        self.assertIn("status=new", tk)
+        self.assertIn("tables=takeaway", tk)
+
+    def test_hostile_table_tokens_are_ignored_not_500(self):
+        all_nums = {self.o4.number, self.o7.number, self.oT.number}
+        # superscript two: str.isdigit() is True but int('²') raises ValueError
+        r1 = self.client.get("/dashboard/orders/?tables=²")
+        self.assertEqual(r1.status_code, 200)
+        self.assertEqual({o.number for o in r1.context["orders"]}, all_nums)
+        # 20-digit token: parses to a Python int Postgres would reject
+        r2 = self.client.get("/dashboard/orders/?tables=99999999999999999999")
+        self.assertEqual(r2.status_code, 200)
+        self.assertEqual({o.number for o in r2.context["orders"]}, all_nums)
+
+    def test_mixed_valid_and_hostile_tokens_filter_to_valid(self):
+        r = self.client.get(
+            f"/dashboard/orders/?tables={self.t4.pk},²,abc")
+        self.assertEqual(r.status_code, 200)
+        self.assertEqual({o.number for o in r.context["orders"]}, {self.o4.number})
