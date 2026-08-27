@@ -1,35 +1,43 @@
-{% comment %}Order queue rows. Expects: orders, show_branch (bool), status_filter.{% endcomment %}
-<div class="table-scroll">
-<table class="tbl">
-  <thead>
-    <tr>
-      <th>Order</th>{% if show_branch %}<th>Branch</th>{% endif %}<th>Table</th>
-      <th>Items</th><th>Total</th><th>Placed</th><th>Status</th><th></th>
-    </tr>
-  </thead>
-  <tbody>
-    {% for o in orders %}
-    <tr>
-      <td class="ono">#{{ o.number }}</td>
-      {% if show_branch %}<td>{{ o.branch.name }}</td>{% endif %}
-      <td>{% if o.table_label %}<span class="tablechip">Table {{ o.table_label }}</span>{% else %}<span class="tablechip">Takeaway</span>{% endif %}
-      {% if o.guest_session %}<span class="who">{{ o.guest_session.display_name }}{% if o.guest_session.contact %} · {{ o.guest_session.contact }}{% endif %}</span>{% else %}<span class="who">—</span>{% endif %}</td>
-      <td>{% for i in o.items.all %}{{ i.name }} ×{{ i.qty }}{% if not forloop.last %}, {% endif %}{% endfor %}</td>
-      <td class="ono">Rs {{ o.total }}</td>
-      <td>{{ o.created_at|timesince }} ago</td>
-      <td><span class="status {% if o.status == 'served' %}done{% else %}new{% endif %}">{{ o.get_status_display }}</span></td>
-      <td>
-        {% if o.status == 'new' %}
-        <form method="post" action="{% url 'dashboard:order_serve' o.pk %}" style="display:inline;">
-          {% csrf_token %}
-          <button type="submit" class="lnk" style="background:none;border:none;cursor:pointer;">Mark served</button>
-        </form>
-        {% endif %}
-      </td>
-    </tr>
-    {% empty %}
-    <tr><td colspan="{% if show_branch %}8{% else %}7{% endif %}" style="color:var(--ink-3);padding:16px;">No orders yet.</td></tr>
-    {% endfor %}
-  </tbody>
-</table>
+{% comment %}Order cards. Expects: orders, show_branch (bool), status_filter.{% endcomment %}
+{% load order_extras %}
+<div class="ocard-list">
+  {% for o in orders %}
+  <div class="ocard">
+    <div class="oc-top">
+      <span class="oc-no">#{{ o.number }}</span>
+      <span class="st {% if o.status == 'served' %}done{% else %}new{% endif %}">{{ o.get_status_display }}</span>
+      <span class="oc-when"><b>{{ o.created_at|smart_datetime }}</b>{{ o.created_at|timesince }} ago</span>
+    </div>
+    <div class="oc-who">
+      {% if o.table_label %}
+        <span class="tchip">Table {{ o.table_label }}</span>
+      {% else %}
+        <span class="tchip away">Takeaway</span>
+      {% endif %}
+      {% if o.guest_session %}
+        <span class="who"><span class="av">{{ o.guest_session.display_name|slice:":1"|upper }}</span>
+          {{ o.guest_session.display_name }}{% if o.guest_session.contact %} <span class="ph">· {{ o.guest_session.contact }}</span>{% endif %}</span>
+      {% else %}
+        <span class="who anon"><span class="av">·</span> Walk-in</span>
+      {% endif %}
+    </div>
+    <div class="oc-items">
+      {% for i in o.items.all %}{{ i.name }} ×{{ i.qty }}{% if not forloop.last %} · {% endif %}{% endfor %}
+    </div>
+    <div class="oc-foot">
+      <span class="oc-tot">Rs {{ o.total }}</span>
+      {% if show_branch %}<span class="oc-br">{{ o.branch.name }}</span>{% endif %}
+      {% if o.status == 'new' %}
+      <form method="post" action="{% url 'dashboard:order_serve' o.pk %}" class="oc-serve">
+        {% csrf_token %}
+        <button type="submit" class="servebtn">Mark served</button>
+      </form>
+      {% else %}
+      <span class="servedtxt">Served</span>
+      {% endif %}
+    </div>
+  </div>
+  {% empty %}
+  <p class="ocard-empty" style="color:var(--ink-3);padding:16px;">No orders yet.</p>
+  {% endfor %}
 </div>
