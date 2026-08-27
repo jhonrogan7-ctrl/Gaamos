@@ -948,10 +948,22 @@ h1,h2,h3 { font-family: var(--hd); }
       animation: sheet-up .22s cubic-bezier(.2, .8, .2, 1);
     }
   }
-  /* orders-actionbar-desktop-hide: the pinned bar is a mobile affordance; the
-     desktop table-detail / bill screens carry their own header actions. */
+  /* orders-actionbar-desktop-hide */
   @media (min-width: 900px) {
+    /* The pinned bar is a mobile affordance: table detail hides it and keeps
+       its {% block header_action %} Bill button as the desktop control. */
     .actionbar { display: none; }
+    /* The bill screen has no header-action fallback, so its --inline variant
+       falls back to a plain in-flow button row (one set of markup, two
+       layouts — never a duplicated block). Compound selector out-specifies
+       the bare hide, so order between the two rules does not matter. */
+    .actionbar.actionbar--inline {
+      display: flex; position: static; bottom: auto; z-index: auto;
+      margin-top: 18px; padding: 0; background: none;
+    }
+    .actionbar.actionbar--inline .ab { flex: 0 0 auto; padding: 10px 18px; }
+    .actionbar.actionbar--inline .ab-form { flex: 0 0 auto; }
+    .actionbar.actionbar--inline .ab-form .ab { width: auto; }
   }
 
   /* ══════════════════════════════════════════

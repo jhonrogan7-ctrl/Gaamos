@@ -720,6 +720,27 @@ class OrderCardCssTest(SimpleTestCase):
             'a top-level .ocard/.actionbar rule was added after the 900px hide '
             'block — it would override the mobile-only styling at every width')
 
+    def test_bill_actionbar_inline_variant_survives_desktop_hide(self):
+        # D6b regression guard. At >=900px `.actionbar { display: none }` hides
+        # the pinned bar — table detail falls back to its header-action Bill
+        # button. The bill screen has no such fallback, so its `.actionbar--inline`
+        # variant must be EXPLICITLY restored to a visible in-flow row. If a
+        # future edit folds the two rules together (dropping the restore), the
+        # bill screen loses Preview/Close on desktop — this must then fail.
+        import re
+        css = self._css()
+        self.assertRegex(css, r'\.actionbar\{display:\s*none\}',
+                         'desktop hide for .actionbar missing from build')
+        m = re.search(r'\.actionbar\.actionbar--inline\{([^}]*)\}', css)
+        self.assertIsNotNone(
+            m, '.actionbar--inline desktop restore rule missing — the bill '
+               'screen would render no Preview/Close control at >=900px')
+        decls = m.group(1)
+        self.assertIn('display:flex', decls,
+                      '.actionbar--inline must restore a visible display at >=900px')
+        self.assertIn('position:static', decls,
+                      '.actionbar--inline must drop sticky positioning at >=900px')
+
     def test_row2_rule_removed(self):
         # Task 8 replaced .row2 with .actionbar; no template references row2.
         self.assertNotIn('.row2', self._src())

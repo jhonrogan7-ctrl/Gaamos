@@ -122,6 +122,19 @@ class OrdersTableDetailAndBillTest(TenantTestCase):
         self.assertIn('class="ab ghost"', body)
         self.assertIn('class="ab primary"', body)
 
+    def test_bill_screen_action_bar_carries_inline_modifier(self):
+        # D6b: the bill screen has no {% block header_action %} fallback, so its
+        # action bar must carry .actionbar--inline — the CSS hook that makes
+        # Preview/Close fall back to an in-flow row at >=900px instead of being
+        # swallowed by `.actionbar { display: none }`. Table detail does NOT
+        # carry it (it keeps its header Bill button on desktop).
+        bill = self.client.get(
+            f'/dashboard/orders/table/{self.table.pk}/bill/').content.decode()
+        self.assertIn('actionbar--inline', bill)
+        detail = self.client.get(
+            f'/dashboard/orders/table/{self.table.pk}/').content.decode()
+        self.assertNotIn('actionbar--inline', detail)
+
     def test_bill_screen_close_form_still_posts_to_close_url_with_csrf(self):
         body = self.client.get(f'/dashboard/orders/table/{self.table.pk}/bill/').content.decode()
         # close_url is an unchanged plain href built in _bill_context; the form

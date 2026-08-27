@@ -65,7 +65,7 @@ not take payment, store a receipt, or touch any order.
 <p class="mini" style="margin:8px 2px;">Toggle → Combine shows one bill: all items, one table total, single print.</p>
 {% endif %}
 
-<div class="actionbar">
+<div class="actionbar actionbar--inline">
   <a class="ab ghost" href="{{ preview_url }}">Preview receipt</a>
   <form method="post" action="{{ close_url }}" class="ab-form">
     {% csrf_token %}
