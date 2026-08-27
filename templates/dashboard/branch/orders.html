@@ -1,5 +1,4 @@
 {% extends "dashboard/base.html" %}
-{% load static %}
 {% block title %}{{ branch.name }} — Orders{% endblock %}
 {% block page_title %}{{ branch.name }}<small>Orders</small>{% endblock %}
 {% block header_action %}
@@ -27,22 +26,18 @@
 
   {% if group == 'table' %}
   <div class="panel" style="padding:14px;"
-       x-data="{ init() { const es = new EventSource('{% url 'dashboard:branch_orders_stream' branch.slug %}'); es.onmessage = () => { fetch('{% url 'dashboard:branch_orders_table_groups' branch.slug %}?status={{ status_filter }}&tables={{ tables_param }}').then(r => r.text()).then(h => { this.$refs.groups.innerHTML = h; }); }; } }">
+       x-data="{ init() { const es = new EventSource('{% url 'dashboard:branch_orders_stream' branch.slug %}'); es.onmessage = () => { fetch('{% url 'dashboard:branch_orders_table_groups' branch.slug %}' + window.location.search).then(r => r.text()).then(h => { this.$refs.groups.innerHTML = h; }); }; } }">
     <div x-ref="groups">
       {% include 'dashboard/_orders_table_groups.html' %}
     </div>
   </div>
   {% else %}
   <div class="panel"
-       x-data="{ init() { const es = new EventSource('{% url 'dashboard:branch_orders_stream' branch.slug %}'); es.onmessage = () => { fetch('{% url 'dashboard:branch_orders_queue' branch.slug %}?status={{ status_filter }}&tables={{ tables_param }}').then(r => r.text()).then(h => { this.$refs.queue.innerHTML = h; }); }; } }">
+       x-data="{ init() { const es = new EventSource('{% url 'dashboard:branch_orders_stream' branch.slug %}'); es.onmessage = () => { fetch('{% url 'dashboard:branch_orders_queue' branch.slug %}' + window.location.search).then(r => r.text()).then(h => { this.$refs.queue.innerHTML = h; }); }; } }">
     <div x-ref="queue">
       {% include 'dashboard/_orders_queue.html' %}
     </div>
   </div>
   {% endif %}
 </div>
-{% endblock %}
-
-{% block extra_scripts %}
-<script src="{% static 'js/push.js' %}?v={{ asset_v }}"></script>
 {% endblock %}

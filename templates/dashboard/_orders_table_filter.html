@@ -22,16 +22,15 @@ hook now so no re-templating is needed then.
   <div class="search-bar">
     <span>🔍</span>
     <input type="text" x-model="tableQuery" placeholder="Search table…" autocomplete="off">
-    <button type="button" x-show="tableQuery.length" @click="tableQuery=''" x-cloak
-            aria-label="Clear search"
-            style="background:none;border:none;color:#9ca3af;font-size:16px;cursor:pointer;line-height:1;padding:0 2px;">✕</button>
+    <button type="button" class="search-clear" x-show="tableQuery.length" @click="tableQuery=''"
+            x-cloak aria-label="Clear search">✕</button>
   </div>
 
   <div class="table-opts">
     {% for opt in table_filter_options %}
     <a class="table-opt {% if opt.selected %}on{% endif %}"
        href="{{ opt.toggle_url }}"
-       x-show="!tableQuery || 'table {{ opt.table.label|lower }}'.includes(tableQuery.toLowerCase())">
+       x-show="!tableQuery || 'table {{ opt.table.label|lower|escapejs }}'.includes(tableQuery.toLowerCase())">
       <span class="cbx">{% if opt.selected %}✓{% endif %}</span>
       Table {{ opt.table.label }}
       <span class="rt">{{ opt.guests }} · Rs {{ opt.total }}</span>

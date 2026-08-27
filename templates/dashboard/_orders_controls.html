@@ -1,8 +1,9 @@
 {% comment %}
 Shared orders-queue controls: status segment, flat/by-table view toggle, active
-table-filter chips, the collapsible table-filter panel and the per-device push
-toggle. Used by dashboard/orders.html and dashboard/branch/orders.html so both
-pages carry the identical shell.
+table-filter chips and the collapsible table-filter panel. Used by
+dashboard/orders.html and dashboard/branch/orders.html so both pages carry the
+identical shell. The per-device push toggle is NOT here — it is included by
+orders.html only (the branch tab has never had one).
 
 Every link URL is precomputed in _orders_shell_context (status_urls / group_urls
 / opt.toggle_url / takeaway_toggle_url / clear_filter_url) so switching the
@@ -43,5 +44,4 @@ Must sit inside an x-data that exposes `filterOpen` (bool) and `tableQuery` (str
   {% endif %}
 
   {% include 'dashboard/_orders_table_filter.html' %}
-  {% include 'dashboard/_push_toggle.html' %}
 </div>

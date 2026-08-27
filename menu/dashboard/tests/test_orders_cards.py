@@ -258,6 +258,25 @@ class OrdersShellTest(TenantTestCase):
         self.assertEqual(resp.context["group_urls"]["flat"], "/dashboard/orders/?status=new")
         self.assertIn('href="/dashboard/orders/" class="">All</a>', resp.content.decode())
 
+    def test_hostile_tables_param_cannot_inject_into_sse_x_data(self):
+        # `?tables=` is raw request input. The SSE fetch URL must not carry it
+        # into the x-data JS expression: HTML-escaping the apostrophe is NOT
+        # enough because the browser decodes the attribute before Alpine
+        # evaluates it. `alert(1)` has no chars Django escapes, so if the value
+        # is interpolated at all it shows up literally in the body.
+        b = self.client.get(
+            "/dashboard/orders/", {"tables": "');alert(1);('"}).content.decode()
+        self.assertNotIn("alert(1)", b)
+        self.assertIn("/dashboard/orders/queue/", b)  # SSE panel still wired up
+
+    def test_hostile_status_param_cannot_inject_into_sse_x_data(self):
+        b = self.client.get(
+            "/dashboard/orders/", {"status": "');alert(2);('"}).content.decode()
+        self.assertNotIn("alert(2)", b)
+        b2 = self.client.get(
+            "/dashboard/orders/?group=table", {"status": "');alert(3);('"}).content.decode()
+        self.assertNotIn("alert(3)", b2)
+
     def test_branch_orders_page_has_the_same_shell(self):
         b = self.client.get(f"/dashboard/branch/{self.branch.slug}/orders/").content.decode()
         self.assertIn("Filter by table", b)

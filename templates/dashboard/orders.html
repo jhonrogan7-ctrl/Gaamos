@@ -11,17 +11,18 @@
 
 <div x-data="{ filterOpen: {{ active_filter_count }} > 0, tableQuery: '' }">
   {% include 'dashboard/_orders_controls.html' %}
+  {% include 'dashboard/_push_toggle.html' %}
 
   {% if group == 'table' %}
   <div class="panel" style="padding:14px;"
-       x-data="{ init() { const es = new EventSource('{% url 'dashboard:orders_stream' %}'); es.onmessage = () => { fetch('{% url 'dashboard:orders_table_groups' %}?status={{ status_filter }}&tables={{ tables_param }}').then(r => r.text()).then(h => { this.$refs.groups.innerHTML = h; }); }; } }">
+       x-data="{ init() { const es = new EventSource('{% url 'dashboard:orders_stream' %}'); es.onmessage = () => { fetch('{% url 'dashboard:orders_table_groups' %}' + window.location.search).then(r => r.text()).then(h => { this.$refs.groups.innerHTML = h; }); }; } }">
     <div x-ref="groups">
       {% include 'dashboard/_orders_table_groups.html' %}
     </div>
   </div>
   {% else %}
   <div class="panel"
-       x-data="{ init() { const es = new EventSource('{% url 'dashboard:orders_stream' %}'); es.onmessage = () => { fetch('{% url 'dashboard:orders_queue' %}?status={{ status_filter }}&tables={{ tables_param }}').then(r => r.text()).then(h => { this.$refs.queue.innerHTML = h; }); }; } }">
+       x-data="{ init() { const es = new EventSource('{% url 'dashboard:orders_stream' %}'); es.onmessage = () => { fetch('{% url 'dashboard:orders_queue' %}' + window.location.search).then(r => r.text()).then(h => { this.$refs.queue.innerHTML = h; }); }; } }">
     <div x-ref="queue">
       {% include 'dashboard/_orders_queue.html' %}
     </div>
