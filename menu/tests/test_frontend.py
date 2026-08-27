@@ -682,7 +682,23 @@ class OrderCardCssTest(SimpleTestCase):
         for sel in (r'\.st\.new', r'\.st\.done', r'\.tchip\.away',
                     r'\.who\.anon', r'\.chip\.clear', r'\.table-opt\.on',
                     r'\.ab\.primary', r'\.ab\.ghost'):
-            self.assertRegex(css, sel, f'missing state rule {sel}')
+            # Anchored like the sibling presence test so a modifier can't match
+            # inside a longer selector.
+            self.assertRegex(css, r'[}{,\s]' + sel + r'[\s.,:{]',
+                             f'missing state rule {sel}')
+
+    def test_actionbar_lifted_above_mobile_tabbar(self):
+        # The pinned bar is shown ONLY under 900px, where nav.tabbar is fixed at
+        # bottom:0 (z-index 40). If .actionbar stayed at bottom:0 there it would
+        # sit under the nav and be untappable. The <900px override must offset it
+        # by the tab-bar height (the shared --tabbar-h token) so a future edit
+        # can't silently reintroduce the collision.
+        import re
+        css = self._css()
+        self.assertIn('--tabbar-h:', css, '--tabbar-h token not defined')
+        self.assertRegex(
+            css, r'\.actionbar\{[^}]*bottom:\s*calc\([^)]*--tabbar-h',
+            '.actionbar has no tab-bar-height bottom offset under 900px')
 
     def test_actionbar_desktop_hide_comes_after_base_rules(self):
         # Cascade guard on the SOURCE file. The minified build merges every

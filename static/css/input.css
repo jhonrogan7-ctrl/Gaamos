@@ -11,6 +11,9 @@
   --accent-2: #ff9f1c;
   --accent-grad: linear-gradient(135deg,#ff9f1c,#e23744); --accent-ink: #fff;
   --green: #1f9d57; --green-soft: #e3f6ec; --amber: #c98a00; --amber-soft: #fdf0d4;
+  /* Mobile (<900px) bottom tab-bar content height. Single source of truth so the
+     tab bar, the .body scroll padding and the pinned .actionbar offset agree. */
+  --tabbar-h: 56px;
 }
 /* ── Guest structural defaults (colors arrive inline from menu/themes.py via
    {% theme_style %}; pages carry data-theme + an inline token style, the
@@ -926,6 +929,13 @@ h1,h2,h3 { font-family: var(--hd); }
   /* Orders responsive blocks — MUST stay after every base rule above; same
      specificity means source order is the only thing that decides. */
   @media (max-width: 899.98px) {
+    /* The action bar is only ever shown under 900px — exactly where the fixed
+       bottom tab bar (nav.tabbar, z-index 40) overlays the viewport edge. Lift
+       the sticky bar to rest directly ABOVE the tab bar (offset = its content
+       height + the safe-area inset the tab bar itself adds) so its buttons stay
+       tappable; keep z-index below the nav so it never covers navigation. */
+    .actionbar { bottom: calc(var(--tabbar-h) + env(safe-area-inset-bottom)); padding-bottom: 12px; }
+
     /* The table-filter panel becomes a bottom sheet (reuses the .sheet idiom:
        fixed to the bottom edge, rounded top, sheet-up entrance). The markup
        already carries .sheet-handle for the grab bar. */
@@ -953,7 +963,7 @@ h1,h2,h3 { font-family: var(--hd); }
   @media (max-width: 899.98px) {
     .app { grid-template-columns: 1fr; }
     .side { display: none; }
-    .body { padding: 14px; padding-bottom: calc(76px + env(safe-area-inset-bottom)); }
+    .body { padding: 14px; padding-bottom: calc(var(--tabbar-h) + 20px + env(safe-area-inset-bottom)); }
     .top { padding: 0 14px; gap: 10px; }
     .top h2 { min-width: 0; }
     .top h2, .top h2 small { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
@@ -966,7 +976,7 @@ h1,h2,h3 { font-family: var(--hd); }
       padding-bottom: env(safe-area-inset-bottom);
     }
     .tabbar .tb {
-      flex: 1; min-width: 0; min-height: 56px;
+      flex: 1; min-width: 0; min-height: var(--tabbar-h);
       @apply flex flex-col items-center justify-center gap-1;
       font-family: var(--bd); font-size: 11px; font-weight: 700; color: var(--ink-3);
       text-decoration: none; background: none; border: none; cursor: pointer;
