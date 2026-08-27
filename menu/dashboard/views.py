@@ -1259,12 +1259,14 @@ def orders_table(request, table_id):
     """Task 3.3 / B2 — a table's open guest sessions with their items."""
     table = get_object_or_404(Table, pk=table_id, branch__in=visible_branches(request))
     sessions = table_sessions(table.branch, table)
+    guests = _guest_rows(sessions)
     return render(request, 'dashboard/orders_table.html', {
         'active_tab': 'orders',
         'table': table,
         'branch': table.branch,
         'is_takeaway': False,
-        'guests': _guest_rows(sessions),
+        'guests': guests,
+        'table_total': sum(g["subtotal"] for g in guests),
     })
 
 
@@ -1272,12 +1274,14 @@ def orders_table(request, table_id):
 def orders_table_takeaway(request):
     """Task 3.3 / B2 — the Takeaway "table": open guest sessions with no table."""
     sessions = _takeaway_sessions(visible_branches(request))
+    guests = _guest_rows(sessions)
     return render(request, 'dashboard/orders_table.html', {
         'active_tab': 'orders',
         'table': None,
         'branch': None,
         'is_takeaway': True,
-        'guests': _guest_rows(sessions),
+        'guests': guests,
+        'table_total': sum(g["subtotal"] for g in guests),
     })
 
 

@@ -95,6 +95,69 @@ class OrdersTableDetailAndBillTest(TenantTestCase):
         body = self.client.get(f'/dashboard/orders/table/{self.table.pk}/bill/?mode=split').content.decode()
         self.assertIn(f'/dashboard/orders/table/{self.table.pk}/bill/print/{self.bikash.pk}/', body)
 
+    # --- Task 8: pinned mobile action bars ---
+
+    def test_table_detail_has_pinned_bill_action_bar(self):
+        body = self.client.get(f'/dashboard/orders/table/{self.table.pk}/').content.decode()
+        # `.actionbar` is used nowhere else in the dashboard templates; the
+        # `Bill · Rs 660` label carries the middle dot + exact table total
+        # (300 + 360), so it cannot collide with the `Bill · Table 7` page
+        # title or the plain `Bill` header-action button.
+        self.assertIn('actionbar', body)
+        self.assertIn('Bill · Rs 660', body)
+        self.assertEqual(self.client.get(
+            f'/dashboard/orders/table/{self.table.pk}/').context['table_total'], 660)
+
+    def test_table_detail_action_bar_total_matches_guest_subtotals(self):
+        ctx = self.client.get(f'/dashboard/orders/table/{self.table.pk}/').context
+        self.assertEqual(ctx['table_total'], sum(g['subtotal'] for g in ctx['guests']))
+
+    def test_bill_screen_has_pinned_action_bar(self):
+        body = self.client.get(f'/dashboard/orders/table/{self.table.pk}/bill/').content.decode()
+        # `Preview receipt` and `Close table` are unique strings in the bill
+        # template; both must live inside the single `.actionbar`.
+        self.assertIn('actionbar', body)
+        self.assertIn('Close table', body)
+        self.assertIn('Preview receipt', body)
+        self.assertIn('class="ab ghost"', body)
+        self.assertIn('class="ab primary"', body)
+
+    def test_bill_screen_close_form_still_posts_to_close_url_with_csrf(self):
+        body = self.client.get(f'/dashboard/orders/table/{self.table.pk}/bill/').content.decode()
+        # close_url is an unchanged plain href built in _bill_context; the form
+        # must still POST there and still ship a CSRF token.
+        self.assertIn(f'action="/dashboard/orders/table/{self.table.pk}/close/"', body)
+        self.assertIn('csrfmiddlewaretoken', body)
+        self.assertIn('class="ab-form"', body)
+
+    def test_bill_screen_non_pos_note_survives(self):
+        body = self.client.get(f'/dashboard/orders/table/{self.table.pk}/bill/').content.decode()
+        self.assertIn('Gaamos stays non-POS.', body)
+
+    def test_bill_split_print_button_label_includes_guest_name(self):
+        body = self.client.get(
+            f'/dashboard/orders/table/{self.table.pk}/bill/?mode=split').content.decode()
+        # bare `Print` was ambiguous across guests; the label now names the guest.
+        self.assertIn('>Print Bikash<', body)
+        self.assertIn('>Print Sita<', body)
+
+    def test_takeaway_table_detail_has_action_bar(self):
+        GuestSession.objects.create(
+            branch=self.branch, table=None, token='tok-ta-8', label='Guest A', name='Ram')
+        body = self.client.get('/dashboard/orders/table/takeaway/').content.decode()
+        self.assertIn('actionbar', body)
+        self.assertIn('Bill · Rs', body)
+        self.assertIn('/dashboard/orders/table/takeaway/bill/', body)
+
+    def test_takeaway_bill_screen_has_action_bar(self):
+        GuestSession.objects.create(
+            branch=self.branch, table=None, token='tok-ta-8b', label='Guest A', name='Ram')
+        body = self.client.get('/dashboard/orders/table/takeaway/bill/').content.decode()
+        self.assertIn('actionbar', body)
+        self.assertIn('Close table', body)
+        self.assertIn('Preview receipt', body)
+        self.assertIn('action="/dashboard/orders/table/takeaway/close/"', body)
+
     # --- fail-closed tenancy ---
 
     def test_table_detail_other_company_table_is_404(self):

@@ -48,4 +48,8 @@ markup (gaamos-orders/billing.html).
   </p>
   {% endfor %}
 </div>
+
+<div class="actionbar">
+  <a class="ab primary" href="{% if is_takeaway %}{% url 'dashboard:orders_table_bill_takeaway' %}{% else %}{% url 'dashboard:orders_table_bill' table.pk %}{% endif %}">Bill · Rs {{ table_total }}</a>
+</div>
 {% endblock %}

@@ -56,7 +56,7 @@ not take payment, store a receipt, or touch any order.
     <div class="li"><span class="mini">No items yet.</span></div>
     {% endfor %}
     <div class="sub2"><span>Subtotal</span><span>Rs {{ g.subtotal }}</span></div>
-    <a class="btn ghost btn-sm bill-print-btn" href="{{ g.print_url }}">Print</a>
+    <a class="btn ghost btn-sm bill-print-btn" href="{{ g.print_url }}">Print {{ g.session.display_name }}</a>
   </div>
   {% empty %}
   <p style="color:var(--ink-3);padding:16px;">No open guest sessions to bill.</p>
@@ -65,12 +65,12 @@ not take payment, store a receipt, or touch any order.
 <p class="mini" style="margin:8px 2px;">Toggle → Combine shows one bill: all items, one table total, single print.</p>
 {% endif %}
 
-<div class="row2">
-  <form method="post" action="{{ close_url }}">
+<div class="actionbar">
+  <a class="ab ghost" href="{{ preview_url }}">Preview receipt</a>
+  <form method="post" action="{{ close_url }}" class="ab-form">
     {% csrf_token %}
-    <button type="submit" class="btn primary">Close table</button>
+    <button type="submit" class="ab primary">Close table</button>
   </form>
-  <a class="btn ghost" href="{{ preview_url }}">Preview receipt</a>
 </div>
 
 <div class="note">
