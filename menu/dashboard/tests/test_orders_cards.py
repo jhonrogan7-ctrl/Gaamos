@@ -223,8 +223,8 @@ class TableGroupsPartialTest(TenantTestCase):
         r = self.client.get("/dashboard/orders/table-groups/")
         self.assertIn(r.status_code, (302, 403))
 
-    def test_branch_partial_forbidden_other_company(self):
-        """Branch from a different company must not be reachable."""
+    def test_branch_partial_404_for_other_company_branch(self):
+        """Tenant scoping: branch from a different company is hidden as 404."""
         other = Company.objects.create(name='Other', slug='other')
         tok = set_current_company(other)
         try:
@@ -232,7 +232,6 @@ class TableGroupsPartialTest(TenantTestCase):
         finally:
             reset_current_company(tok)
         r = self.client.get(f'/dashboard/branch/{fbranch.slug}/orders/table-groups/')
-        # Foreign branch is outside our tenant scope → 404 (hidden)
         self.assertEqual(r.status_code, 404)
 
     def test_branch_partial_allowed_for_owner(self):
@@ -242,3 +241,15 @@ class TableGroupsPartialTest(TenantTestCase):
         body = r.content.decode()
         self.assertIn("Table 4", body)
         self.assertNotIn("<aside class=\"side\"", body)  # fragment, not full page
+
+    def test_branch_partial_forbidden_for_unassigned_manager(self):
+        """Intra-company branch-scoped manager must not access unassigned branches."""
+        U = get_user_model()
+        branch_a = Branch.objects.create(company=self.company, name="A", slug="a")
+        branch_b = Branch.objects.create(company=self.company, name="B", slug="b")
+        manager = U.objects.create_user("mgr", password="pass")
+        self.make_manager(manager, branches=[branch_a])
+        self.client.logout()
+        self.login_as(manager)
+        r = self.client.get(f'/dashboard/branch/{branch_b.slug}/orders/table-groups/')
+        self.assertEqual(r.status_code, 403)
