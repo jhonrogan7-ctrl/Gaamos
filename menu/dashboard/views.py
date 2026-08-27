@@ -280,16 +280,32 @@ def orders(request):
     if group not in ('flat', 'table'):
         group = 'flat'
     branches = visible_branches(request)
+    table_ids, want_takeaway = _parse_table_filter(request)
+    takeaway_available = GuestSession.objects.filter(
+        branch__in=branches, table__isnull=True, closed_at__isnull=True).exists()
     context = {
         'active_tab': 'orders',
         'show_branch': True, 'status_filter': status, 'group': group,
         # Empty when push isn't configured — the toggle then renders nothing.
         'vapid_public_key': django_settings.VAPID_PUBLIC_KEY,
+        'table_filter_options': _open_table_options(request, branches),
+        'selected_table_ids': table_ids,
+        'selected_takeaway': want_takeaway,
+        'takeaway_available': takeaway_available,
+        'active_filter_count': len(table_ids) + (1 if want_takeaway else 0),
+        'tables_param': request.GET.get('tables', ''),
+        'takeaway_toggle_url': _toggle_takeaway_url(request),
     }
     if group == 'table':
-        context['table_cards'], context['takeaway_card'] = _table_card_groups(branches)
+        cards, takeaway = _table_card_groups(branches)
+        if table_ids or want_takeaway:
+            cards = [c for c in cards if c['table'].pk in table_ids]
+            if not want_takeaway:
+                takeaway = None
+        context['table_cards'], context['takeaway_card'] = cards, takeaway
     else:
-        context['orders'] = _orders_for(Order.objects.filter(branch__in=branches), status)
+        context['orders'] = _orders_for(
+            Order.objects.filter(branch__in=branches), status, table_ids, want_takeaway)
     return render(request, 'dashboard/orders.html', context)
 
 
@@ -977,10 +993,84 @@ def branch_theme_save(request, slug):
     return redirect('dashboard:branch_theme', slug=branch.slug)
 
 
-def _orders_for(qs, status):
+def _parse_table_filter(request):
+    """Read ``?tables=`` — a comma-joined list of ``Table.pk`` ints plus the
+    literal token ``takeaway``. Junk tokens are ignored; an empty/absent param
+    means no filter, returned as ``([], False)``."""
+    raw = request.GET.get('tables', '')
+    tokens = [t.strip() for t in raw.split(',') if t.strip()]
+    want_takeaway = 'takeaway' in tokens
+    table_ids = [int(t) for t in tokens if t.isdigit()]
+    return table_ids, want_takeaway
+
+
+def _apply_table_filter(qs, table_ids, want_takeaway):
+    """Restrict an Order queryset to the selected tables and/or the tableless
+    (Takeaway) pool. No selection ⇒ queryset returned untouched."""
+    if not table_ids and not want_takeaway:
+        return qs
+    cond = Q()
+    if table_ids:
+        cond |= Q(table_id__in=table_ids)
+    if want_takeaway:
+        cond |= Q(table_id__isnull=True)
+    return qs.filter(cond)
+
+
+def _tables_query(table_ids, want_takeaway):
+    """The ``?tables=`` fragment for a filter state: sorted int ids then the
+    literal ``takeaway`` token, comma-joined. Empty state ⇒ ``''``."""
+    tokens = [str(i) for i in sorted(table_ids)]
+    if want_takeaway:
+        tokens.append('takeaway')
+    return ('?tables=' + ','.join(tokens)) if tokens else ''
+
+
+def _toggle_table_url(request, pk):
+    """Current filter with this table's pk flipped in/out of ``?tables=``.
+
+    Built in Python because Django's ``{% querystring %}`` REPLACES a param and
+    cannot append to a comma list."""
+    table_ids, want_takeaway = _parse_table_filter(request)
+    ids = set(table_ids) ^ {pk}
+    return request.path + _tables_query(ids, want_takeaway)
+
+
+def _toggle_takeaway_url(request):
+    """Current filter with the ``takeaway`` token flipped, selected ids kept."""
+    table_ids, want_takeaway = _parse_table_filter(request)
+    return request.path + _tables_query(table_ids, not want_takeaway)
+
+
+def _open_table_options(request, branches):
+    """Open tables as filter rows, each with a toggle URL that adds or
+    removes that table from ?tables=."""
+    branches = list(branches)
+    selected, _ = _parse_table_filter(request)
+    selected = set(selected)
+    open_table_ids = (
+        GuestSession.objects
+        .filter(branch__in=branches, table__isnull=False, closed_at__isnull=True)
+        .values_list('table', flat=True).distinct()
+    )
+    tables = (
+        Table.objects.filter(pk__in=open_table_ids).select_related('branch')
+        .order_by('branch__name', 'display_order', 'created_at')
+    )
+    return [{
+        'table': t,
+        'guests': len(table_sessions(t.branch, t)),
+        'total': table_total(t.branch, t),
+        'selected': t.pk in selected,
+        'toggle_url': _toggle_table_url(request, t.pk),
+    } for t in tables]
+
+
+def _orders_for(qs, status, table_ids=None, want_takeaway=False):
     qs = qs.select_related('branch', 'table', 'guest_session').prefetch_related('items')
     if status in (Order.STATUS_NEW, Order.STATUS_SERVED):
         qs = qs.filter(status=status)
+    qs = _apply_table_filter(qs, table_ids or [], want_takeaway)
     return list(qs)
 
 
@@ -1289,9 +1379,13 @@ def table_close_takeaway(request):
 @require_membership
 def orders_queue(request):
     status = request.GET.get('status', 'all')
+    table_ids, want_takeaway = _parse_table_filter(request)
     return render(request, 'dashboard/_orders_queue.html', {
-        'orders': _orders_for(Order.objects.filter(branch__in=visible_branches(request)), status),
+        'orders': _orders_for(
+            Order.objects.filter(branch__in=visible_branches(request)),
+            status, table_ids, want_takeaway),
         'show_branch': True, 'status_filter': status,
+        'tables_param': request.GET.get('tables', ''),
     })
 
 
@@ -1301,9 +1395,11 @@ def branch_orders_queue(request, slug):
     if not ensure_can_manage_branch(request, branch):
         return forbidden(request)
     status = request.GET.get('status', 'all')
+    table_ids, want_takeaway = _parse_table_filter(request)
     return render(request, 'dashboard/_orders_queue.html', {
-        'orders': _orders_for(branch.orders.all(), status),
+        'orders': _orders_for(branch.orders.all(), status, table_ids, want_takeaway),
         'show_branch': False, 'status_filter': status, 'branch': branch,
+        'tables_param': request.GET.get('tables', ''),
     })
 
 
