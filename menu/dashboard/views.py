@@ -14,7 +14,7 @@ from django.conf import settings as django_settings
 from django.utils import timezone
 
 from django.db import models
-from django.db.models import Count, Sum, Max
+from django.db.models import Count, Sum, Max, Q
 from django.db.models.functions import TruncDate
 from menu.models import (
     Company, Branch, Category, SubCategory, MenuItem, BranchMenuItem,
@@ -989,14 +989,18 @@ def _annotate_table_card(sessions):
     the takeaway pool's): status counts, guest names, lead contact, timing."""
     session_ids = [s.pk for s in sessions]
     orders = Order.objects.filter(guest_session_id__in=session_ids)
-    lead_contact = next((s.contact for s in sessions if s.contact), "")
+    stats = orders.aggregate(
+        new_count=Count("pk", filter=Q(status=Order.STATUS_NEW)),
+        served_count=Count("pk", filter=Q(status=Order.STATUS_SERVED)),
+        last_order_at=Max("created_at"),
+    )
     return {
-        "new_count": orders.filter(status=Order.STATUS_NEW).count(),
-        "served_count": orders.filter(status=Order.STATUS_SERVED).count(),
+        "new_count": stats["new_count"],
+        "served_count": stats["served_count"],
         "guest_names": [s.display_name for s in sessions],
-        "lead_contact": lead_contact,
+        "lead_contact": sessions[0].contact if sessions else "",
         "opened_at": min((s.created_at for s in sessions), default=None),
-        "last_order_at": orders.aggregate(m=Max("created_at"))["m"],
+        "last_order_at": stats["last_order_at"],
     }
 
 
