@@ -295,7 +295,6 @@ def _orders_shell_context(request, branches):
         'selected_takeaway': want_takeaway,
         'takeaway_available': takeaway_available,
         'active_filter_count': len(table_ids) + (1 if want_takeaway else 0),
-        'tables_param': request.GET.get('tables', ''),
         'takeaway_toggle_url': _toggle_takeaway_url(request),
         'clear_filter_url': _replace_params(request, tables=None),
         'status_urls': {
@@ -1466,7 +1465,6 @@ def orders_queue(request):
             Order.objects.filter(branch__in=visible_branches(request)),
             status, table_ids, want_takeaway),
         'show_branch': True, 'status_filter': status,
-        'tables_param': request.GET.get('tables', ''),
     })
 
 
@@ -1480,7 +1478,6 @@ def branch_orders_queue(request, slug):
     return render(request, 'dashboard/_orders_queue.html', {
         'orders': _orders_for(branch.orders.all(), status, table_ids, want_takeaway),
         'show_branch': False, 'status_filter': status, 'branch': branch,
-        'tables_param': request.GET.get('tables', ''),
     })
 
 

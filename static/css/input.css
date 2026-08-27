@@ -268,7 +268,6 @@ h1,h2,h3 { font-family: var(--hd); }
   .tcard .th { @apply flex items-center gap-2.5; font-weight: 800; font-size: 14px; color: var(--ink); }
   .tcard .pill { background: var(--bg); border: 1px solid var(--line-2); border-radius: 14px; padding: 1px 9px; font-size: 11px; color: var(--ink-2); font-weight: 700; }
   .tcard .pill.g { background: var(--green-soft); border-color: var(--green); color: var(--green); }
-  .tcard .chev { margin-left: auto; color: var(--ink-3); font-size: 16px; }
   /* Guest identity chip on the order card (avatar + name + phone). Only the
      redesigned flat queue uses `.who` now; the fuller rules live in the
      "Orders: order cards" block near the end of this layer. */
@@ -431,7 +430,8 @@ h1,h2,h3 { font-family: var(--hd); }
   .price-input { width: 92px; padding: 9px 12px; border: 1px solid var(--line); border-radius: 10px; font-family: var(--bd); font-size: 13px; color: var(--ink); background: #fff; outline: none; }
   .price-input:focus { outline: 2px solid var(--accent); border-color: transparent; }
   .price-dash { color: var(--ink-3); }
-  .filter-panel-foot { @apply flex justify-end; padding: 10px 0 8px; border-top: 1px solid var(--line); margin-top: 4px; }
+  .filter-panel-foot { @apply flex items-center justify-end gap-3; padding: 10px 0 8px; border-top: 1px solid var(--line); margin-top: 4px; }
+  .filter-panel-foot .clear-all { margin-right: auto; }
   .clear-all { font-size: 12px; font-weight: 800; color: var(--accent-deep); text-decoration: none; }
 
   .results-bar { @apply flex items-baseline justify-between; margin: 2px 2px 14px; }
@@ -521,7 +521,7 @@ h1,h2,h3 { font-family: var(--hd); }
   .sheet-backdrop { position: fixed; inset: 0; background: rgba(20,23,31,.5); z-index: 60; @apply flex justify-center; align-items: flex-end; }
   .sheet { background: #fff; border-radius: 18px 18px 0 0; padding: 18px 18px 30px; width: 100%; max-width: 520px; max-height: 85vh; overflow-y: auto; animation: sheet-up .22s cubic-bezier(.2,.8,.2,1); }
   @keyframes sheet-up { from { transform: translateY(40px); opacity: .6; } to { transform: none; opacity: 1; } }
-  .sheet-handle { width: 38px; height: 4px; border-radius: 2px; background: var(--line-2); margin: 0 auto 16px; }
+  .sheet-handle { display: block; width: 38px; height: 4px; padding: 0; border: none; border-radius: 2px; background: var(--line-2); margin: 0 auto 16px; cursor: pointer; }
   /* ≥900px: centred dialog instead of a bottom sheet — anchored to the bottom
      edge of a large monitor the sheet reads as fallen off the screen. Must stay
      AFTER the base rules above (same specificity; source order decides). */
@@ -942,11 +942,17 @@ h1,h2,h3 { font-family: var(--hd); }
     .orders-controls .table-filter {
       position: fixed; left: 0; right: 0; bottom: 0; z-index: 45;
       margin: 0; border-radius: 18px 18px 0 0;
-      max-height: 82vh; overflow-y: auto;
+      max-height: 82vh;
       padding: 16px 16px calc(20px + env(safe-area-inset-bottom));
       box-shadow: 0 -10px 40px rgba(16, 24, 40, .18);
       animation: sheet-up .22s cubic-bezier(.2, .8, .2, 1);
+      /* Scroll the LIST, not the sheet: scrolling the whole panel pushes the
+         footer — which holds the only Done button — out of reach at a venue
+         with enough tables to fill 82vh. */
+      display: flex; flex-direction: column; overflow: hidden;
     }
+    .orders-controls .table-filter .table-opts { flex: 1 1 auto; min-height: 0; overflow-y: auto; }
+    .orders-controls .table-filter .filter-panel-foot { flex: 0 0 auto; }
   }
   /* orders-actionbar-desktop-hide */
   @media (min-width: 900px) {

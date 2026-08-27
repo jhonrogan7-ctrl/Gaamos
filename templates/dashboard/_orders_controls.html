@@ -20,7 +20,9 @@ Must sit inside an x-data that exposes `filterOpen` (bool) and `tableQuery` (str
       <a href="{{ status_urls.new }}" class="{% if status_filter == 'new' %}on{% endif %}">New</a>
       <a href="{{ status_urls.served }}" class="{% if status_filter == 'served' %}on{% endif %}">Served</a>
     </div>
-    <button type="button" class="filters-btn" :class="{ 'open': filterOpen }" @click="filterOpen = !filterOpen">
+    {# .stop keeps this click off the document, so the panel's @click.outside
+       cannot close the sheet in the same tick this button opens it. #}
+    <button type="button" class="filters-btn" :class="{ 'open': filterOpen }" @click.stop="filterOpen = !filterOpen">
       <span>Filter by table</span>
       {% if active_filter_count %}<span class="filters-count">{{ active_filter_count }}</span>{% endif %}
     </button>

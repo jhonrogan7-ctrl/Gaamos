@@ -354,3 +354,45 @@ class TableGroupsPartialTest(TenantTestCase):
         self.login_as(manager)
         r = self.client.get(f'/dashboard/branch/{branch_b.slug}/orders/table-groups/')
         self.assertEqual(r.status_code, 403)
+
+
+class FilterSheetDismissTest(TenantTestCase):
+    """The filter panel is a bottom sheet on mobile, fixed over the queue AND
+    the nav, and it AUTO-OPENS whenever a filter is active. So it must always
+    carry a way out. The state that shipped broken was the one with NO filter
+    selected: the footer holding the only control was gated on
+    `active_filter_count`, leaving the sheet with nothing that closes it and a
+    page reload as the only escape."""
+
+    def setUp(self):
+        super().setUp()
+        U = get_user_model()
+        self.owner = U.objects.create_user("sheetboss", password="pass")
+        self.make_owner(self.owner)
+        self.branch = Branch.objects.create(company=self.company, name="Lake", slug="lake")
+        self.t4 = Table.objects.create(branch=self.branch, label="4")
+        GuestSession.objects.create(branch=self.branch, table=self.t4, token="sheet-g4", label="Guest A")
+        self.login_as(self.owner)
+
+    def test_sheet_has_a_close_control_with_no_filter_active(self):
+        b = self.client.get("/dashboard/orders/").content.decode()
+        self.assertEqual(self.client.get("/dashboard/orders/").context["active_filter_count"], 0)
+        self.assertIn("filter-done", b)          # the Done button, ungated
+        self.assertIn("filterOpen = false", b)   # it actually closes the sheet
+
+    def test_sheet_has_a_close_control_with_a_filter_active(self):
+        b = self.client.get(f"/dashboard/orders/?tables={self.t4.pk}").content.decode()
+        self.assertIn("filter-done", b)
+        self.assertIn("Clear table filter", b)   # Clear returns only when relevant
+
+    def test_grip_and_outside_tap_also_dismiss(self):
+        b = self.client.get("/dashboard/orders/").content.decode()
+        self.assertIn('class="sheet-handle"', b)
+        self.assertIn("Close table filter", b)   # the grip is a real button
+        self.assertIn("@click.outside", b)
+
+    def test_toggle_button_stops_propagation(self):
+        # Without .stop the panel's @click.outside fires on the same click that
+        # opens the sheet, so it can never be opened from the button.
+        b = self.client.get("/dashboard/orders/").content.decode()
+        self.assertIn("@click.stop", b)

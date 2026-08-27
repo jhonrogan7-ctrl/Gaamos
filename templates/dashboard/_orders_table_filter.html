@@ -11,14 +11,20 @@ Expects:
 
 Rendered inside an x-data that exposes `filterOpen` (bool) and `tableQuery`
 (str). Alpine only shows/hides rows client-side as you type; the filter itself
-is applied server-side by following a row's toggle_url. On mobile the CSS task
-presents `.table-filter` as a `.sheet`; the markup carries the `.sheet-handle`
-hook now so no re-templating is needed then.
+is applied server-side by following a row's toggle_url. On mobile `.table-filter`
+becomes a bottom sheet fixed over the queue and the nav.
+
+Because it is a sheet — and because it AUTO-OPENS whenever a filter is active —
+it must always carry a way out. Three of them: the grip, the Done button, and a
+tap outside. The footer is therefore never gated on `active_filter_count`; with
+no filter selected the Clear link is meaningless but Done is the only escape.
 {% endcomment %}
 <div class="filter-panel table-filter" x-show="filterOpen" x-cloak
+     @click.outside="filterOpen = false"
      x-transition:enter="fp-enter" x-transition:enter-start="fp-enter-start"
      x-transition:enter-end="fp-enter-end">
-  <div class="sheet-handle"></div>
+  <button type="button" class="sheet-handle" @click="filterOpen = false"
+          aria-label="Close table filter"></button>
   <div class="search-bar">
     <span>🔍</span>
     <input type="text" x-model="tableQuery" placeholder="Search table…" autocomplete="off">
@@ -49,9 +55,10 @@ hook now so no re-templating is needed then.
     {% endif %}
   </div>
 
-  {% if active_filter_count %}
   <div class="filter-panel-foot">
+    {% if active_filter_count %}
     <a class="clear-all" href="{{ clear_filter_url }}">✕ Clear table filter</a>
+    {% endif %}
+    <button type="button" class="btn ghost btn-sm filter-done" @click="filterOpen = false">Done</button>
   </div>
-  {% endif %}
 </div>
