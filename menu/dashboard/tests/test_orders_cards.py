@@ -5,8 +5,9 @@ from django.template import Context, Template
 from django.test import SimpleTestCase
 from django.utils import timezone
 
-from menu.models import Branch, Order, OrderItem, GuestSession, Table
+from menu.models import Branch, Company, Order, OrderItem, GuestSession, Table
 from menu.dashboard.views import _table_card_groups
+from menu.tenancy import set_current_company, reset_current_company
 from menu.tests.base import TenantTestCase
 
 
@@ -221,3 +222,23 @@ class TableGroupsPartialTest(TenantTestCase):
         self.client.logout()
         r = self.client.get("/dashboard/orders/table-groups/")
         self.assertIn(r.status_code, (302, 403))
+
+    def test_branch_partial_forbidden_other_company(self):
+        """Branch from a different company must not be reachable."""
+        other = Company.objects.create(name='Other', slug='other')
+        tok = set_current_company(other)
+        try:
+            fbranch = Branch.objects.create(company=other, name='Far', slug='far')
+        finally:
+            reset_current_company(tok)
+        r = self.client.get(f'/dashboard/branch/{fbranch.slug}/orders/table-groups/')
+        # Foreign branch is outside our tenant scope → 404 (hidden)
+        self.assertEqual(r.status_code, 404)
+
+    def test_branch_partial_allowed_for_owner(self):
+        """Owner can access their own branch's table-groups partial."""
+        r = self.client.get(f'/dashboard/branch/{self.branch.slug}/orders/table-groups/')
+        self.assertEqual(r.status_code, 200)
+        body = r.content.decode()
+        self.assertIn("Table 4", body)
+        self.assertNotIn("<aside class=\"side\"", body)  # fragment, not full page

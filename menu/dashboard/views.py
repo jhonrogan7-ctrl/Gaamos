@@ -297,11 +297,7 @@ def orders(request):
         'takeaway_toggle_url': _toggle_takeaway_url(request),
     }
     if group == 'table':
-        cards, takeaway = _table_card_groups(branches)
-        if table_ids or want_takeaway:
-            cards = [c for c in cards if c['table'].pk in table_ids]
-            if not want_takeaway:
-                takeaway = None
+        cards, takeaway = _filtered_table_groups(branches, table_ids, want_takeaway)
         context['table_cards'], context['takeaway_card'] = cards, takeaway
     else:
         context['orders'] = _orders_for(
@@ -1159,6 +1155,19 @@ def _table_card_groups(branches):
     return cards, takeaway
 
 
+def _filtered_table_groups(branches, table_ids, want_takeaway):
+    """`_table_card_groups` narrowed to the current ?tables= selection.
+    With no selection active, everything is returned unchanged — the
+    takeaway card is only dropped when a filter IS active and does not
+    include the takeaway token."""
+    cards, takeaway = _table_card_groups(branches)
+    if table_ids or want_takeaway:
+        cards = [c for c in cards if c["table"].pk in table_ids]
+        if not want_takeaway:
+            takeaway = None
+    return cards, takeaway
+
+
 def _takeaway_sessions(branches):
     """Open guest sessions with no table (Takeaway), oldest first — the same
     filter _table_card_groups uses for its Takeaway card, since table_sessions
@@ -1432,11 +1441,7 @@ def orders_table_groups(request):
     """Partial-render endpoint for by-table card groups. Honours ?tables= only."""
     branches = visible_branches(request)
     table_ids, want_takeaway = _parse_table_filter(request)
-    cards, takeaway = _table_card_groups(branches)
-    if table_ids or want_takeaway:
-        cards = [c for c in cards if c["table"].pk in table_ids]
-        if not want_takeaway:
-            takeaway = None
+    cards, takeaway = _filtered_table_groups(branches, table_ids, want_takeaway)
     return render(request, "dashboard/_orders_table_groups.html", {
         "table_cards": cards, "takeaway_card": takeaway,
     })
@@ -1449,11 +1454,7 @@ def branch_orders_table_groups(request, slug):
     if not ensure_can_manage_branch(request, branch):
         return forbidden(request)
     table_ids, want_takeaway = _parse_table_filter(request)
-    cards, takeaway = _table_card_groups([branch])
-    if table_ids or want_takeaway:
-        cards = [c for c in cards if c["table"].pk in table_ids]
-        if not want_takeaway:
-            takeaway = None
+    cards, takeaway = _filtered_table_groups([branch], table_ids, want_takeaway)
     return render(request, "dashboard/_orders_table_groups.html", {
         "table_cards": cards, "takeaway_card": takeaway,
     })
