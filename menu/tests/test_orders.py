@@ -117,6 +117,39 @@ class OrdersQueueTest(TenantTestCase):
         self.assertIn(f'#{self.order.number}', body)
         self.assertNotIn(f'#{served.number}', body)
 
+    def test_queue_shows_a_line_note(self):
+        OrderItem.objects.create(order=self.order, name='Momo', unit_price=180, qty=1,
+                                 note='No chili please')
+        body = self.client.get(
+            f'/dashboard/branch/{self.branch.slug}/orders/queue/').content.decode()
+        self.assertIn('No chili please', body)
+
+    def test_queue_escapes_a_note(self):
+        OrderItem.objects.create(order=self.order, name='Momo', unit_price=180, qty=1,
+                                 note='<script>alert(1)</script>')
+        body = self.client.get(
+            f'/dashboard/branch/{self.branch.slug}/orders/queue/').content.decode()
+        self.assertNotIn('<script>alert(1)</script>', body)
+        self.assertIn('&lt;script&gt;', body)
+
+    def test_queue_marks_the_dish_a_note_belongs_to(self):
+        # Two lines, one note: staff must see WHICH dish the note is about, so
+        # the note is rendered with its own item's name, not loose on the order.
+        OrderItem.objects.create(order=self.order, name='Momo', unit_price=180, qty=3,
+                                 note='No chili please')
+        body = self.client.get(
+            f'/dashboard/branch/{self.branch.slug}/orders/queue/').content.decode()
+        note_at = body.index('No chili please')
+        window = body[max(0, note_at - 260):note_at]
+        self.assertIn('Momo', window)
+        self.assertNotIn('Latte', window.rsplit('Momo', 1)[1])
+
+    def test_queue_renders_no_note_markup_for_a_plain_order(self):
+        # self.order's only line (Latte) carries no note.
+        body = self.client.get(
+            f'/dashboard/branch/{self.branch.slug}/orders/queue/').content.decode()
+        self.assertNotIn('oc-note', body)
+
     def test_serve_action_marks_served(self):
         self.client.post(f'/dashboard/order/{self.order.pk}/serve/')
         self.order.refresh_from_db()

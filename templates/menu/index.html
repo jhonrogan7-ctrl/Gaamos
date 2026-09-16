@@ -1,6 +1,8 @@
 {% extends "menu/_base.html" %}
-{% load static %}
+{% load static i18n %}
 {% block content %}
+{% translate "Edit" as note_edit_label %}
+{% translate "Add note" as note_add_label %}
 {{ payload|json_script:"menu-data" }}
 
 {% if ad %}
@@ -70,15 +72,25 @@
         </div>
         <p class="desc" x-text="selectedDish.description"></p>
 
-        <!-- Quantity (tracks & edits the bag directly) -->
+        <!-- Quantity (tracks & edits the bag directly — the line for this note) -->
         <div class="qty-bar">
           <span class="lbl">Quantity</span>
           <div class="ctrl">
-            <button class="btn" @click="quickRemove(selectedDish.id)"
-                    :disabled="cartQtyOf(selectedDish.id) === 0">−</button>
-            <span class="n" x-text="cartQtyOf(selectedDish.id)"></span>
-            <button class="btn" @click="quickAdd(selectedDish.id)">+</button>
+            <button class="btn" @click="quickRemove(selectedDish.id, dishNote)"
+                    :disabled="lineQtyOf(selectedDish.id, dishNote) === 0">−</button>
+            <span class="n" x-text="lineQtyOf(selectedDish.id, dishNote)"></span>
+            <button class="btn" @click="quickAdd(selectedDish.id, dishNote)">+</button>
           </div>
+        </div>
+
+        <!-- Special instructions for this line (J-01) -->
+        <div class="note-bar">
+          <label class="lbl" for="dish-note">{% translate "Special instructions" %}</label>
+          <p class="note-hint">{% translate "Tell the kitchen how you want it made. Optional." %}</p>
+          <input id="dish-note" class="note-in" type="text" maxlength="200"
+                 x-model="dishNote"
+                 placeholder="{% translate 'e.g. No chili, extra spicy…' %}">
+          <div class="note-count" x-text="dishNote.length + ' / 200'"></div>
         </div>
       </div>
 
@@ -131,7 +143,7 @@
             </div>
 
             <!-- Cart items -->
-            <template x-for="(item, idx) in cart" :key="item.id">
+            <template x-for="(item, idx) in cart" :key="lineKey(item)">
               <div class="citem">
                 <template x-if="item.image_url"><div class="img" x-lazy-bg="item.image_url"></div></template>
                 <template x-if="!item.image_url"><div class="img k-monogram"><span x-html="icon('dish')"></span></div></template>
@@ -145,6 +157,25 @@
                     </div>
                     <span class="pr" x-text="'Rs ' + (item.price * item.qty)"></span>
                   </div>
+
+                  <!-- The guest's own words for this line (J-01) -->
+                  <template x-if="editingNote !== idx">
+                    <div class="cnote" :class="{ 'is-empty': !item.note }">
+                      <span class="cnote-text" x-show="item.note" x-text="item.note"></span>
+                      <button type="button" class="cnote-edit" @click="startEditNote(idx)"
+                              x-text="item.note ? '{{ note_edit_label }}' : '{{ note_add_label }}'"></button>
+                    </div>
+                  </template>
+                  <template x-if="editingNote === idx">
+                    <div class="cnote is-editing">
+                      <input class="note-in" type="text" maxlength="200" x-model="noteDraft"
+                             x-init="$nextTick(() => $el.focus())"
+                             @keydown.enter="commitEditNote()"
+                             @keydown.escape="editingNote = -1"
+                             placeholder="{% translate 'e.g. No chili, extra spicy…' %}">
+                      <button type="button" class="cnote-edit" @click="commitEditNote()">{% translate "Save" %}</button>
+                    </div>
+                  </template>
                 </div>
               </div>
             </template>
