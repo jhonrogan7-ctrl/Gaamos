@@ -152,11 +152,24 @@ def _queue_order_push(order_id):
         logger.exception('could not queue order push for order=%s', order_id)
 
 
+def _clean_note(raw):
+    """A guest note as it may be stored: text only, collapsed, length-capped.
+
+    Anything that is not a string (absent, null, a number, a nested object) is
+    no note. The cap is applied here rather than left to the column, where an
+    overlong note from a hand-rolled client would fail the whole order.
+    """
+    if not isinstance(raw, str):
+        return ''
+    return ' '.join(raw.split())[:OrderItem.NOTE_MAX]
+
+
 @require_POST
 def place_order(request):
     """Create a real Order for the active tenant. Body:
-    {branch:<slug>, table:<code?>, items:[{id,qty}]}. Branch/table/items are
-    resolved only within request.company (fail-closed). Still bumps order_count.
+    {branch:<slug>, table:<code?>, items:[{id,qty,note?}]}. Branch/table/items
+    are resolved only within request.company (fail-closed). Still bumps
+    order_count.
     """
     try:
         body = json.loads(request.body or '{}')
@@ -190,7 +203,7 @@ def place_order(request):
         item = MenuItem.objects.filter(pk=item_id).first()
         if item is None:
             continue
-        lines.append((item, qty))
+        lines.append((item, qty, _clean_note(entry.get('note'))))
         total += item.price * qty
 
     if not lines:
@@ -201,9 +214,10 @@ def place_order(request):
         table_label=table.label if table else '',
         total=total,
     )
-    for item, qty in lines:
+    for item, qty, note in lines:
         OrderItem.objects.create(order=order, menu_item=item,
-                                 name=item.name, unit_price=item.price, qty=qty)
+                                 name=item.name, unit_price=item.price, qty=qty,
+                                 note=note)
         MenuItem.objects.filter(pk=item.pk).update(order_count=F('order_count') + qty)
 
     _queue_order_push(order.pk)

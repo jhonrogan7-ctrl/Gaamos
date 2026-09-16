@@ -1,3 +1,4 @@
+{% load i18n %}
 {% comment %}Order queue rows. Expects: orders, show_branch (bool), status_filter.{% endcomment %}
 <div class="table-scroll">
 <table class="tbl">
@@ -13,7 +14,12 @@
       <td class="ono">#{{ o.number }}</td>
       {% if show_branch %}<td>{{ o.branch.name }}</td>{% endif %}
       <td>{% if o.table_label %}<span class="tablechip">Table {{ o.table_label }}</span>{% else %}<span class="tablechip">Takeaway</span>{% endif %}</td>
-      <td>{% for i in o.items.all %}{{ i.name }} ×{{ i.qty }}{% if not forloop.last %}, {% endif %}{% endfor %}</td>
+      <td>
+        {% for i in o.items.all %}{{ i.name }} ×{{ i.qty }}{% if not forloop.last %}, {% endif %}{% endfor %}
+        {% for i in o.items.all %}{% if i.note %}
+        <div class="oc-note"><b>{% translate "Note" %}</b> {{ i.name }} ×{{ i.qty }} — {{ i.note }}</div>
+        {% endif %}{% endfor %}
+      </td>
       <td class="ono">Rs {{ o.total }}</td>
       <td>{{ o.created_at|timesince }} ago</td>
       <td><span class="status {% if o.status == 'served' %}done{% else %}new{% endif %}">{{ o.get_status_display }}</span></td>

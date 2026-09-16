@@ -527,3 +527,14 @@ msgstr "मासिक बिलिङ"
 msgid ""
 "Every plan includes the branded guest menu, QR generation, and live orders."
 msgstr "हरेक योजनामा ब्रान्डेड गेस्ट मेनु, QR निर्माण र लाइभ अर्डर समावेश छ।"
+
+#. Guest-facing wording supplied by Janak (2026-09-16). The remaining J-01
+#. strings (Edit / Add note / Save / the hint) are still awaiting Nepali and
+#. fall back to English until then.
+#: templates/menu/index.html
+msgid "Special instructions"
+msgstr "विशेष अनुरोध"
+
+#: templates/menu/index.html
+msgid "e.g. No chili, extra spicy…"
+msgstr "जस्तै: पिरो नहाल्नुहोस्, धेरै पिरो…"

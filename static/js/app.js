@@ -95,9 +95,12 @@ document.addEventListener('alpine:init', () => {
     // ── Detail screen state ───────────────────────────
     selectedDishId: null,
     qty: 1,
+    dishNote: '',        // special instructions being typed for this dish
 
     // ── Cart / order ──────────────────────────────────
     cart: [],
+    editingNote: -1,     // cart line whose note is open for editing (-1 = none)
+    noteDraft: '',
     placing: false,
     toast: '',
     orders: [],          // placed orders, persisted on this device (newest first)
@@ -124,6 +127,8 @@ document.addEventListener('alpine:init', () => {
       const saved = localStorage.getItem('jc_cart');
       if (saved) {
         try { this.cart = JSON.parse(saved); } catch (e) { this.cart = []; }
+        // A cart saved before notes existed has no note on its lines.
+        this.cart.forEach(c => { c.note = this.noteKey(c.note); });
       }
       const savedOrders = localStorage.getItem('jc_orders');
       if (savedOrders) {
@@ -288,29 +293,71 @@ document.addEventListener('alpine:init', () => {
       }
       this.selectedDishId  = id;
       this.qty             = 1;
+      this.dishNote        = '';
       this.screen          = 'detail';
     },
     addToCart() {
       if (!this.selectedDish) return;
-      this.addQty(this.selectedDish.id, this.qty);
+      this.addQty(this.selectedDish.id, this.qty, this.dishNote);
       this.screen = 'menu';
     },
-    quickAdd(dishId) { this.addQty(dishId, 1); },
-    addQty(dishId, n) {
+    quickAdd(dishId, note) { this.addQty(dishId, 1, note); },
+    // A line is identified by its dish AND its note: the same dish asked for two
+    // ways is two lines, because the kitchen makes them differently.
+    noteKey(note) {
+      return String(note == null ? '' : note).split(/\s+/).join(' ').trim().slice(0, 200);
+    },
+    lineKey(line) { return line.id + '␟' + (line.note || ''); },
+    lineIndexOf(dishId, note) {
+      return this.cart.findIndex(c => c.id === String(dishId) && (c.note || '') === note);
+    },
+    addQty(dishId, n, note) {
       const dish = this.dishes.find(d => d.id === dishId);
       if (!dish) return;
-      const idx = this.cart.findIndex(c => c.id === String(dish.id));
+      const key = this.noteKey(note);
+      const idx = this.lineIndexOf(dish.id, key);
       if (idx >= 0) { this.cart[idx].qty += n; }
-      else { this.cart.push({ id: String(dish.id), name: dish.name, image_url: dish.image_url, qty: n, price: dish.price }); }
+      else { this.cart.push({ id: String(dish.id), name: dish.name, image_url: dish.image_url, qty: n, price: dish.price, note: key }); }
       this.saveCart();
     },
-    quickRemove(dishId) {
-      const idx = this.cart.findIndex(c => c.id === String(dishId));
+    quickRemove(dishId, note) {
+      const idx = this.lineIndexOf(dishId, this.noteKey(note));
       if (idx >= 0) this.updateCartQty(idx, -1);
     },
     cartQtyOf(dishId) {
-      const line = this.cart.find(c => c.id === String(dishId));
-      return line ? line.qty : 0;
+      // Every note-variant of this dish — what the dish screen's badge counts.
+      return this.cart.reduce((n, c) => (c.id === String(dishId) ? n + c.qty : n), 0);
+    },
+    lineQtyOf(dishId, note) {
+      const idx = this.lineIndexOf(dishId, this.noteKey(note));
+      return idx >= 0 ? this.cart[idx].qty : 0;
+    },
+    startEditNote(idx) {
+      this.editingNote = idx;
+      this.noteDraft   = (this.cart[idx] && this.cart[idx].note) || '';
+    },
+    commitEditNote() {
+      if (this.editingNote < 0) return;
+      this.setLineNote(this.editingNote, this.noteDraft);
+      this.editingNote = -1;
+      this.noteDraft   = '';
+    },
+    setLineNote(idx, note) {
+      const line = this.cart[idx];
+      if (!line) return;
+      const key = this.noteKey(note);
+      if ((line.note || '') === key) return;
+      // Editing a note into one another line of the same dish already has would
+      // leave two identical lines; fold them into one instead.
+      const twin = this.cart.findIndex(
+        (c, i) => i !== idx && c.id === line.id && (c.note || '') === key);
+      if (twin >= 0) {
+        this.cart[twin].qty += line.qty;
+        this.cart.splice(idx, 1);
+      } else {
+        line.note = key;
+      }
+      this.saveCart();
     },
     updateCartQty(idx, delta) {
       const next = this.cart[idx].qty + delta;
@@ -332,12 +379,12 @@ document.addEventListener('alpine:init', () => {
     placeOrder() {
       if (this.placing || this.cart.length === 0) return;
       this.placing = true;
-      const items = this.cart.map(c => ({ id: Number(c.id), qty: c.qty }));
+      const items = this.cart.map(c => ({ id: Number(c.id), qty: c.qty, note: c.note || '' }));
       // Snapshot the order for this device's record before clearing the cart.
       const record = {
         id: Date.now(),
         placed_at: new Date().toISOString(),
-        items: this.cart.map(c => ({ name: c.name, qty: c.qty, price: c.price, image_url: c.image_url })),
+        items: this.cart.map(c => ({ name: c.name, qty: c.qty, price: c.price, image_url: c.image_url, note: c.note || '' })),
         total: this.cartTotal(),
       };
       fetch('/api/order/', {

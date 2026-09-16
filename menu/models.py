@@ -314,11 +314,16 @@ class Order(TenantScopedModel):
 
 
 class OrderItem(models.Model):
+    NOTE_MAX = 200
+
     order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name='items')
     menu_item = models.ForeignKey(MenuItem, on_delete=models.SET_NULL, null=True, blank=True)
     name = models.CharField(max_length=120)       # snapshot
     unit_price = models.PositiveIntegerField()    # Rs snapshot
     qty = models.PositiveSmallIntegerField()
+    # Guest's own words for this line ("no chili"). Two lines of the same item
+    # with different notes are deliberately separate rows, not one merged row.
+    note = models.CharField(max_length=NOTE_MAX, blank=True)
 
     @property
     def line_total(self):

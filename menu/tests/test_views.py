@@ -4,7 +4,7 @@ from django.test import TestCase, override_settings
 from menu.tests.base import TenantTestCase
 from menu.models import (
     Branch, Category, Company, MenuItem, BranchMenuItem,
-    BranchCategory, BranchItemPlacement,
+    BranchCategory, BranchItemPlacement, Order, OrderItem,
 )
 
 
@@ -216,6 +216,70 @@ class PlaceOrderTest(TenantTestCase):
         self.assertEqual(resp.status_code, 400)
         self.item_a.refresh_from_db()
         self.assertEqual(self.item_a.order_count, 0)
+
+
+class OrderItemNoteTest(TenantTestCase):
+    """J-01: a guest's free-text special instructions, carried per order line."""
+
+    def setUp(self):
+        super().setUp()
+        self.branch = Branch.objects.create(company=self.company, name="Main", slug="main")
+        self.item = MenuItem.objects.create(name="Chicken Momo", slug="chicken-momo", price=180)
+
+    def order(self, items):
+        return self.client.post(
+            '/api/order/',
+            data=json.dumps({'branch': 'main', 'items': items}),
+            content_type='application/json',
+        )
+
+    def test_note_is_stored_on_the_order_line(self):
+        resp = self.order([{'id': self.item.id, 'qty': 2, 'note': 'No chili please'}])
+        self.assertEqual(resp.status_code, 200)
+        line = OrderItem.objects.get()
+        self.assertEqual(line.note, 'No chili please')
+
+    def test_an_order_without_a_note_stores_an_empty_note(self):
+        self.assertEqual(self.order([{'id': self.item.id, 'qty': 1}]).status_code, 200)
+        self.assertEqual(OrderItem.objects.get().note, '')
+
+    def test_a_blank_note_is_stored_as_no_note(self):
+        self.order([{'id': self.item.id, 'qty': 1, 'note': '   \n  '}])
+        self.assertEqual(OrderItem.objects.get().note, '')
+
+    def test_inner_whitespace_in_a_note_is_collapsed(self):
+        self.order([{'id': self.item.id, 'qty': 1, 'note': ' no   chili \n please '}])
+        self.assertEqual(OrderItem.objects.get().note, 'no chili please')
+
+    def test_an_overlong_note_is_capped_not_rejected(self):
+        resp = self.order([{'id': self.item.id, 'qty': 1, 'note': 'x' * 500}])
+        self.assertEqual(resp.status_code, 200)
+        self.assertEqual(len(OrderItem.objects.get().note), OrderItem.NOTE_MAX)
+
+    def test_a_note_that_is_not_text_is_ignored(self):
+        # A hand-rolled client could send anything; nothing here may 500.
+        for junk in ({'a': 1}, ['x'], 7, True, None):
+            OrderItem.objects.all().delete()
+            Order.objects.all().delete()
+            resp = self.order([{'id': self.item.id, 'qty': 1, 'note': junk}])
+            self.assertEqual(resp.status_code, 200, junk)
+            self.assertEqual(OrderItem.objects.get().note, '', junk)
+
+    def test_the_same_item_with_two_notes_stays_two_lines(self):
+        resp = self.order([
+            {'id': self.item.id, 'qty': 1, 'note': 'No chili please'},
+            {'id': self.item.id, 'qty': 2, 'note': 'Extra spicy'},
+        ])
+        self.assertEqual(resp.status_code, 200)
+        lines = OrderItem.objects.order_by('qty')
+        self.assertEqual([(l.qty, l.note) for l in lines],
+                         [(1, 'No chili please'), (2, 'Extra spicy')])
+
+    def test_a_note_never_reaches_the_page_as_markup(self):
+        payload = '<script>alert(1)</script>'
+        self.order([{'id': self.item.id, 'qty': 1, 'note': payload}])
+        # Stored verbatim — escaping is the template's job, not the model's.
+        self.assertEqual(OrderItem.objects.get().note, payload)
 
 
 @override_settings(BASE_DOMAIN='zxyn.online', ALLOWED_HOSTS=['.zxyn.online', 'testserver'])
