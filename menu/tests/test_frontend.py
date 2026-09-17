@@ -1,3 +1,4 @@
+import re
 from pathlib import Path
 from django.conf import settings
 from django.test import SimpleTestCase, override_settings
@@ -22,6 +23,18 @@ class CssComponentsTest(SimpleTestCase):
         css = self._css()
         for sel in ['.btn', '.panel', '.side', '.nav', '.tbl', '.stat', '.focal']:
             self.assertIn(sel, css, f'missing component class {sel}')
+
+    def test_order_note_wraps_without_collapsing_its_column(self):
+        # `overflow-wrap: anywhere` counts toward a box's min-content width, so
+        # inside a table it lets the browser shrink the column to a couple of
+        # characters — on a phone this produced a 72px-wide, 24-line note chip in
+        # a 1208px-tall row. `break-word` breaks long words without feeding the
+        # intrinsic size, which is what this chip needs.
+        css = self._css()
+        rule = re.search(r'[}{]\.oc-note\{([^}]*)\}', css)
+        self.assertIsNotNone(rule, 'missing .oc-note rule')
+        self.assertIn('overflow-wrap:break-word', rule.group(1).replace(' ', ''))
+        self.assertNotIn('anywhere', rule.group(1))
 
     def test_dashboard_shell_layout_present(self):
         # The .app grid places the sidebar in a fixed left column with main on the

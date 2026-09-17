@@ -254,9 +254,12 @@ h1,h2,h3 { font-family: var(--hd); }
   .tbl tr:last-child td { border-bottom: none; }
   .tbl tr:hover td { background: #fafbfd; }
 
-  /* A guest's special instructions on an order line (J-01) — staff must not
-     miss it, so it sits out of the item run rather than inside it. */
-  .oc-note { display: flex; gap: 7px; align-items: flex-start; margin-top: 7px; padding: 6px 9px; border-radius: 7px; background: var(--accent-soft); border-left: 3px solid var(--accent); font-size: 12px; line-height: 1.4; overflow-wrap: anywhere; }
+  /* A guest's special instructions on an order line (J-01).
+     `break-word`, never `anywhere`: `anywhere` counts toward a box's
+     min-content width, which let the orders table shrink the column to a
+     couple of characters — on a phone that produced a 72px-wide, 24-line note
+     in a 1208px-tall row. */
+  .oc-note { display: flex; gap: 7px; align-items: flex-start; margin-top: 7px; padding: 6px 9px; border-radius: 7px; background: var(--accent-soft); border-left: 3px solid var(--accent); font-size: 12px; line-height: 1.4; overflow-wrap: break-word; }
   .oc-note b { flex: none; font-size: 9.5px; letter-spacing: .09em; text-transform: uppercase; color: var(--accent-deep); padding-top: 2px; }
 
   .tablechip { @apply inline-flex items-center gap-1; font-size: 11px; font-weight: 800; color: var(--ink-2); background: var(--bg); border: 1px solid var(--line-2); border-radius: 8px; padding: 4px 9px; }
