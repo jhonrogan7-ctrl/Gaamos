@@ -46,6 +46,10 @@ class Company(models.Model):
 
     logo_url = models.CharField(max_length=200, blank=True)
 
+    IDENTITY_MODES = [('auto', 'Guest A/B/C'), ('name', 'Name'), ('phone', 'Phone + OTP'), ('room', 'Room number')]
+    identity_mode = models.CharField(max_length=8, choices=IDENTITY_MODES, default='auto')
+    identity_skippable = models.BooleanField(default=True)
+
     objects = models.Manager()   # plain — Company is the tenant root, not scoped
 
     def __str__(self):
@@ -280,6 +284,7 @@ class Order(TenantScopedModel):
     company = models.ForeignKey(Company, on_delete=models.CASCADE, related_name='orders')
     branch = models.ForeignKey(Branch, on_delete=models.CASCADE, related_name='orders')
     table = models.ForeignKey(Table, on_delete=models.SET_NULL, null=True, blank=True, related_name='orders')
+    guest_session = models.ForeignKey('GuestSession', on_delete=models.SET_NULL, null=True, blank=True, related_name='orders')
     table_label = models.CharField(max_length=40, blank=True)  # snapshot; "" => Takeaway
     number = models.PositiveIntegerField(default=0)
     status = models.CharField(max_length=12, choices=STATUS_CHOICES, default=STATUS_NEW)
@@ -331,6 +336,45 @@ class OrderItem(models.Model):
 
     def __str__(self):
         return f"{self.name} ×{self.qty}"
+
+
+class GuestSession(TenantScopedModel):
+    """A browser-scoped diner at a table. Not an account — anonymous-friendly,
+    carried by a cookie token. Groups a guest's repeat orders so the venue can
+    attribute orders and split bills. Closed at checkout (frees the table)."""
+    company = models.ForeignKey(Company, on_delete=models.CASCADE, related_name='guest_sessions')
+    branch = models.ForeignKey(Branch, on_delete=models.CASCADE, related_name='guest_sessions')
+    table = models.ForeignKey(Table, on_delete=models.SET_NULL, null=True, blank=True, related_name='guest_sessions')
+    token = models.CharField(max_length=64, unique=True, db_index=True)
+    label = models.CharField(max_length=40)            # auto "Guest A/B/C" within a table
+    name = models.CharField(max_length=80, blank=True)  # optional, guest-entered
+    contact = models.CharField(max_length=40, blank=True)  # phone or room no.
+    verified = models.BooleanField(default=False)       # phone confirmed via OTP
+    created_at = models.DateTimeField(auto_now_add=True)
+    closed_at = models.DateTimeField(null=True, blank=True)
+
+    class Meta(TenantScopedModel.Meta):
+        ordering = ['created_at']
+
+    @property
+    def display_name(self):
+        return self.name or self.label
+
+    def __str__(self):
+        return f"{self.display_name} @ {self.table_id or 'takeaway'}"
+
+
+class OtpChallenge(models.Model):
+    """A single issued one-time code for a GuestSession's phone verification.
+    Always queried via its session, so it does not need tenant scoping itself."""
+    session = models.ForeignKey(GuestSession, on_delete=models.CASCADE, related_name='otp_challenges')
+    phone = models.CharField(max_length=40)
+    code_hash = models.CharField(max_length=128)
+    expires_at = models.DateTimeField()
+    attempts = models.PositiveSmallIntegerField(default=0)
+
+    def __str__(self):
+        return f"OTP for {self.phone} @ session {self.session_id}"
 
 
 class PushSubscription(TenantScopedModel):

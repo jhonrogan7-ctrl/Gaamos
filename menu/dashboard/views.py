@@ -14,13 +14,14 @@ from django.conf import settings as django_settings
 from django.utils import timezone
 
 from django.db import models
-from django.db.models import Count, Sum
+from django.db.models import Count, Sum, Max, Q
 from django.db.models.functions import TruncDate
 from menu.models import (
     Company, Branch, Category, SubCategory, MenuItem, BranchMenuItem,
     BranchCategory, BranchSubCategory, BranchItemPlacement, Membership, Table, Order,
-    BranchAd, BranchVisit, OrderItem,
+    BranchAd, BranchVisit, OrderItem, GuestSession,
 )
+from menu.dashboard.billing import table_sessions, table_total, session_subtotal, session_lines
 from menu.permissions import (
     require_membership, require_owner, ensure_can_manage_branch, forbidden,
     visible_branches,
@@ -272,16 +273,55 @@ def overview(request):
     })
 
 
-@require_membership
-def orders(request):
+def _orders_shell_context(request, branches):
+    """Shared shell context for the orders queue — the all-branches page and the
+    per-branch tab render the same segment / table-filter / chip controls. Both
+    queue modes ('flat' + 'table') are resolved here so the template only picks
+    which panel to show. ``branches`` is the scope: every visible branch, or
+    ``[branch]`` for the per-branch tab."""
     status = request.GET.get('status', 'all')
-    return render(request, 'dashboard/orders.html', {
-        'active_tab': 'orders',
-        'orders': _orders_for(Order.objects.filter(branch__in=visible_branches(request)), status),
-        'show_branch': True, 'status_filter': status,
+    group = request.GET.get('group', 'flat')
+    if group not in ('flat', 'table'):
+        group = 'flat'
+    table_ids, want_takeaway = _parse_table_filter(request)
+    takeaway_available = GuestSession.objects.filter(
+        branch__in=branches, table__isnull=True, closed_at__isnull=True).exists()
+    context = {
+        'status_filter': status, 'group': group,
         # Empty when push isn't configured — the toggle then renders nothing.
         'vapid_public_key': django_settings.VAPID_PUBLIC_KEY,
-    })
+        'table_filter_options': _open_table_options(request, branches),
+        'selected_table_ids': table_ids,
+        'selected_takeaway': want_takeaway,
+        'takeaway_available': takeaway_available,
+        'active_filter_count': len(table_ids) + (1 if want_takeaway else 0),
+        'takeaway_toggle_url': _toggle_takeaway_url(request),
+        'clear_filter_url': _replace_params(request, tables=None),
+        'status_urls': {
+            'all': _replace_params(request, status=None),
+            'new': _replace_params(request, status='new'),
+            'served': _replace_params(request, status='served'),
+        },
+        'group_urls': {
+            'flat': _replace_params(request, group=None),
+            'table': _replace_params(request, group='table'),
+        },
+    }
+    return context, status, group, table_ids, want_takeaway
+
+
+@require_membership
+def orders(request):
+    branches = visible_branches(request)
+    context, status, group, table_ids, want_takeaway = _orders_shell_context(request, branches)
+    context.update({'active_tab': 'orders', 'show_branch': True})
+    if group == 'table':
+        cards, takeaway = _filtered_table_groups(branches, table_ids, want_takeaway)
+        context['table_cards'], context['takeaway_card'] = cards, takeaway
+    else:
+        context['orders'] = _orders_for(
+            Order.objects.filter(branch__in=branches), status, table_ids, want_takeaway)
+    return render(request, 'dashboard/orders.html', context)
 
 
 @require_membership
@@ -871,13 +911,18 @@ def branch_orders(request, slug):
     branch = get_object_or_404(Branch, slug=slug)
     if not ensure_can_manage_branch(request, branch):
         return forbidden(request)
-    status = request.GET.get('status', 'all')
-    return render(request, 'dashboard/branch/orders.html', {
+    branches = [branch]
+    context, status, group, table_ids, want_takeaway = _orders_shell_context(request, branches)
+    context.update({
         'active_tab': 'branches', 'branch_tab': 'orders', 'branch': branch,
-        'has_tables': branch.tables.exists(),
-        'orders': _orders_for(branch.orders.all(), status),
-        'show_branch': False, 'status_filter': status,
+        'has_tables': branch.tables.exists(), 'show_branch': False,
     })
+    if group == 'table':
+        cards, takeaway = _filtered_table_groups(branches, table_ids, want_takeaway)
+        context['table_cards'], context['takeaway_card'] = cards, takeaway
+    else:
+        context['orders'] = _orders_for(branch.orders.all(), status, table_ids, want_takeaway)
+    return render(request, 'dashboard/branch/orders.html', context)
 
 
 @require_membership
@@ -968,18 +1013,457 @@ def branch_theme_save(request, slug):
     return redirect('dashboard:branch_theme', slug=branch.slug)
 
 
-def _orders_for(qs, status):
-    qs = qs.select_related('branch', 'table').prefetch_related('items')
+# Postgres ``integer`` column ceiling — a ``?tables=`` token above this would
+# reach the DB as an out-of-range value (DataError), so it is dropped at parse
+# time exactly like non-numeric junk.
+_PG_INT_MAX = 2147483647
+
+
+def _parse_table_filter(request):
+    """Read ``?tables=`` — a comma-joined list of ``Table.pk`` ints plus the
+    literal token ``takeaway``. Junk tokens are ignored; an empty/absent param
+    means no filter, returned as ``([], False)``.
+
+    Hostile input never raises: ``str.isdigit()`` is True for exotic Unicode
+    digits (e.g. ``'²'``) that ``int()`` rejects, so tokens are also required to
+    be ASCII, and anything past the Postgres integer ceiling is discarded."""
+    raw = request.GET.get('tables', '')
+    tokens = [t.strip() for t in raw.split(',') if t.strip()]
+    want_takeaway = 'takeaway' in tokens
+    table_ids = []
+    for t in tokens:
+        if t.isascii() and t.isdigit():
+            val = int(t)
+            if 0 < val <= _PG_INT_MAX:
+                table_ids.append(val)
+    return table_ids, want_takeaway
+
+
+def _apply_table_filter(qs, table_ids, want_takeaway):
+    """Restrict an Order queryset to the selected tables and/or the tableless
+    (Takeaway) pool. No selection ⇒ queryset returned untouched."""
+    if not table_ids and not want_takeaway:
+        return qs
+    cond = Q()
+    if table_ids:
+        cond |= Q(table_id__in=table_ids)
+    if want_takeaway:
+        cond |= Q(table_id__isnull=True)
+    return qs.filter(cond)
+
+
+def _tables_url(request, table_ids, want_takeaway):
+    """A URL for the current page with ``?tables=`` set to this filter state and
+    every OTHER query param on the request preserved (so the by-table view and
+    the status filter survive a chip click). Sorted int ids then the literal
+    ``takeaway`` token, comma-joined; an empty token list drops ``tables``
+    entirely — a bare path when nothing else is set.
+
+    Built in Python because Django's ``{% querystring %}`` REPLACES a param and
+    cannot append to a comma list."""
+    tokens = [str(i) for i in sorted(table_ids)]
+    if want_takeaway:
+        tokens.append('takeaway')
+    params = request.GET.copy()
+    if tokens:
+        params['tables'] = ','.join(tokens)
+    else:
+        params.pop('tables', None)
+    query = params.urlencode(safe=',')
+    return f'{request.path}?{query}' if query else request.path
+
+
+def _replace_params(request, **changes):
+    """Current URL with the given single-value query params replaced (a value of
+    ``None`` drops that param) and every OTHER param on the request preserved.
+
+    The status segment and the flat/by-table toggle use this so switching one
+    never drops the table filter (or vice versa). Django's ``{% querystring %}``
+    can't stand in here: when the param it clears is the only one on the request
+    it renders an empty ``href=""`` — a dead "All" / "Flat list" link."""
+    params = request.GET.copy()
+    for key, value in changes.items():
+        if value is None:
+            params.pop(key, None)
+        else:
+            params[key] = value
+    query = params.urlencode(safe=',')
+    return f'{request.path}?{query}' if query else request.path
+
+
+def _toggle_table_url(request, pk):
+    """Current filter with this table's pk flipped in/out of ``?tables=``."""
+    table_ids, want_takeaway = _parse_table_filter(request)
+    ids = set(table_ids) ^ {pk}
+    return _tables_url(request, ids, want_takeaway)
+
+
+def _toggle_takeaway_url(request):
+    """Current filter with the ``takeaway`` token flipped, selected ids kept."""
+    table_ids, want_takeaway = _parse_table_filter(request)
+    return _tables_url(request, table_ids, not want_takeaway)
+
+
+def _open_table_options(request, branches):
+    """Open tables as filter rows, each with a toggle URL that adds or
+    removes that table from ?tables=."""
+    branches = list(branches)
+    selected, _ = _parse_table_filter(request)
+    selected = set(selected)
+    open_table_ids = (
+        GuestSession.objects
+        .filter(branch__in=branches, table__isnull=False, closed_at__isnull=True)
+        .values_list('table', flat=True).distinct()
+    )
+    tables = (
+        Table.objects.filter(pk__in=open_table_ids).select_related('branch')
+        .order_by('branch__name', 'display_order', 'created_at')
+    )
+    return [{
+        'table': t,
+        'guests': len(table_sessions(t.branch, t)),
+        'total': table_total(t.branch, t),
+        'selected': t.pk in selected,
+        'toggle_url': _toggle_table_url(request, t.pk),
+    } for t in tables]
+
+
+def _orders_for(qs, status, table_ids=None, want_takeaway=False):
+    qs = qs.select_related('branch', 'table', 'guest_session').prefetch_related('items')
     if status in (Order.STATUS_NEW, Order.STATUS_SERVED):
         qs = qs.filter(status=status)
+    qs = _apply_table_filter(qs, table_ids or [], want_takeaway)
     return list(qs)
+
+
+def _annotate_table_card(sessions):
+    """Shared card fields for a set of open GuestSessions (a table's, or
+    the takeaway pool's): status counts, guest names, lead contact, timing."""
+    session_ids = [s.pk for s in sessions]
+    orders = Order.objects.filter(guest_session_id__in=session_ids)
+    stats = orders.aggregate(
+        new_count=Count("pk", filter=Q(status=Order.STATUS_NEW)),
+        served_count=Count("pk", filter=Q(status=Order.STATUS_SERVED)),
+        last_order_at=Max("created_at"),
+    )
+    return {
+        "new_count": stats["new_count"],
+        "served_count": stats["served_count"],
+        "guest_names": [s.display_name for s in sessions],
+        "lead_contact": sessions[0].contact if sessions else "",
+        "opened_at": min((s.created_at for s in sessions), default=None),
+        "last_order_at": stats["last_order_at"],
+    }
+
+
+def _table_card_groups(branches):
+    """Group open guest sessions into per-table cards for the orders queue's
+    '?group=table' view (Task 3.2), plus a Takeaway card for sessions with no
+    table when at least one exists. Guest counts + running totals reuse the
+    Task 3.1 billing helpers (table_sessions / table_total).
+    """
+    branches = list(branches)
+    table_ids = (
+        GuestSession.objects
+        .filter(branch__in=branches, table__isnull=False, closed_at__isnull=True)
+        .values_list('table', flat=True).distinct()
+    )
+    tables = (
+        Table.objects.filter(pk__in=table_ids).select_related('branch')
+        .order_by('branch__name', 'display_order', 'created_at')
+    )
+    cards = []
+    for table in tables:
+        sessions = table_sessions(table.branch, table)
+        cards.append({
+            "table": table,
+            "branch": table.branch,
+            "guests": len(sessions),
+            "total": table_total(table.branch, table),
+            **_annotate_table_card(sessions),
+        })
+
+    takeaway_sessions = list(
+        GuestSession.objects
+        .filter(branch__in=branches, table__isnull=True, closed_at__isnull=True)
+        .order_by('created_at')
+    )
+    takeaway = None
+    if takeaway_sessions:
+        takeaway = {
+            "guests": len(takeaway_sessions),
+            "total": sum(session_subtotal(s) for s in takeaway_sessions),
+            **_annotate_table_card(takeaway_sessions),
+        }
+    return cards, takeaway
+
+
+def _filtered_table_groups(branches, table_ids, want_takeaway):
+    """`_table_card_groups` narrowed to the current ?tables= selection.
+    With no selection active, everything is returned unchanged — the
+    takeaway card is only dropped when a filter IS active and does not
+    include the takeaway token."""
+    cards, takeaway = _table_card_groups(branches)
+    if table_ids or want_takeaway:
+        cards = [c for c in cards if c["table"].pk in table_ids]
+        if not want_takeaway:
+            takeaway = None
+    return cards, takeaway
+
+
+def _takeaway_sessions(branches):
+    """Open guest sessions with no table (Takeaway), oldest first — the same
+    filter _table_card_groups uses for its Takeaway card, since table_sessions
+    (Task 3.1) takes a single branch+table and doesn't cover this case."""
+    return list(
+        GuestSession.objects
+        .filter(branch__in=branches, table__isnull=True, closed_at__isnull=True)
+        .order_by('created_at')
+    )
+
+
+def _bill_mode(request):
+    mode = request.GET.get('mode', 'split')
+    return mode if mode in ('split', 'combine') else 'split'
+
+
+def _merge_session_lines(sessions):
+    """Combine-mode display helper: merge every session's session_lines() into
+    one itemised list, summing qty/line_total for items that share a name
+    across guests. Presentation-only aggregation on top of the Task 3.1
+    helpers — table_total (not this) remains the source of truth for the total.
+    """
+    merged = {}
+    order = []
+    for session in sessions:
+        for name, qty, line_total in session_lines(session):
+            if name not in merged:
+                merged[name] = [0, 0]
+                order.append(name)
+            merged[name][0] += qty
+            merged[name][1] += line_total
+    return [(name, merged[name][0], merged[name][1]) for name in order]
+
+
+def _guest_rows(sessions):
+    return [{
+        'session': s,
+        'lines': session_lines(s),
+        'subtotal': session_subtotal(s),
+    } for s in sessions]
+
+
+@require_membership
+def orders_table(request, table_id):
+    """Task 3.3 / B2 — a table's open guest sessions with their items."""
+    table = get_object_or_404(Table, pk=table_id, branch__in=visible_branches(request))
+    sessions = table_sessions(table.branch, table)
+    guests = _guest_rows(sessions)
+    return render(request, 'dashboard/orders_table.html', {
+        'active_tab': 'orders',
+        'table': table,
+        'branch': table.branch,
+        'is_takeaway': False,
+        'guests': guests,
+        'table_total': sum(g["subtotal"] for g in guests),
+    })
+
+
+@require_membership
+def orders_table_takeaway(request):
+    """Task 3.3 / B2 — the Takeaway "table": open guest sessions with no table."""
+    sessions = _takeaway_sessions(visible_branches(request))
+    guests = _guest_rows(sessions)
+    return render(request, 'dashboard/orders_table.html', {
+        'active_tab': 'orders',
+        'table': None,
+        'branch': None,
+        'is_takeaway': True,
+        'guests': guests,
+        'table_total': sum(g["subtotal"] for g in guests),
+    })
+
+
+def _bill_context(request, table, sessions):
+    """Shared context for the Split/Combine bill preview. `close_url` posts to
+    Task 3.5's table_close/table_close_takeaway; `print_url` is Task 3.4's PDF
+    export. Both routes exist now — these are plain hrefs (not {% url %}) so
+    this page keeps working unchanged if either path is ever renamed."""
+    mode = _bill_mode(request)
+    table_path = f'table/{table.pk}' if table else 'table/takeaway'
+    close_url = f'/dashboard/orders/{table_path}/close/'
+    print_base_url = f'/dashboard/orders/{table_path}/bill/print/'
+    context = {
+        'active_tab': 'orders',
+        'table': table,
+        'branch': table.branch if table else None,
+        'is_takeaway': table is None,
+        'mode': mode,
+        'close_url': close_url,
+        'preview_url': print_base_url,
+    }
+    if mode == 'combine':
+        context['combined_lines'] = _merge_session_lines(sessions)
+        context['combined_total'] = (
+            table_total(table.branch, table) if table
+            else sum(session_subtotal(s) for s in sessions)
+        )
+    else:
+        guests = _guest_rows(sessions)
+        for row in guests:
+            row['print_url'] = f'{print_base_url}{row["session"].pk}/'
+        context['guests'] = guests
+    return context
+
+
+@require_membership
+def orders_table_bill(request, table_id):
+    """Task 3.3 / B3-B4 — Split/Combine bill preview for one table.
+
+    Non-POS boundary: this only computes and previews a summary. No payment,
+    no receipt storage, no order/session mutation happens here.
+    """
+    table = get_object_or_404(Table, pk=table_id, branch__in=visible_branches(request))
+    sessions = table_sessions(table.branch, table)
+    return render(request, 'dashboard/orders_bill.html', _bill_context(request, table, sessions))
+
+
+@require_membership
+def orders_table_bill_takeaway(request):
+    """Task 3.3 / B3-B4 — Split/Combine bill preview for Takeaway."""
+    sessions = _takeaway_sessions(visible_branches(request))
+    return render(request, 'dashboard/orders_bill.html', _bill_context(request, None, sessions))
+
+
+def _bill_pdf_context(table, sessions, mode, session_id=None):
+    """Pure (request-free) context builder for the bill-summary PDF template
+    (Task 3.4). Mirrors ``_bill_context``'s combine/split shapes so the PDF
+    matches the on-screen preview, plus a ``single_guest`` shape for printing
+    one guest's bill — Task 3.3's per-guest Print button links to
+    ``<print_base_url><session.pk>/`` (a path segment, not a query param; see
+    ``_bill_context``), so ``session_id`` here is resolved against this
+    table's/takeaway's own already-scoped ``sessions`` list. That list is
+    always produced by ``table_sessions``/``_takeaway_sessions``, which are
+    themselves filtered to ``visible_branches`` by the caller — so a session
+    id from another table or another company simply isn't in ``sessions``
+    and this returns None (the view turns that into a 404), keeping the
+    fail-closed tenancy boundary without a second lookup here.
+
+    Returns None when ``session_id`` doesn't match any session in scope.
+    """
+    context = {
+        'table': table,
+        'branch': table.branch if table else None,
+        'is_takeaway': table is None,
+    }
+    if session_id is not None:
+        session = next((s for s in sessions if s.pk == session_id), None)
+        if session is None:
+            return None
+        context['mode'] = 'split'
+        context['single_guest'] = True
+        context['guests'] = [{
+            'session': session,
+            'lines': session_lines(session),
+            'subtotal': session_subtotal(session),
+        }]
+        if table is None:
+            context['branch'] = session.branch
+        return context
+
+    context['mode'] = mode
+    context['single_guest'] = False
+    if mode == 'combine':
+        context['combined_lines'] = _merge_session_lines(sessions)
+        context['combined_total'] = (
+            table_total(table.branch, table) if table
+            else sum(session_subtotal(s) for s in sessions)
+        )
+    else:
+        context['guests'] = _guest_rows(sessions)
+    return context
+
+
+def _bill_pdf_response(request, table, sessions, session_id):
+    """Task 3.4 — render the bill-summary PDF and return it.
+
+    Non-POS boundary: this only renders and returns a PDF from the same
+    read-only billing helpers as the on-screen preview. No payment is taken,
+    nothing is mutated, and no receipt is stored anywhere.
+    """
+    from django.http import HttpResponse
+    from django.template.loader import render_to_string
+    from .utils import render_html_to_pdf
+
+    mode = _bill_mode(request)
+    context = _bill_pdf_context(table, sessions, mode, session_id)
+    if context is None:
+        raise Http404('Guest session not found for this table.')
+    context['venue_name'] = request.company.name
+    context['generated_at'] = timezone.now()
+
+    html = render_to_string('dashboard/bill_summary_pdf.html', context)
+    pdf = render_html_to_pdf(html)
+    resp = HttpResponse(pdf, content_type='application/pdf')
+    label = table.label if table else 'takeaway'
+    resp['Content-Disposition'] = f'inline; filename="bill-{label}.pdf"'
+    return resp
+
+
+@require_membership
+def orders_table_bill_pdf(request, table_id, session_id=None):
+    """Task 3.4 / B3-B4 print — read-only bill-summary PDF for one table."""
+    table = get_object_or_404(Table, pk=table_id, branch__in=visible_branches(request))
+    sessions = table_sessions(table.branch, table)
+    return _bill_pdf_response(request, table, sessions, session_id)
+
+
+@require_membership
+def orders_table_bill_pdf_takeaway(request, session_id=None):
+    """Task 3.4 print — read-only bill-summary PDF for Takeaway."""
+    sessions = _takeaway_sessions(visible_branches(request))
+    return _bill_pdf_response(request, None, sessions, session_id)
+
+
+def _close_sessions(sessions):
+    """Task 3.5 — close a table: sets closed_at on its open guest sessions.
+
+    Non-POS boundary: this only closes sessions (frees the table + resets the
+    label pool for the next guest). No payment, no receipt, and no Order row
+    is created, deleted, or mutated here.
+    """
+    ids = [s.pk for s in sessions]
+    if ids:
+        GuestSession.objects.filter(pk__in=ids).update(closed_at=timezone.now())
+
+
+@require_membership
+@require_POST
+def table_close(request, table_id):
+    """Task 3.5 / B4 — "Close table": ends every open guest session at this
+    table. Fail-closed: the table is resolved only within visible_branches,
+    so a foreign-company table 404s rather than leaking existence."""
+    table = get_object_or_404(Table, pk=table_id, branch__in=visible_branches(request))
+    _close_sessions(table_sessions(table.branch, table))
+    return redirect('dashboard:orders')
+
+
+@require_membership
+@require_POST
+def table_close_takeaway(request):
+    """Task 3.5 — "Close table" for the Takeaway group (table IS NULL)."""
+    _close_sessions(_takeaway_sessions(visible_branches(request)))
+    return redirect('dashboard:orders')
 
 
 @require_membership
 def orders_queue(request):
     status = request.GET.get('status', 'all')
+    table_ids, want_takeaway = _parse_table_filter(request)
     return render(request, 'dashboard/_orders_queue.html', {
-        'orders': _orders_for(Order.objects.filter(branch__in=visible_branches(request)), status),
+        'orders': _orders_for(
+            Order.objects.filter(branch__in=visible_branches(request)),
+            status, table_ids, want_takeaway),
         'show_branch': True, 'status_filter': status,
     })
 
@@ -990,21 +1474,47 @@ def branch_orders_queue(request, slug):
     if not ensure_can_manage_branch(request, branch):
         return forbidden(request)
     status = request.GET.get('status', 'all')
+    table_ids, want_takeaway = _parse_table_filter(request)
     return render(request, 'dashboard/_orders_queue.html', {
-        'orders': _orders_for(branch.orders.all(), status),
+        'orders': _orders_for(branch.orders.all(), status, table_ids, want_takeaway),
         'show_branch': False, 'status_filter': status, 'branch': branch,
+    })
+
+
+@require_membership
+def orders_table_groups(request):
+    """Partial-render endpoint for by-table card groups. Honours ?tables= only."""
+    branches = visible_branches(request)
+    table_ids, want_takeaway = _parse_table_filter(request)
+    cards, takeaway = _filtered_table_groups(branches, table_ids, want_takeaway)
+    return render(request, "dashboard/_orders_table_groups.html", {
+        "table_cards": cards, "takeaway_card": takeaway,
+    })
+
+
+@require_membership
+def branch_orders_table_groups(request, slug):
+    """Partial-render endpoint for by-table card groups on a specific branch. Honours ?tables= only."""
+    branch = get_object_or_404(Branch, slug=slug)
+    if not ensure_can_manage_branch(request, branch):
+        return forbidden(request)
+    table_ids, want_takeaway = _parse_table_filter(request)
+    cards, takeaway = _filtered_table_groups([branch], table_ids, want_takeaway)
+    return render(request, "dashboard/_orders_table_groups.html", {
+        "table_cards": cards, "takeaway_card": takeaway,
     })
 
 
 def orders_payload(company_id, branch_ids, after_id):
     """Sync, async-safe: explicit company filter (no contextvar reliance)."""
-    qs = Order.all_objects.filter(company_id=company_id, pk__gt=after_id)
+    qs = Order.all_objects.filter(company_id=company_id, pk__gt=after_id).select_related('guest_session')
     if branch_ids is not None:
         qs = qs.filter(branch_id__in=branch_ids)
     qs = qs.order_by('pk')
     events, max_id = [], after_id
     for o in qs:
-        events.append(f"data: #{o.number} {o.status}\n\n")
+        guest_label = o.guest_session.display_name if o.guest_session else '—'
+        events.append(f"data: #{o.number} {o.status} {guest_label}\n\n")
         max_id = o.pk
     return events, max_id
 

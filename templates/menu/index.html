@@ -133,6 +133,10 @@
       <!-- Cart body -->
       <div class="cart">
 
+        {% if restaurant.identity_mode != 'auto' %}
+          {% include 'menu/_identity_badge.html' %}
+        {% endif %}
+
         <!-- Current order being built -->
         <template x-if="cart.length > 0">
           <div>
@@ -236,7 +240,7 @@
 
       <!-- Sticky CTA (only while building an order) -->
       <div class="sticky-cta" x-show="cart.length > 0">
-        <button class="cta" @click="placeOrder()" :disabled="cart.length === 0 || placing">
+        <button class="cta" @click="attemptPlaceOrder()" :disabled="cart.length === 0 || placing">
           <span x-text="placing ? 'Placing…' : 'Place Order'"></span>
           <span class="pr" x-text="'Rs ' + cartTotal()"></span>
         </button>
@@ -245,6 +249,33 @@
     </div>
   </template>
   <!-- END SCREEN 3 -->
+
+  {% if restaurant.identity_mode != 'auto' %}
+  <!-- ═══════════════════════════════════════════════
+       SCREEN 5 — IDENTITY (first order only, Task 2.4)
+  ══════════════════════════════════════════════════ -->
+  <template x-if="screen === 'identity'">
+    <div style="display:flex;flex-direction:column;flex:1;min-height:0;overflow:hidden;position:relative;">
+
+      <!-- Sub-screen header -->
+      <div class="sub-h">
+        <button class="icon-btn" @click="screen = 'cart'" style="border:none;background:transparent;padding:0;">
+          <span x-html="icon('back')"></span>
+        </button>
+        <h2>Who's ordering?</h2>
+      </div>
+
+      <div class="cart">
+        {% include 'menu/_identity_step.html' %}
+        {% if restaurant.identity_mode == 'phone' %}
+          {% include 'menu/_otp_step.html' %}
+        {% endif %}
+      </div>
+
+    </div>
+  </template>
+  {% endif %}
+  <!-- END SCREEN 5 -->
 
   <!-- ═══════════════════════════════════════════════
        SCREEN 4 — ORDER PLACED (F11/F12)

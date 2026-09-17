@@ -1,12 +1,16 @@
 import json
 import logging
 
+from django.conf import settings
+from django.core.cache import cache
 from django.db.models import F
-from django.http import JsonResponse
+from django.http import HttpResponse, JsonResponse
 from django.shortcuts import redirect, render
 from django.views.decorators.csrf import ensure_csrf_cookie
 from django.views.decorators.http import require_POST
-from .models import Branch, BranchAd, BranchVisit, Category, BranchItemPlacement, BranchMenuItem, MenuItem, Table, Order, OrderItem, Company
+from .guest_sessions import COOKIE, attach_cookie, get_or_create_session
+from .models import Branch, BranchAd, BranchVisit, Category, BranchItemPlacement, BranchMenuItem, GuestSession, MenuItem, Table, Order, OrderItem, Company
+from .otp import issue_code, verify_code
 from .socials import social_link
 from .themes import DEFAULT_THEME, THEMES
 
@@ -117,6 +121,10 @@ def menu(request):
             'instagram': social_link('instagram', restaurant.instagram) if restaurant else None,
             'facebook': social_link('facebook', restaurant.facebook) if restaurant else None,
             'tiktok': social_link('tiktok', restaurant.tiktok) if restaurant else None,
+            # Task 2.4: drives the client-side identity/OTP step gating —
+            # mirrors the server-side conditional in index.html below.
+            'identity_mode': restaurant.identity_mode if restaurant else 'auto',
+            'identity_skippable': restaurant.identity_skippable if restaurant else True,
         },
         'branches': branches,
         'branch': {
@@ -135,7 +143,7 @@ def menu(request):
         BranchVisit.objects.create(branch=branch)
 
     return render(request, 'menu/index.html',
-                  {'payload': payload, 'ad': ad, 'theme': theme})
+                  {'payload': payload, 'ad': ad, 'theme': theme, 'restaurant': restaurant})
 
 
 def _queue_order_push(order_id):
@@ -190,6 +198,8 @@ def place_order(request):
     if body.get('table'):
         table = Table.objects.filter(code=body['table'], branch=branch).first()
 
+    gs, token, _ = get_or_create_session(request, branch, table)
+
     lines, total = [], 0
     for entry in raw_items:
         try:
@@ -212,7 +222,7 @@ def place_order(request):
     order = Order.objects.create(
         branch=branch, table=table,
         table_label=table.label if table else '',
-        total=total,
+        total=total, guest_session=gs,
     )
     for item, qty, note in lines:
         OrderItem.objects.create(order=order, menu_item=item,
@@ -221,7 +231,161 @@ def place_order(request):
         MenuItem.objects.filter(pk=item.pk).update(order_count=F('order_count') + qty)
 
     _queue_order_push(order.pk)
-    return JsonResponse({'ok': True, 'number': order.number})
+    resp = JsonResponse({'ok': True, 'number': order.number})
+    return attach_cookie(resp, token)
+
+
+def _resolve_active_session(request):
+    """The active GuestSession for this browser, or None.
+
+    Mirrors the cookie contract from menu/guest_sessions.py without going
+    through get_or_create_session: a missing/invalid/stale cookie means there
+    is no existing session to resolve. otp_verify/otp_resend treat that as a
+    client error (nothing to verify against). identity_submit is the one
+    exception (fix round 1, 2026-08-26): on a None here, it creates a fresh
+    session itself via get_or_create_session, so a guest's true first visit
+    — before place_order has ever run — still has somewhere to attach a
+    name/phone/OTP.
+
+    menu/urls.py is mounted globally, so this can be reached on an apex/
+    reserved/unknown host where TenantMiddleware sets request.company = None.
+    GuestSession.objects is the fail-closed TenantManager: querying it with no
+    company in context raises TenantContextRequired rather than returning no
+    rows. Guarding on request.company here — before the query — turns that
+    into the same 400 the caller already gets for a missing/invalid cookie,
+    never an uncaught 500."""
+    if getattr(request, 'company', None) is None:
+        return None
+    token = request.COOKIES.get(COOKIE, '')
+    if not token:
+        return None
+    return GuestSession.objects.filter(token=token, closed_at__isnull=True).first()
+
+
+def _queue_otp_sms(phone, code):
+    """Hand the OTP text to the worker for delivery. Swallows everything, same
+    as _queue_order_push above: the code was already written to the DB by
+    issue_code() before this is called, so a dead broker costs the guest an
+    SMS, never the ability to be verified."""
+    try:
+        from .tasks import send_otp_sms
+        send_otp_sms.delay(phone, code)
+    except Exception:                                    # noqa: BLE001
+        logger.exception('could not queue otp sms for phone=%s', phone)
+
+
+@require_POST
+def identity_submit(request):
+    """Guest identity capture. Body: {name, phone?, branch?, table?}. Branches
+    on request.company.identity_mode: name/room/auto save straight to the
+    session (no OTP); phone issues a code and enqueues its SMS.
+
+    Fix round 1 (2026-08-26): on a guest's true first visit there is no
+    gaamos_gs cookie yet — historically only place_order created one, so the
+    identity step shown *before* the first order had nothing to attach to
+    and this endpoint 400'd. Now, when _resolve_active_session finds no
+    existing session (cookie missing, or stale/invalid), this creates one
+    itself the same way place_order does: resolve branch/table from the
+    body, then get_or_create_session + attach_cookie on the response.
+    otp_verify/otp_resend are unchanged — by the time they run, this has
+    already created the session and set the cookie.
+
+    The request.company is-None guard stays first and short-circuits before
+    any GuestSession query, exactly as before (apex/reserved/unknown host →
+    400, never a TenantContextRequired 500)."""
+    if getattr(request, 'company', None) is None:
+        return JsonResponse({'error': 'no active session'}, status=400)
+
+    try:
+        body = json.loads(request.body or '{}')
+    except (json.JSONDecodeError, TypeError):
+        return JsonResponse({'error': 'invalid body'}, status=400)
+
+    gs = _resolve_active_session(request)
+    new_token = None
+    if gs is None:
+        branch = Branch.objects.filter(slug=body.get('branch', '')).first()
+        if branch is None:
+            branch = Branch.objects.first()
+        if branch is None:
+            return JsonResponse({'error': 'no active session'}, status=400)
+        table = None
+        if body.get('table'):
+            table = Table.objects.filter(code=body['table'], branch=branch).first()
+        gs, new_token, _ = get_or_create_session(request, branch, table)
+
+    name = (body.get('name') or '').strip()
+    phone = (body.get('phone') or '').strip()
+    mode = request.company.identity_mode
+
+    if mode == 'phone':
+        if not phone:
+            return JsonResponse({'error': 'phone required'}, status=400)
+        if name:
+            gs.name = name
+            gs.save(update_fields=['name'])
+        code = issue_code(gs, phone)
+        _queue_otp_sms(phone, code)
+        resp = JsonResponse({'ok': True, 'otp': True})
+        return attach_cookie(resp, new_token) if new_token else resp
+
+    update_fields = []
+    if name:
+        gs.name = name
+        update_fields.append('name')
+    if phone:
+        gs.contact = phone
+        update_fields.append('contact')
+    if update_fields:
+        gs.save(update_fields=update_fields)
+    resp = JsonResponse({'ok': True})
+    return attach_cookie(resp, new_token) if new_token else resp
+
+
+@require_POST
+def otp_verify(request):
+    """Verify a submitted OTP code against the active session. Body: {code}."""
+    gs = _resolve_active_session(request)
+    if gs is None:
+        return JsonResponse({'error': 'no active session'}, status=400)
+
+    try:
+        body = json.loads(request.body or '{}')
+    except (json.JSONDecodeError, TypeError):
+        return JsonResponse({'error': 'invalid body'}, status=400)
+
+    ok = verify_code(gs, str(body.get('code', '')))
+    return JsonResponse({'ok': ok, 'verified': gs.verified})
+
+
+@require_POST
+def otp_resend(request):
+    """Re-issue and re-send an OTP code for the active session's phone.
+
+    Rate-limited by reusing the same GUEST_RATE_LIMIT/GUEST_RATE_WINDOW knobs
+    RateLimitMiddleware already uses for guest reads (see menu/middleware.py),
+    keyed per-session rather than per-IP so one guest resending repeatedly
+    can't be masked by (or itself trip) the shared IP counter."""
+    gs = _resolve_active_session(request)
+    if gs is None:
+        return JsonResponse({'error': 'no active session'}, status=400)
+
+    last = gs.otp_challenges.order_by('-id').first()
+    phone = last.phone if last else gs.contact
+    if not phone:
+        return JsonResponse({'error': 'no phone on file'}, status=400)
+
+    limit = getattr(settings, 'GUEST_RATE_LIMIT', 120)
+    window = getattr(settings, 'GUEST_RATE_WINDOW', 60)
+    key = f'otp-resend:{gs.pk}'
+    cache.add(key, 0, window)
+    count = cache.incr(key)
+    if count > limit:
+        return HttpResponse('Too Many Requests', status=429)
+
+    code = issue_code(gs, phone)
+    _queue_otp_sms(phone, code)
+    return JsonResponse({'ok': True})
 
 
 @ensure_csrf_cookie

@@ -16,6 +16,18 @@ def ping():
     return "pong"
 
 
+@shared_task
+def send_otp_sms(phone, code):
+    """Deliver one OTP code by SMS. Fail-soft by construction: `menu.sms.send_sms`
+    never raises, and the code itself was already persisted synchronously by
+    `menu.otp.issue_code` before this task was even queued — so a broker hiccup
+    or SMS provider outage never costs the guest their code, only the text."""
+    from menu.sms import send_sms
+
+    message = f"Your Gaamos verification code is {code}"
+    return send_sms(phone, message)
+
+
 def _write_drafts(scan, payload):
     """Replace this scan's drafts with freshly normalized rows.
 

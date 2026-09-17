@@ -1,0 +1,15 @@
+{% comment %}
+Task 2.4 — "Ordering as <name>" badge (screen 3 of identity.html wireframe).
+Shown once the guest has finished (or skipped) the identity step. Included
+only when restaurant.identity_mode != 'auto'; visibility of done vs skipped
+is handled client-side via Alpine's `identity` state.
+{% endcomment %}
+<div class="identity-badge" x-show="identity === 'done' || identity === 'skipped'" x-cloak>
+  <span class="av" x-text="identity === 'done' ? '✓' : (identityName ? identityName[0].toUpperCase() : 'G')"></span>
+  <template x-if="identity === 'done'">
+    <span>Ordering as <b x-text="identityName"></b><template x-if="identityPhone"><span x-text="' · ' + identityPhone"></span></template></span>
+  </template>
+  <template x-if="identity === 'skipped'">
+    <span>Ordering as <b>Guest</b></span>
+  </template>
+</div>

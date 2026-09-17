@@ -1,0 +1,80 @@
+{% extends 'dashboard/base.html' %}
+
+{% comment %}
+Task 3.3 / B3-B4 — Split/Combine bill preview. Expects: table (Table or None
+for Takeaway), is_takeaway (bool), mode ('split'|'combine'), close_url,
+preview_url, and either `guests` (split: list of {session, lines, subtotal,
+print_url}) or `combined_lines` + `combined_total` (combine). Copies the
+B3/B4 wireframe's .tcard/.sub2/.total markup (gaamos-orders/billing.html).
+
+Non-POS boundary: this screen only computes and previews a bill summary.
+preview_url / each guest's print_url render a read-only PDF (Task 3.4).
+close_url (Task 3.5) POSTs to end the table's open guest sessions — it does
+not take payment, store a receipt, or touch any order.
+{% endcomment %}
+
+{% block page_title %}Bill · {% if is_takeaway %}Takeaway{% else %}Table {{ table.label }}{% endif %}{% endblock %}
+{% block subtitle %}{% if mode == 'combine' %}Combine — one table total{% else %}Split — per-guest itemised bills{% endif %}{% endblock %}
+
+{% block header_action %}
+<a class="btn ghost" href="{% if is_takeaway %}{% url 'dashboard:orders_table_takeaway' %}{% else %}{% url 'dashboard:orders_table' table.pk %}{% endif %}">&larr; Back to table</a>
+{% endblock %}
+
+{% block content %}
+<div class="sec-h">
+  <h3>Bill · {% if is_takeaway %}Takeaway{% else %}Table {{ table.label }}{% endif %}</h3>
+  <div class="sp"></div>
+  <div class="toggle">
+    <a href="?mode=split" class="{% if mode != 'combine' %}on{% endif %}">Split</a>
+    <a href="?mode=combine" class="{% if mode == 'combine' %}on{% endif %}">Combine</a>
+  </div>
+</div>
+
+{% if mode == 'combine' %}
+<div class="panel bill-tcard-wrap">
+  <div class="tcard bill-tcard">
+    {% for name, qty, line_total in combined_lines %}
+    <div class="li"><span>{{ name }} ×{{ qty }}</span><span>{{ line_total }}</span></div>
+    {% empty %}
+    <div class="li"><span class="mini">No items yet.</span></div>
+    {% endfor %}
+    <div class="total"><span>Table total</span><span>Rs {{ combined_total }}</span></div>
+  </div>
+</div>
+<p class="mini" style="margin:8px 2px;">One bill, all items combined — single print for the whole table.</p>
+{% else %}
+<div class="bill-split-grid">
+  {% for g in guests %}
+  <div class="tcard bill-tcard">
+    <div class="gh">
+      <span class="av">{{ g.session.display_name|slice:":1"|upper }}</span>
+      {{ g.session.display_name }}
+    </div>
+    {% for name, qty, line_total in g.lines %}
+    <div class="li"><span>{{ name }} ×{{ qty }}</span><span>{{ line_total }}</span></div>
+    {% empty %}
+    <div class="li"><span class="mini">No items yet.</span></div>
+    {% endfor %}
+    <div class="sub2"><span>Subtotal</span><span>Rs {{ g.subtotal }}</span></div>
+    <a class="btn ghost btn-sm bill-print-btn" href="{{ g.print_url }}">Print {{ g.session.display_name }}</a>
+  </div>
+  {% empty %}
+  <p style="color:var(--ink-3);padding:16px;">No open guest sessions to bill.</p>
+  {% endfor %}
+</div>
+<p class="mini" style="margin:8px 2px;">Toggle → Combine shows one bill: all items, one table total, single print.</p>
+{% endif %}
+
+<div class="actionbar actionbar--inline">
+  <a class="ab ghost" href="{{ preview_url }}">Preview receipt</a>
+  <form method="post" action="{{ close_url }}" class="ab-form">
+    {% csrf_token %}
+    <button type="submit" class="ab primary">Close table</button>
+  </form>
+</div>
+
+<div class="note">
+  <b>Gaamos stays non-POS.</b> This is a bill summary preview only — it does not take payment
+  or issue a tax receipt. The venue settles in its own cash / POS / credit book.
+</div>
+{% endblock %}

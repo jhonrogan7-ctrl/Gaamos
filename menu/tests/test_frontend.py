@@ -89,12 +89,14 @@ class OverviewStubTest(DashboardShellTest):
 
 class OrdersStubTest(DashboardShellTest):
     def test_orders_renders_live_queue(self):
-        # Spec 3: global Orders renders the real live-queue table (empty here).
+        # Spec 3: global Orders renders the real live queue (empty here). Task 5
+        # replaced the <table class="tbl"> with the .ocard-list card queue.
         self.login_as(self.owner)
         r = self.client.get('/dashboard/orders/')
         self.assertEqual(r.status_code, 200)
         body = r.content.decode()
-        self.assertIn('class="tbl"', body)
+        self.assertIn('class="ocard-list"', body)
+        self.assertNotIn('class="tbl"', body)
         self.assertIn('Live order queue', body)
 
 
@@ -569,9 +571,13 @@ class TableScrollTest(TenantTestCase):
                            '.set-grid mobile override must come after the base rule '
                            'or the settings grid never collapses under 900px')
 
-    def test_orders_queue_table_wrapped(self):
+    def test_orders_queue_renders_as_cards_not_a_wide_table(self):
+        # Task 5 turned the orders queue into the .ocard-list card queue, which
+        # reflows on narrow screens without a horizontal-scroll wrapper. The
+        # branch-QR table below still uses .table-scroll (see next test).
         body = self.client.get('/dashboard/orders/').content.decode()
-        self.assertIn('table-scroll', body)
+        self.assertIn('class="ocard-list"', body)
+        self.assertNotIn('class="tbl"', body)
 
     def test_branch_tables_list_wrapped(self):
         # Deviation from brief: menu.models has no Restaurant model, and Branch
@@ -655,3 +661,99 @@ class MemberSheetCssTest(SimpleTestCase):
             self.assertIsNotNone(
                 re.search(r'[}{]\.' + cls + r'[ .{]', css),
                 f'.{cls} missing from built app.css (purged or not built)')
+
+
+class OrderCardCssTest(SimpleTestCase):
+    """Task 9 — the Orders page card redesign only becomes visible once these
+    classes are styled in input.css and survive the Tailwind purge into the
+    built app.css. Every class asserted here is emitted by
+    templates/dashboard/_orders_*.html / orders_table.html / orders_bill.html."""
+
+    def _css(self):
+        return (Path(settings.BASE_DIR) / 'static/css/app.css').read_text()
+
+    def _src(self):
+        return (Path(settings.BASE_DIR) / 'static/css/input.css').read_text()
+
+    def test_order_card_rules_present_in_build(self):
+        # Anchored so a bare class name can't match inside a longer selector
+        # (".st" would otherwise hit ".status", ".stat", ".sticky", ...).
+        import re
+        css = self._css()
+        for cls in ('ocard', 'ocard-list', 'oc-top', 'oc-no', 'oc-when', 'oc-who',
+                    'oc-items', 'oc-foot', 'oc-tot', 'oc-serve', 'servebtn', 'servedtxt',
+                    'st', 'tchip', 'who', 'orders-controls', 'fbar', 'seg', 'chips',
+                    'chip', 'table-filter', 'table-opt', 'search-clear', 'tcard-body',
+                    'tsub', 'tnames', 'tmeta', 'billbtn', 'actionbar', 'ab-form'):
+            self.assertRegex(
+                css, r'[}{,\s]\.' + re.escape(cls) + r'[\s.,:{]',
+                f'.{cls} missing from built app.css (purged or input.css not built)')
+
+    def test_status_and_chip_state_modifiers_present(self):
+        import re
+        css = self._css()
+        for sel in (r'\.st\.new', r'\.st\.done', r'\.tchip\.away',
+                    r'\.who\.anon', r'\.chip\.clear', r'\.table-opt\.on',
+                    r'\.ab\.primary', r'\.ab\.ghost'):
+            # Anchored like the sibling presence test so a modifier can't match
+            # inside a longer selector.
+            self.assertRegex(css, r'[}{,\s]' + sel + r'[\s.,:{]',
+                             f'missing state rule {sel}')
+
+    def test_actionbar_lifted_above_mobile_tabbar(self):
+        # The pinned bar is shown ONLY under 900px, where nav.tabbar is fixed at
+        # bottom:0 (z-index 40). If .actionbar stayed at bottom:0 there it would
+        # sit under the nav and be untappable. The <900px override must offset it
+        # by the tab-bar height (the shared --tabbar-h token) so a future edit
+        # can't silently reintroduce the collision.
+        import re
+        css = self._css()
+        self.assertIn('--tabbar-h:', css, '--tabbar-h token not defined')
+        self.assertRegex(
+            css, r'\.actionbar\{[^}]*bottom:\s*calc\([^)]*--tabbar-h',
+            '.actionbar has no tab-bar-height bottom offset under 900px')
+
+    def test_actionbar_desktop_hide_comes_after_base_rules(self):
+        # Cascade guard on the SOURCE file. The minified build merges every
+        # `@media (min-width: 900px)` block into one, so css.index("min-width:
+        # 900px") in app.css finds an unrelated earlier block and proves
+        # nothing — assert on input.css source order instead (same shape as
+        # core/tests/test_landing.py::test_landing_css_mobile_overrides_come_last).
+        import re
+        src = self._src()
+        hide = src.index('/* orders-actionbar-desktop-hide')
+        self.assertLess(src.index('\n  .actionbar {'), hide,
+                        'base .actionbar rule must precede the 900px hide block')
+        self.assertLess(src.index('\n  .ocard {'), hide,
+                        'base .ocard rule must precede the 900px hide block')
+        self.assertIn('.actionbar { display: none; }', src[hide:hide + 400])
+        tail = src[hide:]
+        self.assertIsNone(
+            re.search(r'\n  \.(ocard|actionbar)[\w-]*\s*[,{]', tail),
+            'a top-level .ocard/.actionbar rule was added after the 900px hide '
+            'block — it would override the mobile-only styling at every width')
+
+    def test_bill_actionbar_inline_variant_survives_desktop_hide(self):
+        # D6b regression guard. At >=900px `.actionbar { display: none }` hides
+        # the pinned bar — table detail falls back to its header-action Bill
+        # button. The bill screen has no such fallback, so its `.actionbar--inline`
+        # variant must be EXPLICITLY restored to a visible in-flow row. If a
+        # future edit folds the two rules together (dropping the restore), the
+        # bill screen loses Preview/Close on desktop — this must then fail.
+        import re
+        css = self._css()
+        self.assertRegex(css, r'\.actionbar\{display:\s*none\}',
+                         'desktop hide for .actionbar missing from build')
+        m = re.search(r'\.actionbar\.actionbar--inline\{([^}]*)\}', css)
+        self.assertIsNotNone(
+            m, '.actionbar--inline desktop restore rule missing — the bill '
+               'screen would render no Preview/Close control at >=900px')
+        decls = m.group(1)
+        self.assertIn('display:flex', decls,
+                      '.actionbar--inline must restore a visible display at >=900px')
+        self.assertIn('position:static', decls,
+                      '.actionbar--inline must drop sticky positioning at >=900px')
+
+    def test_row2_rule_removed(self):
+        # Task 8 replaced .row2 with .actionbar; no template references row2.
+        self.assertNotIn('.row2', self._src())

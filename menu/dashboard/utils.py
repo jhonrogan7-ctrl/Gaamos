@@ -1,6 +1,7 @@
 import io
 import os
 
+import fitz
 from django.conf import settings
 
 from . import poster
@@ -113,3 +114,27 @@ def generate_qr_for_branch(branch, base_url):
     branch.qr_image = f"qr/{filename}"
     branch.save(update_fields=['qr_image'])
     return path
+
+
+def render_html_to_pdf(html, page_size='a4'):
+    """Render an HTML+CSS string to PDF bytes (Task 3.4 bill-summary PDF).
+
+    Uses PyMuPDF's ``Story`` layout engine rather than adding a WeasyPrint
+    dependency: PyMuPDF is already a project dependency (it backs the QR
+    poster PDFs above), and its Story class lays out arbitrary HTML/CSS onto
+    PDF pages, flowing content onto additional pages automatically when it
+    overflows one.
+    """
+    story = fitz.Story(html=html)
+    buf = io.BytesIO()
+    writer = fitz.DocumentWriter(buf)
+    mediabox = fitz.paper_rect(page_size)
+    where = mediabox + (36, 36, -36, -36)  # ~0.5in margins
+    more = 1
+    while more:
+        device = writer.begin_page(mediabox)
+        more, _filled = story.place(where)
+        story.draw(device)
+        writer.end_page()
+    writer.close()
+    return buf.getvalue()

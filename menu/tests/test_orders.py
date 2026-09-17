@@ -1,7 +1,7 @@
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
 
-from menu.models import Branch, Company, Table, MenuItem, Order, OrderItem
+from menu.models import Branch, Company, Table, MenuItem, Order, OrderItem, GuestSession
 from menu.tenancy import set_current_company, reset_current_company
 from menu.tests.base import TenantTestCase
 
@@ -155,6 +155,29 @@ class OrdersQueueTest(TenantTestCase):
         self.order.refresh_from_db()
         self.assertEqual(self.order.status, Order.STATUS_SERVED)
 
+    def test_queue_shows_named_guest(self):
+        gs = GuestSession.objects.create(branch=self.branch, token='t-named',
+                                          label='Guest A', name='Bikash', contact='+977 98…')
+        o = Order.objects.create(branch=self.branch, guest_session=gs, total=90)
+        body = self.client.get('/dashboard/orders/queue/').content.decode()
+        self.assertIn(f'#{o.number}', body)
+        self.assertIn('Bikash', body)
+
+    def test_queue_shows_anonymous_guest_label(self):
+        gs = GuestSession.objects.create(branch=self.branch, token='t-anon', label='Guest A')
+        o = Order.objects.create(branch=self.branch, guest_session=gs, total=90)
+        body = self.client.get('/dashboard/orders/queue/').content.decode()
+        self.assertIn(f'#{o.number}', body)
+        self.assertIn('Guest A', body)
+
+    def test_queue_shows_fallback_when_no_guest_session(self):
+        body = self.client.get('/dashboard/orders/queue/').content.decode()
+        # self.order (from setUp) has no guest_session attached. The queue endpoint
+        # renders the bare _orders_queue.html partial (no page chrome), so the
+        # 'Walk-in' fallback label is an unambiguous marker here.
+        self.assertIn('Walk-in', body)
+        self.assertNotIn('class="ph"', body)  # no phone line rendered without a guest
+
     def test_serve_forbidden_other_company(self):
         other = Company.objects.create(name='Other', slug='other')
         tok = set_current_company(other)
@@ -190,6 +213,27 @@ class OrderStreamTest(TenantTestCase):
         # after_id at o.pk → nothing new
         events, _ = orders_payload(self.company.id, [self.branch.id], o.pk)
         self.assertEqual(events, [])
+
+    def test_orders_payload_includes_named_guest_label(self):
+        from menu.dashboard.views import orders_payload
+        gs = GuestSession.objects.create(branch=self.branch, token='t-named2',
+                                          label='Guest A', name='Bikash')
+        o = Order.objects.create(branch=self.branch, guest_session=gs, total=0)
+        events, _ = orders_payload(self.company.id, None, 0)
+        self.assertTrue(any('Bikash' in e for e in events))
+
+    def test_orders_payload_includes_anonymous_guest_label(self):
+        from menu.dashboard.views import orders_payload
+        gs = GuestSession.objects.create(branch=self.branch, token='t-anon2', label='Guest A')
+        o = Order.objects.create(branch=self.branch, guest_session=gs, total=0)
+        events, _ = orders_payload(self.company.id, None, 0)
+        self.assertTrue(any('Guest A' in e for e in events))
+
+    def test_orders_payload_fallback_when_no_guest_session(self):
+        from menu.dashboard.views import orders_payload
+        o = Order.objects.create(branch=self.branch, total=0)
+        events, _ = orders_payload(self.company.id, None, 0)
+        self.assertTrue(any('—' in e for e in events))
 
     def test_stream_content_type(self):
         r = self.client.get('/dashboard/orders/stream/?once=1')
@@ -237,3 +281,146 @@ class OrdersScreenTest(TenantTestCase):
         self.assertIn(f'#{self.order.number}', body)
         self.assertNotIn('#JC-2847', body)
         self.assertIn('/dashboard/orders/stream/', body)
+
+
+class OrdersGroupByTableTest(TenantTestCase):
+    """Task 3.2 — '?group=table' turns the flat queue into per-table cards."""
+
+    def setUp(self):
+        super().setUp()
+        U = get_user_model()
+        self.owner = U.objects.create_user('boss2', password='pass')
+        self.make_owner(self.owner)
+        self.branch = Branch.objects.create(company=self.company, name='Lake', slug='lake')
+
+        self.table4 = Table.objects.create(branch=self.branch, label='4')
+        self.table2 = Table.objects.create(branch=self.branch, label='2')
+
+        # Table 4: two open guest sessions -> guests=2, total=200
+        g1 = GuestSession.objects.create(branch=self.branch, table=self.table4,
+                                          token='tok-g1', label='Guest A')
+        g2 = GuestSession.objects.create(branch=self.branch, table=self.table4,
+                                          token='tok-g2', label='Guest B')
+        o1 = Order.objects.create(branch=self.branch, table=self.table4, guest_session=g1)
+        OrderItem.objects.create(order=o1, name='Coffee', unit_price=100, qty=1)
+        o2 = Order.objects.create(branch=self.branch, table=self.table4, guest_session=g2)
+        OrderItem.objects.create(order=o2, name='Tea', unit_price=50, qty=2)
+
+        # Table 2: one open guest session -> guests=1, total=300
+        g3 = GuestSession.objects.create(branch=self.branch, table=self.table2,
+                                          token='tok-g3', label='Guest A')
+        o3 = Order.objects.create(branch=self.branch, table=self.table2, guest_session=g3)
+        OrderItem.objects.create(order=o3, name='Juice', unit_price=150, qty=2)
+
+        self.login_as(self.owner)
+
+    def test_group_table_shows_per_table_cards_with_counts_and_totals(self):
+        body = self.client.get('/dashboard/orders/?group=table').content.decode()
+        self.assertIn('Table 4', body)
+        self.assertIn('2 guests', body)
+        self.assertIn('Rs 200', body)
+        self.assertIn('Table 2', body)
+        self.assertIn('1 guest', body)
+        self.assertIn('Rs 300', body)
+
+    def test_group_table_excludes_closed_sessions_from_counts(self):
+        from django.utils import timezone
+        g2 = GuestSession.objects.get(token='tok-g2')
+        g2.closed_at = timezone.now()
+        g2.save()
+        body = self.client.get('/dashboard/orders/?group=table').content.decode()
+        self.assertIn('1 guest', body)  # Table 4 now down to one open guest
+        self.assertIn('Rs 100', body)   # Table 4 total now just Guest A's order
+
+    def test_card_shows_guest_names_counts_and_bill_link(self):
+        GuestSession.objects.filter(token="tok-g1").update(
+            name="Bikash", contact="+977 9812 34567")
+        body = self.client.get('/dashboard/orders/?group=table').content.decode()
+        self.assertIn('Bikash', body)
+        self.assertIn('+977 9812 34567', body)
+        # Table 4's two orders both default to STATUS_NEW -> sub-line "2 new".
+        # '2 new' is unambiguous: it appears nowhere in the page chrome and
+        # 'new' alone is a substring of class names / other words.
+        self.assertIn('2 new', body)
+        self.assertIn(f'/dashboard/orders/table/{self.table4.pk}/bill/', body)
+
+    def test_table_card_body_is_not_a_nested_anchor(self):
+        body = self.client.get('/dashboard/orders/?group=table').content.decode()
+        self.assertNotIn('<a class="tcard"', body)   # the old card WAS an anchor
+        self.assertIn('<a class="tcard-body"', body)  # detail link lives inside a div
+        self.assertIn('class="billbtn"', body)        # Bill is its own sibling link
+
+    def test_group_flat_is_default_and_renders_order_cards(self):
+        body = self.client.get('/dashboard/orders/').content.decode()
+        self.assertIn('ocard', body)
+        self.assertNotIn('class="tbl"', body)
+
+    def test_group_flat_explicit_renders_order_cards(self):
+        body = self.client.get('/dashboard/orders/?group=flat').content.decode()
+        self.assertIn('ocard', body)
+        self.assertNotIn('class="tbl"', body)
+
+
+class OrderCardContentTest(TenantTestCase):
+    """Task 5 — the flat queue renders one .ocard per order with the guest's
+    name + phone, a smart date-time, item lines and total."""
+
+    def setUp(self):
+        super().setUp()
+        U = get_user_model()
+        self.owner = U.objects.create_user('cardboss', password='pass')
+        self.make_owner(self.owner)
+        self.branch = Branch.objects.create(company=self.company, name='Lake', slug='lake')
+        self.gs = GuestSession.objects.create(branch=self.branch, table=None,
+                                              token='card-gs', label='Guest A',
+                                              name='Bikash', contact='+977 9812 34567')
+        self.order = Order.objects.create(branch=self.branch, table_label='4',
+                                          guest_session=self.gs, total=300,
+                                          status=Order.STATUS_NEW)
+        OrderItem.objects.create(order=self.order, name='Latte', unit_price=150, qty=2)
+        self.login_as(self.owner)
+
+    def _resp(self):
+        return self.client.get('/dashboard/orders/')
+
+    def test_card_shows_number_guest_phone_items_total(self):
+        resp = self._resp()
+        b = resp.content.decode()
+        # '#<n>' == '#1' is a substring of the '#15171d' theme-color in base.html
+        # page chrome, so read the rendered order set for presence instead.
+        self.assertIn(self.order.number, {o.number for o in resp.context['orders']})
+        self.assertIn('Bikash', b)             # guest_session.display_name; not in chrome
+        self.assertIn('+977 9812 34567', b)    # guest_session.contact; not in chrome
+        self.assertIn('Latte', b)              # OrderItem.name; not in chrome
+        self.assertIn('Rs 300', b)             # o.total; 'Rs 300' not in chrome
+
+    def test_card_shows_date_time_and_mark_served_for_new(self):
+        b = self._resp().content.decode()
+        self.assertIn('Today', b)              # smart_datetime(created_at); not in chrome
+        self.assertIn('Mark served', b)        # only in _orders_queue.html serve form
+
+    def test_served_order_shows_no_mark_served_button(self):
+        self.order.status = Order.STATUS_SERVED
+        self.order.save()
+        b = self._resp().content.decode()
+        self.assertNotIn('Mark served', b)
+
+    def test_anonymous_order_has_no_phone_line(self):
+        self.order.guest_session = None
+        self.order.save()
+        b = self._resp().content.decode()
+        self.assertIn('Walk-in', b)            # anon branch of the card; not in chrome
+        self.assertNotIn('+977', b)            # no phone line without a guest session
+
+    def test_branch_name_shown_only_when_show_branch(self):
+        from django.template.loader import render_to_string
+        base = {'orders': [self.order], 'status_filter': 'all'}
+        shown = render_to_string('dashboard/_orders_queue.html', {**base, 'show_branch': True})
+        hidden = render_to_string('dashboard/_orders_queue.html', {**base, 'show_branch': False})
+        # 'Lake' is the branch name; the sidebar/page chrome renders the *company*
+        # ('Test Co'), so on this page 'Lake' can only reach the DOM via the
+        # show_branch .oc-br span. Assert the partial actually gates on the flag.
+        self.assertIn('oc-br', shown)
+        self.assertIn('Lake', shown)
+        self.assertNotIn('oc-br', hidden)
+        self.assertNotIn('Lake', hidden)

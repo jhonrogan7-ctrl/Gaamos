@@ -11,6 +11,9 @@
   --accent-2: #ff9f1c;
   --accent-grad: linear-gradient(135deg,#ff9f1c,#e23744); --accent-ink: #fff;
   --green: #1f9d57; --green-soft: #e3f6ec; --amber: #c98a00; --amber-soft: #fdf0d4;
+  /* Mobile (<900px) bottom tab-bar content height. Single source of truth so the
+     tab bar, the .body scroll padding and the pinned .actionbar offset agree. */
+  --tabbar-h: 56px;
 }
 /* ── Guest structural defaults (colors arrive inline from menu/themes.py via
    {% theme_style %}; pages carry data-theme + an inline token style, the
@@ -259,10 +262,42 @@ h1,h2,h3 { font-family: var(--hd); }
      min-content width, which let the orders table shrink the column to a
      couple of characters — on a phone that produced a 72px-wide, 24-line note
      in a 1208px-tall row. */
-  .oc-note { display: flex; gap: 7px; align-items: flex-start; margin-top: 7px; padding: 6px 9px; border-radius: 7px; background: var(--accent-soft); border-left: 3px solid var(--accent); font-size: 12px; line-height: 1.4; overflow-wrap: break-word; }
+  .oc-note { display: flex; gap: 8px; align-items: flex-start; margin-top: 8px; padding: 7px 10px; border-radius: 8px; background: var(--accent-soft); border-left: 3px solid var(--accent); font-size: 12px; line-height: 1.45; overflow-wrap: break-word; }
   .oc-note b { flex: none; font-size: 9.5px; letter-spacing: .09em; text-transform: uppercase; color: var(--accent-deep); padding-top: 2px; }
+  .oc-note .dish { font-weight: 700; }
 
   .tablechip { @apply inline-flex items-center gap-1; font-size: 11px; font-weight: 800; color: var(--ink-2); background: var(--bg); border: 1px solid var(--line-2); border-radius: 8px; padding: 4px 9px; }
+
+  /* Orders queue: "Flat list / Group by table" toggle + per-table cards (Task 3.2). */
+  .toggle { margin-left: auto; display: flex; border: 1px solid var(--line-2); border-radius: 8px; overflow: hidden; font-size: 11.5px; }
+  .toggle a { padding: 5px 11px; background: #fff; color: var(--ink-2); font-weight: 700; text-decoration: none; }
+  .toggle a.on { background: var(--accent); color: #fff; }
+  .tcard { display: block; background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 12px 14px; margin-bottom: 10px; text-decoration: none; color: inherit; }
+  .tcard:hover { border-color: var(--ink-3); }
+  .tcard .th { @apply flex items-center gap-2.5; font-weight: 800; font-size: 14px; color: var(--ink); }
+  .tcard .pill { background: var(--bg); border: 1px solid var(--line-2); border-radius: 14px; padding: 1px 9px; font-size: 11px; color: var(--ink-2); font-weight: 700; }
+  .tcard .pill.g { background: var(--green-soft); border-color: var(--green); color: var(--green); }
+  /* Guest identity chip on the order card (avatar + name + phone). Only the
+     redesigned flat queue uses `.who` now; the fuller rules live in the
+     "Orders: order cards" block near the end of this layer. */
+
+  /* Table detail (B2) + Split/Combine bill preview (B3/B4) — Task 3.3. */
+  .bill-tcard-wrap { padding: 14px; }
+  .bill-tcard { margin: 0 0 10px; }
+  .bill-tcard:last-child { margin-bottom: 0; }
+  .bill-split-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; }
+  .bill-split-grid .bill-tcard { margin: 0; }
+  .guest { border-top: 1px solid var(--line); padding: 9px 0; font-size: 12.5px; }
+  .guest:first-child { border-top: 0; padding-top: 0; }
+  .gh { @apply flex items-center gap-2; font-weight: 700; }
+  .gh .av, .guest .av { width: 22px; height: 22px; border-radius: 50%; background: var(--accent); color: #fff; @apply flex items-center justify-center; font-size: 10px; font-weight: 800; flex: 0 0 22px; }
+  .li { display: flex; justify-content: space-between; font-size: 12px; color: var(--ink-2); padding: 2px 0 2px 30px; }
+  .bill-split-grid .li, .bill-tcard > .li { padding-left: 0; }
+  .sub2 { display: flex; justify-content: space-between; font-weight: 800; font-size: 12.5px; padding: 3px 0 0 30px; color: var(--accent-deep); }
+  .bill-split-grid .sub2, .bill-tcard > .sub2 { padding-left: 0; }
+  .total { display: flex; justify-content: space-between; font-weight: 800; font-size: 15px; margin-top: 8px; padding-top: 8px; border-top: 2px solid var(--accent); }
+  .bill-print-btn { margin-top: 8px; width: 100%; justify-content: center; }
+  .note { background: var(--amber-soft, #fff7ed); border: 1px solid var(--line-2); border-left: 4px solid var(--amber, #b45309); border-radius: 8px; padding: 11px 14px; font-size: 13px; margin: 14px 0 0; color: var(--ink-2); }
   .status { @apply inline-flex items-center gap-1.5; font-size: 11px; font-weight: 800; border-radius: 999px; padding: 4px 11px; }
   .status::before { content: ''; width: 7px; height: 7px; border-radius: 50%; background: currentColor; }
   .status.new { color: var(--accent-deep); background: var(--accent-soft); }
@@ -404,7 +439,8 @@ h1,h2,h3 { font-family: var(--hd); }
   .price-input { width: 92px; padding: 9px 12px; border: 1px solid var(--line); border-radius: 10px; font-family: var(--bd); font-size: 13px; color: var(--ink); background: #fff; outline: none; }
   .price-input:focus { outline: 2px solid var(--accent); border-color: transparent; }
   .price-dash { color: var(--ink-3); }
-  .filter-panel-foot { @apply flex justify-end; padding: 10px 0 8px; border-top: 1px solid var(--line); margin-top: 4px; }
+  .filter-panel-foot { @apply flex items-center justify-end gap-3; padding: 10px 0 8px; border-top: 1px solid var(--line); margin-top: 4px; }
+  .filter-panel-foot .clear-all { margin-right: auto; }
   .clear-all { font-size: 12px; font-weight: 800; color: var(--accent-deep); text-decoration: none; }
 
   .results-bar { @apply flex items-baseline justify-between; margin: 2px 2px 14px; }
@@ -494,7 +530,7 @@ h1,h2,h3 { font-family: var(--hd); }
   .sheet-backdrop { position: fixed; inset: 0; background: rgba(20,23,31,.5); z-index: 60; @apply flex justify-center; align-items: flex-end; }
   .sheet { background: #fff; border-radius: 18px 18px 0 0; padding: 18px 18px 30px; width: 100%; max-width: 520px; max-height: 85vh; overflow-y: auto; animation: sheet-up .22s cubic-bezier(.2,.8,.2,1); }
   @keyframes sheet-up { from { transform: translateY(40px); opacity: .6; } to { transform: none; opacity: 1; } }
-  .sheet-handle { width: 38px; height: 4px; border-radius: 2px; background: var(--line-2); margin: 0 auto 16px; }
+  .sheet-handle { display: block; width: 38px; height: 4px; padding: 0; border: none; border-radius: 2px; background: var(--line-2); margin: 0 auto 16px; cursor: pointer; }
   /* ≥900px: centred dialog instead of a bottom sheet — anchored to the bottom
      edge of a large monitor the sheet reads as fallen off the screen. Must stay
      AFTER the base rules above (same specificity; source order decides). */
@@ -825,6 +861,130 @@ h1,h2,h3 { font-family: var(--hd); }
   .wz-tile-prompt { font-size: 11.5px; line-height: 1.4; width: 100%; resize: vertical; }
 
   /* ══════════════════════════════════════════
+     ORDERS PAGE — card redesign (2026-08-27).
+     Order cards + by-table cards + queue controls + pinned action bar.
+     Every class here is emitted by templates/dashboard/_orders_*.html /
+     orders_table.html / orders_bill.html (Tasks 5-8). Base rules first;
+     the two responsive blocks come last in this section so their
+     same-specificity overrides win by source order.
+  ══════════════════════════════════════════ */
+
+  /* --- Orders: order cards (flat queue) --- */
+  .ocard-list { display: flex; flex-direction: column; }
+  .ocard { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 12px 13px; margin-bottom: 10px; }
+  .ocard-empty { font-size: 13px; }
+  .oc-top { @apply flex items-center gap-2; }
+  .oc-no { font-family: var(--hd); font-weight: 800; font-size: 15px; color: var(--ink); }
+  .st { @apply inline-flex items-center gap-1.5; font-size: 10.5px; font-weight: 800; text-transform: uppercase; letter-spacing: .03em; border-radius: 999px; padding: 3px 9px; }
+  .st::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+  .st.new { color: var(--accent-deep); background: var(--accent-soft); }
+  .st.done { color: var(--green); background: var(--green-soft); }
+  .oc-when { margin-left: auto; text-align: right; font-size: 11px; color: var(--ink-3); font-weight: 600; line-height: 1.35; }
+  .oc-when b, .oc-when time b { display: block; color: var(--ink); font-size: 12px; font-weight: 800; }
+  .oc-who { @apply flex items-center gap-2 flex-wrap; margin-top: 9px; }
+  .oc-items { margin-top: 9px; font-size: 12.5px; color: var(--ink-2); line-height: 1.5; }
+  .oc-foot { @apply flex items-center gap-2.5 flex-wrap; margin-top: 11px; padding-top: 10px; border-top: 1px dashed var(--line); }
+  .oc-tot { font-family: var(--hd); font-weight: 800; font-size: 15px; color: var(--ink); }
+  .oc-br { font-size: 11px; color: var(--ink-3); font-weight: 600; }
+  .oc-serve { margin-left: auto; }
+  .servebtn { background: var(--accent-grad); color: #fff; border: none; cursor: pointer; border-radius: 9px; padding: 8px 12px; font-family: var(--bd); font-size: 12px; font-weight: 800; }
+  .servedtxt { margin-left: auto; @apply inline-flex items-center gap-1.5; color: var(--green); font-size: 12px; font-weight: 800; }
+
+  /* table / takeaway chip + guest identity chip (shared by the card head) */
+  .tchip { @apply inline-flex items-center gap-1; font-size: 11px; font-weight: 800; color: var(--ink-2); background: var(--bg); border: 1px solid var(--line-2); border-radius: 8px; padding: 3px 9px; }
+  .tchip.away { color: var(--amber); background: var(--amber-soft); border-color: var(--amber-soft); }
+  .who { @apply inline-flex items-center gap-2; font-size: 12.5px; font-weight: 700; color: var(--ink); }
+  .who .av { width: 22px; height: 22px; border-radius: 50%; background: var(--accent); color: #fff; @apply inline-flex items-center justify-center; font-size: 10px; font-weight: 800; flex: 0 0 22px; }
+  /* NOT `.ph` — that class is the page-header component (15/18px padding and a
+     bottom border), so reusing it here drew a stray rule under every phone
+     number and padded the line out. */
+  .who .oc-ph { color: var(--ink-3); font-weight: 600; padding: 0; border: 0; }
+  .who.anon { color: var(--ink-3); }
+  .who.anon .av { background: var(--line-2); color: var(--ink-3); }
+
+  /* --- Orders: queue controls (segment, chips, filter trigger) --- */
+  .orders-controls { margin-bottom: 14px; }
+  .orders-controls .fbar { @apply flex gap-2 flex-wrap items-center; margin-bottom: 8px; }
+  .seg { @apply inline-flex; border: 1px solid var(--line-2); border-radius: 10px; overflow: hidden; font-size: 12.5px; font-weight: 700; }
+  .seg a { padding: 8px 13px; background: #fff; color: var(--ink-2); text-decoration: none; }
+  .seg a + a { border-left: 1px solid var(--line-2); }
+  .seg a.on { background: var(--accent); color: #fff; border-color: var(--accent); }
+  .chips { @apply flex gap-1.5 flex-wrap; margin-bottom: 10px; }
+  .chip { @apply inline-flex items-center gap-1; background: var(--accent-soft); border: 1px solid var(--line-2); color: var(--accent-deep); border-radius: 16px; padding: 3px 10px; font-size: 11.5px; font-weight: 700; text-decoration: none; }
+  .chip.clear { background: #fff; border-style: dashed; color: var(--ink-3); }
+
+  /* --- Orders: table-filter panel (desktop = inline panel) --- */
+  .table-filter .search-clear { border: none; background: none; color: var(--ink-3); font-size: 13px; line-height: 1; cursor: pointer; padding: 2px 4px; }
+  .table-filter .table-opts { display: flex; flex-direction: column; margin: 6px 0; }
+  .table-opt { @apply flex items-center gap-2.5; padding: 10px 8px; border-bottom: 1px solid var(--line); font-size: 13.5px; color: var(--ink); text-decoration: none; }
+  .table-opt:last-child { border-bottom: none; }
+  .table-opt .cbx { width: 20px; height: 20px; border-radius: 6px; border: 2px solid var(--line-2); @apply inline-flex items-center justify-center; font-size: 12px; color: #fff; flex: 0 0 20px; }
+  .table-opt.on .cbx { background: var(--accent); border-color: var(--accent); }
+  .table-opt .rt { margin-left: auto; color: var(--ink-3); font-size: 12px; font-weight: 600; }
+
+  /* --- Orders: by-table card additions (extends .tcard above) --- */
+  .tcard-body { display: block; text-decoration: none; color: inherit; }
+  .tsub { font-size: 11.5px; color: var(--ink-3); font-weight: 600; margin-top: 8px; }
+  .tnames { @apply flex items-center gap-1.5 flex-wrap; font-size: 12.5px; font-weight: 700; color: var(--ink-2); margin-top: 5px; }
+  .tnames .oc-ph { color: var(--ink-3); font-weight: 600; padding: 0; border: 0; }
+  .tmeta { @apply flex items-center gap-2 flex-wrap; margin-top: 11px; padding-top: 10px; border-top: 1px dashed var(--line); font-size: 11.5px; color: var(--ink-3); font-weight: 600; }
+  .billbtn { margin-left: auto; @apply inline-flex items-center gap-1.5; background: var(--accent-grad); color: #fff; border-radius: 9px; padding: 8px 13px; font-size: 12.5px; font-weight: 800; text-decoration: none; }
+
+  /* --- Orders: pinned action bar (table detail + bill screen) --- */
+  .actionbar { position: sticky; bottom: 0; z-index: 5; display: flex; gap: 9px; margin-top: 16px; padding: 12px 0 max(12px, env(safe-area-inset-bottom)); background: linear-gradient(180deg, transparent, var(--bg) 22%); }
+  .actionbar .ab { flex: 1; text-align: center; border-radius: 11px; padding: 12px; font-family: var(--bd); font-weight: 800; font-size: 13px; text-decoration: none; border: none; cursor: pointer; }
+  .actionbar .ab.primary { background: var(--accent-grad); color: #fff; }
+  .actionbar .ab.ghost { background: #fff; border: 1.5px solid var(--accent); color: var(--accent-deep); }
+  .actionbar .ab-form { flex: 1; display: flex; }
+  .actionbar .ab-form .ab { width: 100%; }
+
+  /* Orders responsive blocks — MUST stay after every base rule above; same
+     specificity means source order is the only thing that decides. */
+  @media (max-width: 899.98px) {
+    /* The action bar is only ever shown under 900px — exactly where the fixed
+       bottom tab bar (nav.tabbar, z-index 40) overlays the viewport edge. Lift
+       the sticky bar to rest directly ABOVE the tab bar (offset = its content
+       height + the safe-area inset the tab bar itself adds) so its buttons stay
+       tappable; keep z-index below the nav so it never covers navigation. */
+    .actionbar { bottom: calc(var(--tabbar-h) + env(safe-area-inset-bottom)); padding-bottom: 12px; }
+
+    /* The table-filter panel becomes a bottom sheet (reuses the .sheet idiom:
+       fixed to the bottom edge, rounded top, sheet-up entrance). The markup
+       already carries .sheet-handle for the grab bar. */
+    .orders-controls .table-filter {
+      position: fixed; left: 0; right: 0; bottom: 0; z-index: 45;
+      margin: 0; border-radius: 18px 18px 0 0;
+      max-height: 82vh;
+      padding: 16px 16px calc(20px + env(safe-area-inset-bottom));
+      box-shadow: 0 -10px 40px rgba(16, 24, 40, .18);
+      animation: sheet-up .22s cubic-bezier(.2, .8, .2, 1);
+      /* Scroll the LIST, not the sheet: scrolling the whole panel pushes the
+         footer — which holds the only Done button — out of reach at a venue
+         with enough tables to fill 82vh. */
+      display: flex; flex-direction: column; overflow: hidden;
+    }
+    .orders-controls .table-filter .table-opts { flex: 1 1 auto; min-height: 0; overflow-y: auto; }
+    .orders-controls .table-filter .filter-panel-foot { flex: 0 0 auto; }
+  }
+  /* orders-actionbar-desktop-hide */
+  @media (min-width: 900px) {
+    /* The pinned bar is a mobile affordance: table detail hides it and keeps
+       its {% block header_action %} Bill button as the desktop control. */
+    .actionbar { display: none; }
+    /* The bill screen has no header-action fallback, so its --inline variant
+       falls back to a plain in-flow button row (one set of markup, two
+       layouts — never a duplicated block). Compound selector out-specifies
+       the bare hide, so order between the two rules does not matter. */
+    .actionbar.actionbar--inline {
+      display: flex; position: static; bottom: auto; z-index: auto;
+      margin-top: 18px; padding: 0; background: none;
+    }
+    .actionbar.actionbar--inline .ab { flex: 0 0 auto; padding: 10px 18px; }
+    .actionbar.actionbar--inline .ab-form { flex: 0 0 auto; }
+    .actionbar.actionbar--inline .ab-form .ab { width: auto; }
+  }
+
+  /* ══════════════════════════════════════════
      MOBILE DASHBOARD SHELL — <900px overrides.
      MUST stay at the END of @layer components: .side/.top overrides share
      specificity with their base rules above, so source order decides
@@ -833,7 +993,7 @@ h1,h2,h3 { font-family: var(--hd); }
   @media (max-width: 899.98px) {
     .app { grid-template-columns: 1fr; }
     .side { display: none; }
-    .body { padding: 14px; padding-bottom: calc(76px + env(safe-area-inset-bottom)); }
+    .body { padding: 14px; padding-bottom: calc(var(--tabbar-h) + 20px + env(safe-area-inset-bottom)); }
     .top { padding: 0 14px; gap: 10px; }
     .top h2 { min-width: 0; }
     .top h2, .top h2 small { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
@@ -846,7 +1006,7 @@ h1,h2,h3 { font-family: var(--hd); }
       padding-bottom: env(safe-area-inset-bottom);
     }
     .tabbar .tb {
-      flex: 1; min-width: 0; min-height: 56px;
+      flex: 1; min-width: 0; min-height: var(--tabbar-h);
       @apply flex flex-col items-center justify-center gap-1;
       font-family: var(--bd); font-size: 11px; font-weight: 700; color: var(--ink-3);
       text-decoration: none; background: none; border: none; cursor: pointer;
@@ -1425,6 +1585,70 @@ html { scroll-behavior: smooth; }
 }
 .sm.tot .am { color: var(--brand-deep); }
 .sm.disc { color: var(--brand-deep); }
+
+/* ── Identity / OTP (Task 2.4 — first order only) ──
+   Markup/classes ported from the identity.html wireframe (screens 1–3):
+   name+phone capture, OTP boxes, and the "Ordering as <name>" badge. Scoped
+   under their own wrapper classes (not bare .btn/.skip/.badge) so they never
+   collide with the dashboard's own component classes in this shared sheet;
+   themed with this venue's guest tokens rather than the wireframe's fixed
+   #1C3F73, so it always matches the picked menu theme. */
+.identity-step, .otp-step {
+  display: flex; flex-direction: column; background: #fff;
+  border: 1px solid var(--line); border-radius: 16px; padding: 18px;
+  box-shadow: var(--shadow-card); margin-bottom: 14px;
+}
+.identity-step .id-h2, .otp-step .id-h2 {
+  font-family: 'Bricolage Grotesque', serif; font-size: 17px; font-weight: 800;
+  color: var(--ink); margin: 0 0 4px;
+}
+.identity-step .id-muted, .otp-step .id-muted {
+  font-size: 12px; color: var(--ink-3); line-height: 1.5;
+}
+.identity-step .lbl, .otp-step .lbl {
+  font-size: 11px; color: var(--ink-3); text-transform: uppercase;
+  letter-spacing: .04em; font-weight: 700; margin: 14px 0 5px;
+}
+.identity-step .inp {
+  width: 100%; border: 1px solid var(--line); border-radius: 10px;
+  padding: 12px 13px; font-size: 13.5px; color: var(--ink); background: #fff;
+}
+.identity-step .btn.solid, .otp-step .btn.solid {
+  border: none; width: 100%; text-align: center; border-radius: 12px;
+  padding: 13px; font-weight: 700; font-size: 13.5px; margin-top: 16px;
+  background: var(--grad, var(--brand)); color: var(--brand-ink, #fff); cursor: pointer;
+}
+.identity-step .btn.solid:disabled, .otp-step .btn.solid:disabled { opacity: .6; cursor: default; }
+.identity-step .skip {
+  text-align: center; color: var(--ink-3); font-size: 12px; margin-top: 12px;
+  text-decoration: underline; display: block; cursor: pointer;
+}
+.identity-step .id-error, .otp-step .id-error {
+  color: #b91c1c; font-size: 12px; margin: 10px 0 0;
+}
+.otp-step .otp {
+  display: flex; gap: 9px; justify-content: center; margin: 16px 0 6px;
+}
+.otp-step .otp .d {
+  width: 44px; height: 52px; border: 1.5px solid var(--line); border-radius: 10px;
+  text-align: center; font-weight: 800; font-size: 20px; color: var(--brand-deep);
+  background: #fff;
+}
+.otp-step .otp .d.on { border-color: var(--brand); background: var(--brand-soft); }
+.otp-step .otp-resend {
+  text-align: center; color: var(--brand-deep); font-size: 12px; margin-top: 12px;
+  text-decoration: underline; display: block; cursor: pointer;
+}
+.identity-badge {
+  display: flex; align-items: center; gap: 9px; background: var(--brand-soft);
+  border: 1px solid var(--line); border-radius: 12px; padding: 10px 12px;
+  font-size: 12.5px; color: var(--ink); margin-bottom: 12px;
+}
+.identity-badge .av {
+  width: 26px; height: 26px; border-radius: 50%; background: var(--brand);
+  color: var(--brand-ink, #fff); display: flex; align-items: center; justify-content: center;
+  font-weight: 800; font-size: 12px; flex: 0 0 26px;
+}
 
 /* ── Contact modal ── */
 .scrim {
