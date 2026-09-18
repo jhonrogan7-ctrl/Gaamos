@@ -1,5 +1,6 @@
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
+from django.utils import timezone
 
 from menu.models import Branch, Company, Table, MenuItem, Order, OrderItem, GuestSession
 from menu.tenancy import set_current_company, reset_current_company
@@ -189,6 +190,100 @@ class OrdersQueueTest(TenantTestCase):
         r = self.client.post(f'/dashboard/order/{forder.pk}/serve/')
         # Another company's order is outside our tenant scope → 404 (hidden), not served.
         self.assertEqual(r.status_code, 404)
+
+
+class OrderDetailTest(TenantTestCase):
+    """Order detail screen — reachable from the flat list for ANY order (table,
+    takeaway, or walk-in with no GuestSession at all), and still reachable once
+    the guest session behind it has closed. Built purely from Order/OrderItem,
+    with no table/session dependency (unlike the by-table screen)."""
+
+    def setUp(self):
+        super().setUp()
+        U = get_user_model()
+        self.owner = U.objects.create_user('detailboss', password='pass')
+        self.make_owner(self.owner)
+        self.branch = Branch.objects.create(company=self.company, name='Lake', slug='lake')
+        self.order = Order.objects.create(branch=self.branch, table_label='7', total=300)
+        OrderItem.objects.create(order=self.order, name='Latte', unit_price=150, qty=2,
+                                 note='Extra hot')
+        self.login_as(self.owner)
+
+    def _get(self, order=None):
+        return self.client.get(f'/dashboard/order/{(order or self.order).pk}/')
+
+    def test_shows_number_items_note_total_table(self):
+        body = self._get().content.decode()
+        self.assertIn(f'#{self.order.number}', body)
+        self.assertIn('Latte', body)
+        self.assertIn('Extra hot', body)
+        self.assertIn('Rs 300', body)
+        self.assertIn('Table 7', body)
+
+    def test_shows_takeaway_when_no_table(self):
+        o = Order.objects.create(branch=self.branch, total=90)
+        body = self._get(o).content.decode()
+        self.assertIn('Takeaway', body)
+
+    def test_shows_guest_name_and_phone(self):
+        gs = GuestSession.objects.create(branch=self.branch, token='dg-1',
+                                         label='Guest A', name='Bikash', contact='+977 98…')
+        o = Order.objects.create(branch=self.branch, guest_session=gs, total=90)
+        body = self._get(o).content.decode()
+        self.assertIn('Bikash', body)
+        self.assertIn('+977 98…', body)
+
+    def test_shows_walkin_when_no_guest_session(self):
+        # self.order (setUp) has no guest_session at all — the case the flat
+        # list could never open before this screen existed.
+        body = self._get().content.decode()
+        self.assertIn('Walk-in', body)
+
+    def test_reachable_when_guest_session_is_closed(self):
+        gs = GuestSession.objects.create(branch=self.branch, token='dg-2', label='Guest A',
+                                         closed_at=timezone.now())
+        o = Order.objects.create(branch=self.branch, guest_session=gs, total=90)
+        r = self._get(o)
+        self.assertEqual(r.status_code, 200)
+
+    def test_mark_served_button_for_new_order(self):
+        body = self._get().content.decode()
+        self.assertIn('Mark served', body)
+
+    def test_no_mark_served_button_for_served_order(self):
+        self.order.status = Order.STATUS_SERVED
+        self.order.save()
+        body = self._get().content.decode()
+        self.assertNotIn('Mark served', body)
+
+    def test_forbidden_other_company(self):
+        other = Company.objects.create(name='Other', slug='other')
+        tok = set_current_company(other)
+        try:
+            fbranch = Branch.objects.create(company=other, name='Far', slug='far')
+            forder = Order.objects.create(branch=fbranch, total=0)
+        finally:
+            reset_current_company(tok)
+        r = self._get(forder)
+        self.assertEqual(r.status_code, 404)
+
+    def test_forbidden_for_unassigned_manager(self):
+        U = get_user_model()
+        branch_b = Branch.objects.create(company=self.company, name='B', slug='b')
+        order_b = Order.objects.create(branch=branch_b, total=0)
+        manager = U.objects.create_user('detailmgr', password='pass')
+        self.make_manager(manager, branches=[self.branch])
+        self.client.logout()
+        self.login_as(manager)
+        r = self._get(order_b)
+        self.assertEqual(r.status_code, 403)
+
+    def test_flat_list_card_links_to_order_detail(self):
+        body = self.client.get('/dashboard/orders/queue/').content.decode()
+        self.assertIn(f'<a class="oc-body" href="/dashboard/order/{self.order.pk}/"', body)
+        # The Mark served form must stay OUTSIDE the anchor (no nested <a><form>).
+        self.assertIn('</a>', body)
+        self.assertLess(body.index('oc-body'), body.index('oc-serve'))
 
 
 class OrderStreamTest(TenantTestCase):

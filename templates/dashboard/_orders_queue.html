@@ -3,6 +3,7 @@
 <div class="ocard-list">
   {% for o in orders %}
   <div class="ocard">
+    <a class="oc-body" href="{% url 'dashboard:order_detail' o.pk %}">
     <div class="oc-top">
       <span class="oc-no">#{{ o.number }}</span>
       <span class="st {% if o.status == 'served' %}done{% else %}new{% endif %}">{{ o.get_status_display }}</span>
@@ -30,6 +31,7 @@
     {% for i in o.items.all %}{% if i.note %}
     <div class="oc-note"><b>{% translate "Note" %}</b> <span><span class="dish">{{ i.name }} ×{{ i.qty }}</span> — {{ i.note }}</span></div>
     {% endif %}{% endfor %}
+    </a>
     <div class="oc-foot">
       <span class="oc-tot" aria-label="Order total Rs {{ o.total }}">Rs {{ o.total }}</span>
       {% if show_branch %}<span class="oc-br">{{ o.branch.name }}</span>{% endif %}

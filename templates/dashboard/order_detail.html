@@ -1,0 +1,52 @@
+{% extends 'dashboard/base.html' %}
+
+{% comment %}
+Single-order detail. Expects: order (Order), branch. Built purely from
+Order/OrderItem — no table or GuestSession dependency — so it renders a
+walk-in order and a takeaway order whose guest session has closed just as
+well as a live table order. Reached from the flat list's .oc-body link.
+{% endcomment %}
+
+{% block page_title %}Order #{{ order.number }}{% endblock %}
+{% block subtitle %}
+  {% if order.table_label %}Table {{ order.table_label }}{% else %}Takeaway{% endif %}
+  · {{ order.get_status_display }}
+{% endblock %}
+
+{% block content %}
+<div class="sec-h">
+  <h3>
+    {% if order.guest_session %}
+      {{ order.guest_session.display_name }}{% if order.guest_session.contact %} <span class="mini">· {{ order.guest_session.contact }}</span>{% endif %}
+    {% else %}
+      Walk-in
+    {% endif %}
+    <span class="mini">{{ order.created_at|date:'c' }}</span>
+  </h3>
+</div>
+
+<div class="panel">
+  <div class="tcard bill-tcard">
+    {% for item in order.items.all %}
+    <div class="li"><span>{{ item.name }} ×{{ item.qty }}</span><span>Rs {{ item.line_total }}</span></div>
+    {% if item.note %}
+    <div class="oc-note"><b>Note</b> <span><span class="dish">{{ item.name }} ×{{ item.qty }}</span> — {{ item.note }}</span></div>
+    {% endif %}
+    {% empty %}
+    <div class="li"><span class="mini">No items.</span></div>
+    {% endfor %}
+    <div class="sub2"><span>Total</span><span>Rs {{ order.total }}</span></div>
+  </div>
+</div>
+
+<div class="actionbar">
+  {% if order.status == 'new' %}
+  <form method="post" action="{% url 'dashboard:order_serve' order.pk %}">
+    {% csrf_token %}
+    <button type="submit" class="ab primary">Mark served</button>
+  </form>
+  {% else %}
+  <span class="servedtxt">Served</span>
+  {% endif %}
+</div>
+{% endblock %}

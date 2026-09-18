@@ -1555,6 +1555,22 @@ def branch_orders_stream(request, slug):
 
 
 @require_membership
+def order_detail(request, pk):
+    """Single-order detail — reachable from any flat-list card. Built purely
+    from Order/OrderItem: unlike the by-table screen, it needs no table or
+    GuestSession, so it opens a walk-in order and a takeaway order whose
+    guest session has since closed just as well as a live one."""
+    order = get_object_or_404(Order, pk=pk)
+    if not ensure_can_manage_branch(request, order.branch):
+        return forbidden(request)
+    return render(request, 'dashboard/order_detail.html', {
+        'active_tab': 'orders',
+        'order': order,
+        'branch': order.branch,
+    })
+
+
+@require_membership
 @require_POST
 def order_serve(request, pk):
     order = get_object_or_404(Order, pk=pk)
