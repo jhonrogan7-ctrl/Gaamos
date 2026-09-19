@@ -68,6 +68,7 @@ urlpatterns = [
     path('branch/<slug:slug>/orders/table-groups/', views.branch_orders_table_groups,
          name='branch_orders_table_groups'),
     path('order/<int:pk>/', views.order_detail, name='order_detail'),
+    path('order/<int:pk>/bill/print/', views.order_bill_pdf, name='order_bill_pdf'),
     path('order/<int:pk>/serve/', views.order_serve, name='order_serve'),
     path('orders/stream/', views.orders_stream, name='orders_stream'),
     path('branch/<slug:slug>/orders/stream/', views.branch_orders_stream, name='branch_orders_stream'),

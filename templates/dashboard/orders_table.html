@@ -11,6 +11,7 @@ markup (gaamos-orders/billing.html).
 {% block subtitle %}{{ guests|length }} open guest session{{ guests|length|pluralize }}{% endblock %}
 
 {% block header_action %}
+<a class="btn ghost" href="{% url 'dashboard:orders' %}">&larr; Orders</a>
 {% if is_takeaway %}
 <a class="btn primary" href="{% url 'dashboard:orders_table_bill_takeaway' %}">Bill</a>
 {% else %}

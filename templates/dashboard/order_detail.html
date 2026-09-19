@@ -13,6 +13,11 @@ well as a live table order. Reached from the flat list's .oc-body link.
   · {{ order.get_status_display }}
 {% endblock %}
 
+{% block header_action %}
+<a class="btn ghost" href="{% url 'dashboard:orders' %}">&larr; Orders</a>
+<a class="btn primary" href="{% url 'dashboard:order_bill_pdf' order.pk %}">Print bill</a>
+{% endblock %}
+
 {% block content %}
 <div class="sec-h">
   <h3>

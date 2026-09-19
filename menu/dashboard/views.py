@@ -1571,6 +1571,34 @@ def order_detail(request, pk):
 
 
 @require_membership
+def order_bill_pdf(request, pk):
+    """Printable bill for a SINGLE order — Janak asked for this on the order
+    detail screen, for every kind of order. Fully additive: built straight
+    from Order/OrderItem, so it needs no GuestSession or Table and never
+    touches the existing table/takeaway split-or-combine bill (_bill_context /
+    _bill_pdf_context / _bill_pdf_response / bill_summary_pdf.html) — that
+    flow is unchanged for every existing client.
+    """
+    from django.http import HttpResponse
+    from django.template.loader import render_to_string
+    from .utils import render_html_to_pdf
+
+    order = get_object_or_404(Order, pk=pk)
+    if not ensure_can_manage_branch(request, order.branch):
+        return forbidden(request)
+    html = render_to_string('dashboard/order_bill_pdf.html', {
+        'order': order,
+        'branch': order.branch,
+        'venue_name': request.company.name,
+        'generated_at': timezone.now(),
+    })
+    pdf = render_html_to_pdf(html)
+    resp = HttpResponse(pdf, content_type='application/pdf')
+    resp['Content-Disposition'] = f'inline; filename="bill-order-{order.number}.pdf"'
+    return resp
+
+
+@require_membership
 @require_POST
 def order_serve(request, pk):
     order = get_object_or_404(Order, pk=pk)

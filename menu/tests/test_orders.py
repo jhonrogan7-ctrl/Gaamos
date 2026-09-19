@@ -285,6 +285,12 @@ class OrderDetailTest(TenantTestCase):
         self.assertIn('</a>', body)
         self.assertLess(body.index('oc-body'), body.index('oc-serve'))
 
+    def test_has_back_link_to_orders(self):
+        body = self._get().content.decode()
+        # The sidebar/tab-bar always link to Orders too, so this checks the
+        # dedicated in-page back control, not just any occurrence of the href.
+        self.assertIn('<a class="btn ghost" href="/dashboard/orders/">', body)
+
 
 class OrderStreamTest(TenantTestCase):
     def setUp(self):

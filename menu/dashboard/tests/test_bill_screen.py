@@ -65,6 +65,30 @@ class OrdersTableDetailAndBillTest(TenantTestCase):
         self.assertEqual(r.status_code, 200)
         self.assertIn('Ram', r.content.decode())
 
+    def test_table_detail_has_back_link_to_orders(self):
+        body = self.client.get(f'/dashboard/orders/table/{self.table.pk}/').content.decode()
+        # The sidebar/tab-bar always link to Orders too, so this checks the
+        # dedicated in-page back control, not just any occurrence of the href.
+        self.assertIn('<a class="btn ghost" href="/dashboard/orders/">', body)
+
+    def test_takeaway_detail_has_back_link_to_orders(self):
+        body = self.client.get('/dashboard/orders/table/takeaway/').content.decode()
+        self.assertIn('<a class="btn ghost" href="/dashboard/orders/">', body)
+
+    def test_bill_screen_already_has_a_back_link_to_its_table(self):
+        # Pre-existing (Task 3.3) — not new work, kept here as a regression
+        # guard: confirms the "← Back to table" control Janak needed already
+        # exists on THIS screen. His 09-19 report turned out to be about
+        # order_detail (no back link at all there), not this one.
+        body = self.client.get(f'/dashboard/orders/table/{self.table.pk}/bill/').content.decode()
+        self.assertIn(f'href="/dashboard/orders/table/{self.table.pk}/"', body)
+        self.assertIn('Back to table', body)
+
+    def test_takeaway_bill_screen_already_has_a_back_link(self):
+        body = self.client.get('/dashboard/orders/table/takeaway/bill/').content.decode()
+        self.assertIn('href="/dashboard/orders/table/takeaway/"', body)
+        self.assertIn('Back to table', body)
+
     # --- B3/B4: bill split / combine ---
 
     def test_bill_split_shows_per_guest_subtotals(self):

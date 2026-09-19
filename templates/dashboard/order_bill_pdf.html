@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Bill summary</title>
+<style>
+  body { font-family: sans-serif; font-size: 12px; color: #111111; }
+  h1 { font-size: 18px; margin: 0 0 4px 0; }
+  .banner {
+    font-size: 10px; font-weight: bold; border: 1px solid #111111;
+    padding: 4px 8px; margin-bottom: 10px;
+  }
+  .meta { font-size: 11px; color: #444444; margin-bottom: 14px; }
+  table { width: 100%; border-collapse: collapse; margin-bottom: 10px; }
+  th, td { padding: 4px 6px; text-align: left; border-bottom: 1px solid #dddddd; }
+  th.amount, td.amount { text-align: right; }
+  tr.total-row td { font-weight: bold; border-top: 2px solid #111111; }
+  .footer {
+    margin-top: 24px; font-size: 10px; color: #444444;
+    border-top: 1px solid #cccccc; padding-top: 6px;
+  }
+</style>
+</head>
+<body>
+
+<div class="banner">Bill summary &mdash; not a tax receipt</div>
+
+<h1>{{ venue_name }}{% if branch %} &middot; {{ branch.name }}{% endif %}</h1>
+<div class="meta">
+  Order #{{ order.number }}
+  &middot; {% if order.table_label %}Table {{ order.table_label }}{% else %}Takeaway{% endif %}
+  {% if order.guest_session %}&middot; {{ order.guest_session.display_name }}{% endif %}
+  &middot; {{ generated_at|date:"Y-m-d H:i" }}
+</div>
+
+<table>
+  <thead>
+    <tr><th>Item</th><th class="amount">Qty</th><th class="amount">Amount (Rs)</th></tr>
+  </thead>
+  <tbody>
+    {% for item in order.items.all %}
+    <tr><td>{{ item.name }}</td><td class="amount">{{ item.qty }}</td><td class="amount">{{ item.line_total }}</td></tr>
+    {% empty %}
+    <tr><td colspan="3">No items.</td></tr>
+    {% endfor %}
+    <tr class="total-row"><td colspan="2">Total</td><td class="amount">Rs {{ order.total }}</td></tr>
+  </tbody>
+</table>
+
+<div class="footer">
+  Bill summary &mdash; not a tax receipt. Gaamos is non-POS: this document does not record a
+  payment and is not a fiscal invoice. The venue settles independently (cash / its own POS /
+  credit book).
+</div>
+
+</body>
+</html>
